@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource("classpath:spring-context/app-context.xml")
 public class JuniperBotApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(JuniperBotApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JuniperBotApplication.class, args);
+    }
 }

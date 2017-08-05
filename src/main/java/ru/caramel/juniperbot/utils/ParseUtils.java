@@ -1,13 +1,12 @@
 package ru.caramel.juniperbot.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParseUtils {
 
-    private ParseUtils() {}
+    private ParseUtils() {
+    }
 
     /// <summary>
     /// Reads command line arguments from a single string.

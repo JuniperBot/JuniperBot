@@ -7,7 +7,10 @@ import ru.caramel.juniperbot.integration.instagram.InstagramListener;
 import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @DiscordCommand(key = "нафыркивай", description = "Автоматически нафыркивать новые посты из блога Джупи")

@@ -141,8 +141,7 @@ public class DiscordClient extends ListenerAdapter {
 
         try {
             action.queue();
-        }
-        catch (ErrorResponseException e) {
+        } catch (ErrorResponseException e) {
             LOGGER.error("Can't execute webhook: ", e);
             return false;
         }

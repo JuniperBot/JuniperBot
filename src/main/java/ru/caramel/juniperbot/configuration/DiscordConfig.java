@@ -49,10 +49,12 @@ public class DiscordConfig {
 
     public static class DiscordWebHook {
 
-        @Getter @Setter
+        @Getter
+        @Setter
         private long id;
 
-        @Getter @Setter
+        @Getter
+        @Setter
         private String token;
 
     }

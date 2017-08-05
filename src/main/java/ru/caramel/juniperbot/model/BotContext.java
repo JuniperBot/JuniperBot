@@ -2,15 +2,16 @@ package ru.caramel.juniperbot.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
 public class BotContext {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean detailedEmbed = true;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String latestId;
 
     @Getter
