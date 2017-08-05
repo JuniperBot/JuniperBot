@@ -8,8 +8,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>juniperbot</name>
-	<description>Demo project for Spring Boot</description>
+	<name>JuniperBot</name>
+	<description>JuniperBot Discord Bot</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -22,13 +22,67 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<JDA.version>3.2.0_241</JDA.version>
+		<lombok.version>1.16.18</lombok.version>
+		<json.version>20160810</json.version>
+		<apache.commons.lang3.version>3.6</apache.commons.lang3.version>
+		<jInstagram.version>1.2.1</jInstagram.version>
+		<joda-time.version>2.9.9</joda-time.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>jcenter</id>
+			<name>jcenter-bintray</name>
+			<url>http://jcenter.bintray.com</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache.commons.lang3.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+
+		<!-- Force Json artifact to fix JDA wrong json resolving -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.dv8tion</groupId>
+			<artifactId>JDA</artifactId>
+			<version>${JDA.version}</version>
+		</dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>com.sachinhandiekar</groupId>
+			<artifactId>jInstagram</artifactId>
+			<version>${jInstagram.version}</version>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

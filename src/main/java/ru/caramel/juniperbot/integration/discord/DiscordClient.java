@@ -1,0 +1,161 @@
+package ru.caramel.juniperbot.integration.discord;
+
+import lombok.Getter;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.commands.Command;
+import ru.caramel.juniperbot.commands.DiscordCommand;
+import ru.caramel.juniperbot.configuration.DiscordConfig;
+import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.WebHookMessage;
+import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.model.exception.ValidationException;
+import ru.caramel.juniperbot.utils.ParseUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.security.auth.login.LoginException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Component
+public class DiscordClient extends ListenerAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
+
+    public static final int MAX_MESSAGE_SIZE = 2000;
+
+    @Autowired
+    private DiscordConfig config;
+
+    @Getter
+    private JDA jda;
+
+    @Getter
+    private Map<String, Command> commands;
+
+    private Map<Guild, BotContext> contexts = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        try {
+            jda = new JDABuilder(config.getAccountType())
+                    .setToken(config.getToken())
+                    .addEventListener(this)
+                    .buildAsync();
+        } catch (LoginException e) {
+            LOGGER.error("Could not login user with specified token", e);
+        } catch (RateLimitedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.isFromType(ChannelType.PRIVATE)) {
+            LOGGER.debug("[PM] {}: {}", event.getAuthor().getName(), event.getMessage().getContent());
+            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
+                    event.getMessage().getContent());
+        } else {
+            LOGGER.debug("[{}][{}] {}: {}", event.getGuild().getName(),
+                    event.getTextChannel().getName(), event.getMember().getEffectiveName(),
+                    event.getMessage().getContent());
+        }
+
+        if (validate(event)) {
+            String input = event.getMessage().getContent();
+            sendCommand(event, input.substring(config.getPrefix().length()));
+        }
+    }
+
+    private void sendCommand(MessageReceivedEvent event, String input) {
+        String[] args = ParseUtils.readArgs(input);
+        if (args.length == 0) {
+            return;
+        }
+
+        Command command = commands.get(args[0]);
+        if (command == null) {
+            return;
+        }
+        BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext(event.getChannel()));
+        try {
+            command.doCommand(event, context, ArrayUtils.subarray(args, 1, args.length));
+        } catch (ValidationException e) {
+            event.getChannel().sendMessage(e.getMessage()).submit();
+        } catch (DiscordException e) {
+            event.getChannel().sendMessage("Ой, произошла какая-то ошибка :C Покорми меня?").submit();
+            LOGGER.error("Command {} execution error", args[0], e);
+        }
+    }
+
+    private boolean validate(MessageReceivedEvent event) {
+        String input = event.getMessage().getContent();
+        return !event.getAuthor().isBot() &&
+                StringUtils.isNotEmpty(input) &&
+                input.startsWith(config.getPrefix()) &&
+                input.length() <= 255;
+    }
+
+    @Autowired
+    private void registerCommands(List<Command> commands) {
+        this.commands = commands.stream()
+                .filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class))
+                .collect(Collectors.toMap(e -> e.getClass().getAnnotation(DiscordCommand.class).key(), e -> e));
+    }
+
+    public boolean executeWebHook(DiscordConfig.DiscordWebHook webHook, WebHookMessage message) {
+        JSONObject obj = message.toJSONObject();
+        RestAction<JSONObject> action = new RestAction<JSONObject>(jda, Route.Custom.POST_ROUTE.compile(String.format("webhooks/%s/%s", webHook.getId(), webHook.getToken())), obj) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void handleResponse(Response response, Request request) {
+                if (response.isOk()) {
+                    request.onSuccess(null);
+                } else {
+                    request.onFailure(response);
+                }
+            }
+        };
+
+        try {
+            action.queue();
+        }
+        catch (ErrorResponseException e) {
+            LOGGER.error("Can't execute webhook: ", e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onException(ExceptionEvent event) {
+        LOGGER.error("JDA error", event.getCause());
+    }
+
+    @PreDestroy
+    public void destroy() {
+        jda.shutdownNow();
+    }
+}
