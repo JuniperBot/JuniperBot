@@ -30,6 +30,8 @@ public class PostCommand extends ParameterizedCommand {
 
     public static final int MAX_DETAILED = 3;
 
+    public static final int MAX_SHORT = 20;
+
     @Autowired
     private InstagramClient instagramClient;
 
@@ -109,12 +111,13 @@ public class PostCommand extends ParameterizedCommand {
                 throw new ValidationException("Всмысле ноль? Ну ладно, не буду ничего присылать.");
             }
 
+            long maxShortPosts = Math.min(context.getMaxShortPosts(), MAX_SHORT);
             if (context.isDetailedEmbed()) {
                 if (count > MAX_DETAILED) {
                     throw new ValidationException("Не могу прислать больше 3 фырок в нефырном виде :C");
                 }
-            } else if (count > 20) {
-                throw new ValidationException("Не могу прислать больше 20 фырок за раз :C");
+            } else if (count > maxShortPosts) {
+                throw new ValidationException(String.format("Не могу прислать больше %s фырок за раз :C", maxShortPosts));
             }
             if (count < 0) {
                 throw new ValidationException("Фтооо ты хочешь от меня?");

@@ -35,7 +35,12 @@ public class RemindCommand extends ParameterizedCommand {
                 return false;
             }
             taskScheduler.schedule(() -> {
-                message.getChannel().sendMessage(args[1]).queue();
+                StringBuilder builder = new StringBuilder();
+                if (message.getGuild().isMember(message.getAuthor())) {
+                    builder.append(String.format("<@!%s> ", message.getAuthor().getId()));
+                }
+                builder.append(args[1]);
+                message.getChannel().sendMessage(builder.toString()).queue();
             }, date.toDate());
             message.getChannel().sendMessage("Лаааадно, напомню. Фыр.").queue();
         } catch (IllegalArgumentException e) {

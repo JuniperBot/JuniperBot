@@ -13,14 +13,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 @Scope("prototype")
 public class GuildPlaybackManager extends AudioEventAdapter {
+
+    private static Set<String> channelNames = new HashSet<>(Arrays.asList("музыка", "music"));
 
     @Autowired
     private Guild guild;
@@ -42,7 +43,18 @@ public class GuildPlaybackManager extends AudioEventAdapter {
         player = playerManager.createPlayer();
         player.addListener(this);
         audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
-        channel = guild.getVoiceChannels().stream().findFirst().orElse(null);
+        channel = getTargetChannel();
+    }
+
+    private VoiceChannel getTargetChannel() {
+        VoiceChannel channel;
+        for (String name : channelNames) {
+            channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
+            if (channel != null) {
+                return channel;
+            }
+        }
+        return guild.getVoiceChannels().stream().findFirst().orElse(null);
     }
 
     public void play(AudioTrack track) {
