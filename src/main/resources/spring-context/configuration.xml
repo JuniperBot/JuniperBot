@@ -4,20 +4,21 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean class="ru.caramel.juniperbot.configuration.InstagramConfig">
-        <property name="clientId"           value="INSERT_HERE" />
-        <property name="clientSecret"       value="INSERT_HERE" />
-        <property name="token"              value="INSERT_HERE" />
-        <property name="pollUserId"         value="2053300282" />
-        <property name="ttl"                value="300000" />
-        <property name="updateInterval"     value="300000" />
+        <property name="clientId" value="INSERT_HERE"/>
+        <property name="clientSecret" value="INSERT_HERE"/>
+        <property name="token" value="INSERT_HERE"/>
+        <property name="pollUserId" value="2053300282"/>
+        <property name="ttl" value="300000"/>
+        <property name="updateInterval" value="300000"/>
     </bean>
 
     <bean class="ru.caramel.juniperbot.configuration.DiscordConfig">
-        <property name="prefix"         value="!" />
-        <property name="token"          value="INSERT_HERE" />
-        <property name="accountType"    value="CLIENT" />
-        <property name="userName"       value="Джупи" />
-        <property name="avatarUrl"      value="https://cdn.discordapp.com/avatars/310848622642069504/17f82d64779394935f900df9f4bb4b38.png?size=128" />
+        <property name="prefix" value="!"/>
+        <property name="token" value="INSERT_HERE"/>
+        <property name="accountType" value="CLIENT"/>
+        <property name="userName" value="Джупи"/>
+        <property name="avatarUrl"
+                  value="https://cdn.discordapp.com/avatars/310848622642069504/17f82d64779394935f900df9f4bb4b38.png?size=128"/>
         <!--<property name="webHooks">
             <list value-type="ru.caramel.juniperbot.configuration.DiscordConfig$DiscordWebHook">
                 <bean class="ru.caramel.juniperbot.configuration.DiscordConfig$DiscordWebHook">

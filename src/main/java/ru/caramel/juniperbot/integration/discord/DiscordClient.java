@@ -14,7 +14,6 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.model.WebHookMessage;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 import ru.caramel.juniperbot.model.exception.ValidationException;
-import ru.caramel.juniperbot.utils.ParseUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -47,6 +45,9 @@ public class DiscordClient extends ListenerAdapter {
 
     @Autowired
     private DiscordConfig config;
+
+    @Autowired
+    private DiscordBeanProviders discordBeanProviders;
 
     @Getter
     private JDA jda;
@@ -72,6 +73,7 @@ public class DiscordClient extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        discordBeanProviders.setMessageContext(event);
         if (event.isFromType(ChannelType.PRIVATE)) {
             LOGGER.debug("[PM] {}: {}", event.getAuthor().getName(), event.getMessage().getContent());
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
@@ -89,7 +91,7 @@ public class DiscordClient extends ListenerAdapter {
     }
 
     private void sendCommand(MessageReceivedEvent event, String input) {
-        String[] args = ParseUtils.readArgs(input);
+        String[] args = input.split("\\s+");
         if (args.length == 0) {
             return;
         }
@@ -100,7 +102,7 @@ public class DiscordClient extends ListenerAdapter {
         }
         BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext(event.getChannel()));
         try {
-            command.doCommand(event, context, ArrayUtils.subarray(args, 1, args.length));
+            command.doCommand(event, context);
         } catch (ValidationException e) {
             event.getChannel().sendMessage(e.getMessage()).submit();
         } catch (DiscordException e) {

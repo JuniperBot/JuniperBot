@@ -20,7 +20,7 @@ public class HelpCommand implements Command {
     private DiscordClient discordClient;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context) {
         Map<String, Command> commands = discordClient.getCommands();
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
@@ -32,7 +32,7 @@ public class HelpCommand implements Command {
         });
         message.getChannel().sendMessage(new MessageBuilder()
                 .append("**Доступные команды:**")
-                .setEmbed(embedBuilder.build()).build()).submit();
+                .setEmbed(embedBuilder.build()).build()).queue();
         return true;
     }
 }

@@ -6,6 +6,6 @@ import ru.caramel.juniperbot.model.exception.DiscordException;
 
 public interface Command {
 
-    boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException;
+    boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException;
 
 }

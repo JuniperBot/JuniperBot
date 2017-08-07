@@ -7,15 +7,16 @@
 
     <!--Could be configured for external files with jvm property like"-Djuniperbot-config-location=file:///D:\\projects\\JuniperBot\\conf\\"-->
 
-    <import resource="classpath:spring-context/task-scheduler.xml" />
-    <import resource="${juniperbot-config-location:classpath:spring-context/}configuration.xml" />
+    <import resource="classpath:spring-context/task-scheduler.xml"/>
+    <import resource="${juniperbot-config-location:classpath:spring-context/}configuration.xml"/>
 
     <context:annotation-config/>
-    <context:property-placeholder ignore-resource-not-found="true" location="${juniperbot-config-location:classpath:}application.properties"/>
+    <context:property-placeholder ignore-resource-not-found="true"
+                                  location="${juniperbot-config-location:classpath:}application.properties"/>
 
     <context:component-scan base-package="
-        ru.caramel.juniperbot.services,
+        ru.caramel.juniperbot.audio,
         ru.caramel.juniperbot.integration,
-        ru.caramel.juniperbot.commands" />
+        ru.caramel.juniperbot.commands"/>
 
 </beans>

@@ -8,12 +8,16 @@ public class ParseUtils {
     private ParseUtils() {
     }
 
+    public static String[] readArgs(String argsString) {
+        return readArgs(argsString, false);
+    }
+
     /// <summary>
     /// Reads command line arguments from a single string.
     /// </summary>
     /// <param name="argsString">The string that contains the entire command line.</param>
     /// <returns>An array of the parsed arguments.</returns>
-    public static String[] readArgs(String argsString) {
+    public static String[] readArgs(String argsString, boolean skipFirst) {
         // Collects the split argument strings
         List<String> args = new ArrayList<>();
         // Builds the current argument
@@ -75,6 +79,10 @@ public class ParseUtils {
         // Save last argument
         if (currentArg.length() > 0 || hadQuote) {
             args.add(currentArg.toString());
+        }
+
+        if (!args.isEmpty() && skipFirst) {
+            args.remove(0);
         }
         return args.toArray(new String[args.size()]);
     }

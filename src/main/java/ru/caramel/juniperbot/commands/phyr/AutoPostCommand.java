@@ -19,11 +19,11 @@ public class AutoPostCommand extends PostCommand implements InstagramListener {
     private Set<BotContext> subscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
         message.getChannel().sendMessage(
                 subscriptions.add(context)
                         ? "Хорошо! Как только будет что-то новенькое я сюда фыркну ^_^"
-                        : "Ты меня уже просил нафыркивать!").submit();
+                        : "Ты меня уже просил нафыркивать!").queue();
         return true;
     }
 

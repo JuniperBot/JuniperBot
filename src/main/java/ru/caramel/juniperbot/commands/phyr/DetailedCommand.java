@@ -10,13 +10,13 @@ import ru.caramel.juniperbot.model.exception.DiscordException;
 public class DetailedCommand implements Command {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
         if (context.isDetailedEmbed()) {
-            context.getChannel().sendMessage("Тебе мало буков? >_>").submit();
+            context.getChannel().sendMessage("Тебе мало буков? >_>").queue();
             return true;
         }
         context.setDetailedEmbed(true);
-        context.getChannel().sendMessage("Ну фыыыр :C").submit();
+        context.getChannel().sendMessage("Ну фыыыр :C").queue();
         return true;
     }
 }

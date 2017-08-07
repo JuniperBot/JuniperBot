@@ -9,8 +9,8 @@ import org.jinstagram.exceptions.InstagramException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.DiscordCommand;
+import ru.caramel.juniperbot.commands.ParameterizedCommand;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.instagram.InstagramClient;
 import ru.caramel.juniperbot.model.BotContext;
@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @DiscordCommand(key = "фыр", description = "Фыркнуть посты из блога Джупи (можно указать количество постов, по-умолчанию одно)")
-public class PostCommand implements Command {
+public class PostCommand extends ParameterizedCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);
 
@@ -43,16 +43,16 @@ public class PostCommand implements Command {
         }
 
         if (medias == null) {
-            message.getChannel().sendMessage("Произошла какая-то ошибка у моего блога... Давай попробуем позже?").submit();
+            message.getChannel().sendMessage("Произошла какая-то ошибка у моего блога... Давай попробуем позже?").queue();
             return false;
         }
         if (medias.isEmpty()) {
-            message.getChannel().sendMessage("Что-то мне и нечего показать...").submit();
+            message.getChannel().sendMessage("Что-то мне и нечего показать...").queue();
             return false;
         }
 
         if (count > medias.size()) {
-            message.getChannel().sendMessage(String.format("У меня есть всего %s сообщений...", medias.size())).submit();
+            message.getChannel().sendMessage(String.format("У меня есть всего %s сообщений...", medias.size())).queue();
             count = medias.size();
         }
         medias = medias.subList(0, count);
@@ -65,7 +65,7 @@ public class PostCommand implements Command {
             if (context.isDetailedEmbed()) {
                 for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
                     MessageEmbed embed = convertToEmbed(context, medias.get(i));
-                    context.getChannel().sendMessage(embed).submit();
+                    context.getChannel().sendMessage(embed).queue();
                 }
             } else {
                 Iterator<MediaFeedData> iterator = medias.iterator();
@@ -84,7 +84,7 @@ public class PostCommand implements Command {
                     messages.add(builder.toString());
                 }
                 for (String part : messages) {
-                    context.getChannel().sendMessage(part).submit();
+                    context.getChannel().sendMessage(part).queue();
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {

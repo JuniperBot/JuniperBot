@@ -12,9 +12,9 @@ public class ResetCommand implements Command {
     private DiscordWebHookPoster poster;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context) {
         poster.setResetToSecond(true);
-        message.getChannel().sendMessage("Сброшено.").submit();
+        message.getChannel().sendMessage("Сброшено.").queue();
         return true;
     }
 }
