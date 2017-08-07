@@ -35,7 +35,7 @@ public class RemindCommand extends ParameterizedCommand {
                 return false;
             }
             taskScheduler.schedule(() -> {
-                context.getChannel().sendMessage(args[1]).queue();
+                message.getChannel().sendMessage(args[1]).queue();
             }, date.toDate());
             message.getChannel().sendMessage("Лаааадно, напомню. Фыр.").queue();
         } catch (IllegalArgumentException e) {

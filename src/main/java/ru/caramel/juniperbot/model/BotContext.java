@@ -2,7 +2,11 @@ package ru.caramel.juniperbot.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.MessageChannel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BotContext {
 
@@ -15,18 +19,7 @@ public class BotContext {
     private String latestId;
 
     @Getter
-    private final MessageChannel channel;
+    @Setter
+    private List<MessageChannel> subscriptions = new ArrayList<>();
 
-    public BotContext(MessageChannel channel) {
-        this.channel = channel;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == null || !(other instanceof BotContext)) {
-            return false;
-        }
-        BotContext otherContext = (BotContext) other;
-        return otherContext.channel.equals(this.channel);
-    }
 }

@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.commands.phyr;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -56,16 +57,16 @@ public class PostCommand extends ParameterizedCommand {
             count = medias.size();
         }
         medias = medias.subList(0, count);
-        post(medias, context);
+        post(medias, message.getChannel(), context);
         return true;
     }
 
-    protected void post(List<MediaFeedData> medias, BotContext context) {
+    protected void post(List<MediaFeedData> medias, MessageChannel channel, BotContext context) {
         if (medias.size() > 0) {
             if (context.isDetailedEmbed()) {
                 for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
                     MessageEmbed embed = convertToEmbed(context, medias.get(i));
-                    context.getChannel().sendMessage(embed).queue();
+                    channel.sendMessage(embed).queue();
                 }
             } else {
                 Iterator<MediaFeedData> iterator = medias.iterator();
@@ -84,7 +85,7 @@ public class PostCommand extends ParameterizedCommand {
                     messages.add(builder.toString());
                 }
                 for (String part : messages) {
-                    context.getChannel().sendMessage(part).queue();
+                    channel.sendMessage(part).queue();
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {

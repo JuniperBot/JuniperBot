@@ -100,7 +100,7 @@ public class DiscordClient extends ListenerAdapter {
         if (command == null) {
             return;
         }
-        BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext(event.getChannel()));
+        BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext());
         try {
             command.doCommand(event, context);
         } catch (ValidationException e) {

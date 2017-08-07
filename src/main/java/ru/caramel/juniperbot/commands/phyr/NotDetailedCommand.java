@@ -12,11 +12,11 @@ public class NotDetailedCommand implements Command {
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
         if (!context.isDetailedEmbed()) {
-            context.getChannel().sendMessage("Уже фырнее некуда! ^_^").queue();
+            message.getChannel().sendMessage("Уже фырнее некуда! ^_^").queue();
             return true;
         }
         context.setDetailedEmbed(false);
-        context.getChannel().sendMessage("Пофырчим! <^.^>").queue();
+        message.getChannel().sendMessage("Пофырчим! <^.^>").queue();
         return true;
     }
 }

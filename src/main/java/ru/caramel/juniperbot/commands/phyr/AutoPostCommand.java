@@ -24,6 +24,7 @@ public class AutoPostCommand extends PostCommand implements InstagramListener {
                 subscriptions.add(context)
                         ? "Хорошо! Как только будет что-то новенькое я сюда фыркну ^_^"
                         : "Ты меня уже просил нафыркивать!").queue();
+        context.getSubscriptions().add(message.getChannel());
         return true;
     }
 
@@ -39,8 +40,8 @@ public class AutoPostCommand extends PostCommand implements InstagramListener {
                     newMedias.add(media);
                 }
 
-                if (!newMedias.isEmpty()) {
-                    post(newMedias, context);
+                if (!newMedias.isEmpty() && !context.getSubscriptions().isEmpty()) {
+                    context.getSubscriptions().forEach(channel -> post(newMedias, channel, context));
                 }
             }
             context.setLatestId(medias.get(0).getId());
