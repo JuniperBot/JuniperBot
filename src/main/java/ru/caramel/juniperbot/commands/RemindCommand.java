@@ -11,10 +11,15 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
-@DiscordCommand(key = "напомни", description = "Напомнить о чем-либо. Дата в формате дд.ММ.гггг чч:мм и сообщение в кавычках")
-public class RemindCommand extends ParameterizedCommand {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@DiscordCommand(key = "напомни", description = "Напомнить о чем-либо. Дата в формате дд.ММ.гггг чч:мм и сообщение")
+public class RemindCommand extends AbstractCommand {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(DateTimeZone.forID("Europe/Moscow"));
+
+    private static Pattern PATTERN = Pattern.compile("^(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(\\d{2}:\\d{2})\\s+(.*)$");
 
     @Autowired
     private TaskScheduler taskScheduler;
@@ -23,13 +28,14 @@ public class RemindCommand extends ParameterizedCommand {
     private DiscordConfig discordConfig;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException {
-        if (args.length < 2) {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        Matcher m = PATTERN.matcher(content);
+        if (!m.find()) {
             return printHelp(message);
         }
 
         try {
-            DateTime date = FORMATTER.parseDateTime(args[0]);
+            DateTime date = FORMATTER.parseDateTime(String.format("%s %s", m.group(1), m.group(2)));
             if (DateTime.now().isAfter(date)) {
                 message.getChannel().sendMessage("Указывай дату в будущем, пожалуйста").queue();
                 return false;
@@ -39,7 +45,7 @@ public class RemindCommand extends ParameterizedCommand {
                 if (message.getGuild().isMember(message.getAuthor())) {
                     builder.append(String.format("<@!%s> ", message.getAuthor().getId()));
                 }
-                builder.append(args[1]);
+                builder.append(m.group(3));
                 message.getChannel().sendMessage(builder.toString()).queue();
             }, date.toDate());
             message.getChannel().sendMessage("Лаааадно, напомню. Фыр.").queue();
@@ -50,8 +56,10 @@ public class RemindCommand extends ParameterizedCommand {
     }
 
     private boolean printHelp(MessageReceivedEvent message) {
-        message.getChannel().sendMessage(String.format("Дата в формате дд.ММ.гггг чч:мм и сообщение в кавычках. Например: %sнапомни \"03.07.2017 21:27\" \"Сообщение\"",
-                discordConfig.getPrefix())).queue();
+        DateTime current = DateTime.now();
+        current = current.plusMinutes(1);
+        message.getChannel().sendMessage(String.format("Дата в формате дд.ММ.гггг чч:мм и сообщение в кавычках. Например: `%sнапомни %s сообщение`",
+                discordConfig.getPrefix(), FORMATTER.print(current))).queue();
         return false;
     }
 }
