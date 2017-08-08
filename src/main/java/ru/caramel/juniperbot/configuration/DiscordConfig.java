@@ -41,6 +41,10 @@ public class DiscordConfig {
 
     @Getter
     @Setter
+    private String playingStatus;
+
+    @Getter
+    @Setter
     private List<DiscordWebHook> webHooks;
 
     @PostConstruct

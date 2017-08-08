@@ -4,8 +4,10 @@ import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -68,6 +70,13 @@ public class DiscordClient extends ListenerAdapter {
             LOGGER.error("Could not login user with specified token", e);
         } catch (RateLimitedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onReady(ReadyEvent event) {
+        if (StringUtils.isNotEmpty(config.getPlayingStatus())) {
+            jda.getPresence().setGame(Game.of(config.getPlayingStatus()));
         }
     }
 

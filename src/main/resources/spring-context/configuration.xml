@@ -19,6 +19,7 @@
         <property name="userName" value="Джупи"/>
         <property name="accentColor" value="#FFA550"/>
         <property name="playRefreshInterval" value="5000"/>
+        <property name="playingStatus" value="фыр-фыр !хелп"/>
         <property name="avatarUrl"
                   value="https://cdn.discordapp.com/avatars/310848622642069504/17f82d64779394935f900df9f4bb4b38.png?size=128"/>
         <!--<property name="webHooks">
