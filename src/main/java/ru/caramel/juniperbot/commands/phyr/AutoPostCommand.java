@@ -41,7 +41,7 @@ public class AutoPostCommand extends PostCommand implements InstagramListener {
                 }
 
                 if (!newMedias.isEmpty() && !context.getSubscriptions().isEmpty()) {
-                    context.getSubscriptions().forEach(channel -> post(newMedias, channel, context));
+                    context.getSubscriptions().forEach(channel -> post(newMedias, channel));
                 }
             }
             context.setLatestId(medias.get(0).getId());

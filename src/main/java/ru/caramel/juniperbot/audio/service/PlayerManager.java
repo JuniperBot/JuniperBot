@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.audio;
+package ru.caramel.juniperbot.audio.service;
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;

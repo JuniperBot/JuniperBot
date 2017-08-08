@@ -3,9 +3,11 @@ package ru.caramel.juniperbot.configuration;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.AccountType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +33,13 @@ public class DiscordConfig {
     private String avatarUrl;
 
     @Getter
+    private Color accentColor;
+
+    @Getter
+    @Setter
+    private Long playRefreshInterval;
+
+    @Getter
     @Setter
     private List<DiscordWebHook> webHooks;
 
@@ -45,6 +54,10 @@ public class DiscordConfig {
 
     public AccountType getAccountType() {
         return accountType != null ? accountType : AccountType.BOT;
+    }
+
+    public void setAccentColor(String color) {
+        accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }
 
     public static class DiscordWebHook {

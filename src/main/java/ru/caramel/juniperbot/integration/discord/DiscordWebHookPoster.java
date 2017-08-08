@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.integration.discord;
 
 import lombok.Setter;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,11 @@ public class DiscordWebHookPoster implements InstagramListener {
             int size = Math.min(PostCommand.MAX_DETAILED, newMedias.size());
             if (size > 0) {
                 List<MessageEmbed> embeds = newMedias.stream()
-                        .map(e -> PostCommand.convertToEmbed(null, e))
-                        .collect(Collectors.toList());
+                        .map(e -> {
+                            EmbedBuilder builder = PostCommand.convertToEmbed(e);
+                            builder.setColor(config.getAccentColor());
+                            return builder.build();
+                        }).collect(Collectors.toList());
 
                 WebHookMessage message = WebHookMessage.builder()
                         .avatarUrl(config.getAvatarUrl())

@@ -2,7 +2,7 @@ package ru.caramel.juniperbot.commands.audio;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.audio.PlaybackManager;
+import ru.caramel.juniperbot.audio.service.PlaybackManager;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.commands.ParameterizedCommand;
 import ru.caramel.juniperbot.model.BotContext;
@@ -19,7 +19,7 @@ public class PlayCommand extends ParameterizedCommand {
         if (args.length == 0) {
             return false;
         }
-        playbackManager.loadAndPlay(message.getTextChannel(), args[0]);
+        playbackManager.loadAndPlay(message.getTextChannel(), message.getAuthor(), args[0]);
         return true;
     }
 }

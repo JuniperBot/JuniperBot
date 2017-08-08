@@ -58,7 +58,7 @@ public class RemindCommand extends AbstractCommand {
     private boolean printHelp(MessageReceivedEvent message) {
         DateTime current = DateTime.now();
         current = current.plusMinutes(1);
-        message.getChannel().sendMessage(String.format("Дата в формате дд.ММ.гггг чч:мм и сообщение в кавычках. Например: `%sнапомни %s сообщение`",
+        message.getChannel().sendMessage(String.format("Дата в формате дд.ММ.гггг чч:мм и сообщение. Например: `%sнапомни %s сообщение`",
                 discordConfig.getPrefix(), FORMATTER.print(current))).queue();
         return false;
     }

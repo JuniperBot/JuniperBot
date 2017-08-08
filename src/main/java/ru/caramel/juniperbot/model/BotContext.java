@@ -11,15 +11,7 @@ public class BotContext {
 
     @Getter
     @Setter
-    private boolean detailedEmbed = true;
-
-    @Getter
-    @Setter
     private String latestId;
-
-    @Getter
-    @Setter
-    private long maxShortPosts = 10;
 
     @Getter
     @Setter

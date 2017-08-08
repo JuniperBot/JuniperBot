@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.audio;
+package ru.caramel.juniperbot.audio.service;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class PlaybackManager {
     @Autowired
     private AudioPlayerManager playerManager;
 
+    @Autowired
+    private MessageManager messageManager;
+
     private Map<Long, GuildPlaybackManager> musicManagers = new HashMap<>();
 
     private synchronized GuildPlaybackManager getGuildAudioPlayer(Guild guild) {
@@ -31,28 +35,22 @@ public class PlaybackManager {
                 e -> applicationContext.getBean(GuildPlaybackManager.class));
     }
 
-    public void loadAndPlay(final TextChannel channel, final String trackUrl) {
+    public void loadAndPlay(final TextChannel channel, final User requestedBy, final String trackUrl) {
         GuildPlaybackManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
-
-                musicManager.play(track);
+                musicManager.play(track, channel, requestedBy);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 AudioTrack firstTrack = playlist.getSelectedTrack();
-
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().get(0);
                 }
-
-                channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
-
-                musicManager.play(firstTrack);
+                musicManager.play(firstTrack, channel, requestedBy);
             }
 
             @Override
@@ -70,6 +68,5 @@ public class PlaybackManager {
     public void skipTrack(TextChannel channel) {
         GuildPlaybackManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.nextTrack();
-        channel.sendMessage("Skipped to next track.").queue();
     }
 }
