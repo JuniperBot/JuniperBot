@@ -24,6 +24,7 @@ public class HelpCommand implements Command {
         Map<String, Command> commands = discordClient.getCommands();
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
+        embedBuilder.setColor(discordConfig.getAccentColor());
         commands.forEach((k, v) -> {
             DiscordCommand annotation = v.getClass().getAnnotation(DiscordCommand.class);
             if (!annotation.hidden()) {
