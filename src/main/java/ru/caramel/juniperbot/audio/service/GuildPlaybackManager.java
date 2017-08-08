@@ -108,6 +108,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
             player.startTrack(queue.poll(), false);
             return;
         }
+        player.startTrack(null, false);
         messageManager.onQueueEnd();
         if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
             audioManager.closeAudioConnection();
