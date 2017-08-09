@@ -22,6 +22,9 @@ public class PlayCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
+        if (!message.getMessage().getAttachments().isEmpty()) {
+            query = message.getMessage().getAttachments().get(0).getUrl();
+        }
         if (!ResourceUtils.isUrl(query)) {
             String result = youTubeClient.searchForUrl(query);
             query = result != null ? result : query;
