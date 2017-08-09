@@ -9,8 +9,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.audio.model.TrackRequest;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -50,7 +49,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
 
     private AudioFrame lastFrame;
 
-    private final BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
+    private TrackRequest current;
+
+    private final BlockingQueue<TrackRequest> queue = new LinkedBlockingQueue<>();
 
     @PostConstruct
     public void init() {
@@ -71,16 +72,21 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         return guild.getVoiceChannels().stream().findFirst().orElse(null);
     }
 
-    public void play(AudioTrack track, TextChannel sourceChannel, User user) {
-        messageManager.onTrackAdd(track, sourceChannel, user, player.getPlayingTrack() == null && queue.isEmpty());
+    public void play(TrackRequest request) {
+        messageManager.onTrackAdd(request, player.getPlayingTrack() == null && queue.isEmpty());
         if (channel != null && !audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             audioManager.openAudioConnection(channel);
         }
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
-        if (!player.startTrack(track, true)) {
-            queue.offer(track);
+        synchronized (queue) {
+            if (player.getPlayingTrack() == null) {
+                current = request;
+                player.playTrack(request.getTrack());
+            } else {
+                queue.offer(request);
+            }
         }
     }
 
@@ -88,8 +94,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         onTrackEnd(player, player.getPlayingTrack(), AudioTrackEndReason.FINISHED);
     }
 
+    @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        messageManager.onTrackStart(track);
+        messageManager.onTrackStart(current);
     }
 
     @Override
@@ -97,19 +104,23 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         if (track == null) {
             return;
         }
-        messageManager.onTrackEnd(track);
-        // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-        if (!endReason.mayStartNext) {
-            return;
+        synchronized (queue) {
+            messageManager.onTrackEnd(current);
+            // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
+            if (!endReason.mayStartNext) {
+                return;
+            }
+            if (!queue.isEmpty()) {
+                // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
+                // giving null to startTrack, which is a valid argument and will simply stop the player.
+                current = queue.poll();
+                player.playTrack(current.getTrack());
+                return;
+            }
+            player.playTrack(null);
+            messageManager.onQueueEnd(current);
+            current = null;
         }
-        if (!queue.isEmpty()) {
-            // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
-            // giving null to startTrack, which is a valid argument and will simply stop the player.
-            player.startTrack(queue.poll(), false);
-            return;
-        }
-        player.startTrack(null, false);
-        messageManager.onQueueEnd();
         if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
             audioManager.closeAudioConnection();
         }
@@ -120,8 +131,15 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         LOGGER.error("Track error", exception);
     }
 
-    public Collection<AudioTrack> getQueue() {
-        return Collections.unmodifiableCollection(queue);
+    public List<TrackRequest> getQueue() {
+        synchronized (queue) {
+            List<TrackRequest> result = new ArrayList<>();
+            if (current != null) {
+                result.add(current);
+            }
+            result.addAll(queue);
+            return Collections.unmodifiableList(result);
+        }
     }
 
     @Override

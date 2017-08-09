@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.audio.model.TrackRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class PlaybackManager {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                musicManager.play(track, channel, requestedBy);
+                musicManager.play(new TrackRequest(track, requestedBy, channel));
             }
 
             @Override
@@ -50,7 +51,7 @@ public class PlaybackManager {
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().get(0);
                 }
-                musicManager.play(firstTrack, channel, requestedBy);
+                musicManager.play(new TrackRequest(firstTrack, requestedBy, channel));
             }
 
             @Override
@@ -66,7 +67,6 @@ public class PlaybackManager {
     }
 
     public void skipTrack(TextChannel channel) {
-        GuildPlaybackManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.nextTrack();
+        getGuildAudioPlayer(channel.getGuild()).nextTrack();
     }
 }

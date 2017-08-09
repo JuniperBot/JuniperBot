@@ -6,17 +6,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
@@ -24,57 +22,42 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 @Service
 public class MessageManager {
 
-    private final Map<AudioTrack, TextChannel> sources = new HashMap<>();
-
-    private final Map<AudioTrack, User> authors = new HashMap<>();
-
-    private final Map<AudioTrack, Message> messages = new HashMap<>();
-
-    private final Map<AudioTrack, ScheduledFuture<?>> updaters = new HashMap<>();
-
-    private TextChannel lastChannel;
-
     @Autowired
     private DiscordConfig discordConfig;
 
     @Autowired
     private TaskScheduler scheduler;
 
-    public void onTrackAdd(AudioTrack track, TextChannel channel, User requestedBy, boolean silent) {
-        lastChannel = channel;
-        sources.put(track, channel);
-        authors.put(track, requestedBy);
+    public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
-            channel.sendMessage(getBasicMessage(track).build()).queue();
+            request.getChannel().sendMessage(getBasicMessage(request).build()).queue();
         }
     }
 
-    public void onTrackStart(AudioTrack track) {
-        TextChannel channel = sources.get(track);
-        if (channel != null) {
-            channel.sendMessage(getPlayMessage(track).build()).queue(e -> runUpdater(track, e));
-        }
+    public void onTrackStart(TrackRequest request) {
+        request.getChannel()
+                .sendMessage(getPlayMessage(request).build())
+                .queue(e -> {
+                    request.setInfoMessage(e);
+                    runUpdater(request);
+                });
     }
 
-    public void onTrackEnd(AudioTrack track) {
-        sources.remove(track);
-        authors.remove(track);
-        ScheduledFuture<?> task = updaters.remove(track);
+    public void onTrackEnd(TrackRequest request) {
+        ScheduledFuture<?> task = request.getUpdaterTask();
         if (task != null) {
             task.cancel(false);
         }
-        Message message = messages.remove(track);
+        Message message = request.getInfoMessage();
         if (message != null) {
             message.delete().complete();
         }
     }
 
-    public void onQueueEnd() {
-        if (lastChannel != null) {
-            EmbedBuilder builder = getQueueMessage();
-            builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
-            lastChannel.sendMessage(builder.build()).queue();
-        }
+    public void onQueueEnd(TrackRequest request) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
+        request.getChannel().sendMessage(builder.build()).queue();
     }
 
     public void onNoMatches(TextChannel sourceChannel, String query) {
@@ -90,20 +73,19 @@ public class MessageManager {
         sourceChannel.sendMessage(builder.build()).queue();
     }
 
-    private void runUpdater(AudioTrack track, Message message) {
-        messages.put(track, message);
+    private void runUpdater(TrackRequest request) {
         if (discordConfig.getPlayRefreshInterval() != null) {
             ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> {
-                Message msg = messages.get(track);
-                if (msg != null) {
+                Message message = request.getInfoMessage();
+                if (message != null) {
                     try {
-                        msg.editMessage(getPlayMessage(track).build()).complete();
+                        message.editMessage(getPlayMessage(request).build()).complete();
                     } catch (Exception e) {
                         // fall down and skip
                     }
                 }
             }, discordConfig.getPlayRefreshInterval());
-            updaters.put(track, task);
+            request.setUpdaterTask(task);
         }
     }
 
@@ -114,19 +96,16 @@ public class MessageManager {
         return builder;
     }
 
-    private EmbedBuilder getPlayMessage(AudioTrack track) {
-        EmbedBuilder builder = getBasicMessage(track);
+    private EmbedBuilder getPlayMessage(TrackRequest request) {
+        EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
-        builder.addField("Длительность", getTextProgress(track), true);
-        User user = authors.get(track);
-        if (user != null) {
-            builder.addField("Поставил", user.getName(), true);
-        }
+        builder.addField("Длительность", getTextProgress(request.getTrack()), true);
+        builder.addField("Поставил", request.getUser().getName(), true);
         return builder;
     }
 
-    private EmbedBuilder getBasicMessage(AudioTrack track) {
-        AudioTrackInfo info = track.getInfo();
+    private EmbedBuilder getBasicMessage(TrackRequest request) {
+        AudioTrackInfo info = request.getTrack().getInfo();
         String thumbUrl = getThumbnail(info);
 
         EmbedBuilder builder = new EmbedBuilder();
