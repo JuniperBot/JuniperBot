@@ -40,11 +40,13 @@ public class MessageManager {
     @Autowired
     private TaskScheduler scheduler;
 
-    public void onTrackAdd(AudioTrack track, TextChannel channel, User requestedBy) {
+    public void onTrackAdd(AudioTrack track, TextChannel channel, User requestedBy, boolean silent) {
         lastChannel = channel;
         sources.put(track, channel);
         authors.put(track, requestedBy);
-        channel.sendMessage(getBasicMessage(track).build()).queue();
+        if (!silent) {
+            channel.sendMessage(getBasicMessage(track).build()).queue();
+        }
     }
 
     public void onTrackStart(AudioTrack track) {
@@ -77,7 +79,7 @@ public class MessageManager {
 
     public void onNoMatches(TextChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
-        builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question: ", query));
+        builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question:", query));
         sourceChannel.sendMessage(builder.build()).queue();
     }
 

@@ -72,7 +72,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     public void play(AudioTrack track, TextChannel sourceChannel, User user) {
-        messageManager.onTrackAdd(track, sourceChannel, user);
+        messageManager.onTrackAdd(track, sourceChannel, user, player.getPlayingTrack() == null && queue.isEmpty());
         if (channel != null && !audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             audioManager.openAudioConnection(channel);
         }
