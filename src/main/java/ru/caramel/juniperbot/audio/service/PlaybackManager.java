@@ -55,12 +55,12 @@ public class PlaybackManager {
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+                messageManager.onNoMatches(channel, trackUrl);
             }
 
             @Override
-            public void loadFailed(FriendlyException exception) {
-                channel.sendMessage("Could not play: " + exception.getMessage()).queue();
+            public void loadFailed(FriendlyException e) {
+                messageManager.onError(channel, e);
             }
         });
     }

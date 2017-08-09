@@ -32,4 +32,8 @@
         </property>-->
     </bean>
 
+    <bean class="ru.caramel.juniperbot.configuration.YouTubeConfig">
+        <property name="apiKey" value="INSERT_HERE"/>
+    </bean>
+
 </beans>

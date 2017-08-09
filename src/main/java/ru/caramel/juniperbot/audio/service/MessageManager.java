@@ -1,5 +1,6 @@
 package ru.caramel.juniperbot.audio.service;
 
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 
+import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -67,12 +69,23 @@ public class MessageManager {
 
     public void onQueueEnd() {
         if (lastChannel != null) {
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.setTitle("Очередь воспроизведения", null);
-            builder.setColor(discordConfig.getAccentColor());
+            EmbedBuilder builder = getQueueMessage();
             builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
             lastChannel.sendMessage(builder.build()).queue();
         }
+    }
+
+    public void onNoMatches(TextChannel sourceChannel, String query) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question: ", query));
+        sourceChannel.sendMessage(builder.build()).queue();
+    }
+
+    public void onError(TextChannel sourceChannel, FriendlyException e) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setColor(Color.RED);
+        builder.setDescription(String.format("Произошла ошибка :interrobang:: %s", e.getMessage()));
+        sourceChannel.sendMessage(builder.build()).queue();
     }
 
     private void runUpdater(AudioTrack track, Message message) {
@@ -90,6 +103,13 @@ public class MessageManager {
             }, discordConfig.getPlayRefreshInterval());
             updaters.put(track, task);
         }
+    }
+
+    private EmbedBuilder getQueueMessage() {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle("Очередь воспроизведения", null);
+        builder.setColor(discordConfig.getAccentColor());
+        return builder;
     }
 
     private EmbedBuilder getPlayMessage(AudioTrack track) {
