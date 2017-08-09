@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.Request;
@@ -111,9 +112,17 @@ public class DiscordClient extends ListenerAdapter {
         try {
             command.doCommand(event, context);
         } catch (ValidationException e) {
-            event.getChannel().sendMessage(e.getMessage()).submit();
+            try {
+                event.getChannel().sendMessage(e.getMessage()).submit();
+            } catch (PermissionException e2) {
+                LOGGER.warn("Permission exception", e);
+            }
         } catch (DiscordException e) {
-            event.getChannel().sendMessage("Ой, произошла какая-то ошибка :C Покорми меня?").submit();
+            try {
+                event.getChannel().sendMessage("Ой, произошла какая-то ошибка :C Покорми меня?").submit();
+            } catch (PermissionException e2) {
+                LOGGER.warn("Permission exception", e);
+            }
             LOGGER.error("Command {} execution error", args[0], e);
         }
     }

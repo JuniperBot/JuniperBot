@@ -3,6 +3,7 @@ package ru.caramel.juniperbot.commands.phyr;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.lang3.StringUtils;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.exceptions.InstagramException;
@@ -44,21 +45,25 @@ public class PostCommand extends ParameterizedCommand {
             LOGGER.error("Could not get instagram data", e);
         }
 
-        if (medias == null) {
-            message.getChannel().sendMessage("Произошла какая-то ошибка у моего блога... Давай попробуем позже?").queue();
-            return false;
-        }
-        if (medias.isEmpty()) {
-            message.getChannel().sendMessage("Что-то мне и нечего показать...").queue();
-            return false;
-        }
+        try {
+            if (medias == null) {
+                message.getChannel().sendMessage("Произошла какая-то ошибка у моего блога... Давай попробуем позже?").queue();
+                return false;
+            }
+            if (medias.isEmpty()) {
+                message.getChannel().sendMessage("Что-то мне и нечего показать...").queue();
+                return false;
+            }
 
-        if (count > medias.size()) {
-            message.getChannel().sendMessage(String.format("У меня есть всего %s сообщений...", medias.size())).queue();
-            count = medias.size();
+            if (count > medias.size()) {
+                message.getChannel().sendMessage(String.format("У меня есть всего %s сообщений...", medias.size())).queue();
+                count = medias.size();
+            }
+            medias = medias.subList(0, count);
+            post(medias, message.getChannel());
+        } catch (PermissionException e) {
+            LOGGER.warn("No permissions to message", e);
         }
-        medias = medias.subList(0, count);
-        post(medias, message.getChannel());
         return true;
     }
 

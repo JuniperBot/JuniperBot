@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -49,6 +50,8 @@ public class RemindCommand extends AbstractCommand {
                 message.getChannel().sendMessage(builder.toString()).queue();
             }, date.toDate());
             message.getChannel().sendMessage("Лаааадно, напомню. Фыр.").queue();
+        } catch (PermissionException e) {
+            return false;
         } catch (IllegalArgumentException e) {
             return printHelp(message);
         }
