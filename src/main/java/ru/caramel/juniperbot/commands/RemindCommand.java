@@ -42,7 +42,7 @@ public class RemindCommand extends AbstractCommand {
             }
             taskScheduler.schedule(() -> {
                 StringBuilder builder = new StringBuilder();
-                if (message.getGuild().isMember(message.getAuthor())) {
+                if (message.getGuild() != null && message.getGuild().isMember(message.getAuthor())) {
                     builder.append(String.format("<@!%s> ", message.getAuthor().getId()));
                 }
                 builder.append(m.group(3));

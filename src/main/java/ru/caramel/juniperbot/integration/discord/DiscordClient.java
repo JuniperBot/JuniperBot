@@ -3,9 +3,7 @@ package ru.caramel.juniperbot.integration.discord;
 import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -21,7 +19,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.DiscordCommand;
@@ -107,7 +104,7 @@ public class DiscordClient extends ListenerAdapter {
         }
 
         Command command = commands.get(args[0]);
-        if (command == null) {
+        if (command == null || !command.isApplicable(event.getChannel())) {
             return;
         }
         BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext());

@@ -5,6 +5,7 @@ import org.jinstagram.entity.users.feed.MediaFeedData;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
 import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.CommandSource;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@DiscordCommand(key = "нафыркивай", description = "Автоматически нафыркивать новые посты из блога Джупи")
+@DiscordCommand(key = "нафыркивай", description = "Автоматически нафыркивать новые посты из блога Джупи", source = CommandSource.GUILD)
 public class AutoPostCommand extends PostCommand implements InstagramListener {
 
     private Set<BotContext> subscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());

@@ -6,9 +6,10 @@ import ru.caramel.juniperbot.audio.service.PlaybackManager;
 import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.CommandSource;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
-@DiscordCommand(key = "скип", description = "Перейти к воспроизведению следующего трека")
+@DiscordCommand(key = "скип", description = "Перейти к воспроизведению следующего трека", source = CommandSource.GUILD)
 public class SkipCommand implements Command {
 
     @Autowired

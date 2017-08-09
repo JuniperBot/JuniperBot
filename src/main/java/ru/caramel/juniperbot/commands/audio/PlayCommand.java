@@ -8,9 +8,10 @@ import ru.caramel.juniperbot.commands.AbstractCommand;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.integration.youtube.YouTubeClient;
 import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.CommandSource;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
-@DiscordCommand(key = "плей", description = "Воспроизвести композицию в голосовом канале по названию или указанному URL")
+@DiscordCommand(key = "плей", description = "Воспроизвести композицию в голосовом канале по названию или указанному URL", source = CommandSource.GUILD)
 public class PlayCommand extends AbstractCommand {
 
     @Autowired
