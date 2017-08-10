@@ -47,6 +47,14 @@ public class DiscordConfig {
     @Setter
     private List<DiscordWebHook> webHooks;
 
+    @Getter
+    @Setter
+    private String copyImageUrl;
+
+    @Getter
+    @Setter
+    private String copyContent;
+
     @PostConstruct
     public void validate() {
         Objects.requireNonNull(token, "No discord token specified!");

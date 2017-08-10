@@ -3,6 +3,7 @@ package ru.caramel.juniperbot.commands;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
@@ -31,6 +32,9 @@ public class HelpCommand implements Command {
                 embedBuilder.addField(discordConfig.getPrefix() + k, annotation.description(), false);
             }
         });
+        if (StringUtils.isNotEmpty(discordConfig.getCopyContent())) {
+            embedBuilder.setFooter(discordConfig.getCopyContent(), discordConfig.getCopyImageUrl());
+        }
         message.getChannel().sendMessage(new MessageBuilder()
                 .append("**Доступные команды:**")
                 .setEmbed(embedBuilder.build()).build()).queue();
