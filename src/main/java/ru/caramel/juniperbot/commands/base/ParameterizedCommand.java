@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.commands;
+package ru.caramel.juniperbot.commands.base;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.commands.model.BotContext;

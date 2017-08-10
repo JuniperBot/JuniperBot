@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.commands;
+package ru.caramel.juniperbot.commands.model;
 
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.commands.model.CommandSource;

@@ -1,8 +1,10 @@
-package ru.caramel.juniperbot.commands;
+package ru.caramel.juniperbot.commands.common;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.commands.base.Command;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.DiscordWebHookPoster;
 import ru.caramel.juniperbot.commands.model.BotContext;
 

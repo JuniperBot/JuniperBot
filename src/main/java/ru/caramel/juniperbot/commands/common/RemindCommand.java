@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.commands;
+package ru.caramel.juniperbot.commands.common;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -8,6 +8,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
+import ru.caramel.juniperbot.commands.base.AbstractCommand;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;

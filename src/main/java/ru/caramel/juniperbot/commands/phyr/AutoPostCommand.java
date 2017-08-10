@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.caramel.juniperbot.commands.DiscordCommand;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandSource;

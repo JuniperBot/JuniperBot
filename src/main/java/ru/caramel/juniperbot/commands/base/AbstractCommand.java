@@ -1,7 +1,8 @@
-package ru.caramel.juniperbot.commands;
+package ru.caramel.juniperbot.commands.base;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
