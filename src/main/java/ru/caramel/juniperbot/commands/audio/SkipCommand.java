@@ -17,7 +17,7 @@ public class SkipCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
-        playbackManager.skipTrack(message.getTextChannel());
+        playbackManager.skipTrack(message.getGuild());
         return true;
     }
 }

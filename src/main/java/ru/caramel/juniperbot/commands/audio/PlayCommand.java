@@ -11,7 +11,7 @@ import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.model.CommandSource;
 import ru.caramel.juniperbot.model.exception.DiscordException;
 
-@DiscordCommand(key = "плей", description = "Воспроизвести композицию в голосовом канале по названию или указанному URL", source = CommandSource.GUILD)
+@DiscordCommand(key = "плей", description = "Воспроизвести композицию в голосовом канале по названию, указанному URL или приложенному файлу", source = CommandSource.GUILD)
 public class PlayCommand extends AbstractCommand {
 
     @Autowired

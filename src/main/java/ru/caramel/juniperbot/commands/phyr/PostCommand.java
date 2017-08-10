@@ -2,6 +2,7 @@ package ru.caramel.juniperbot.commands.phyr;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.commands.ParameterizedCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
-import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.instagram.InstagramClient;
 import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.model.exception.DiscordException;
@@ -104,8 +104,8 @@ public class PostCommand extends ParameterizedCommand {
         if (media.getCaption() != null) {
             String text = media.getCaption().getText();
             if (StringUtils.isNotEmpty(text)) {
-                if (text.length() > DiscordClient.MAX_MESSAGE_SIZE) {
-                    text = text.substring(0, DiscordClient.MAX_MESSAGE_SIZE - 1);
+                if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
+                    text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
                 }
                 if (media.getCaption().getText().length() > 200) {
                     builder.setTitle(media.getLink(), media.getLink());

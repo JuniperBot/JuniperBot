@@ -1,5 +1,6 @@
 package ru.caramel.juniperbot.audio.service;
 
+import com.google.common.collect.Lists;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
@@ -21,6 +22,7 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
@@ -88,9 +90,51 @@ public class MessageManager {
     }
 
     public void onError(TextChannel sourceChannel, FriendlyException e) {
+        onError(sourceChannel, String.format("Произошла ошибка :interrobang:: %s", e.getMessage()));
+    }
+
+    public void onError(TextChannel sourceChannel, String error) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
-        builder.setDescription(String.format("Произошла ошибка :interrobang:: %s", e.getMessage()));
+        builder.setDescription(error);
+        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    public void onEmptyQueue(TextChannel sourceChannel) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setColor(Color.RED);
+        builder.setDescription("Очередь воспроизведения пуста :flag_white: ");
+        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    public void onQueue(TextChannel sourceChannel, List<TrackRequest> requests, int pageNum) {
+        final int pageSize = 25;
+        List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
+        final int totalPages = parts.size();
+        final int offset = (pageNum - 1) * pageSize + 1;
+
+        if (pageNum > totalPages) {
+            onError(sourceChannel, String.format("Всего страниц: %d", parts.size()));
+            return;
+        }
+        List<TrackRequest> pageRequests = parts.get(pageNum - 1);
+
+        EmbedBuilder builder = getQueueMessage();
+        for (int i = 0; i < pageRequests.size(); i++) {
+            TrackRequest request = pageRequests.get(i);
+            AudioTrack track = request.getTrack();
+            AudioTrackInfo info = track.getInfo();
+
+            int rowNum = i + offset;
+            String title = String.format("%d. %s [%s](%s) от %s", rowNum, rowNum == 1 ? ":musical_note: " : "",
+                    info.title, info.uri, request.getUser().getName());
+            builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
+        }
+        if (totalPages > 1) {
+            builder.setFooter(String.format("Страница %d из %d, всего %d в очереди. Введите: %sочередь <номер>",
+                    pageNum, totalPages, requests.size(), discordConfig.getPrefix()), null);
+        }
+
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 

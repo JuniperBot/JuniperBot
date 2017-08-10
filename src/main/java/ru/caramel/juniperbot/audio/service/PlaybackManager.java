@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -66,7 +67,11 @@ public class PlaybackManager {
         });
     }
 
-    public void skipTrack(TextChannel channel) {
-        getGuildAudioPlayer(channel.getGuild()).nextTrack();
+    public void skipTrack(Guild guild) {
+        getGuildAudioPlayer(guild).nextTrack();
+    }
+
+    public List<TrackRequest> getQueue(Guild guild) {
+        return getGuildAudioPlayer(guild).getQueue();
     }
 }

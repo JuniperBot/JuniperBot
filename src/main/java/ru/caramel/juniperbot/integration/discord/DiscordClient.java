@@ -42,8 +42,6 @@ public class DiscordClient extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
 
-    public static final int MAX_MESSAGE_SIZE = 2000;
-
     @Autowired
     private DiscordConfig config;
 
