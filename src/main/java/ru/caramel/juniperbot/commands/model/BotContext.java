@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.commands.model;
 
 import lombok.Getter;
 import lombok.Setter;

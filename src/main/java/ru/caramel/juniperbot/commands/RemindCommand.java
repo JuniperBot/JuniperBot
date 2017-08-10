@@ -9,8 +9,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

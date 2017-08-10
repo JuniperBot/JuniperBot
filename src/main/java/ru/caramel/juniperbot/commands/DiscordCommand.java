@@ -1,7 +1,7 @@
 package ru.caramel.juniperbot.commands;
 
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.model.CommandSource;
+import ru.caramel.juniperbot.commands.model.CommandSource;
 
 import java.lang.annotation.*;
 

@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.integration.discord.model;
 
 import lombok.Builder;
 import lombok.Getter;

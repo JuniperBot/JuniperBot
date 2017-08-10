@@ -1,4 +1,6 @@
-package ru.caramel.juniperbot.model.exception;
+package ru.caramel.juniperbot.commands.model;
+
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 public class ValidationException extends DiscordException {
 

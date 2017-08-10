@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.commands.model.BotContext;
 
 import java.util.Map;
 

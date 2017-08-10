@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.CommandSource;
-import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.commands.model.CommandSource;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 import java.util.ArrayList;
 import java.util.Collections;

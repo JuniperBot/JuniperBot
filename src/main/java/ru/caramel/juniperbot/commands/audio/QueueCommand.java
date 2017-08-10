@@ -9,9 +9,9 @@ import ru.caramel.juniperbot.audio.service.MessageManager;
 import ru.caramel.juniperbot.audio.service.PlaybackManager;
 import ru.caramel.juniperbot.commands.AbstractCommand;
 import ru.caramel.juniperbot.commands.DiscordCommand;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.CommandSource;
-import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.commands.model.CommandSource;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 import java.util.List;
 

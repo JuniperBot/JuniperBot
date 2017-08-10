@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.commands.phyr.PostCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
-import ru.caramel.juniperbot.model.WebHookMessage;
+import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 
 import java.util.ArrayList;
 import java.util.List;

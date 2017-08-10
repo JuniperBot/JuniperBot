@@ -24,10 +24,10 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.WebHookMessage;
-import ru.caramel.juniperbot.model.exception.DiscordException;
-import ru.caramel.juniperbot.model.exception.ValidationException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.commands.model.ValidationException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

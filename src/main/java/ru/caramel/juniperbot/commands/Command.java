@@ -4,9 +4,9 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.CommandSource;
-import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.commands.model.CommandSource;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 public interface Command {
 

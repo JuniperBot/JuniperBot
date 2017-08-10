@@ -1,8 +1,8 @@
 package ru.caramel.juniperbot.commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.model.BotContext;
-import ru.caramel.juniperbot.model.exception.DiscordException;
+import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.utils.ParseUtils;
 
 public abstract class ParameterizedCommand extends AbstractCommand {

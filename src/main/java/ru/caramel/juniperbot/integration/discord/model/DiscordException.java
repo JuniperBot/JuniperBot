@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.model.exception;
+package ru.caramel.juniperbot.integration.discord.model;
 
 public class DiscordException extends Exception {
 

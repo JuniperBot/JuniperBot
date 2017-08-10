@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.integration.discord.DiscordWebHookPoster;
-import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.commands.model.BotContext;
 
 @DiscordCommand(key = "сбросвх", description = "Сбросить пост вебхуков до последнего", hidden = true)
 public class ResetCommand implements Command {
