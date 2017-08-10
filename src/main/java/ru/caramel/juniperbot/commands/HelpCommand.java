@@ -28,7 +28,7 @@ public class HelpCommand implements Command {
         commands.forEach((k, v) -> {
             DiscordCommand annotation = v.getClass().getAnnotation(DiscordCommand.class);
             if (!annotation.hidden() && v.isApplicable(message.getChannel())) {
-                embedBuilder.addField(discordConfig.getPrefix() + k, annotation.description(), true);
+                embedBuilder.addField(discordConfig.getPrefix() + k, annotation.description(), false);
             }
         });
         message.getChannel().sendMessage(new MessageBuilder()
