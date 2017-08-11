@@ -26,6 +26,9 @@ public class StartCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
+        if (!playbackManager.validateChannel(message.getTextChannel(), message.getAuthor())) {
+            return false;
+        }
         if (!playbackManager.resumeTrack(message.getGuild())) {
             messageManager.onMessage(message.getChannel(), "Воспроизведение не запущено");
         }

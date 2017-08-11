@@ -26,6 +26,9 @@ public class PauseCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
+        if (!playbackManager.validateChannel(message.getTextChannel(), message.getAuthor())) {
+            return false;
+        }
         messageManager.onMessage(message.getChannel(), playbackManager.pauseTrack(message.getGuild())
                 ? "Воспроизведение приостановлено :pause_button: " : "Воспроизведение не запущено");
         return true;

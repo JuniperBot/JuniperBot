@@ -8,8 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,6 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     @Autowired
     private MessageManager messageManager;
 
-    private VoiceChannel channel;
-
     private AudioPlayer player;
 
     private AudioFrame lastFrame;
@@ -58,10 +55,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         player = playerManager.createPlayer();
         player.addListener(this);
         audioManager.setSendingHandler(this);
-        channel = getTargetChannel();
     }
 
-    private VoiceChannel getTargetChannel() {
+    private VoiceChannel getDesiredChannel() {
         VoiceChannel channel;
         for (String name : channelNames) {
             channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
@@ -74,8 +70,8 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
 
     public void play(TrackRequest request) {
         messageManager.onTrackAdd(request, player.getPlayingTrack() == null && queue.isEmpty());
-        if (channel != null && !audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-            audioManager.openAudioConnection(channel);
+        if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
+            audioManager.openAudioConnection(getDesiredChannel());
         }
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
@@ -88,6 +84,11 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
                 queue.offer(request);
             }
         }
+    }
+
+    public boolean isInChannel(User user) {
+        VoiceChannel channel = audioManager.isConnected() ? audioManager.getConnectedChannel() : getDesiredChannel();
+        return channel.getMembers().stream().map(Member::getUser).anyMatch(user::equals);
     }
 
     public void nextTrack() {

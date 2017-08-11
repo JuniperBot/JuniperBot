@@ -27,6 +27,9 @@ public class PlayCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
+        if (!playbackManager.validateChannel(message.getTextChannel(), message.getAuthor())) {
+            return false;
+        }
         if (!message.getMessage().getAttachments().isEmpty()) {
             query = message.getMessage().getAttachments().get(0).getUrl();
         }

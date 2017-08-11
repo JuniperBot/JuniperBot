@@ -71,6 +71,18 @@ public class PlaybackManager {
         getGuildAudioPlayer(guild).nextTrack();
     }
 
+    public boolean isInChannel(Guild guild, User user) {
+        return getGuildAudioPlayer(guild).isInChannel(user);
+    }
+
+    public boolean validateChannel(TextChannel channel, User user) {
+        boolean result = isInChannel(channel.getGuild(), user);
+        if (!result) {
+            messageManager.onDisallowed(channel);
+        }
+        return result;
+    }
+
     public boolean pauseTrack(Guild guild) {
         return getGuildAudioPlayer(guild).pauseTrack();
     }

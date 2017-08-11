@@ -83,7 +83,10 @@ public class MessageManager {
     }
 
     public void onTrackPause(TrackRequest request) {
-        // nothing here yet`
+        ScheduledFuture<?> task = request.getUpdaterTask();
+        if (task != null) {
+            task.cancel(false);
+        }
     }
 
     public void onTrackResume(TrackRequest request) {
@@ -124,6 +127,13 @@ public class MessageManager {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription("Очередь воспроизведения пуста :flag_white: ");
+        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    public void onDisallowed(MessageChannel sourceChannel) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setColor(Color.RED);
+        builder.setDescription("Сперва вы должны зайти в голосовой канал :raised_hand: ");
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 

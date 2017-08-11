@@ -7,12 +7,12 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import ru.caramel.juniperbot.commands.base.AbstractCommand;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.service.ReminderService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,10 +25,10 @@ public class RemindCommand extends AbstractCommand {
     private static Pattern PATTERN = Pattern.compile("^(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(\\d{2}:\\d{2})\\s+(.*)$");
 
     @Autowired
-    private TaskScheduler taskScheduler;
+    private DiscordConfig discordConfig;
 
     @Autowired
-    private DiscordConfig discordConfig;
+    private ReminderService reminderService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
@@ -43,14 +43,7 @@ public class RemindCommand extends AbstractCommand {
                 message.getChannel().sendMessage("Указывай дату в будущем, пожалуйста").queue();
                 return false;
             }
-            taskScheduler.schedule(() -> {
-                StringBuilder builder = new StringBuilder();
-                if (message.getGuild() != null && message.getGuild().isMember(message.getAuthor())) {
-                    builder.append(String.format("<@!%s> ", message.getAuthor().getId()));
-                }
-                builder.append(m.group(3));
-                message.getChannel().sendMessage(builder.toString()).queue();
-            }, date.toDate());
+            reminderService.createReminder(message.getChannel(), message.getMember(), m.group(3), date.toDate());
             message.getChannel().sendMessage("Лаааадно, напомню. Фыр.").queue();
         } catch (PermissionException e) {
             return false;
