@@ -71,6 +71,18 @@ public class PlaybackManager {
         getGuildAudioPlayer(guild).nextTrack();
     }
 
+    public boolean pauseTrack(Guild guild) {
+        return getGuildAudioPlayer(guild).pauseTrack();
+    }
+
+    public boolean resumeTrack(Guild guild) {
+        return getGuildAudioPlayer(guild).resumeTrack();
+    }
+
+    public boolean stop(Guild guild) {
+        return getGuildAudioPlayer(guild).stop();
+    }
+
     public List<TrackRequest> getQueue(Guild guild) {
         return getGuildAudioPlayer(guild).getQueue();
     }

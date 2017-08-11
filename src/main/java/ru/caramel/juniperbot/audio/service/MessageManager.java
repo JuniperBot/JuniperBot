@@ -63,10 +63,15 @@ public class MessageManager {
         if (task != null) {
             task.cancel(false);
         }
+        deleteMessage(request);
+    }
+
+    private void deleteMessage(TrackRequest request) {
         Message message = request.getInfoMessage();
         if (message != null) {
             try {
                 message.delete().complete();
+                request.setInfoMessage(null);
             } catch (PermissionException e) {
                 LOGGER.warn("No permission to delete", e);
             } catch (ErrorResponseException e) {
@@ -77,10 +82,25 @@ public class MessageManager {
         }
     }
 
+    public void onTrackPause(TrackRequest request) {
+        // nothing here yet`
+    }
+
+    public void onTrackResume(TrackRequest request) {
+        deleteMessage(request);
+        onTrackStart(request);
+    }
+
     public void onQueueEnd(TrackRequest request) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
         sendMessageSilent(request.getChannel()::sendMessage, builder.build());
+    }
+
+    public void onMessage(MessageChannel sourceChannel, String message) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setDescription(message);
+        sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onNoMatches(MessageChannel sourceChannel, String query) {

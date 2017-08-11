@@ -94,6 +94,40 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         onTrackEnd(player, player.getPlayingTrack(), AudioTrackEndReason.FINISHED);
     }
 
+    public boolean pauseTrack() {
+        boolean playing = player.getPlayingTrack() != null;
+        if (playing) {
+            player.setPaused(true);
+        }
+        return playing;
+    }
+
+    public boolean resumeTrack() {
+        boolean paused = player.isPaused();
+        if (paused) {
+            player.setPaused(false);
+        }
+        return paused;
+    }
+
+    public boolean stop() {
+        boolean stopped = player.getPlayingTrack() != null;
+        if (stopped) {
+            player.stopTrack();
+        }
+        return stopped;
+    }
+
+    @Override
+    public void onPlayerPause(AudioPlayer player) {
+        messageManager.onTrackPause(current);
+    }
+
+    @Override
+    public void onPlayerResume(AudioPlayer player) {
+        messageManager.onTrackResume(current);
+    }
+
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         messageManager.onTrackStart(current);
@@ -107,18 +141,19 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         synchronized (queue) {
             messageManager.onTrackEnd(current);
             // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
-            if (!endReason.mayStartNext) {
-                return;
-            }
-            if (!queue.isEmpty()) {
-                // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
-                // giving null to startTrack, which is a valid argument and will simply stop the player.
-                current = queue.poll();
-                player.playTrack(current.getTrack());
-                return;
+            if (endReason.mayStartNext) {
+                if (!queue.isEmpty()) {
+                    // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
+                    // giving null to startTrack, which is a valid argument and will simply stop the player.
+                    current = queue.poll();
+                    player.playTrack(current.getTrack());
+                    return;
+                }
+                messageManager.onQueueEnd(current);
+            } else {
+                queue.clear();
             }
             player.playTrack(null);
-            messageManager.onQueueEnd(current);
             current = null;
         }
         if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
