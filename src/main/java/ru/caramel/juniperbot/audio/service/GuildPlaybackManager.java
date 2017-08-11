@@ -97,7 +97,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     public boolean pauseTrack() {
-        boolean playing = player.getPlayingTrack() != null;
+        boolean playing = isActive() && !player.isPaused();
         if (playing) {
             player.setPaused(true);
         }
@@ -105,7 +105,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     public boolean resumeTrack() {
-        boolean paused = player.isPaused();
+        boolean paused = isActive() && player.isPaused();
         if (paused) {
             player.setPaused(false);
         }
@@ -113,21 +113,25 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     public boolean stop() {
-        boolean stopped = player.getPlayingTrack() != null;
-        if (stopped) {
+        boolean active = isActive();
+        if (active) {
             player.stopTrack();
         }
-        return stopped;
+        return active;
     }
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
-        messageManager.onTrackPause(current);
+        if (isActive()) {
+            messageManager.onTrackPause(current);
+        }
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        messageManager.onTrackResume(current);
+        if (isActive()) {
+            messageManager.onTrackResume(current);
+        }
     }
 
     @Override
@@ -200,5 +204,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     @Override
     public boolean isOpus() {
         return true;
+    }
+
+    private boolean isActive() {
+        return player.getPlayingTrack() != null;
     }
 }
