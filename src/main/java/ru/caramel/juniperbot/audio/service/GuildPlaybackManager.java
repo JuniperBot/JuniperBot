@@ -79,6 +79,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         synchronized (queue) {
             if (player.getPlayingTrack() == null) {
                 current = request;
+                player.setPaused(false);
                 player.playTrack(request.getTrack());
             } else {
                 queue.offer(request);
