@@ -1,7 +1,6 @@
 package ru.caramel.juniperbot.commands.model;
 
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.commands.model.CommandSource;
 
 import java.lang.annotation.*;
 
@@ -16,6 +15,8 @@ public @interface DiscordCommand {
     String description();
 
     CommandSource[] source() default {};
+
+    CommandGroup group() default CommandGroup.COMMON;
 
     boolean hidden() default false;
 }

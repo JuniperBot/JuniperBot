@@ -6,8 +6,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -83,31 +83,31 @@ public class MessageManager {
         sendMessageSilent(request.getChannel()::sendMessage, builder.build());
     }
 
-    public void onNoMatches(TextChannel sourceChannel, String query) {
+    public void onNoMatches(MessageChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question:", query));
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onError(TextChannel sourceChannel, FriendlyException e) {
+    public void onError(MessageChannel sourceChannel, FriendlyException e) {
         onError(sourceChannel, String.format("Произошла ошибка :interrobang:: %s", e.getMessage()));
     }
 
-    public void onError(TextChannel sourceChannel, String error) {
+    public void onError(MessageChannel sourceChannel, String error) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription(error);
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onEmptyQueue(TextChannel sourceChannel) {
+    public void onEmptyQueue(MessageChannel sourceChannel) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription("Очередь воспроизведения пуста :flag_white: ");
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onQueue(TextChannel sourceChannel, List<TrackRequest> requests, int pageNum) {
+    public void onQueue(MessageChannel sourceChannel, List<TrackRequest> requests, int pageNum) {
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
         final int totalPages = parts.size();

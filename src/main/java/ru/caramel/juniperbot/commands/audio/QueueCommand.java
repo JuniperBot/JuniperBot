@@ -8,6 +8,7 @@ import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.audio.service.MessageManager;
 import ru.caramel.juniperbot.audio.service.PlaybackManager;
 import ru.caramel.juniperbot.commands.base.AbstractCommand;
+import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandSource;
@@ -15,7 +16,11 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 import java.util.List;
 
-@DiscordCommand(key = "очередь", description = "Показать очередь воспроизведения", source = CommandSource.GUILD)
+@DiscordCommand(
+        key = "очередь",
+        description = "Показать очередь воспроизведения",
+        source = CommandSource.GUILD,
+        group = CommandGroup.MUSIC)
 public class QueueCommand extends AbstractCommand {
 
     @Autowired
