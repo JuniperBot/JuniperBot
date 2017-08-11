@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -20,11 +21,13 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.commands.base.Command;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.commands.model.ValidationException;
@@ -55,6 +58,9 @@ public class DiscordClient extends ListenerAdapter {
     private Map<String, Command> commands;
 
     private Map<Guild, BotContext> contexts = new HashMap<>();
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @PostConstruct
     public void init() {
@@ -167,6 +173,11 @@ public class DiscordClient extends ListenerAdapter {
     @Override
     public void onException(ExceptionEvent event) {
         LOGGER.error("JDA error", event.getCause());
+    }
+
+    @Override
+    public void onGenericEvent(Event event) {
+        applicationEventPublisher.publishEvent(new DiscordEvent(event));
     }
 
     @PreDestroy
