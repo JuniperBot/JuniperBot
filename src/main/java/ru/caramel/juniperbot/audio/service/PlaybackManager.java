@@ -16,6 +16,7 @@ import ru.caramel.juniperbot.audio.model.TrackRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaybackManager {
@@ -48,11 +49,8 @@ public class PlaybackManager {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                AudioTrack firstTrack = playlist.getSelectedTrack();
-                if (firstTrack == null) {
-                    firstTrack = playlist.getTracks().get(0);
-                }
-                musicManager.play(new TrackRequest(firstTrack, requestedBy, channel));
+                musicManager.play(playlist.getTracks().stream().map(e ->
+                        new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
             }
 
             @Override
@@ -85,6 +83,10 @@ public class PlaybackManager {
 
     public boolean pauseTrack(Guild guild) {
         return getGuildAudioPlayer(guild).pauseTrack();
+    }
+
+    public boolean shuffleTracks(Guild guild) {
+        return getGuildAudioPlayer(guild).shuffle();
     }
 
     public boolean resumeTrack(Guild guild) {
