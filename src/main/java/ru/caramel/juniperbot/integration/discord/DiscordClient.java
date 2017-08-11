@@ -86,7 +86,7 @@ public class DiscordClient extends ListenerAdapter {
                     event.getMessage().getContent());
         } else {
             LOGGER.debug("[{}][{}] {}: {}", event.getGuild().getName(),
-                    event.getTextChannel().getName(), event.getMember().getEffectiveName(),
+                    event.getChannel().getName(), event.getMember().getEffectiveName(),
                     event.getMessage().getContent());
         }
 
