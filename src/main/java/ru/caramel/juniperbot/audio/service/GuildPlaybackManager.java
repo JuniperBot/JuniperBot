@@ -171,10 +171,10 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
             messageManager.onTrackEnd(current);
             switch (endReason) {
                 case STOPPED:
+                case CLEANUP:
                     queue.clear();
                     break;
                 case REPLACED:
-                case CLEANUP:
                     return;
                 case FINISHED:
                 case LOAD_FAILED:
@@ -186,6 +186,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
                         return;
                     }
                     messageManager.onQueueEnd(current);
+                    break;
             }
             player.playTrack(null);
             current = null;
