@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+    <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp" />
+
+    <definition name="index" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
+    </definition>
+    <definition name="next" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/next.jsp"/>
+    </definition>
+    <definition name="login" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/login.jsp"/>
+    </definition>
+
+</tiles-definitions>

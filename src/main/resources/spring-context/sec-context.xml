@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/security/oauth2
+        http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
+
+    <bean id="oauthAuthenticationEntryPoint"
+          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <constructor-arg value="/login"/>
+    </bean>
+
+    <!-- make ALL other requests go thru the Oauth security filters -->
+    <security:http pattern="/**"
+                   create-session="always"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   disable-url-rewriting="true"
+                   use-expressions="true"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:anonymous enabled="false"/>
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <!-- The filter that uses Oauth2 auth-code flow to acquire an Oauth2 token if the user doesn't already have one -->
+        <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
+        <!-- The filter that validates an Oauth token and loads an Oauth2Authentication object in the SecurityContextHolder -->
+        <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:access-denied-handler error-page="/denied"/>
+        <security:logout logout-url="/logout" logout-success-url="/login?logout=true"/>
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <oauth2:resource id="oauthResource"
+                     client-id="${discord.oauth.clientId}"
+                     client-secret="${discord.oauth.clientSecret}"
+                     user-authorization-uri="${discord.oauth.authorize}"
+                     access-token-uri="${discord.oauth.token}"
+                     type="authorization_code"
+                     client-authentication-scheme="query"
+                     scope="${discord.oauth.scope}" />
+
+    <bean id="requestFactory" class="ru.caramel.juniperbot.security.DiscordHttpRequestFactory" />
+    <bean id="tokenProvider" class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
+        <property name="requestFactory" ref="requestFactory" />
+    </bean>
+
+    <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider" />
+
+    <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
+    <bean id="oauth2AuthenticationFilter"
+          class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter">
+        <constructor-arg name="defaultFilterProcessesUrl" value="/login"/>
+        <property name="restTemplate" ref="restTemplate" />
+        <property name="tokenServices">
+            <bean class="org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices">
+                <constructor-arg value="${discord.oauth.userInfoUri}"/>
+                <constructor-arg value="${discord.oauth.clientId}"/>
+                <property name="restTemplate">
+                    <bean class="org.springframework.security.oauth2.client.OAuth2RestTemplate">
+                        <constructor-arg ref="oauthResource" />
+                        <property name="requestFactory" ref="requestFactory" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <security:authentication-manager id="authenticationManager" />
+</beans>
