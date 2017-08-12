@@ -86,16 +86,7 @@ public class DiscordClient extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         discordBeanProviders.setMessageContext(event);
-        if (event.isFromType(ChannelType.PRIVATE)) {
-            LOGGER.debug("[PM] {}: {}", event.getAuthor().getName(), event.getMessage().getContent());
-            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
-                    event.getMessage().getContent());
-        } else {
-            LOGGER.debug("[{}][{}] {}: {}", event.getGuild().getName(),
-                    event.getChannel().getName(), event.getMember().getEffectiveName(),
-                    event.getMessage().getContent());
-        }
-
+        log(event);
         if (validate(event)) {
             String input = event.getMessage().getContent();
             sendCommand(event, input.substring(config.getPrefix().length()));
@@ -168,6 +159,21 @@ public class DiscordClient extends ListenerAdapter {
             return false;
         }
         return true;
+    }
+
+    private void log(MessageReceivedEvent event) {
+        switch (event.getChannelType()) {
+            case PRIVATE:
+                LOGGER.debug("[PM] {}: {}", event.getAuthor().getName(), event.getMessage().getContent());
+                break;
+            case TEXT:
+                LOGGER.debug("[{}][{}] {}: {}", event.getGuild().getName(),
+                        event.getChannel().getName(), event.getMember().getEffectiveName(),
+                        event.getMessage().getContent());
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
