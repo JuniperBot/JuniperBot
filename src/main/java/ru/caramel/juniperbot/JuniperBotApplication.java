@@ -1,10 +1,10 @@
 package ru.caramel.juniperbot;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.ImportResource;
 
-@Configuration
+@SpringBootConfiguration
 @ImportResource("classpath:spring-context/app-context.xml")
 public class JuniperBotApplication {
 

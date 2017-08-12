@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.persistence.entity;
+package ru.caramel.juniperbot.persistence.entity.base;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,11 +1,7 @@
 package ru.caramel.juniperbot.commands.phyr;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import org.apache.commons.lang3.StringUtils;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.exceptions.InstagramException;
 import org.slf4j.Logger;
@@ -18,8 +14,8 @@ import ru.caramel.juniperbot.integration.instagram.InstagramClient;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.service.PostService;
 
-import java.util.Date;
 import java.util.List;
 
 @DiscordCommand(key = "фыр", description = "Фыркнуть посты из блога Джупи (можно указать количество постов, по-умолчанию одно)")
@@ -27,13 +23,11 @@ public class PostCommand extends ParameterizedCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);
 
-    public static final int MAX_DETAILED = 3;
-
     @Autowired
     private InstagramClient instagramClient;
 
     @Autowired
-    private DiscordConfig discordConfig;
+    protected PostService postService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException {
@@ -60,21 +54,11 @@ public class PostCommand extends ParameterizedCommand {
                 count = medias.size();
             }
             medias = medias.subList(0, count);
-            post(medias, message.getChannel());
+            postService.post(medias, message.getChannel());
         } catch (PermissionException e) {
             LOGGER.warn("No permissions to message", e);
         }
         return true;
-    }
-
-    protected void post(List<MediaFeedData> medias, MessageChannel channel) {
-        if (medias.size() > 0) {
-            for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
-                EmbedBuilder builder = convertToEmbed(medias.get(i));
-                builder.setColor(discordConfig.getAccentColor());
-                channel.sendMessage(builder.build()).queue();
-            }
-        }
     }
 
     private static int parseCount(String[] args) throws ValidationException {
@@ -87,35 +71,13 @@ public class PostCommand extends ParameterizedCommand {
             }
             if (count == 0) {
                 throw new ValidationException("Всмысле ноль? Ну ладно, не буду ничего присылать.");
-            } else if (count > MAX_DETAILED) {
+            } else if (count > DiscordConfig.MAX_DETAILED) {
                 throw new ValidationException("Не могу прислать больше 3 фырок :C");
             } else if (count < 0) {
                 throw new ValidationException("Фтооо ты хочешь от меня?");
             }
         }
         return count;
-    }
-
-    public static EmbedBuilder convertToEmbed(MediaFeedData media) {
-        EmbedBuilder builder = new EmbedBuilder().setImage(media.getImages().getStandardResolution().getImageUrl());
-        builder.setAuthor(media.getUser().getFullName(), null, media.getUser().getProfilePictureUrl());
-        builder.setTimestamp(new Date(Long.parseLong(media.getCreatedTime()) * 1000).toInstant());
-
-        if (media.getCaption() != null) {
-            String text = media.getCaption().getText();
-            if (StringUtils.isNotEmpty(text)) {
-                if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
-                    text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
-                }
-                if (media.getCaption().getText().length() > 200) {
-                    builder.setTitle(media.getLink(), media.getLink());
-                    builder.setDescription(text);
-                } else {
-                    builder.setTitle(text, media.getLink());
-                }
-            }
-        }
-        return builder;
     }
 
 }

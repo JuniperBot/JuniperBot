@@ -14,6 +14,8 @@ import java.util.Objects;
 @Component
 public class DiscordConfig {
 
+    public static final int MAX_DETAILED = 3;
+
     @Setter
     private String prefix;
 
