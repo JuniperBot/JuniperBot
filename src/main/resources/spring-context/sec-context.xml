@@ -50,7 +50,7 @@
                      client-authentication-scheme="query"
                      scope="${discord.oauth.scope}" />
 
-    <bean id="requestFactory" class="ru.caramel.juniperbot.security.DiscordHttpRequestFactory" />
+    <bean id="requestFactory" class="ru.caramel.juniperbot.security.auth.DiscordHttpRequestFactory" />
     <bean id="tokenProvider" class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
         <property name="requestFactory" ref="requestFactory" />
     </bean>
@@ -63,7 +63,7 @@
         <constructor-arg name="defaultFilterProcessesUrl" value="/login"/>
         <property name="restTemplate" ref="restTemplate" />
         <property name="tokenServices">
-            <bean class="org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices">
+            <bean class="ru.caramel.juniperbot.security.auth.DiscordTokenServices">
                 <constructor-arg value="${discord.oauth.userInfoUri}"/>
                 <constructor-arg value="${discord.oauth.clientId}"/>
                 <property name="restTemplate">

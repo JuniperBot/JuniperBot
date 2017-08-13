@@ -4,6 +4,7 @@
 
 <tilesx:useAttribute id="sidebarVisible"    name="sidebarVisible"    classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="breadcrumbVisible" name="breadcrumbVisible" classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="userDetails"       name="userDetails"       classname="ru.caramel.juniperbot.security.model.DiscordUserDetails" ignore="true" scope="request" />
 
 <html>
 <head>

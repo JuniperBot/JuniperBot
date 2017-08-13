@@ -22,14 +22,15 @@
                 <sec:authorize access="isAuthenticated()">
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="../../dist/img/user2-160x160.jpg" class="user-image" alt="Аватарка">
-                            <span class="hidden-xs">Alexander Pierce</span>
+                            <img src="${userDetails.avatarUrl}" class="user-image" alt="Аватарка">
+                            <span class="hidden-xs">${userDetails.userName}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="user-header">
-                                <img src="../../dist/img/user2-160x160.jpg" class="img-circle" alt="Аватарка">
-                                <p>Alexander Pierce - Web Developer</p>
+                                <img src="${userDetails.avatarUrl}" class="img-circle" alt="Аватарка">
+                                <p>${userDetails.userName}#${userDetails.discriminator}
+                                <small>${userDetails.email}</small></p>
                             </li>
                             <li class="user-footer">
                                 <div class="pull-left">

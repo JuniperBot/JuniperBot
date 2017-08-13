@@ -2,7 +2,7 @@
 <!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-    <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp">
+    <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp" preparer="userInfoPreparer">
         <put-attribute name="sidebarVisible" value="true" />
         <put-attribute name="breadcrumbVisible" value="true" />
     </definition>

@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.security;
+package ru.caramel.juniperbot.security.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
