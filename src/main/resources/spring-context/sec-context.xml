@@ -55,6 +55,14 @@
         <property name="requestFactory" ref="requestFactory" />
     </bean>
 
+    <bean id="discordTokenServices" class="ru.caramel.juniperbot.security.auth.DiscordTokenServices">
+        <constructor-arg value="${discord.oauth.userInfoUri}"/>
+        <constructor-arg value="${discord.oauth.guildsInfoUri}"/>
+        <constructor-arg value="${discord.oauth.clientId}"/>
+        <constructor-arg ref="oauthResource"/>
+        <property name="requestFactory" ref="requestFactory" />
+    </bean>
+
     <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider" />
 
     <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
@@ -62,18 +70,7 @@
           class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter">
         <constructor-arg name="defaultFilterProcessesUrl" value="/login"/>
         <property name="restTemplate" ref="restTemplate" />
-        <property name="tokenServices">
-            <bean class="ru.caramel.juniperbot.security.auth.DiscordTokenServices">
-                <constructor-arg value="${discord.oauth.userInfoUri}"/>
-                <constructor-arg value="${discord.oauth.clientId}"/>
-                <property name="restTemplate">
-                    <bean class="org.springframework.security.oauth2.client.OAuth2RestTemplate">
-                        <constructor-arg ref="oauthResource" />
-                        <property name="requestFactory" ref="requestFactory" />
-                    </bean>
-                </property>
-            </bean>
-        </property>
+        <property name="tokenServices" ref="discordTokenServices" />
         <property name="authenticationSuccessHandler">
             <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
                 <property name="defaultTargetUrl" value="/servers" />

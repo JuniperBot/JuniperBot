@@ -2,3 +2,43 @@
 .main-footer.no-sidebar {
     margin-left: 0 !important;
 }
+
+.row-centered {
+    text-align: center;
+}
+
+.col-centered {
+    display: inline-block;
+    float: none;
+    text-align: left;
+}
+
+/* SERVER-LIST */
+
+.server-select {
+    margin: 20px 0;
+}
+
+.server-item-wrapper img.server-item {
+    width: 100%;
+    border: 4px #FFF solid;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.server-item-wrapper:hover img.server-item {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.server-item-wrapper:hover img.server-item::after {
+    opacity: 1;
+}
+
+.discord-logo {
+    width: 5.5em;
+    margin-bottom: -3px;
+}
