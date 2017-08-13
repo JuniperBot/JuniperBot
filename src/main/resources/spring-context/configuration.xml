@@ -12,7 +12,7 @@
         <property name="updateInterval" value="300000"/>
     </bean>
 
-    <bean id="discordConfig" class="ru.caramel.juniperbot.configuration.DiscordConfig">
+    <bean class="ru.caramel.juniperbot.configuration.DiscordConfig">
         <property name="prefix" value="!"/>
         <property name="token" value="INSERT_HERE"/>
         <property name="accountType" value="CLIENT"/>

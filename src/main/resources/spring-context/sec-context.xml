@@ -11,8 +11,7 @@
         http://www.springframework.org/schema/security/oauth2
         http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
 
-    <bean id="oauthAuthenticationEntryPoint"
-          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
         <constructor-arg value="/login"/>
     </bean>
 
@@ -23,16 +22,24 @@
                    disable-url-rewriting="true"
                    use-expressions="true"
                    xmlns="http://www.springframework.org/schema/security">
-        <security:anonymous enabled="false"/>
+        <security:intercept-url pattern="/resources/**" access="permitAll" />
+        <security:intercept-url pattern="/" access="permitAll" />
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-        <!-- The filter that uses Oauth2 auth-code flow to acquire an Oauth2 token if the user doesn't already have one -->
         <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
-        <!-- The filter that validates an Oauth token and loads an Oauth2Authentication object in the SecurityContextHolder -->
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:access-denied-handler error-page="/denied"/>
-        <security:logout logout-url="/logout" logout-success-url="/login?logout=true"/>
+        <security:logout logout-url="/logout" logout-success-url="/"/>
         <security:csrf disabled="true"/>
     </security:http>
+
+    <bean id="anonymousAuthFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+        <constructor-arg value="anon" />
+    </bean>
+
+    <bean id="anonymousAuthenticationProvider" class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+        <constructor-arg value="anon" />
+    </bean>
 
     <oauth2:resource id="oauthResource"
                      client-id="${discord.oauth.clientId}"
@@ -65,6 +72,11 @@
                         <property name="requestFactory" ref="requestFactory" />
                     </bean>
                 </property>
+            </bean>
+        </property>
+        <property name="authenticationSuccessHandler">
+            <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+                <property name="defaultTargetUrl" value="/servers" />
             </bean>
         </property>
     </bean>

@@ -2,16 +2,33 @@
 <!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-    <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp" />
+    <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp">
+        <put-attribute name="sidebarVisible" value="true" />
+        <put-attribute name="breadcrumbVisible" value="true" />
+    </definition>
 
     <definition name="index" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
+        <put-attribute name="sidebarVisible" value="false" />
+        <put-attribute name="breadcrumbVisible" value="false" />
+        <put-attribute name="title" value="JuniperBOT" />
     </definition>
-    <definition name="next" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/next.jsp"/>
+
+    <definition name="servers" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/servers/servers.jsp"/>
+        <put-attribute name="sidebarVisible" value="false" />
+        <put-attribute name="breadcrumbVisible" value="false" />
+        <put-attribute name="title" value="Серверы" />
     </definition>
-    <definition name="login" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/login.jsp"/>
+
+    <definition name="dashboard" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/dashboard/dashboard.jsp"/>
+        <put-attribute name="title" value="Мониторинг" />
+    </definition>
+
+    <definition name="config" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/config/config.jsp"/>
+        <put-attribute name="title" value="Конфигурация" />
     </definition>
 
 </tiles-definitions>
