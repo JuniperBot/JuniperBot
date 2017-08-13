@@ -29,13 +29,13 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<body class="hold-transition sidebar-mini skin-yellow-light <tiles:insertAttribute name="body-class" ignore="true" />">
+<body class="hold-transition sidebar-mini skin-yellow-light <tiles:insertAttribute name="body-class" ignore="true" /> <c:if test="${not sidebarVisible}">no-sidebar</c:if>">
     <div class="wrapper">
         <jsp:include page="header.jsp" />
         <c:if test="${sidebarVisible}">
             <jsp:include page="sidebar.jsp" />
         </c:if>
-        <div class="content-wrapper <c:if test="${not sidebarVisible}">no-sidebar</c:if>">
+        <div class="content-wrapper ">
             <c:if test="${breadcrumbVisible}">
                 <jsp:include page="breadcrumb.jsp" />
             </c:if>

@@ -12,6 +12,7 @@
         <put-attribute name="sidebarVisible" value="false" />
         <put-attribute name="breadcrumbVisible" value="false" />
         <put-attribute name="title" value="JuniperBOT" />
+        <put-attribute name="body-class" value="juniper-background" />
     </definition>
 
     <definition name="servers" extends="baseLayout">
@@ -19,6 +20,7 @@
         <put-attribute name="sidebarVisible" value="false" />
         <put-attribute name="breadcrumbVisible" value="false" />
         <put-attribute name="title" value="Серверы" />
+        <put-attribute name="body-class" value="juniper-background" />
     </definition>
 
     <definition name="dashboard" extends="baseLayout">

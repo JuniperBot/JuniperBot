@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
-<footer class="main-footer <c:if test="${not sidebarVisible}">no-sidebar</c:if>">
+<footer class="main-footer">
     <%--<div class="pull-right hidden-xs">
         <b>Версия</b> 0.0.1
     </div>--%>

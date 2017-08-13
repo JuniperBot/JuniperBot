@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row server-select">
         <div class="col-md-6 col-md-offset-3 text-center">
-            <h3>Выберите <img src="<c:out value="/resources/img/discord-logo-black.svg"/>" class="discord-logo"> сервер:</h3>
+            <h3>Выберите <img src="<c:out value="/resources/img/discord-logo.svg"/>" class="discord-logo"> сервер:</h3>
         </div>
     </div>
 
