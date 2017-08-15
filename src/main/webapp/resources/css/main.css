@@ -78,12 +78,19 @@ body.no-sidebar .main-footer {
     border: 0;
 }
 
-body.no-sidebar .main-footer a {
+body.no-sidebar a {
     color: #ffd187;
 }
 
-body.no-sidebar .main-footer a:hover {
+body.no-sidebar a:hover {
     color: white;
+}
+
+body.no-sidebar h3,
+body.no-sidebar h4 {
+    -moz-text-shadow: 0 0 20px #000000;
+    -webkit-text-shadow: 0 0 20px #000000;
+    text-shadow: 0 0 20px #000000;
 }
 
 .server-select {

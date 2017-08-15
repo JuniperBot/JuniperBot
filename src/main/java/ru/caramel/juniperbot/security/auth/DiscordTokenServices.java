@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.security.utils.SecurityUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -111,6 +112,11 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
     public List<DiscordGuildDetails> getCurrentGuilds(boolean editable) {
         return getCurrentGuilds().stream().filter(e -> !editable || (editable && (e.isOwner()
                 || e.getPermissions().contains(Permission.ADMINISTRATOR)))).collect(Collectors.toList());
+    }
+
+    public DiscordGuildDetails getGuildById(long id) {
+        String idStr = String.valueOf(id);
+        return getCurrentGuilds(true).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);
     }
 
     @SuppressWarnings({ "unchecked" })

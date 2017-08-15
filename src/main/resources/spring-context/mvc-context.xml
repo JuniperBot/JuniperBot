@@ -11,6 +11,7 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 
+    <context:annotation-config />
     <context:component-scan base-package="ru.caramel.juniperbot.web"/>
 
     <mvc:annotation-driven />
@@ -57,4 +58,11 @@
         </property>
         <property name="preparerFactoryClass" value="org.springframework.web.servlet.view.tiles3.SpringBeanPreparerFactory" />
     </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="ru.caramel.juniperbot.web.common.navigation.NavigationInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>

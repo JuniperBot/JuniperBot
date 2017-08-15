@@ -4,8 +4,8 @@
 
 <header class="main-header">
     <a href="<c:url value="/" />" class="logo">
-        <span class="logo-mini"><b>J</b>BOT</span>
-        <span class="logo-lg"><b>Juniper</b>BOT</span>
+        <span class="logo-mini"><i class="fa fa-paw"></i></span>
+        <span class="logo-lg"><i class="fa fa-paw"></i> <b>Juniper</b>BOT</span>
     </a>
 
     <nav class="navbar navbar-static-top">

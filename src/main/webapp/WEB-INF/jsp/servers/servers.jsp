@@ -4,14 +4,20 @@
 <div class="container">
     <div class="row server-select">
         <div class="col-md-6 col-md-offset-3 text-center">
-            <h3>Выберите <img src="<c:out value="/resources/img/discord-logo.svg"/>" class="discord-logo"> сервер:</h3>
+            <c:if test="${empty servers}">
+                <h3>У вас нет ни одного сервера, где вы могли бы настроить Джупи.</h3>
+                <h4>Создайте свой сервер прямо сейчас и <a href="<c:url value="/" />">добавьте</a> Джупи к себе!</h4>
+            </c:if>
+            <c:if test="${not empty servers}">
+                <h3>Выберите <img src="<c:url value="/resources/img/discord-logo.svg"/>" class="discord-logo"> сервер:</h3>
+            </c:if>
         </div>
     </div>
 
     <div class="row row-centered">
         <c:forEach var="server" items="${servers}">
             <div class="col-md-2 text-center col-centered">
-                <a href="<c:out value="/dashboard" />/${server.id}">
+                <a href="<c:url value="/dashboard" />/${server.id}">
                     <div class="server-item-wrapper">
                         <img src="${server.avatarUrl}" class="img-circle server-item" title="${server.name}" data-toggle="tooltip" data-placement="bottom" />
                     </div>
