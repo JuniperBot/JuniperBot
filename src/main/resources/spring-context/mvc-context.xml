@@ -3,6 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -64,5 +65,14 @@
             <mvc:mapping path="/**" />
             <bean class="ru.caramel.juniperbot.web.common.navigation.NavigationInterceptor" />
         </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="ru.caramel.juniperbot.web.common.flash.FlashInterceptor" />
+        </mvc:interceptor>
     </mvc:interceptors>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="/locale/messages">
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
 </beans>

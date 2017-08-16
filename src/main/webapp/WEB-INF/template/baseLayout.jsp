@@ -55,6 +55,7 @@
                 <jsp:include page="navigation/breadcrumb.jsp" />
             </c:if>
             <section class="content">
+                <jsp:include page="flash-messages.jsp" />
                 <tiles:insertAttribute name="content" />
             </section>
         </div>
