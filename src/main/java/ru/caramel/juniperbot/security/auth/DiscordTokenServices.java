@@ -110,8 +110,11 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
     }
 
     public List<DiscordGuildDetails> getCurrentGuilds(boolean editable) {
-        return getCurrentGuilds().stream().filter(e -> !editable || (editable && (e.isOwner()
-                || e.getPermissions().contains(Permission.ADMINISTRATOR)))).collect(Collectors.toList());
+        return getCurrentGuilds().stream().filter(e -> !editable || (editable && hasPermission(e))).collect(Collectors.toList());
+    }
+
+    public boolean hasPermission(DiscordGuildDetails details) {
+        return details.isOwner() || details.getPermissions().contains(Permission.ADMINISTRATOR);
     }
 
     public DiscordGuildDetails getGuildById(long id) {

@@ -15,7 +15,7 @@
     <context:annotation-config />
     <context:component-scan base-package="ru.caramel.juniperbot.web"/>
 
-    <mvc:annotation-driven />
+    <mvc:annotation-driven validator="validator" />
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
     <bean class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory">
@@ -62,17 +62,22 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**" />
+            <mvc:mapping path="/**"  />
+            <mvc:exclude-mapping path="/resources/**" />
             <bean class="ru.caramel.juniperbot.web.common.navigation.NavigationInterceptor" />
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/resources/**" />
             <bean class="ru.caramel.juniperbot.web.common.flash.FlashInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="/locale/messages">
-        <property name="defaultEncoding" value="UTF-8" />
-    </bean>
-
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
+          p:defaultEncoding="UTF-8"
+          p:basename="/messages"/>
+    <bean id ="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+          p:validationMessageSource-ref="messageSource"/>
+    <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"
+          p:validator-ref="validator" />
 </beans>

@@ -11,50 +11,33 @@ import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
 @Component
 public class DiscordConfig {
 
     public static final int MAX_DETAILED = 3;
 
-    @Setter
     private String prefix;
 
-    @Getter
-    @Setter
     private String token;
 
-    @Setter
     private AccountType accountType;
 
-    @Getter
-    @Setter
     private String userName;
 
-    @Getter
-    @Setter
     private String avatarUrl;
 
-    @Getter
     private Color accentColor;
 
-    @Getter
-    @Setter
     private Long playRefreshInterval;
 
-    @Getter
-    @Setter
     private String playingStatus;
 
-    @Getter
-    @Setter
     private List<DiscordWebHook> webHooks;
 
-    @Getter
-    @Setter
     private String copyImageUrl;
 
-    @Getter
-    @Setter
     private String copyContent;
 
     @PostConstruct
@@ -74,15 +57,12 @@ public class DiscordConfig {
         accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }
 
+    @Getter
+    @Setter
     public static class DiscordWebHook {
 
-        @Getter
-        @Setter
         private long id;
 
-        @Getter
-        @Setter
         private String token;
-
     }
 }

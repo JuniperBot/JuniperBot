@@ -9,11 +9,12 @@ import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 
 @Controller
+@Navigation(PageElement.DASHBOARD)
 public class DashboardController extends AbstractController {
 
     @RequestMapping("/dashboard/{serverId}")
-    @Navigation(PageElement.DASHBOARD)
     public ModelAndView dashboard(@PathVariable long serverId) {
+        validateGuildId(serverId);
         return createModel("dashboard", serverId);
     }
 }

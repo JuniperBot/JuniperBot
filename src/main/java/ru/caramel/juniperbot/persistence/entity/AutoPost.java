@@ -13,10 +13,12 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames={"channelId", "guildId"})})
 @ToString
+@Getter
+@Setter
 public class AutoPost extends TextChannelEntity {
 
-    @Getter
-    @Setter
+    private static final long serialVersionUID = 5900616915326953578L;
+
     @Basic
     private String latestId;
 

@@ -64,11 +64,11 @@ public class HelpCommand extends AbstractCommand {
             return false;
         }
 
-        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(discordConfig.getPrefix() + e.key(), e.description(), false));
+        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
         if (common) {
             groupedCommands.forEach((group, commands) -> {
-                embedBuilder.addField(String.format("%s (%sхелп %s):", group.getTitle(), discordConfig.getPrefix(), group.getTitle().toLowerCase()),
-                        commands.stream().map(e -> '`' + discordConfig.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
+                embedBuilder.addField(String.format("%s (%sхелп %s):", group.getTitle(), context.getPrefix(), group.getTitle().toLowerCase()),
+                        commands.stream().map(e -> '`' + context.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
             });
         }
 

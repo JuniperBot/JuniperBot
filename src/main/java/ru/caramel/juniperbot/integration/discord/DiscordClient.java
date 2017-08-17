@@ -31,6 +31,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.service.ConfigService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -51,13 +53,16 @@ public class DiscordClient extends ListenerAdapter {
     @Autowired
     private DiscordBeanProviders discordBeanProviders;
 
+    @Autowired
+    private ConfigService configService;
+
     @Getter
     private JDA jda;
 
     @Getter
     private Map<String, Command> commands;
 
-    private Map<Guild, BotContext> contexts = new HashMap<>();
+    private Map<MessageChannel, BotContext> contexts = new HashMap<>();
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -87,14 +92,20 @@ public class DiscordClient extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         discordBeanProviders.setMessageContext(event);
         log(event);
-        if (validate(event)) {
+
+        GuildConfig guildConfig = null;
+        if (event.getChannelType().isGuild() && event.getGuild() != null) {
+            guildConfig = configService.getOrCreate(event.getGuild().getIdLong());
+        }
+        String prefix = guildConfig != null ? guildConfig.getPrefix() : config.getPrefix();
+        if (validate(event, prefix)) {
             String input = event.getMessage().getContent();
-            sendCommand(event, input.substring(config.getPrefix().length()));
+            sendCommand(event, input, prefix, guildConfig);
         }
     }
 
-    private void sendCommand(MessageReceivedEvent event, String input) {
-        String[] args = input.split("\\s+");
+    private void sendCommand(MessageReceivedEvent event, String input, String prefix, GuildConfig guildConfig) {
+        String[] args = input.substring(prefix.length()).split("\\s+");
         if (args.length == 0) {
             return;
         }
@@ -103,7 +114,9 @@ public class DiscordClient extends ListenerAdapter {
         if (command == null || !command.isApplicable(event.getChannel())) {
             return;
         }
-        BotContext context = contexts.computeIfAbsent(event.getGuild(), e -> new BotContext());
+        BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
+        context.setPrefix(prefix);
+        context.setConfig(guildConfig);
         try {
             command.doCommand(event, context);
         } catch (ValidationException e) {
@@ -122,11 +135,11 @@ public class DiscordClient extends ListenerAdapter {
         }
     }
 
-    private boolean validate(MessageReceivedEvent event) {
+    private boolean validate(MessageReceivedEvent event, String prefix) {
         String input = event.getMessage().getContent();
         return !event.getAuthor().isBot() &&
                 StringUtils.isNotEmpty(input) &&
-                input.startsWith(config.getPrefix()) &&
+                input.startsWith(prefix) &&
                 input.length() <= 255;
     }
 

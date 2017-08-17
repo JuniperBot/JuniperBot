@@ -30,7 +30,12 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
         modelAndView.addObject("navigationMenu", menuItems);
 
         if (handler instanceof HandlerMethod) {
-            Navigation navigation = ((HandlerMethod) handler).getMethod().getAnnotation(Navigation.class);
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            Navigation navigation = handlerMethod.getMethod().getAnnotation(Navigation.class);
+            if (navigation == null) {
+                navigation = handlerMethod.getBeanType().getAnnotation(Navigation.class);
+            }
+
             if (navigation != null) {
                 PageElement pageElement = navigation.value();
 

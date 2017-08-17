@@ -43,16 +43,16 @@ public class QueueCommand extends AbstractCommand {
             messageManager.onError(message.getTextChannel(), "Укажите корректный номер страницы");
             return false;
         }
-        return print(message.getTextChannel(), playbackManager.getQueue(message.getGuild()), pageNum);
+        return print(message.getTextChannel(), context, playbackManager.getQueue(message.getGuild()), pageNum);
     }
 
-    private boolean print(TextChannel channel, List<TrackRequest> requests, int pageNum) {
+    private boolean print(TextChannel channel, BotContext context, List<TrackRequest> requests, int pageNum) {
         if (requests.isEmpty()) {
             messageManager.onEmptyQueue(channel);
             return true;
         }
 
-        messageManager.onQueue(channel, requests, pageNum);
+        messageManager.onQueue(channel, context, requests, pageNum);
         return true;
     }
 }

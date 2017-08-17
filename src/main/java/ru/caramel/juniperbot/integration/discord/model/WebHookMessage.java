@@ -11,23 +11,17 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Builder
 public class WebHookMessage {
 
-    @Getter
-    @Setter
     private String username;
 
-    @Getter
-    @Setter
     private String avatarUrl;
 
-    @Getter
-    @Setter
     private String content;
 
-    @Getter
-    @Setter
     private List<MessageEmbed> embeds;
 
     public JSONObject toJSONObject() {

@@ -12,7 +12,6 @@ public class IndexController extends AbstractController {
     @RequestMapping("/")
     @Navigation(PageElement.HOME)
     public ModelAndView home() {
-        flash.info("test.message", "гость");
         return new ModelAndView("index");
     }
 }

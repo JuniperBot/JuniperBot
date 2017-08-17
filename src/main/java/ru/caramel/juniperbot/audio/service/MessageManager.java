@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 
 import java.awt.*;
@@ -137,7 +138,7 @@ public class MessageManager {
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onQueue(MessageChannel sourceChannel, List<TrackRequest> requests, int pageNum) {
+    public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
         final int totalPages = parts.size();
@@ -162,7 +163,7 @@ public class MessageManager {
         }
         if (totalPages > 1) {
             builder.setFooter(String.format("Страница %d из %d, всего %d в очереди. Введите: %sочередь <номер>",
-                    pageNum, totalPages, requests.size(), discordConfig.getPrefix()), null);
+                    pageNum, totalPages, requests.size(), context.getPrefix()), null);
         }
 
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
