@@ -43,6 +43,21 @@
     background: url(../img/background_blur.jpg) no-repeat top center;
 }
 
+.not-found-background {
+    background-size: cover;
+    background: url(../img/hey_background.jpg) no-repeat top center;
+}
+
+.forbidden-background {
+    background-size: cover;
+    background: url(../img/nope_background.jpg) no-repeat top center;
+}
+
+.error-background {
+    background-size: cover;
+    background: url(../img/oops_background.jpg) no-repeat top center;
+}
+
 /* NO-SIDEBAR STYLES */
 
 body.no-sidebar {
@@ -95,4 +110,18 @@ body.no-sidebar h4 {
 
 .server-select {
     color: white !important;
+}
+
+.text-white {
+    color: white;
+}
+
+.error-page>.error-content {
+    padding-top: 10px !important;
+}
+
+.error-page {
+    -moz-text-shadow: 0 0 20px #000000;
+    -webkit-text-shadow: 0 0 20px #000000;
+    text-shadow: 0 0 20px #000000;
 }

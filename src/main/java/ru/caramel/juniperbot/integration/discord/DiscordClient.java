@@ -181,7 +181,7 @@ public class DiscordClient extends ListenerAdapter {
                 break;
             case TEXT:
                 LOGGER.debug("[{}][{}] {}: {}", event.getGuild().getName(),
-                        event.getChannel().getName(), event.getMember().getEffectiveName(),
+                        event.getChannel().getName(), event.getMember() != null ? event.getMember().getEffectiveName() : "WebHook",
                         event.getMessage().getContent());
                 break;
             default:

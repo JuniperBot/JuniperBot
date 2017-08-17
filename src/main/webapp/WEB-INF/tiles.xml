@@ -7,23 +7,39 @@
         <put-attribute name="breadcrumbVisible" value="true" />
     </definition>
 
-    <definition name="index" extends="baseLayout">
+    <definition name="baseLayoutLite" extends="baseLayout">
+        <put-attribute name="sidebarVisible" value="false" />
+        <put-attribute name="breadcrumbVisible" value="false" />
+        <put-attribute name="body-class" value="juniper-background" />
+    </definition>
+
+    <definition name="error404" extends="baseLayoutLite">
+        <put-attribute name="content" value="/WEB-INF/jsp/errors/404.jsp"/>
+        <put-attribute name="title" value="Не найдено" />
+        <put-attribute name="body-class" value="not-found-background" />
+    </definition>
+
+    <definition name="error403" extends="baseLayoutLite">
+        <put-attribute name="content" value="/WEB-INF/jsp/errors/403.jsp"/>
+        <put-attribute name="title" value="Доступ запрещен" />
+        <put-attribute name="body-class" value="forbidden-background" />
+    </definition>
+
+    <definition name="error500" extends="baseLayoutLite">
+        <put-attribute name="content" value="/WEB-INF/jsp/errors/500.jsp"/>
+        <put-attribute name="title" value="Ошибка" />
+        <put-attribute name="body-class" value="error-background" />
+    </definition>
+
+    <definition name="index" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
-        <put-attribute name="sidebarVisible" value="false" />
-        <put-attribute name="breadcrumbVisible" value="false" />
         <put-attribute name="title" value="JuniperBOT" />
-        <put-attribute name="body-class" value="juniper-background" />
     </definition>
 
-    <definition name="servers" extends="baseLayout">
+    <definition name="servers" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/servers/servers.jsp"/>
-        <put-attribute name="sidebarVisible" value="false" />
-        <put-attribute name="breadcrumbVisible" value="false" />
         <put-attribute name="title" value="Серверы" />
-        <put-attribute name="body-class" value="juniper-background" />
     </definition>
-
-    <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
 
     <definition name="dashboard" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/dashboard/dashboard.jsp"/>
@@ -34,5 +50,7 @@
         <put-attribute name="content" value="/WEB-INF/jsp/config/config.jsp"/>
         <put-attribute name="title" value="Конфигурация" />
     </definition>
+
+    <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
 
 </tiles-definitions>

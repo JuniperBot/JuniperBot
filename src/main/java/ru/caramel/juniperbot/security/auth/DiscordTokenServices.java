@@ -119,7 +119,7 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
 
     public DiscordGuildDetails getGuildById(long id) {
         String idStr = String.valueOf(id);
-        return getCurrentGuilds(true).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);
+        return getCurrentGuilds(false).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);
     }
 
     @SuppressWarnings({ "unchecked" })
