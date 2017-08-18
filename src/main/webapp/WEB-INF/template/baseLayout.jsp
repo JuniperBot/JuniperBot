@@ -15,6 +15,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/ionicons.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/AdminLTE.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/skin-yellow-light.min.css"/>">
@@ -22,6 +23,7 @@
 
     <script type="text/javascript" src="<c:url value="/resources/js/jquery.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js"/>"></script>
 

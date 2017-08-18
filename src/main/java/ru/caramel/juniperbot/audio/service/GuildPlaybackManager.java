@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.service.ConfigService;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -29,10 +32,11 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildPlaybackManager.class);
 
-    private static Set<String> channelNames = new HashSet<>(Arrays.asList("музыка", "music"));
-
     @Autowired
     private Guild guild;
+
+    @Autowired
+    private DiscordClient discordClient;
 
     @Autowired
     private AudioManager audioManager;
@@ -42,6 +46,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
 
     @Autowired
     private MessageManager messageManager;
+
+    @Autowired
+    private ConfigService configService;
 
     private AudioPlayer player;
 
@@ -59,14 +66,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     private VoiceChannel getDesiredChannel() {
-        VoiceChannel channel;
-        for (String name : channelNames) {
-            channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
-            if (channel != null) {
-                return channel;
-            }
-        }
-        return guild.getVoiceChannels().stream().findFirst().orElse(null);
+        GuildConfig config = configService.getOrCreate(guild.getIdLong());
+        return config.getMusicChannelId() != null
+                ? discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) : null;
     }
 
     public void play(List<TrackRequest> requests) {
@@ -81,7 +83,11 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     public void play(TrackRequest request) {
         messageManager.onTrackAdd(request, player.getPlayingTrack() == null && queue.isEmpty());
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-            audioManager.openAudioConnection(getDesiredChannel());
+            VoiceChannel channel = getDesiredChannel();
+            if (channel == null) {
+                return;
+            }
+            audioManager.openAudioConnection(channel);
         }
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
@@ -98,8 +104,9 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     }
 
     public boolean isInChannel(User user) {
-        VoiceChannel channel = audioManager.isConnected() ? audioManager.getConnectedChannel() : getDesiredChannel();
-        return channel.getMembers().stream().map(Member::getUser).anyMatch(user::equals);
+        VoiceChannel channel = audioManager.isConnected() && audioManager.getConnectedChannel() != null
+                ? audioManager.getConnectedChannel() : getDesiredChannel();
+        return channel != null && channel.getMembers().stream().map(Member::getUser).anyMatch(user::equals);
     }
 
     public void nextTrack() {

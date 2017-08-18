@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.commands.model.BotContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class PlaybackManager {
                 e -> applicationContext.getBean(GuildPlaybackManager.class));
     }
 
-    public void loadAndPlay(final TextChannel channel, final User requestedBy, final String trackUrl) {
+    public void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
         GuildPlaybackManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
@@ -49,8 +50,12 @@ public class PlaybackManager {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                musicManager.play(playlist.getTracks().stream().map(e ->
-                        new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
+                if (Boolean.TRUE.equals(context.getConfig().getMusicPlaylistEnabled())) {
+                    musicManager.play(playlist.getTracks().stream().map(e ->
+                            new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
+                    return;
+                }
+                messageManager.onError(channel, "Добавление плейлистов отключено на этом сервере");
             }
 
             @Override

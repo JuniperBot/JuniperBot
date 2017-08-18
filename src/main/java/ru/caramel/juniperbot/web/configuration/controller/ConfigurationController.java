@@ -42,4 +42,10 @@ public class ConfigurationController extends AbstractController {
         flash.success("flash.config.save.success.message");
         return view(serverId);
     }
+
+    @Override
+    protected ModelAndView createModel(String name, long serverId) {
+        return super.createModel(name, serverId)
+                .addObject("voiceChannels", getVoiceChannels(serverId));
+    }
 }

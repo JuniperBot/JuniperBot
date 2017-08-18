@@ -29,6 +29,12 @@ public class GuildConfig extends BaseEntity {
     @Size(max = 20)
     private String prefix;
 
+    @Basic
+    private Long musicChannelId;
+
+    @Basic
+    private Boolean musicPlaylistEnabled;
+
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }

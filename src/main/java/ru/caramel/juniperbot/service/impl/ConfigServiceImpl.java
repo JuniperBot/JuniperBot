@@ -1,9 +1,11 @@
 package ru.caramel.juniperbot.service.impl;
 
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
+import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.ConfigDto;
 import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
@@ -21,6 +23,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private MapperService mapper;
+
+    @Autowired
+    private DiscordClient discordClient;
 
     @Override
     @Transactional
@@ -44,6 +49,14 @@ public class ConfigServiceImpl implements ConfigService {
             config = new GuildConfig(serverId);
             config.setPrefix(discordConfig.getPrefix());
             repository.save(config);
+        }
+        if (discordClient.isConnected() && (config.getMusicChannelId() == null ||
+                discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) == null)) {
+            VoiceChannel channel = discordClient.getDefaultMusicChannel(config.getGuildId());
+            if (channel != null) {
+                config.setMusicChannelId(channel.getIdLong());
+                repository.save(config);
+            }
         }
         return config;
     }

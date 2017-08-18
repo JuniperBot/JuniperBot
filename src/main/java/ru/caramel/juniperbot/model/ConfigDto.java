@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -16,4 +17,9 @@ public class ConfigDto implements Serializable {
     @Size(max = 20, message = "{validation.config.prefix.Size.message}")
     @NotBlank(message = "{validation.config.prefix.NotBlank.message}")
     private String prefix;
+
+    private Long musicChannelId;
+
+    @NotNull
+    private Boolean musicPlaylistEnabled;
 }

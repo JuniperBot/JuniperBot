@@ -125,3 +125,7 @@ body.no-sidebar h4 {
     -webkit-text-shadow: 0 0 20px #000000;
     text-shadow: 0 0 20px #000000;
 }
+
+.form-group input[type=checkbox] {
+    margin-top: 10px;
+}

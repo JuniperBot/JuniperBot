@@ -37,15 +37,15 @@ import ru.caramel.juniperbot.service.ConfigService;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DiscordClient extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
+
+    private static Set<String> musicChannels = new HashSet<>(Arrays.asList("музыка", "music"));
 
     @Autowired
     private DiscordConfig config;
@@ -202,5 +202,27 @@ public class DiscordClient extends ListenerAdapter {
     @PreDestroy
     public void destroy() {
         jda.shutdownNow();
+    }
+
+    public boolean isConnected() {
+        return jda != null && JDA.Status.CONNECTED.equals(jda.getStatus());
+    }
+
+    public VoiceChannel getDefaultMusicChannel(long guildId) {
+        if (!isConnected()) {
+            return null;
+        }
+        Guild guild = jda.getGuildById(guildId);
+        if (guild == null) {
+            return null;
+        }
+        VoiceChannel channel;
+        for (String name : musicChannels) {
+            channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
+            if (channel != null) {
+                return channel;
+            }
+        }
+        return guild.getVoiceChannels().stream().findAny().orElse(null);
     }
 }
