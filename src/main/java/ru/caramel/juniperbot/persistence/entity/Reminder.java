@@ -11,10 +11,12 @@ import lombok.Setter;
 import ru.caramel.juniperbot.persistence.entity.base.MemberMessageEntity;
 
 @Entity
+@Getter
+@Setter
 public class Reminder extends MemberMessageEntity {
 
-    @Getter
-    @Setter
+    private static final long serialVersionUID = -3814573681159758727L;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 

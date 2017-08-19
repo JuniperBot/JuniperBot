@@ -10,6 +10,8 @@
     <!--Could be configured for external files with jvm property like"-Djuniperbot-config-location=file:///D:\\projects\\JuniperBot\\conf\\"-->
     <import resource="${juniperbot-config-location:classpath:spring-context/}configuration.xml"/>
     <import resource="classpath:spring-context/persistence.xml"/>
+    <import resource="classpath:spring-context/mvc-context.xml"/>
+    <import resource="classpath:spring-context/sec-context.xml"/>
 
     <context:annotation-config/>
     <context:property-placeholder ignore-resource-not-found="true" location="${juniperbot-config-location:classpath:}application.properties"/>

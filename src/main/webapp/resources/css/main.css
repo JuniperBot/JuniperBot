@@ -1,0 +1,254 @@
+.row-centered {
+    text-align: center;
+}
+
+.col-centered {
+    display: inline-block;
+    float: none;
+    text-align: left;
+}
+
+/* SERVER-LIST */
+
+.server-select {
+    margin: 20px 0;
+}
+
+.server-item-wrapper img.server-item {
+    width: 100%;
+    border: 4px #FFF solid;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.server-item-wrapper:hover img.server-item {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.server-item-wrapper:hover img.server-item::after {
+    opacity: 1;
+}
+
+.discord-logo {
+    width: 5.5em;
+    margin-bottom: -3px;
+}
+
+.juniper-background {
+    background-size: cover;
+    background: url(../img/background_blur.jpg) no-repeat top center;
+}
+
+.not-found-background {
+    background-size: cover;
+    background: url(../img/hey_background.jpg) no-repeat top center;
+}
+
+.forbidden-background {
+    background-size: cover;
+    background: url(../img/nope_background.jpg) no-repeat top center;
+}
+
+.error-background {
+    background-size: cover;
+    background: url(../img/oops_background.jpg) no-repeat top center;
+}
+
+/* NO-SIDEBAR STYLES */
+
+body.no-sidebar {
+    -moz-box-shadow:inset 0 0 250px #000000;
+    -webkit-box-shadow:inset 0 0 250px #000000;
+    box-shadow:inset 0 0 250px #000000;
+}
+
+body.no-sidebar .content-wrapper,
+body.no-sidebar .main-footer {
+    margin-left: 0 !important;
+    background: none !important;
+}
+
+body.no-sidebar > div.wrapper,
+body.no-sidebar .main-footer {
+    background: none !important;
+}
+
+body.no-sidebar .main-header > .navbar {
+    /*background-color: rgba(243,156,18,0.6) !important;*/
+    background: none;
+}
+
+body.no-sidebar .main-header > a.logo,
+body.no-sidebar .main-header > a.logo:hover {
+    /*background-color: rgba(243,156,18,0.6) !important;*/
+    background: none;
+}
+
+body.no-sidebar .main-footer {
+    color: white;
+    border: 0;
+}
+
+body.no-sidebar a {
+    color: #ffd187;
+}
+
+body.no-sidebar a:hover {
+    color: white;
+}
+
+body.no-sidebar h3,
+body.no-sidebar h4 {
+    -moz-text-shadow: 0 0 20px #000000;
+    -webkit-text-shadow: 0 0 20px #000000;
+    text-shadow: 0 0 20px #000000;
+}
+
+.server-select {
+    color: white !important;
+}
+
+.text-white {
+    color: white;
+}
+
+.error-page>.error-content {
+    padding-top: 10px !important;
+}
+
+.error-page {
+    -moz-text-shadow: 0 0 20px #000000;
+    -webkit-text-shadow: 0 0 20px #000000;
+    text-shadow: 0 0 20px #000000;
+}
+
+.form-group input[type=checkbox] {
+    margin-top: 10px;
+}
+
+/* ======================================
+            JUMBOTRON
+   ====================================== */
+
+.jumbotron {
+    padding-top: 10px;
+    font-family: "Open sans", Helvetica, Arial !important;
+    background: none;
+    color: white;
+}
+
+.jumbotron .jumbo-header {
+    font-size: 44px;
+    font-weight: 200;
+    float: right !important;
+    -moz-text-shadow: 0 0 25px #000000;
+    -webkit-text-shadow: 0 0 25px #000000;
+    text-shadow: 0 0 25px #000000;
+}
+
+.jumbotron .lead {
+    font-size: 16px;
+    float: right !important;
+    -moz-text-shadow: 0 0 20px #000000;
+    -webkit-text-shadow: 0 0 20px #000000;
+    text-shadow: 0 0 20px #000000;
+}
+
+.jumbotron .btn-default {
+    margin: 20px 0;
+    border: 0;
+    text-shadow: none;
+    background: transparent;
+    color: rgba(255,255,255,.8);
+    -webkit-box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
+    -moz-box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
+    box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
+    -moz-text-shadow: 0 0 15px #000000;
+    -webkit-text-shadow: 0 0 15px #000000;
+    text-shadow: 0 0 15px #000000;
+}
+
+.jumbotron .btn-default:hover,
+.jumbotron .btn-default:focus {
+    color:rgba(255,255,255,1);
+    -webkit-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
+    -moz-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
+    box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
+    background: transparent;
+}
+.jumbotron .btn-default:active,
+.jumbotron .btn-default.active {
+    color:#fff;
+    -webkit-box-shadow:inset 0px 0px 0px 3px #fff;
+    -moz-box-shadow:inset 0px 0px 0px 3px #fff;
+    box-shadow:inset 0px 0px 0px 3px #fff;
+    background: transparent;
+}
+
+.jumbotron .btn-add {
+    margin-top: 20px;
+    padding: 25px 35px;
+}
+
+.jumbotron .discord-logo {
+    margin: 0 !important;
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+    .jumbotron .jumbo-header {
+        float: none !important;
+    }
+    .jumbotron .lead {
+        float: none !important;
+    }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+    .jumbotron .jumbo-header {
+        font-size: 34px !important;
+    }
+    .jumbotron .lead {
+        font-size: 14px !important;
+    }
+    .jumbotron .btn-add {
+        margin-top: 15px !important;
+        padding: 15px 0;
+        width: 100%;
+    }
+
+    .user-menu > a > .caret {
+        margin-top: -5px;
+    }
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 480px) {
+    .jumbotron .jumbo-header {
+        font-size: 26px !important;
+    }
+    .jumbotron .lead {
+        font-size: 12px !important;
+    }
+    .jumbotron .btn-add {
+        margin-top: 5px !important;
+        padding: 15px 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .form-horizontal .combo-control {
+        padding-top: 55px;
+    }
+    .play-checkbox {
+        margin-top: 25px !important;
+    }
+    .play-checkbox input[type=checkbox] {
+        margin-top: 4px !important;
+    }
+}

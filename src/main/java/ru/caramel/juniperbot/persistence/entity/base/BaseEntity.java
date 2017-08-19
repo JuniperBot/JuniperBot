@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
@@ -22,14 +24,10 @@ public abstract class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
-    @Getter
-    @Setter
     private Long id;
 
     @Version
     @Column(name = "version")
-    @Getter
-    @Setter
     private Long version;
 
     @Override

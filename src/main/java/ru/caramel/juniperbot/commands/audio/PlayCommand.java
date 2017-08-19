@@ -37,7 +37,7 @@ public class PlayCommand extends AbstractCommand {
             String result = youTubeClient.searchForUrl(query);
             query = result != null ? result : query;
         }
-        playbackManager.loadAndPlay(message.getTextChannel(), message.getAuthor(), query);
+        playbackManager.loadAndPlay(message.getTextChannel(), context, message.getAuthor(), query);
         return true;
     }
 }

@@ -4,29 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
+@Getter
+@Setter
 @Component
 public class InstagramConfig {
 
-    @Getter
-    @Setter
     private String clientId;
 
-    @Getter
-    @Setter
     private String clientSecret;
 
-    @Getter
-    @Setter
     private String token;
 
-    @Getter
-    @Setter
     private String pollUserId;
 
-    @Setter
     private Long ttl;
 
-    @Setter
     private Long updateInterval;
 
     public Long getTtl() {

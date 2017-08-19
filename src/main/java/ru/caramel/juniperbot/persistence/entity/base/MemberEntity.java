@@ -1,6 +1,6 @@
 package ru.caramel.juniperbot.persistence.entity.base;
 
-import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import lombok.Getter;
@@ -11,7 +11,7 @@ public abstract class MemberEntity extends GuildEntity {
 
     @Setter
     @Getter
-    @Basic
+    @Column(name = "user_id")
     protected String userId;
 
 }
