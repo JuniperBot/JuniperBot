@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.persistence.entity.base;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Size;
 
@@ -17,7 +18,7 @@ public abstract class MemberMessageEntity extends MemberEntity {
     @Basic
     protected String message;
 
-    @Basic
+    @Column(name = "channel_id")
     protected String channelId;
 
 }

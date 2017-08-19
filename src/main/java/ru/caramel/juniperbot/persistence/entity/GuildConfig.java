@@ -6,22 +6,19 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(indexes = { @Index(columnList = "guildId", name = "idx_guild_config_guildId", unique = true) })
+@Table(name = "guild_config")
 public class GuildConfig extends BaseEntity {
 
     private static final long serialVersionUID = 1599157155969887890L;
 
-    @Basic
+    @Column(name = "guild_id")
     private long guildId;
 
     @Basic
@@ -29,19 +26,21 @@ public class GuildConfig extends BaseEntity {
     @Size(max = 20)
     private String prefix;
 
-    @Basic
+    @Column(name = "music_channel_id")
     private Long musicChannelId;
 
     @Basic
+    @Column(name = "music_playlist_enabled")
     private Boolean musicPlaylistEnabled;
 
-    @Basic
+    @Column(name = "music_queue_limit")
     private Long musicQueueLimit;
 
-    @Basic
+    @Column(name = "music_duration_limit")
     private Long musicDurationLimit;
 
     @Basic
+    @Column(name = "music_duplicate_limit")
     private Long musicDuplicateLimit;
 
     public GuildConfig(long guildId) {

@@ -5,13 +5,10 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.caramel.juniperbot.persistence.entity.base.TextChannelEntity;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames={"channelId", "guildId"})})
+@Table(name = "auto_post")
 @ToString
 @Getter
 @Setter
@@ -19,7 +16,7 @@ public class AutoPost extends TextChannelEntity {
 
     private static final long serialVersionUID = 5900616915326953578L;
 
-    @Basic
+    @Column(name = "latest_id")
     private String latestId;
 
     public AutoPost() {
