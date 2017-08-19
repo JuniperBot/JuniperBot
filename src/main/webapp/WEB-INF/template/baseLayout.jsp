@@ -13,6 +13,9 @@
     <title><tiles:insertAttribute name="title" ignore="true"/></title>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="theme-color" content="#f39c12" />
+
+    <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
@@ -26,6 +29,9 @@
     <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js"/>"></script>
+
+    <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-32x32.png"/>" sizes="32x32" />
+    <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-16x16.png"/>" sizes="16x16" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

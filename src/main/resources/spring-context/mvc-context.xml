@@ -17,6 +17,7 @@
 
     <mvc:annotation-driven validator="validator" />
     <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/favicon.ico" location="/resources/img/favicon.ico" />
 
     <bean class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory"
           p:port="${portal.port:8080}" />

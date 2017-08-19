@@ -1,5 +1,5 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@include file="/WEB-INF/template/include.jsp" %>
 
 <div class="container">
     <div class="row server-select">

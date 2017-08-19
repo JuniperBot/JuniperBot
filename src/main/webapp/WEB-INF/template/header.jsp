@@ -29,7 +29,10 @@
                             <li class="user-header">
                                 <img src="${userDetails.avatarUrl}" class="img-circle" alt="Аватарка">
                                 <p>${userDetails.userName}#${userDetails.discriminator}
-                                <small>${userDetails.email}</small></p>
+                                    <c:if test="${not empty userDetails.email}">
+                                        <small>${userDetails.email}</small>
+                                    </c:if>
+                                </p>
                             </li>
                             <li class="user-footer">
                                 <div class="pull-left">
