@@ -31,15 +31,51 @@
                             </div>
                         </div>
                     </spring:bind>
-                    <spring:bind path="musicPlaylistEnabled">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="playlist-enabled" class="col-sm-4 control-label">Разрешить плейлисты</label>
-                            <div class="col-sm-8">
-                                <form:checkbox id="playlist-enabled" path="musicPlaylistEnabled" />
-                                <form:errors path="musicPlaylistEnabled" class="help-block" />
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label combo-control">Ограничения воспроизведения</label>
+                        <div class="col-sm-8">
+                            <div class="row">
+                                <spring:bind path="musicQueueLimit">
+                                    <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
+                                        <label for="queue-limit" class="control-label">Треков на участника</label>
+                                        <form:input id="queue-limit" type="number" min="1" path="musicQueueLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <form:errors path="musicQueueLimit" class="help-block" />
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="musicDurationLimit">
+                                    <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
+                                        <label for="duration-limit" class="control-label">Длительность трека</label>
+                                        <div class="input-group">
+                                            <form:input id="duration-limit" type="number" min="1" path="musicDurationLimit" cssClass="form-control" placeholder="не ограничено" />
+                                            <span class="input-group-addon">мин</span>
+                                        </div>
+                                        <form:errors path="musicDurationLimit" class="help-block" />
+                                    </div>
+                                </spring:bind>
+                            </div>
+                            <div class="row">
+                                <spring:bind path="musicDuplicateLimit">
+                                    <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
+                                        <label for="duplicate-limit" class="control-label">Одинаковых треков</label>
+                                        <form:input id="duplicate-limit" type="number" min="1" path="musicDuplicateLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <form:errors path="musicDuplicateLimit" class="help-block" />
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="musicPlaylistEnabled">
+                                    <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
+                                        <div class="checkbox play-checkbox">
+                                            <label>
+                                                <form:checkbox path="musicPlaylistEnabled" cssStyle="margin-top: 4px;" />
+                                                Разрешить плейлисты
+                                            </label>
+                                            <form:errors path="musicPlaylistEnabled" class="help-block" />
+                                        </div>
+                                    </div>
+                                </spring:bind>
                             </div>
                         </div>
-                    </spring:bind>
+                    </div>
                 </div>
                 <div class="box-footer">
                     <button type="submit" class="btn bg-orange pull-right">Сохранить</button>

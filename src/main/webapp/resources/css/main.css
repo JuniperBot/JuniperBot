@@ -240,3 +240,15 @@ body.no-sidebar h4 {
         padding: 15px 0;
     }
 }
+
+@media (min-width: 768px) {
+    .form-horizontal .combo-control {
+        padding-top: 55px;
+    }
+    .play-checkbox {
+        margin-top: 25px !important;
+    }
+    .play-checkbox input[type=checkbox] {
+        margin-top: 4px !important;
+    }
+}

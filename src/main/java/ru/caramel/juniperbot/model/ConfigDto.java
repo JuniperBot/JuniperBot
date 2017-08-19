@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -22,4 +23,14 @@ public class ConfigDto implements Serializable {
 
     @NotNull
     private Boolean musicPlaylistEnabled;
+
+    @Min(0)
+    private Long musicQueueLimit;
+
+    @Min(0)
+    private Long musicDurationLimit;
+
+    @Min(0)
+    private Long musicDuplicateLimit;
+
 }

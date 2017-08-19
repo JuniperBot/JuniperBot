@@ -35,6 +35,15 @@ public class GuildConfig extends BaseEntity {
     @Basic
     private Boolean musicPlaylistEnabled;
 
+    @Basic
+    private Long musicQueueLimit;
+
+    @Basic
+    private Long musicDurationLimit;
+
+    @Basic
+    private Long musicDuplicateLimit;
+
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }

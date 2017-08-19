@@ -17,7 +17,7 @@
     <div class="row row-centered">
         <c:forEach var="server" items="${servers}">
             <div class="col-md-2 text-center col-centered">
-                <a href="<c:url value="/dashboard" />/${server.id}">
+                <a href="<c:url value="/config/${server.id}" />">
                     <div class="server-item-wrapper">
                         <img src="${server.avatarUrl}" class="img-circle server-item" title="${server.name}" data-toggle="tooltip" data-placement="bottom" />
                     </div>

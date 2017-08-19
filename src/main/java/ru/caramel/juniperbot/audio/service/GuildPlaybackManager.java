@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -75,7 +76,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         if (CollectionUtils.isNotEmpty(requests)) {
             play(requests.get(0));
             if (requests.size() > 1) {
-                requests.subList(1, requests.size() - 1).forEach(queue::offer);
+                requests.subList(1, requests.size()).forEach(queue::offer);
             }
         }
     }
@@ -216,6 +217,12 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
             }
             result.addAll(queue);
             return Collections.unmodifiableList(result);
+        }
+    }
+
+    public List<TrackRequest> getQueue(User user) {
+        synchronized (queue) {
+            return getQueue().stream().filter(e -> user.equals(e.getUser())).collect(Collectors.toList());
         }
     }
 
