@@ -34,8 +34,6 @@ public class DiscordConfig {
 
     private String playingStatus;
 
-    private List<DiscordWebHook> webHooks;
-
     private String copyImageUrl;
 
     private String copyContent;
@@ -55,14 +53,5 @@ public class DiscordConfig {
 
     public void setAccentColor(String color) {
         accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
-    }
-
-    @Getter
-    @Setter
-    public static class DiscordWebHook {
-
-        private long id;
-
-        private String token;
     }
 }

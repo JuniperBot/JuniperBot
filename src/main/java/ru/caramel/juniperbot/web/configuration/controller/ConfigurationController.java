@@ -46,6 +46,7 @@ public class ConfigurationController extends AbstractController {
     @Override
     protected ModelAndView createModel(String name, long serverId) {
         return super.createModel(name, serverId)
-                .addObject("voiceChannels", getVoiceChannels(serverId));
+                .addObject("voiceChannels", getVoiceChannels(serverId))
+                .addObject("textChannels", getTextChannels(serverId));
     }
 }

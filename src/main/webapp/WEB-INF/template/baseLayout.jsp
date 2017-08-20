@@ -10,7 +10,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><tiles:insertAttribute name="title" ignore="true"/></title>
+    <title>
+        <c:if test="${not empty serverName}"><c:out value="${serverName}"/> — </c:if>
+        <tiles:insertAttribute name="title" ignore="true"/>
+    </title>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="theme-color" content="#f39c12" />

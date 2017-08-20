@@ -11,4 +11,28 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20082017-1-2" author="caramel">
+        <createTable tableName="web_hook">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_web_hook"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="hook_id" type="BIGINT" />
+            <column name="token" type="VARCHAR(255)" />
+            <column name="enabled" type="BOOLEAN" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20082017-1-3" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="web_hook_id" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="fk_guild_config_web_hook" references="web_hook(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20082017-1-4" author="caramel">
+        <delete tableName="auto_post" />
+    </changeSet>
+
 </databaseChangeLog>

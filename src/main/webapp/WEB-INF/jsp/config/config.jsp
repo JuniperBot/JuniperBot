@@ -3,13 +3,13 @@
 
 <spring:url value="/config/${serverId}" var="actionUrl" />
 
-<div class="row">
-    <div class="col-md-7">
-        <div class="box box-warning">
-            <div class="box-header with-border">
-                <h3 class="box-title">Основные настройки</h3>
-            </div>
-            <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
+<form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Основные настройки</h3>
+                </div>
                 <div class="box-body">
                     <spring:bind path="prefix">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
@@ -20,16 +20,7 @@
                             </div>
                         </div>
                     </spring:bind>
-                    <spring:bind path="privateHelp">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="input-help" class="col-sm-4 control-label">Отправлять команду <small class="label bg-yellow">хелп</small> в личку</label>
-                            <div class="col-sm-8">
-                                <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
-                                <p class="help-block">(это так же отключит группировку и отправит полный список команд)</p>
-                                <form:errors path="privateHelp" class="help-block" />
-                            </div>
-                        </div>
-                    </spring:bind>
+
                     <hr />
                     <spring:bind path="musicChannelId">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
@@ -87,10 +78,57 @@
                         </div>
                     </div>
                 </div>
-                <div class="box-footer">
-                    <button type="submit" class="btn bg-orange pull-right">Сохранить</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Настройки публикаций</h3>
                 </div>
-            </form:form>
+
+                <div class="box-body">
+                    <spring:bind path="privateHelp">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="input-help" class="col-sm-4 control-label">Отправлять команду <small class="label bg-yellow">хелп</small> в личку</label>
+                            <div class="col-sm-8">
+                                <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
+                                <p class="help-block">(это также отключит группировку и отправит полный список команд)</p>
+                                <form:errors path="privateHelp" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+                    <spring:bind path="webHook.enabled">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="enable-publish" class="col-sm-4 control-label">Включить публикации фырок</label>
+                            <div class="col-sm-8">
+                                <form:checkbox id="enable-publish" disabled="${not config.webHook.available}" path="webHook.enabled" />
+                                <form:errors path="webHook.enabled" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+                    <spring:bind path="webHook.channelId">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="publish-channel" class="col-sm-4 control-label">Канал для публикаций</label>
+                            <div class="col-sm-8">
+                                <form:select id="publish-channel" path="webHook.channelId" disabled="${not config.webHook.available}" cssClass="form-control select2" cssStyle="width: 100%;"
+                                             items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                <form:errors path="webHook.channelId" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
+                    <c:if test="${not config.webHook.available}">
+                        <div class="callout callout-warning">
+                            <p>Изменение настроек публикации недоступно, поскольку бот не добавлен на сервер и/или нет прав на управление WebHook'ами</p>
+                        </div>
+                    </c:if>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-md-6">
+            <button type="submit" class="btn bg-orange">Сохранить изменения</button>
+        </div>
+    </div>
+</form:form>

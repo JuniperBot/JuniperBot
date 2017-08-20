@@ -15,6 +15,7 @@
         </c:if>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
+                <li><a href="https://github.com/GoldRenard/JuniperBotJ" target="_blank"><i class="fa fa-github"></i></a></li>
                 <sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
                     <li><a href="<c:url value="/login"/>"><i class="fa fa-sign-in"></i> Войти</a></li>
                 </sec:authorize>

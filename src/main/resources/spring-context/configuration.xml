@@ -24,14 +24,6 @@
         <property name="copyContent" value="Карамелька © 2017 Все права зафырканы" />
         <property name="avatarUrl"
                   value="https://cdn.discordapp.com/avatars/310848622642069504/17f82d64779394935f900df9f4bb4b38.png?size=128"/>
-        <!--<property name="webHooks">
-            <list value-type="ru.caramel.juniperbot.configuration.DiscordConfig$DiscordWebHook">
-                <bean class="ru.caramel.juniperbot.configuration.DiscordConfig$DiscordWebHook">
-                    <property name="id"     value="id" />
-                    <property name="token"  value="token" />
-                </bean>
-            </list>
-        </property>-->
     </bean>
 
     <bean class="ru.caramel.juniperbot.configuration.YouTubeConfig">

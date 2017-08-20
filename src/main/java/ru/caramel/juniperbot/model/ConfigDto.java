@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -36,4 +37,6 @@ public class ConfigDto implements Serializable {
     @Min(0)
     private Long musicDuplicateLimit;
 
+    @Valid
+    private WebHookDto webHook;
 }

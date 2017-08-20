@@ -3,7 +3,10 @@ package ru.caramel.juniperbot.integration.discord;
 import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -24,20 +27,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.commands.base.Command;
-import ru.caramel.juniperbot.commands.model.DiscordCommand;
-import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.commands.model.BotContext;
-import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
-import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
-import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.configuration.DiscordConfig;
+import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.ConfigService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -150,7 +155,7 @@ public class DiscordClient extends ListenerAdapter {
                 .collect(Collectors.toMap(e -> e.getClass().getAnnotation(DiscordCommand.class).key(), e -> e));
     }
 
-    public boolean executeWebHook(DiscordConfig.DiscordWebHook webHook, WebHookMessage message) {
+    public boolean executeWebHook(WebHook webHook, WebHookMessage message, Consumer<WebHook> onAbsent) {
         JSONObject obj = message.toJSONObject();
         RestAction<JSONObject> action = new RestAction<JSONObject>(jda, Route.Custom.POST_ROUTE.compile(String.format("webhooks/%s/%s", webHook.getId(), webHook.getToken())), obj) {
 
@@ -161,15 +166,18 @@ public class DiscordClient extends ListenerAdapter {
                     request.onSuccess(null);
                 } else {
                     request.onFailure(response);
+                    if (response.code == 404) {
+                        onAbsent.accept(webHook);
+                    }
                 }
             }
         };
 
         try {
             action.queue();
+            return false;
         } catch (ErrorResponseException e) {
             LOGGER.error("Can't execute webhook: ", e);
-            return false;
         }
         return true;
     }

@@ -1,119 +1,39 @@
 package ru.caramel.juniperbot.service.impl;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.lang3.StringUtils;
 import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
-import ru.caramel.juniperbot.persistence.entity.AutoPost;
-import ru.caramel.juniperbot.persistence.repository.AutoPostRepository;
+import ru.caramel.juniperbot.persistence.entity.WebHook;
+import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.service.PostService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService, InstagramListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
+    @Autowired
+    private WebHookRepository webHookRepository;
 
     @Autowired
-    private AutoPostRepository repository;
+    private DiscordConfig config;
 
     @Autowired
-    private DiscordConfig discordConfig;
+    private DiscordClient client;
 
-    @Autowired
-    private DiscordClient discordClient;
+    private String latestId;
 
-    @Override
-    @Transactional
-    public boolean subscribe(TextChannel channel) {
-        String channelId = channel.getId();
-        String guildId = channel.getGuild().getId();
-        return !repository.exists(guildId, channelId) && repository.save(new AutoPost(guildId, channelId)).getId() != null;
-    }
-
-    @Override
-    @Transactional
-    public boolean unSubscribe(TextChannel channel) {
-        return repository.deleteByGuildIdAndChannelId(channel.getGuild().getId(), channel.getId()) > 0;
-    }
-
-    @Override
-    @Transactional
-    public boolean switchSubscription(TextChannel channel) {
-        boolean subscribed = subscribe(channel);
-        if (!subscribed) {
-            unSubscribe(channel);
-        }
-        return subscribed;
-    }
-
-    @Override
-    public synchronized void onInstagramUpdated(List<MediaFeedData> medias) {
-        Map<String, Guild> guildCache = new HashMap<>();
-        Map<TextChannel, AutoPost> targetMap = new HashMap<>();
-        List<AutoPost> toDelete = new ArrayList<>();
-
-        JDA jda = discordClient.getJda();
-        if (jda == null || !JDA.Status.CONNECTED.equals(jda.getStatus())) {
-            return;
-        }
-
-        for (AutoPost post : repository.findAll()) {
-            Guild guild = null;
-            if (!guildCache.containsKey(post.getGuildId())) {
-                guild = guildCache.computeIfAbsent(post.getGuildId(), jda::getGuildById);
-            }
-
-            if (guild == null) {
-                toDelete.add(post);
-                continue;
-            }
-
-            TextChannel channel = guild.getTextChannelById(post.getChannelId());
-            if (channel == null) {
-                toDelete.add(post);
-                continue;
-            }
-            targetMap.put(channel, post);
-        }
-
-        targetMap.forEach((channel, post) -> {
-            if (post.getLatestId() != null) {
-                List<MediaFeedData> newMedias = new ArrayList<>();
-                for (MediaFeedData media : medias) {
-                    if (media.getId().equals(post.getLatestId())) {
-                        break;
-                    }
-                    newMedias.add(media);
-                }
-
-                if (!newMedias.isEmpty()) {
-                    try {
-                        post(newMedias, channel);
-                    } catch (PermissionException e) {
-                        LOGGER.warn("No permissions to send {}", post, e);
-                    }
-                }
-            }
-            post.setLatestId(medias.get(0).getId());
-        });
-        repository.delete(toDelete);
-        repository.save(targetMap.values());
-    }
 
     @Override
     public void post(List<MediaFeedData> medias, MessageChannel channel) {
@@ -126,12 +46,45 @@ public class PostServiceImpl implements PostService, InstagramListener {
     }
 
     @Override
+    public void onInstagramUpdated(List<MediaFeedData> medias) {
+        if (latestId != null) {
+            List<MediaFeedData> newMedias = new ArrayList<>();
+            for (MediaFeedData media : medias) {
+                if (media.getId().equals(latestId)) {
+                    break;
+                }
+                newMedias.add(media);
+            }
+
+            int size = Math.min(DiscordConfig.MAX_DETAILED, newMedias.size());
+            if (size > 0) {
+                List<MessageEmbed> embeds = newMedias.stream()
+                        .map(e -> convertToEmbed(e).build())
+                        .collect(Collectors.toList());
+
+                WebHookMessage message = WebHookMessage.builder()
+                        .avatarUrl(config.getAvatarUrl())
+                        .username(config.getUserName())
+                        .embeds(embeds)
+                        .build();
+
+                List<WebHook> webHooks = webHookRepository.findActive();
+                webHooks.forEach(e -> client.executeWebHook(e, message, e2 -> {
+                    e2.setEnabled(false);
+                    webHookRepository.save(e2);
+                }));
+            }
+        }
+        latestId = medias.get(0).getId();
+    }
+
+    @Override
     public EmbedBuilder convertToEmbed(MediaFeedData media) {
         EmbedBuilder builder = new EmbedBuilder()
                 .setImage(media.getImages().getStandardResolution().getImageUrl())
                 .setAuthor(media.getUser().getFullName(), null, media.getUser().getProfilePictureUrl())
                 .setTimestamp(new Date(Long.parseLong(media.getCreatedTime()) * 1000).toInstant())
-                .setColor(discordConfig.getAccentColor());
+                .setColor(config.getAccentColor());
 
         if (media.getCaption() != null) {
             String text = media.getCaption().getText();
