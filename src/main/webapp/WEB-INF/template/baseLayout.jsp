@@ -15,7 +15,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="theme-color" content="#f39c12" />
 
-    <link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <link rel="stylesheet" media="screen" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
