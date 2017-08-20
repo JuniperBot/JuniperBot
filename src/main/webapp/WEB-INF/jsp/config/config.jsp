@@ -20,6 +20,16 @@
                             </div>
                         </div>
                     </spring:bind>
+                    <spring:bind path="privateHelp">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="input-help" class="col-sm-4 control-label">Отправлять команду <small class="label bg-yellow">хелп</small> в личку</label>
+                            <div class="col-sm-8">
+                                <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
+                                <p class="help-block">(это так же отключит группировку и отправит полный список команд)</p>
+                                <form:errors path="privateHelp" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
                     <hr />
                     <spring:bind path="musicChannelId">
                         <div class="form-group ${status.error ? 'has-error' : ''}">

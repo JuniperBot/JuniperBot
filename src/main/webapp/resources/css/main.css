@@ -136,15 +136,19 @@ body.no-sidebar h4 {
 
 .jumbotron {
     padding-top: 10px;
-    font-family: "Open sans", Helvetica, Arial !important;
     background: none;
     color: white;
+}
+
+.jumbotron .jumbo-header,
+.jumbotron .lead {
+    float: right !important;
+    font-family: "Open sans", Helvetica, Arial !important;
 }
 
 .jumbotron .jumbo-header {
     font-size: 44px;
     font-weight: 200;
-    float: right !important;
     -moz-text-shadow: 0 0 25px #000000;
     -webkit-text-shadow: 0 0 25px #000000;
     text-shadow: 0 0 25px #000000;
@@ -152,7 +156,6 @@ body.no-sidebar h4 {
 
 .jumbotron .lead {
     font-size: 16px;
-    float: right !important;
     -moz-text-shadow: 0 0 20px #000000;
     -webkit-text-shadow: 0 0 20px #000000;
     text-shadow: 0 0 20px #000000;

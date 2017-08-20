@@ -29,7 +29,6 @@ public class GuildConfig extends BaseEntity {
     @Column(name = "music_channel_id")
     private Long musicChannelId;
 
-    @Basic
     @Column(name = "music_playlist_enabled")
     private Boolean musicPlaylistEnabled;
 
@@ -39,9 +38,11 @@ public class GuildConfig extends BaseEntity {
     @Column(name = "music_duration_limit")
     private Long musicDurationLimit;
 
-    @Basic
     @Column(name = "music_duplicate_limit")
     private Long musicDuplicateLimit;
+
+    @Column(name = "is_help_private")
+    private Boolean privateHelp;
 
     public GuildConfig(long guildId) {
         this.guildId = guildId;
