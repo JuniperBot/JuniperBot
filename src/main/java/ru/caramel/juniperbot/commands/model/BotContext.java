@@ -8,8 +8,6 @@ import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 @Setter
 public class BotContext {
 
-    private String latestId;
-
     private String prefix;
 
     private GuildConfig config;
