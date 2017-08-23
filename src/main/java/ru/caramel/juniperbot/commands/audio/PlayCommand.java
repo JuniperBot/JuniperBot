@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.audio.service.PlaybackManager;
-import ru.caramel.juniperbot.commands.base.AbstractCommand;
+import ru.caramel.juniperbot.commands.base.Command;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.youtube.YouTubeClient;
@@ -17,7 +17,7 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         description = "Воспроизвести композицию в голосовом канале по названию, указанному URL или приложенному файлу",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC)
-public class PlayCommand extends AbstractCommand {
+public class PlayCommand implements Command {
 
     @Autowired
     private PlaybackManager playbackManager;

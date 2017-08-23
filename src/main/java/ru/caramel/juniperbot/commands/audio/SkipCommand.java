@@ -21,7 +21,7 @@ public class SkipCommand implements Command {
     private PlaybackManager playbackManager;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playbackManager.validateChannel(message.getTextChannel(), message.getAuthor())) {
             return false;
         }

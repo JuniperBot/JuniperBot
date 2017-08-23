@@ -3,10 +3,7 @@ package ru.caramel.juniperbot.integration.discord;
 import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -95,6 +92,9 @@ public class DiscordClient extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getAuthor().isBot()) {
+            return;
+        }
         discordBeanProviders.setMessageContext(event);
         log(event);
 
@@ -102,15 +102,22 @@ public class DiscordClient extends ListenerAdapter {
         if (event.getChannelType().isGuild() && event.getGuild() != null) {
             guildConfig = configService.getOrCreate(event.getGuild().getIdLong());
         }
-        String prefix = guildConfig != null ? guildConfig.getPrefix() : config.getPrefix();
-        if (validate(event, prefix)) {
-            String input = event.getMessage().getContent();
-            sendCommand(event, input, prefix, guildConfig);
+
+        String content = event.getMessage().getRawContent().trim();
+        String inlinePrefix = guildConfig != null ? guildConfig.getPrefix() : config.getPrefix();
+        String rawPrefix = inlinePrefix;
+        if (event.getMessage().isMentioned(jda.getSelfUser())) {
+            String customMention = String.format("<@!%s>", jda.getSelfUser().getId());
+            rawPrefix = content.startsWith(customMention) ? customMention : jda.getSelfUser().getAsMention();
+        }
+        if (StringUtils.isNotEmpty(content) && content.startsWith(rawPrefix) && content.length() <= 255) {
+            String input = content.substring(rawPrefix.length()).trim();
+            sendCommand(event, input, inlinePrefix, guildConfig);
         }
     }
 
-    private void sendCommand(MessageReceivedEvent event, String input, String prefix, GuildConfig guildConfig) {
-        String[] args = input.substring(prefix.length()).split("\\s+");
+    private void sendCommand(MessageReceivedEvent event, String content, String prefix, GuildConfig guildConfig) {
+        String[] args = content.split("\\s+");
         if (args.length == 0) {
             return;
         }
@@ -123,7 +130,8 @@ public class DiscordClient extends ListenerAdapter {
         context.setPrefix(prefix);
         context.setConfig(guildConfig);
         try {
-            command.doCommand(event, context);
+            content = content.substring(args[0].length(), content.length()).trim();
+            command.doCommand(event, context, content);
         } catch (ValidationException e) {
             try {
                 event.getChannel().sendMessage(e.getMessage()).submit();
@@ -138,14 +146,6 @@ public class DiscordClient extends ListenerAdapter {
             }
             LOGGER.error("Command {} execution error", args[0], e);
         }
-    }
-
-    private boolean validate(MessageReceivedEvent event, String prefix) {
-        String input = event.getMessage().getContent();
-        return !event.getAuthor().isBot() &&
-                StringUtils.isNotEmpty(input) &&
-                input.startsWith(prefix) &&
-                input.length() <= 255;
     }
 
     @Autowired

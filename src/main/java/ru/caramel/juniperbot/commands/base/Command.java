@@ -11,7 +11,7 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 public interface Command {
 
-    boolean doCommand(MessageReceivedEvent message, BotContext context) throws DiscordException;
+    boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
     default boolean isApplicable(MessageChannel channel) {
         if (!getClass().isAnnotationPresent(DiscordCommand.class)) {

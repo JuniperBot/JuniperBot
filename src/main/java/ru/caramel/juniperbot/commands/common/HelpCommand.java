@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.audio.service.MessageManager;
-import ru.caramel.juniperbot.commands.base.AbstractCommand;
+import ru.caramel.juniperbot.commands.base.Command;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @DiscordCommand(key = "хелп", description = "Отображает эту справку")
-public class HelpCommand extends AbstractCommand {
+public class HelpCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
 
