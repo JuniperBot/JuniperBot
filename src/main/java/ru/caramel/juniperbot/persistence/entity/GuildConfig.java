@@ -32,6 +32,9 @@ public class GuildConfig extends BaseEntity {
     @Column(name = "music_playlist_enabled")
     private Boolean musicPlaylistEnabled;
 
+    @Column(name = "music_streams_enabled")
+    private boolean musicStreamsEnabled;
+
     @Column(name = "music_queue_limit")
     private Long musicQueueLimit;
 

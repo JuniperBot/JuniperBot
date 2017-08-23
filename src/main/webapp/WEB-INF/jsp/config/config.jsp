@@ -63,17 +63,26 @@
                                         <form:errors path="musicDuplicateLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
-                                <spring:bind path="musicPlaylistEnabled">
-                                    <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
-                                        <div class="checkbox play-checkbox">
+                                <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
+                                    <spring:bind path="musicPlaylistEnabled">
+                                        <div class="checkbox play-checkbox ${status.error ? 'has-error' : ''}">
                                             <label>
                                                 <form:checkbox path="musicPlaylistEnabled" cssStyle="margin-top: 4px;" />
                                                 Разрешить плейлисты
                                             </label>
                                             <form:errors path="musicPlaylistEnabled" class="help-block" />
                                         </div>
-                                    </div>
-                                </spring:bind>
+                                    </spring:bind>
+                                    <spring:bind path="musicStreamsEnabled">
+                                        <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
+                                            <label>
+                                                <form:checkbox path="musicStreamsEnabled" cssStyle="margin-top: 4px;" />
+                                                Разрешить потоковое аудио
+                                            </label>
+                                            <form:errors path="musicStreamsEnabled" class="help-block" />
+                                        </div>
+                                    </spring:bind>
+                                </div>
                             </div>
                         </div>
                     </div>

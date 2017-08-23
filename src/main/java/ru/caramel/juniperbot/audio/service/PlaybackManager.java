@@ -50,6 +50,11 @@ public class PlaybackManager {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
+                if (track.getInfo().isStream && !context.getConfig().isMusicStreamsEnabled()) {
+                    messageManager.onError(channel, "Потоковое аудио запрещено на этом сервере :raised_hand:");
+                    return;
+                }
+
                 if (queueLimit != null) {
                     List<TrackRequest> userQueue = musicManager.getQueue(requestedBy);
                     if (userQueue.size() >= queueLimit) {
@@ -64,7 +69,7 @@ public class PlaybackManager {
                         return;
                     }
                 }
-                if (durationLimit != null && track.getDuration() >= (durationLimit * 60000)) {
+                if (!track.getInfo().isStream && durationLimit != null && track.getDuration() >= (durationLimit * 60000)) {
                     messageManager.onError(channel, String.format("Запрещено ставить треки длительностью более %d мин :raised_hand:", durationLimit));
                     return;
                 }
@@ -79,8 +84,16 @@ public class PlaybackManager {
                 }
 
                 List<AudioTrack> tracks = playlist.getTracks();
+                if (!tracks.isEmpty() && !context.getConfig().isMusicStreamsEnabled()) {
+                    tracks = tracks.stream().filter(e -> !e.getInfo().isStream).collect(Collectors.toList());
+                    if (tracks.isEmpty()) {
+                        messageManager.onError(channel,"Потоковое аудио запрещено на этом сервере :raised_hand:");
+                        return;
+                    }
+                }
+
                 if (!tracks.isEmpty() && durationLimit != null) {
-                    tracks = tracks.stream().filter(e -> e.getDuration() < (durationLimit * 60000)).collect(Collectors.toList());
+                    tracks = tracks.stream().filter(e -> e.getInfo().isStream || e.getDuration() < (durationLimit * 60000)).collect(Collectors.toList());
                     if (tracks.isEmpty()) {
                         messageManager.onError(channel, String.format("Ни один трек плейлиста не подходит под ограничение %d мин :raised_hand:", durationLimit));
                         return;
