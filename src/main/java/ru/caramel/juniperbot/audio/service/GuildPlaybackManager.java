@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class GuildPlaybackManager extends AudioEventAdapter implements AudioSendHandler {
+public class GuildPlaybackManager extends AudioEventAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildPlaybackManager.class);
 
@@ -53,8 +53,6 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
 
     private AudioPlayer player;
 
-    private AudioFrame lastFrame;
-
     private TrackRequest current;
 
     private final BlockingQueue<TrackRequest> queue = new LinkedBlockingQueue<>();
@@ -63,7 +61,7 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
     public void init() {
         player = playerManager.createPlayer();
         player.addListener(this);
-        audioManager.setSendingHandler(this);
+        audioManager.setSendingHandler(new GuildAudioSendHandler(player));
     }
 
     private VoiceChannel getDesiredChannel() {
@@ -228,29 +226,6 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         synchronized (queue) {
             return getQueue().stream().filter(e -> user.equals(e.getUser())).collect(Collectors.toList());
         }
-    }
-
-    @Override
-    public boolean canProvide() {
-        if (lastFrame == null) {
-            lastFrame = player.provide();
-        }
-        return lastFrame != null;
-    }
-
-    @Override
-    public byte[] provide20MsAudio() {
-        if (lastFrame == null) {
-            lastFrame = player.provide();
-        }
-        byte[] data = lastFrame != null ? lastFrame.data : null;
-        lastFrame = null;
-        return data;
-    }
-
-    @Override
-    public boolean isOpus() {
-        return true;
     }
 
     private boolean isActive() {

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
+import ru.caramel.juniperbot.utils.CommonUtils;
 
 import java.awt.*;
 import java.net.URI;
@@ -26,8 +27,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
-
-import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 @Service
 public class MessageManager {
@@ -169,6 +168,10 @@ public class MessageManager {
         sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
+    public EmbedBuilder getBaseEmbed() {
+        return new EmbedBuilder().setColor(discordConfig.getAccentColor());
+    }
+
     private void runUpdater(TrackRequest request) {
         if (discordConfig.getPlayRefreshInterval() != null) {
             ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> {
@@ -186,10 +189,7 @@ public class MessageManager {
     }
 
     private EmbedBuilder getQueueMessage() {
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle("Очередь воспроизведения", null);
-        builder.setColor(discordConfig.getAccentColor());
-        return builder;
+        return getBaseEmbed().setTitle("Очередь воспроизведения", null);
     }
 
     private EmbedBuilder getPlayMessage(TrackRequest request) {
@@ -215,8 +215,13 @@ public class MessageManager {
     }
 
     private String getTextProgress(AudioTrack track) {
-        return String.format("%s/%s", formatDuration(track.getPosition(), "HH:mm:ss"),
-                formatDuration(track.getDuration(), "HH:mm:ss"));
+        StringBuilder builder = new StringBuilder(CommonUtils.formatDuration(track.getPosition()));
+        if (!track.getInfo().isStream) {
+            builder.append("/").append(CommonUtils.formatDuration(track.getDuration()));
+        } else {
+            builder.append(" (поток)");
+        }
+        return builder.toString();
     }
 
     private String getThumbnail(AudioTrackInfo info) {
