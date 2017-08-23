@@ -59,7 +59,9 @@ public class YouTubeClient {
             List<SearchResult> results = search(queryTerm, maxResults);
             YouTube.Videos.List list = youTube.videos().list("id,snippet,contentDetails");
             list.setKey(config.getApiKey());
-            list.setId(results.stream().map(e -> e.getId().getVideoId()).collect(Collectors.joining(",")));
+            list.setId(results.stream()
+                    .filter(e -> e.getId() != null && e.getId().getVideoId() != null)
+                    .map(e -> e.getId().getVideoId()).collect(Collectors.joining(",")));
             return list.execute().getItems();
         } catch (IOException e) {
             LOGGER.error("Could not perform YouTube search", e);
