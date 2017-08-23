@@ -138,6 +138,10 @@ public class GuildPlaybackManager extends AudioEventAdapter implements AudioSend
         return active;
     }
 
+    public void setVolume(int volume) {
+        player.setVolume(volume);
+    }
+
     public boolean shuffle() {
         synchronized (queue) {
             if (queue.isEmpty()) {

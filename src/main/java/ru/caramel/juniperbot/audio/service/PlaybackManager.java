@@ -131,6 +131,10 @@ public class PlaybackManager {
         getGuildAudioPlayer(guild).nextTrack();
     }
 
+    public void setVolume(Guild guild, int volume) {
+        getGuildAudioPlayer(guild).setVolume(volume);
+    }
+
     public boolean isInChannel(Guild guild, User user) {
         return getGuildAudioPlayer(guild).isInChannel(user);
     }
