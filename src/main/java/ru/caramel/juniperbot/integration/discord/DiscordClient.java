@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.Request;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.commands.base.Command;
+import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.ValidationException;
@@ -34,6 +33,7 @@ import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.ConfigService;
+import ru.caramel.juniperbot.service.MessageService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -57,6 +57,9 @@ public class DiscordClient extends ListenerAdapter {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Getter
     private JDA jda;
@@ -129,21 +132,14 @@ public class DiscordClient extends ListenerAdapter {
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
         context.setPrefix(prefix);
         context.setConfig(guildConfig);
+        context.setGuild(event.getGuild());
         try {
             content = content.substring(args[0].length(), content.length()).trim();
             command.doCommand(event, context, content);
         } catch (ValidationException e) {
-            try {
-                event.getChannel().sendMessage(e.getMessage()).submit();
-            } catch (PermissionException e2) {
-                LOGGER.warn("Permission exception", e);
-            }
+            messageService.onError(event.getChannel(), e.getMessage());
         } catch (DiscordException e) {
-            try {
-                event.getChannel().sendMessage("Ой, произошла какая-то ошибка :C Покорми меня?").submit();
-            } catch (PermissionException e2) {
-                LOGGER.warn("Permission exception", e);
-            }
+            messageService.onError(event.getChannel(), "Ой, произошла какая-то ошибка :C Покорми меня?");
             LOGGER.error("Command {} execution error", args[0], e);
         }
     }

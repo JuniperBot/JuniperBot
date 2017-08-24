@@ -7,7 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.commands.base.Command;
+import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;

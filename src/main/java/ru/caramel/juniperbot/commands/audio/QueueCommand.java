@@ -3,11 +3,7 @@ package ru.caramel.juniperbot.commands.audio;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
-import ru.caramel.juniperbot.audio.service.MessageManager;
-import ru.caramel.juniperbot.audio.service.PlaybackManager;
-import ru.caramel.juniperbot.commands.base.Command;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
@@ -21,16 +17,10 @@ import java.util.List;
         description = "Показать очередь воспроизведения",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC)
-public class QueueCommand implements Command {
-
-    @Autowired
-    private PlaybackManager playbackManager;
-
-    @Autowired
-    private MessageManager messageManager;
+public class QueueCommand extends AudioCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int pageNum = 1;
         if (StringUtils.isNotEmpty(content)) {
             try {
@@ -40,10 +30,10 @@ public class QueueCommand implements Command {
             }
         }
         if (pageNum < 1) {
-            messageManager.onError(message.getTextChannel(), "Укажите корректный номер страницы");
+            messageManager.onQueueError(message.getTextChannel(), "Укажите корректный номер страницы");
             return false;
         }
-        return print(message.getTextChannel(), context, playbackManager.getQueue(message.getGuild()), pageNum);
+        return print(message.getTextChannel(), context, handlerService.getQueue(message.getGuild()), pageNum);
     }
 
     private boolean print(TextChannel channel, BotContext context, List<TrackRequest> requests, int pageNum) {
@@ -54,5 +44,10 @@ public class QueueCommand implements Command {
 
         messageManager.onQueue(channel, context, requests, pageNum);
         return true;
+    }
+
+    @Override
+    protected boolean isChannelRestricted() {
+        return false;
     }
 }

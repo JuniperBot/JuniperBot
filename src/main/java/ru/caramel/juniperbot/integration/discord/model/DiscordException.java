@@ -2,6 +2,8 @@ package ru.caramel.juniperbot.integration.discord.model;
 
 public class DiscordException extends Exception {
 
+    private static final long serialVersionUID = 4621225391411561750L;
+
     public DiscordException() {
     }
 

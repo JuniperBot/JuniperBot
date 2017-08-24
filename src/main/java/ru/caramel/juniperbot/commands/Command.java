@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.commands.base;
+package ru.caramel.juniperbot.commands;
 
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;

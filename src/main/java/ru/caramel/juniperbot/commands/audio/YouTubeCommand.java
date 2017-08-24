@@ -4,14 +4,13 @@ import com.google.api.services.youtube.model.Video;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.audio.service.MessageManager;
-import ru.caramel.juniperbot.commands.base.Command;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.CommandSource;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.integration.youtube.YouTubeClient;
+import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 import java.time.Duration;
@@ -23,23 +22,23 @@ import java.util.List;
         description = "Произвести поиск по указанному запросу по YouTube для выбора воспроизведения",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC)
-public class YouTubeCommand implements Command {
+public class YouTubeCommand extends AudioCommand {
 
     @Autowired
     private YouTubeClient youTubeClient;
 
     @Autowired
-    private MessageManager messageManager;
+    private MessageService messageService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         List<Video> results = youTubeClient.searchDetailed(content, 10L);
         if (results.isEmpty()) {
             messageManager.onMessage(message.getChannel(), "Ничего не найдено по указанному запросу :flag_white:");
             return false;
         }
 
-        EmbedBuilder builder = messageManager.getBaseEmbed();
+        EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle("Результаты поиска:");
 
         List<String> urls = new ArrayList<>();
@@ -58,5 +57,10 @@ public class YouTubeCommand implements Command {
         context.setSearchResults(urls);
         message.getChannel().sendMessage(builder.build()).queue();
         return true;
+    }
+
+    @Override
+    protected boolean isChannelRestricted() {
+        return false;
     }
 }

@@ -7,13 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.audio.service.MessageManager;
-import ru.caramel.juniperbot.commands.base.Command;
+import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.service.MessageService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class HelpCommand implements Command {
     private DiscordClient discordClient;
 
     @Autowired
-    private MessageManager messageManager;
+    private MessageService messageService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
@@ -51,7 +51,7 @@ public class HelpCommand implements Command {
             rootGroup = CommandGroup.getForTitle(query);
         }
         if (rootGroup == null || !groupedCommands.containsKey(rootGroup)) {
-            messageManager.onError(message.getChannel(), "Указанной группы не существует");
+            messageService.onError(message.getChannel(), "Указанной группы не существует");
             return false;
         }
 

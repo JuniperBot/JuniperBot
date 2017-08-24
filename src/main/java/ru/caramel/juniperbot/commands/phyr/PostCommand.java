@@ -2,13 +2,14 @@ package ru.caramel.juniperbot.commands.phyr;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import org.apache.commons.lang3.StringUtils;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.exceptions.InstagramException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
-import ru.caramel.juniperbot.commands.base.ParameterizedCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.instagram.InstagramClient;
 import ru.caramel.juniperbot.commands.model.BotContext;
@@ -19,7 +20,7 @@ import ru.caramel.juniperbot.service.PostService;
 import java.util.List;
 
 @DiscordCommand(key = "фыр", description = "Фыркнуть посты из блога Джупи (можно указать количество постов, по-умолчанию одно)")
-public class PostCommand extends ParameterizedCommand {
+public class PostCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);
 
@@ -30,8 +31,8 @@ public class PostCommand extends ParameterizedCommand {
     protected PostService postService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String[] args) throws DiscordException {
-        int count = parseCount(args);
+    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        int count = parseCount(content);
         List<MediaFeedData> medias = null;
         try {
             medias = instagramClient.getRecent();
@@ -61,11 +62,11 @@ public class PostCommand extends ParameterizedCommand {
         return true;
     }
 
-    private static int parseCount(String[] args) throws ValidationException {
+    private static int parseCount(String content) throws ValidationException {
         int count = 1;
-        if (args.length > 0) {
+        if (StringUtils.isNotEmpty(content)) {
             try {
-                count = Integer.parseInt(args[0]);
+                count = Integer.parseInt(content);
             } catch (NumberFormatException e) {
                 throw new ValidationException("Фыр на тебя. Число мне, число!");
             }
@@ -79,5 +80,4 @@ public class PostCommand extends ParameterizedCommand {
         }
         return count;
     }
-
 }

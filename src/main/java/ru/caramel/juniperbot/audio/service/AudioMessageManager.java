@@ -1,16 +1,13 @@
 package ru.caramel.juniperbot.audio.service;
 
 import com.google.common.collect.Lists;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.RestAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
+import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 import java.awt.*;
@@ -26,12 +24,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import java.util.function.Function;
 
 @Service
-public class MessageManager {
+public class AudioMessageManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AudioMessageManager.class);
 
     @Autowired
     private DiscordConfig discordConfig;
@@ -39,9 +36,12 @@ public class MessageManager {
     @Autowired
     private TaskScheduler scheduler;
 
+    @Autowired
+    private MessageService messageService;
+
     public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
-            sendMessageSilent(request.getChannel()::sendMessage, getBasicMessage(request).build());
+            messageService.sendMessageSilent(request.getChannel()::sendMessage, getBasicMessage(request).build());
         }
     }
 
@@ -97,44 +97,33 @@ public class MessageManager {
     public void onQueueEnd(TrackRequest request) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
-        sendMessageSilent(request.getChannel()::sendMessage, builder.build());
+        messageService.sendMessageSilent(request.getChannel()::sendMessage, builder.build());
     }
 
     public void onMessage(MessageChannel sourceChannel, String message) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(message);
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onNoMatches(MessageChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question:", query));
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onError(MessageChannel sourceChannel, FriendlyException e) {
-        onError(sourceChannel, String.format("Произошла ошибка :interrobang:: %s", e.getMessage()));
-    }
-
-    public void onError(MessageChannel sourceChannel, String error) {
+    public void onQueueError(MessageChannel sourceChannel, String error) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription(error);
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onEmptyQueue(MessageChannel sourceChannel) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription("Очередь воспроизведения пуста :flag_white: ");
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
-    }
-
-    public void onDisallowed(MessageChannel sourceChannel) {
-        EmbedBuilder builder = getQueueMessage();
-        builder.setColor(Color.RED);
-        builder.setDescription("Сперва вы должны зайти в голосовой канал :raised_hand: ");
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
@@ -144,7 +133,7 @@ public class MessageManager {
         final int offset = (pageNum - 1) * pageSize + 1;
 
         if (pageNum > totalPages) {
-            onError(sourceChannel, String.format("Всего страниц: %d", parts.size()));
+            onQueueError(sourceChannel, String.format("Всего страниц: %d", parts.size()));
             return;
         }
         List<TrackRequest> pageRequests = parts.get(pageNum - 1);
@@ -165,11 +154,7 @@ public class MessageManager {
                     pageNum, totalPages, requests.size(), context.getPrefix()), null);
         }
 
-        sendMessageSilent(sourceChannel::sendMessage, builder.build());
-    }
-
-    public EmbedBuilder getBaseEmbed() {
-        return new EmbedBuilder().setColor(discordConfig.getAccentColor());
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     private void runUpdater(TrackRequest request) {
@@ -189,7 +174,7 @@ public class MessageManager {
     }
 
     private EmbedBuilder getQueueMessage() {
-        return getBaseEmbed().setTitle("Очередь воспроизведения", null);
+        return messageService.getBaseEmbed().setTitle("Очередь воспроизведения", null);
     }
 
     private EmbedBuilder getPlayMessage(TrackRequest request) {
@@ -204,11 +189,10 @@ public class MessageManager {
         AudioTrackInfo info = request.getTrack().getInfo();
         String thumbUrl = getThumbnail(info);
 
-        EmbedBuilder builder = new EmbedBuilder();
+        EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(info.title, info.uri);
         builder.setAuthor(info.author, info.uri, thumbUrl);
         builder.setThumbnail(thumbUrl);
-        builder.setColor(discordConfig.getAccentColor());
         builder.setDescription("Добавлено в очередь воспроизведения :musical_note:");
 
         return builder;
@@ -234,13 +218,5 @@ public class MessageManager {
             // fall down
         }
         return null;
-    }
-
-    private void sendMessageSilent(Function<MessageEmbed, RestAction<Message>> action, MessageEmbed embed) {
-        try {
-            action.apply(embed).queue();
-        } catch (PermissionException e) {
-            LOGGER.warn("No permission to message", e);
-        }
     }
 }

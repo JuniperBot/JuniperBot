@@ -6,8 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,9 +27,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class GuildPlaybackManager extends AudioEventAdapter {
+public class PlaybackHandler extends AudioEventAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GuildPlaybackManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlaybackHandler.class);
 
     @Autowired
     private Guild guild;
@@ -46,7 +44,7 @@ public class GuildPlaybackManager extends AudioEventAdapter {
     private AudioPlayerManager playerManager;
 
     @Autowired
-    private MessageManager messageManager;
+    private AudioMessageManager messageManager;
 
     @Autowired
     private ConfigService configService;
