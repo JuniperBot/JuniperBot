@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,6 +52,7 @@ public class PlaybackHandler extends AudioEventAdapter {
 
     private AudioPlayer player;
 
+    @Getter
     private TrackRequest current;
 
     private final BlockingQueue<TrackRequest> queue = new LinkedBlockingQueue<>();
@@ -66,6 +68,11 @@ public class PlaybackHandler extends AudioEventAdapter {
         GuildConfig config = configService.getOrCreate(guild.getIdLong());
         return config.getMusicChannelId() != null
                 ? discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) : null;
+    }
+
+    public VoiceChannel getChannel() {
+        return audioManager.isConnected() && audioManager.getConnectedChannel() != null
+                ? audioManager.getConnectedChannel() : getDesiredChannel();
     }
 
     public void play(List<TrackRequest> requests) {
@@ -101,8 +108,7 @@ public class PlaybackHandler extends AudioEventAdapter {
     }
 
     public boolean isInChannel(User user) {
-        VoiceChannel channel = audioManager.isConnected() && audioManager.getConnectedChannel() != null
-                ? audioManager.getConnectedChannel() : getDesiredChannel();
+        VoiceChannel channel = getChannel();
         return channel != null && channel.getMembers().stream().map(Member::getUser).anyMatch(user::equals);
     }
 
@@ -226,7 +232,7 @@ public class PlaybackHandler extends AudioEventAdapter {
         }
     }
 
-    private boolean isActive() {
-        return player.getPlayingTrack() != null;
+    public boolean isActive() {
+        return audioManager.isConnected() && audioManager.getConnectedChannel() != null && player.getPlayingTrack() != null;
     }
 }

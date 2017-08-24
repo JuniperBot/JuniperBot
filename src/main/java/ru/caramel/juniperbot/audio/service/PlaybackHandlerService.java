@@ -4,25 +4,33 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @Service
 public class PlaybackHandlerService {
 
+    private final static long TIMEOUT = 180000; // 3 minutes
+
     @Autowired
     private ApplicationContext applicationContext;
 
-    private Map<Long, PlaybackHandler> handlerMap = new ConcurrentHashMap<>();
+    @Autowired
+    private AudioMessageManager messageManager;
+
+    private final Map<Long, PlaybackHandler> handlerMap = new HashMap<>();
+
+    private final Map<Long, Long> activeTime = new HashMap<>();
 
     public PlaybackHandler getHandler(Guild guild) {
-        long guildId = Long.parseLong(guild.getId());
-        return handlerMap.computeIfAbsent(guildId,
-                e -> applicationContext.getBean(PlaybackHandler.class));
+        synchronized (handlerMap) {
+            long guildId = Long.parseLong(guild.getId());
+            return handlerMap.computeIfAbsent(guildId,
+                    e -> applicationContext.getBean(PlaybackHandler.class));
+        }
     }
 
     public void skipTrack(Guild guild) {
@@ -55,5 +63,31 @@ public class PlaybackHandlerService {
 
     public List<TrackRequest> getQueue(Guild guild) {
         return getHandler(guild).getQueue();
+    }
+
+    @Scheduled(fixedDelay = 15000)
+    public void monitor() {
+        synchronized (handlerMap) {
+            long currentTimeMillis = System.currentTimeMillis();
+
+            Set<Long> inactiveIds = new HashSet<>();
+            handlerMap.forEach((k, v) -> {
+                long lastMillis = activeTime.computeIfAbsent(k, e -> currentTimeMillis);
+                TrackRequest current = v.getCurrent();
+                if (v.getChannel().getMembers().stream().filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count() > 0) {
+                    activeTime.put(k, currentTimeMillis);
+                    return;
+                }
+                if (current != null && currentTimeMillis - lastMillis > TIMEOUT) {
+                    v.stop();
+                    messageManager.onTimeout(current.getChannel());
+                    inactiveIds.add(k);
+                }
+            });
+            inactiveIds.forEach(e -> {
+                handlerMap.remove(e);
+                activeTime.remove(e);
+            });
+        }
     }
 }

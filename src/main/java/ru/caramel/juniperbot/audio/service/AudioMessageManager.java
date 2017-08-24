@@ -126,6 +126,12 @@ public class AudioMessageManager {
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
+    public void onTimeout(MessageChannel sourceChannel) {
+        EmbedBuilder builder = getQueueMessage();
+        builder.setDescription("Воспроизведение остановлено, поскольку не осталось слушателей");
+        messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
     public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
