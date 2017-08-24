@@ -255,3 +255,17 @@ body.no-sidebar h4 {
         margin-top: 4px !important;
     }
 }
+
+div.discord-header-icon-wrapper {
+    display: inline-block;
+    width: 12px !important;
+}
+
+div.discord-header-icon {
+    position: absolute;
+    top: 16px;
+    left: 12px;
+    height: 18px;
+    width: 18px;
+    background: url(../img/discord-logo-small.svg) no-repeat top center;
+}
