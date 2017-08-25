@@ -242,6 +242,13 @@ body.no-sidebar h4 {
         margin-top: 5px !important;
         padding: 15px 0;
     }
+
+}
+
+@media (max-width: 992px) {
+    #vk-confirmation-code {
+        margin-bottom: 15px;
+    }
 }
 
 @media (min-width: 768px) {

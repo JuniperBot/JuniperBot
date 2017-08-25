@@ -11,6 +11,7 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
+import ru.caramel.juniperbot.model.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.service.PostService;
@@ -68,7 +69,7 @@ public class PostServiceImpl implements PostService, InstagramListener {
                         .embeds(embeds)
                         .build();
 
-                List<WebHook> webHooks = webHookRepository.findActive();
+                List<WebHook> webHooks = webHookRepository.findActive(WebHookType.INSTAGRAM);
                 webHooks.forEach(e -> client.executeWebHook(e, message, e2 -> {
                     e2.setEnabled(false);
                     webHookRepository.save(e2);

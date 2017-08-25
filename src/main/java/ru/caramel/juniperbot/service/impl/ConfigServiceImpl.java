@@ -9,6 +9,7 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.ConfigDto;
 import ru.caramel.juniperbot.model.WebHookDto;
+import ru.caramel.juniperbot.model.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
@@ -64,7 +65,7 @@ public class ConfigServiceImpl implements ConfigService {
 
         if (config.getWebHook() == null) {
             WebHook webHook = new WebHook();
-            webHook.setConfig(config);
+            webHook.setType(WebHookType.INSTAGRAM);
             config.setWebHook(webHook);
             shouldSave = true;
         }

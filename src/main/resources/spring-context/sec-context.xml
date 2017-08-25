@@ -24,6 +24,7 @@
                    xmlns="http://www.springframework.org/schema/security">
         <security:intercept-url pattern="/resources/**" access="permitAll" />
         <security:intercept-url pattern="/" access="permitAll" />
+        <security:intercept-url pattern="/vk/callback/**" access="permitAll" />
         <security:intercept-url pattern="/favicon.ico" access="permitAll" />
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>

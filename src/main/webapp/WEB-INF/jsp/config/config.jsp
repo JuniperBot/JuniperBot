@@ -3,6 +3,68 @@
 
 <spring:url value="/config/${serverId}" var="actionUrl" />
 
+<div id="vk-connect-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vk-connect-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="vk-connect-modal-label">Подключение сообщества ВКонтакте</h4>
+            </div>
+            <div class="modal-body">
+                <div id="vk-first-step">
+                    <p>Для подключения своего сообщества к боту необходимо сделать следующее:</p>
+                    <ol>
+                        <li>Зайти в управление сообществом на его странице ВКонтакте;</li>
+                        <li>Открыть раздел <b>Работа с API</b>;</li>
+                        <li>Перейти во вкладку <b>Callback API</b>;</li>
+                        <li>Добавить новый сервер с помощью кнопки <b>Добавить сервер</b> или воспользоваться имеющимся, если он не используется;</li>
+                        <li>Во вкладке <b>Типы событий</b> найти раздел <b>Записи на стене</b> и поставить галочку напротив <b>Добавление</b>;</li>
+                        <li>Во вкладке <b>Настройки сервера</b> скопировать выделенный жирным код подтверждения сервера (строка, которую должен вернуть сервер) в поле ниже, ввести любое название и нажать оранжевую кнопочку <b>Подключить</b>.</li>
+                    </ol>
+                    <div class="callout">
+                        <p>Не закрывайте страницу ВКонтакте откуда вы скопировали этот код! Она вам еще понадобится.</p>
+                    </div>
+                </div>
+                <div id="vk-second-step">
+                    <p>Отлично! Мы готовы принимать запросы от ВКонтакте! Но нужно сделать кое-что еще:</p>
+                    <ol>
+                        <li>Вернитесь на страницу, откуда вы брали код подтверждения;</li>
+                        <li>Введите там в поле <b>Адрес</b>, указанный ниже и нажмите там же кнопку <b>Подтвердить</b>;</li>
+                        <li>Готово! Через некоторое время мы установим соединение с ВКонтакте и на текущей странице конфигурации вы сможете выбрать канал, в который будут публиковаться ваши фыр-фырные посты.</li>
+                    </ol>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="vk-address-input" type="text" class="form-control" readonly>
+                            <span class="input-group-btn">
+                                <button id="vk-address-copy" type="button" class="btn" title="Скопировать в буфер обмена"
+                                        data-toggle="tooltip" data-placement="bottom"><i class="fa fa-copy"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <input id="vk-connection-name" class="form-control" maxlength="255" placeholder="Название подключения" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input id="vk-confirmation-code" class="form-control" maxlength="50" placeholder="Код подтверждения" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button id="vk-create-button" type="button" class="btn btn-warning" style="width: 110px;">
+                        <span id="vk-connect-text">Подключить</span>
+                        <span id="vk-connect-spinner" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style="font-size:18px;"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
     <div class="row">
         <div class="col-md-6">
@@ -96,6 +158,7 @@
                 </div>
 
                 <div class="box-body">
+                    <form:hidden path="webHook.available" />
                     <spring:bind path="privateHelp">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <label for="input-help" class="col-sm-4 control-label">Отправлять команду <small class="label bg-yellow">хелп</small> в личку</label>
@@ -126,6 +189,10 @@
                         </div>
                     </spring:bind>
 
+                    <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
+                        <i class="fa fa-vk"></i> Подключить сообщество ВКонтакте
+                    </a>
+
                     <c:if test="${not config.webHook.available}">
                         <div class="callout callout-warning">
                             <p>Изменение настроек публикации недоступно, поскольку бот не добавлен на сервер и/или нет прав на управление WebHook'ами</p>
@@ -141,3 +208,11 @@
         </div>
     </div>
 </form:form>
+
+<script type="text/javascript" src="<c:url value="/resources/js/vk-connector.js"/>"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var connector = new VkConnector();
+        connector.init();
+    });
+</script>

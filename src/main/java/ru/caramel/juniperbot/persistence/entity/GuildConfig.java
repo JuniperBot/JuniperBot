@@ -8,6 +8,7 @@ import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -50,6 +51,9 @@ public class GuildConfig extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "web_hook_id")
     private WebHook webHook;
+
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VkConnection> vkConnections;
 
     public GuildConfig(long guildId) {
         this.guildId = guildId;
