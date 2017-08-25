@@ -55,7 +55,7 @@ public class YouTubeCommand extends AudioCommand {
         builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, String.format("Для воспроизведения введите команду `%sплей N`, где N — номер трека из списка выше",
                 context.getPrefix()), false);
         context.setSearchResults(urls);
-        message.getChannel().sendMessage(builder.build()).queue();
+        context.setSearchMessage(message.getChannel().sendMessage(builder.build()).complete());
         return true;
     }
 

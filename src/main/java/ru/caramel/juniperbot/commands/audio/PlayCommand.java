@@ -49,6 +49,8 @@ public class PlayCommand extends AudioCommand {
                 return false;
             }
             query = context.getSearchResults().get(index);
+            context.getSearchMessage().delete().queue();
+            context.setSearchMessage(null);
         }
         if (!ResourceUtils.isUrl(query)) {
             String result = youTubeClient.searchForUrl(query);
