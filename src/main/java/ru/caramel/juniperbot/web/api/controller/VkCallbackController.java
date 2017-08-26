@@ -93,4 +93,13 @@ public class VkCallbackController extends AbstractController {
         GuildConfig config = configService.getOrCreate(serverId);
         return mapperService.getVkConnectionDto(vkService.create(config, name, code));
     }
+
+    @RequestMapping(value = "/vk/delete/{serverId}", method = RequestMethod.POST)
+    public void create(
+            @PathVariable("serverId") long serverId,
+            @RequestParam("id") long id) {
+        validateGuildId(serverId);
+        GuildConfig config = configService.getOrCreate(serverId);
+        vkService.delete(config, id);
+    }
 }

@@ -126,7 +126,7 @@ body.no-sidebar h4 {
     text-shadow: 0 0 20px #000000;
 }
 
-.form-group input[type=checkbox] {
+.form-group.checkbox-group input[type=checkbox] {
     margin-top: 10px;
 }
 

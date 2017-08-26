@@ -1,23 +1,22 @@
 package ru.caramel.juniperbot.service.impl;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.model.ConfigDto;
-import ru.caramel.juniperbot.model.WebHookDto;
-import ru.caramel.juniperbot.model.WebHookType;
+import ru.caramel.juniperbot.model.*;
+import ru.caramel.juniperbot.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.service.ConfigService;
-import ru.caramel.juniperbot.service.PermissionsService;
+import ru.caramel.juniperbot.service.WebHookService;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ConfigServiceImpl implements ConfigService {
@@ -35,7 +34,7 @@ public class ConfigServiceImpl implements ConfigService {
     private DiscordClient discordClient;
 
     @Autowired
-    private PermissionsService permissionsService;
+    private WebHookService webHookService;
 
     @Override
     @Transactional
@@ -84,20 +83,14 @@ public class ConfigServiceImpl implements ConfigService {
     private ConfigDto getConfigDto(GuildConfig config) {
         ConfigDto dto = mapper.getConfigDto(config);
         WebHook webHook = config.getWebHook();
-        WebHookDto hookDto = dto.getWebHook();
-
-        if (discordClient.isConnected()) {
-            JDA jda = discordClient.getJda();
-            Guild guild = jda.getGuildById(config.getGuildId());
-            if (guild != null && permissionsService.hasWebHooksAccess(guild)) {
-                hookDto.setAvailable(true);
-                Webhook webhook = getWebHook(guild, webHook);
-                if (webhook != null) {
-                    hookDto.setChannelId(webhook.getChannel().getIdLong());
-                } else {
-                    hookDto.setEnabled(false);
-                }
-            }
+        WebHookDto hookDto = webHookService.getDtoForView(config.getGuildId(), webHook);
+        dto.setWebHook(hookDto);
+        for (VkConnection connection : config.getVkConnections()) {
+            WebHookDto vkHookDto = webHookService.getDtoForView(config.getGuildId(), connection.getWebHook());
+            dto.getVkConnections().stream()
+                    .filter(e -> e.getId().equals(connection.getId()))
+                    .findFirst()
+                    .ifPresent(e -> e.setWebHook(vkHookDto));
         }
         return dto;
     }
@@ -106,42 +99,26 @@ public class ConfigServiceImpl implements ConfigService {
         mapper.updateConfig(dto, config);
         WebHook webHook = config.getWebHook();
         WebHookDto hookDto = dto.getWebHook();
-        if (hookDto == null) {
-            return;
+
+        if (hookDto != null) {
+            webHookService.updateWebHook(config.getGuildId(), hookDto.getChannelId(), webHook, "JuniperBot");
         }
 
-        if (discordClient.isConnected()) {
-            JDA jda = discordClient.getJda();
-            Guild guild = jda.getGuildById(config.getGuildId());
-            if (guild != null && hookDto.getChannelId() != null && permissionsService.hasWebHooksAccess(guild)) {
-                Webhook webhook = getWebHook(guild, webHook);
-                if (webhook == null) {
-                    TextChannel channel = guild.getTextChannelById(hookDto.getChannelId());
-                    webhook = guild.getController().createWebhook(channel, "JuniperBot").complete();
+        if (dto.getVkConnections() != null) {
+            Map<VkConnection, Long> updateMap = new HashMap<>();
+            dto.getVkConnections().forEach(e -> {
+                VkConnection connection = config.getVkConnections().stream()
+                        .filter(e1 -> e.getId().equals(e1.getId()))
+                        .findFirst().orElse(null);
+                if (connection != null
+                        && e.getWebHook() != null
+                        && e.getWebHook().getChannelId() != null
+                        && VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
+                    mapper.updateWebHook(e.getWebHook(), connection.getWebHook());
+                    updateMap.put(connection, e.getWebHook().getChannelId());
                 }
-                if (!hookDto.getChannelId().equals(webhook.getChannel().getIdLong())) {
-                    TextChannel channel = guild.getTextChannelById(hookDto.getChannelId());
-                    if (channel == null) {
-                        throw new IllegalStateException("Tried to set non-existent channel");
-                    }
-                    // TODO Update to new JDA because of bug https://github.com/DV8FromTheWorld/JDA/pull/438
-                    // webhook.getManager().setChannel(channel).queue();
-                    webhook.delete().complete();
-                    webhook = guild.getController().createWebhook(channel, "JuniperBot").complete();
-                }
-                webHook.setHookId(webhook.getIdLong());
-                webHook.setToken(webhook.getToken());
-            }
+            });
+            updateMap.forEach((k, v) -> webHookService.updateWebHook(config.getGuildId(), v, k.getWebHook(), k.getName()));
         }
-    }
-
-    private Webhook getWebHook(Guild guild, WebHook webHook) {
-        if (webHook.getHookId() != null && webHook.getToken() != null) {
-            List<Webhook> webHooks = guild.getWebhooks().complete();
-            return webHooks.stream()
-                    .filter(e -> webHook.getHookId().equals(e.getIdLong())
-                            && webHook.getToken().equals(e.getToken())).findFirst().orElse(null);
-        }
-        return null;
     }
 }

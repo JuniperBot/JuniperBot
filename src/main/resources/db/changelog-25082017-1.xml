@@ -15,7 +15,7 @@
                 <constraints nullable="false" foreignKeyName="fk_vk_connection_guild_config" references="guild_config(id)" />
             </column>
             <column name="web_hook_id" type="BIGINT">
-                <constraints nullable="true" foreignKeyName="fk_vk_connection_web_hook" references="web_hook(id)" />
+                <constraints nullable="false" foreignKeyName="fk_vk_connection_web_hook" references="web_hook(id)" />
             </column>
             <column name="group_id" type="INTEGER"/>
             <column name="status" type="VARCHAR(15)">

@@ -9,6 +9,8 @@ public interface VkService {
 
     VkConnection create(GuildConfig config, String name, String code);
 
+    void delete(GuildConfig config, long id);
+
     VkConnection getForToken(String token);
 
     String confirm(VkConnection connection, CallbackMessage message);

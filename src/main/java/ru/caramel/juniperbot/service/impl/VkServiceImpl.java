@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.model.VkConnectionStatus;
+import ru.caramel.juniperbot.model.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.entity.VkConnection;
+import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.persistence.repository.VkConnectionRepository;
 import ru.caramel.juniperbot.service.VkService;
 
@@ -28,7 +30,22 @@ public class VkServiceImpl implements VkService {
         connection.setToken(UUID.randomUUID().toString());
         connection.setName(name);
         connection.setConfirmCode(code);
+
+        WebHook hook = new WebHook();
+        hook.setType(WebHookType.VK);
+        hook.setEnabled(true);
+        connection.setWebHook(hook);
         return repository.save(connection);
+    }
+
+    @Override
+    @Transactional
+    public void delete(GuildConfig config, long id) {
+        VkConnection connection = repository.getOne(id);
+        if (!connection.getConfig().equals(config)) {
+            throw new IllegalStateException("Trying to delete not own connection!");
+        }
+        repository.delete(connection);
     }
 
     @Override

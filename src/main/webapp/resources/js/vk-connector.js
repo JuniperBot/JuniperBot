@@ -8,6 +8,7 @@ function VkConnector() {
     var $codeGroup = $codeInput.closest('.form-group');
     var $nameInput = $("#vk-connection-name");
     var $nameGroup = $nameInput.closest('.form-group');
+    var $connectionList = $("#vk-connection-list");
 
 
     var $connectText = $('#vk-connect-text');
@@ -22,7 +23,6 @@ function VkConnector() {
     self.onConnect = function () {
         var code = $codeInput.val().trim();
         var name = $nameInput.val().trim();
-
 
         var valid = true;
         if (!name) {
@@ -41,8 +41,34 @@ function VkConnector() {
         }
         if (valid) {
             block(true);
-            send(name, code);
+            create(name, code);
         }
+    };
+
+    self.onRemove = function(id, name) {
+        BootstrapDialog.show({
+            title: 'Удаление соединения',
+            type: BootstrapDialog.TYPE_WARNING,
+            message: 'Вы уверены что хотите удалить соединение с сообществом "' + name + '"?',
+            spinicon: 'fa fa-circle-o-notch',
+            buttons: [{
+                label: 'Удалить',
+                cssClass: 'btn-warning',
+                autospin: true,
+                action: function(dialogRef){
+                    dialogRef.enableButtons(false);
+                    dialogRef.setClosable(false);
+                    deleteConnection(id, function() {
+                        dialogRef.close();
+                    });
+                }
+            }, {
+                label: 'Закрыть',
+                action: function(dialogRef){
+                    dialogRef.close();
+                }
+            }]
+        });
     };
 
     self.init = function() {
@@ -58,17 +84,31 @@ function VkConnector() {
             });
             $button.click(self.onConnect);
         }
+        rebindRemove();
     };
 
-    function send(name, code) {
+    function create(name, code) {
         $.post(contextPath + 'vk/create/' + serverId, {name: name, code: code})
             .done(function (data) {
                 $addressInput.val(contextPath + 'vk/callback/' + data.token);
+                $connectionList.append(createNewConnection(data.id, data.name));
                 switchStep(false);
+                rebindRemove();
             })
-            .fail(function (data) {
+            .fail(function () {
                 BootstrapDialog.warning('Что-то пошло не так!');
             });
+    }
+
+    function deleteConnection(id, callback) {
+        $.post(contextPath + 'vk/delete/' + serverId, {id: id})
+            .done(function () {
+                $('button[data-vk-id="' + id + '"]').closest('.form-group').remove();
+            })
+            .fail(function () {
+                BootstrapDialog.warning('Что-то пошло не так!');
+            })
+            .always(callback);
     }
 
     function block(block) {
@@ -91,6 +131,29 @@ function VkConnector() {
             document.execCommand('copy');
         } catch (err) { }
     });
+
+    function createNewConnection(id, name) {
+        return $('<div class="form-group">' +
+            '  <label class="col-sm-4 control-label"><i class="fa fa-vk"></i> ' + name + '</label>' +
+            '  <div class="col-sm-8">' +
+            '    <div class="input-group">' +
+            '      <input type="text" value="Ожидается подтверждение..." class="form-control" disabled="">' +
+            '      <span class="input-group-btn">' +
+            '        <button type="button" class="btn btn-danger btn-flat vk-remove-btn" data-vk-id="' + id + '" data-vk-name="' + name + '">' +
+            '          <i class="fa fa-remove"></i>' +
+            '        </button>' +
+            '      </span>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>');
+    }
+    
+    function rebindRemove() {
+        $('.vk-remove-btn').unbind('click').bind('click', function() {
+            var $e = $(this);
+            self.onRemove($e.data('vk-id'), $e.data('vk-name'));
+        })
+    }
 
     return self;
 }
