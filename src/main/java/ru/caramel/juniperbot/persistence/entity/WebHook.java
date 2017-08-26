@@ -3,6 +3,7 @@ package ru.caramel.juniperbot.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.model.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
@@ -29,4 +30,9 @@ public class WebHook extends BaseEntity {
 
     @Column
     private boolean enabled;
+
+    @Transient
+    public boolean isValid() {
+        return enabled && StringUtils.isNotEmpty(token) && hookId != null;
+    }
 }

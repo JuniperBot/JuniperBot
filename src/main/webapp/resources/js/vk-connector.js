@@ -25,19 +25,19 @@ function VkConnector() {
         var name = $nameInput.val().trim();
 
         var valid = true;
-        if (!name) {
-            $nameGroup.addClass('has-error');
-            $nameInput.focus();
-            valid = false;
-        } else {
-            $nameGroup.removeClass('has-error');
-        }
         if (!/^([a-zA-Z0-9]+)$/.test(code)) {
             $codeGroup.addClass('has-error');
             $codeInput.focus();
             valid = false;
         } else {
             $codeGroup.removeClass('has-error');
+        }
+        if (!name) {
+            $nameGroup.addClass('has-error');
+            $nameInput.focus();
+            valid = false;
+        } else {
+            $nameGroup.removeClass('has-error');
         }
         if (valid) {
             block(true);

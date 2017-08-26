@@ -15,6 +15,7 @@ import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.service.VkService;
+import ru.caramel.juniperbot.utils.GsonUtils;
 import ru.caramel.juniperbot.web.common.AbstractController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +29,7 @@ public class VkCallbackController extends AbstractController {
 
     private static final Logger LOG = LoggerFactory.getLogger(VkCallbackController.class);
 
-    private final Gson gson = new Gson();
+    private final Gson gson = GsonUtils.create();
 
     private final static Map<String, Type> CALLBACK_TYPES;
 
@@ -50,6 +51,7 @@ public class VkCallbackController extends AbstractController {
     @Autowired
     private MapperService mapperService;
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)
     public String callback(@RequestBody String content, @PathVariable("token") String token, HttpServletResponse response) {
         JsonObject json = gson.fromJson(content, JsonObject.class);
@@ -75,8 +77,8 @@ public class VkCallbackController extends AbstractController {
                 case CONFIRMATION:
                     return vkService.confirm(connection, message);
                 case WALL_POST_NEW:
-                    vkService.post(connection, (CallbackWallPost) message.getObject());
-                    return null;
+                    vkService.post(connection, message);
+                    return "ok";
             }
         }
         LOG.warn("Unsupported callback event", type);

@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,5 +41,9 @@ public class WebHookMessage {
             obj.put("embeds", array);
         }
         return obj;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(content) && CollectionUtils.isEmpty(embeds);
     }
 }

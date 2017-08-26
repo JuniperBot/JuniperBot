@@ -15,5 +15,5 @@ public interface VkService {
 
     String confirm(VkConnection connection, CallbackMessage message);
 
-    void post(VkConnection connection, CallbackWallPost post);
+    void post(VkConnection connection, CallbackMessage<CallbackWallPost> message);
 }

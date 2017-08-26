@@ -61,10 +61,7 @@ public class WebHookServiceImpl implements WebHookService {
                     if (channel == null) {
                         throw new IllegalStateException("Tried to set non-existent channel");
                     }
-                    // TODO Update to new JDA because of bug https://github.com/DV8FromTheWorld/JDA/pull/438
-                    // webhook.getManager().setChannel(channel).queue();
-                    webhook.delete().complete();
-                    webhook = guild.getController().createWebhook(channel, name).complete();
+                    webhook.getManager().setChannel(channel).complete();
                 }
                 webHook.setHookId(webhook.getIdLong());
                 webHook.setToken(webhook.getToken());
