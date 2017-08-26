@@ -90,7 +90,8 @@ function VkConnector() {
     function create(name, code) {
         $.post(contextPath + 'vk/create/' + serverId, {name: name, code: code})
             .done(function (data) {
-                $addressInput.val(contextPath + 'vk/callback/' + data.token);
+                var path = contextPath.replace(/^https/, 'http');
+                $addressInput.val(path + 'vk/callback/' + data.token);
                 $connectionList.append(createNewConnection(data.id, data.name));
                 switchStep(false);
                 rebindRemove();
