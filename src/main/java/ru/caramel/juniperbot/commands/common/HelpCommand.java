@@ -18,7 +18,7 @@ import ru.caramel.juniperbot.service.MessageService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@DiscordCommand(key = "хелп", description = "Отображает эту справку")
+@DiscordCommand(key = "хелп", description = "Отображает эту справку", priority = 1)
 public class HelpCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
@@ -42,9 +42,10 @@ public class HelpCommand implements Command {
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());
 
+        discordCommands.sort(Comparator.comparingInt(DiscordCommand::priority));
+
         Map<CommandGroup, List<DiscordCommand>> groupedCommands = discordCommands
                 .stream().collect(Collectors.groupingBy(DiscordCommand::group));
-        groupedCommands.forEach((k, v) -> v.sort(Comparator.comparing(DiscordCommand::key)));
 
         CommandGroup rootGroup = CommandGroup.COMMON;
         if (StringUtils.isNotEmpty(query)) {

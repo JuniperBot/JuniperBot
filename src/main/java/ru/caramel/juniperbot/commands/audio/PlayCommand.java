@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
         key = "плей",
         description = "Воспроизвести композицию в голосовом канале по названию, указанному URL или приложенному файлу",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 104)
 public class PlayCommand extends AudioCommand {
 
     @Autowired

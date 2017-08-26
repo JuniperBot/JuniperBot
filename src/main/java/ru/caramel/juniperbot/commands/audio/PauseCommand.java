@@ -11,7 +11,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         key = "пауза",
         description = "Приостановить воспроизведение текущего трека",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 105)
 public class PauseCommand extends AudioCommand {
 
     @Override

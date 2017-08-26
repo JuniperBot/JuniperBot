@@ -11,13 +11,14 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         key = "перемешать",
         description = "Перемешать очередь воспроизведения",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 109)
 public class ShuffleCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (handlerService.shuffleTracks(message.getGuild())) {
-            messageManager.onMessage(message.getChannel(), "Очередь воспроизведения перемешана :cyclone: ");
+            messageManager.onMessage(message.getChannel(), "Очередь воспроизведения перемешана :twisted_rightwards_arrows:");
         } else {
             messageManager.onEmptyQueue(message.getChannel());
         }

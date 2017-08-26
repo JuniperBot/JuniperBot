@@ -16,7 +16,8 @@ import java.util.List;
         key = "очередь",
         description = "Показать очередь воспроизведения",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 101)
 public class QueueCommand extends AudioCommand {
 
     @Override

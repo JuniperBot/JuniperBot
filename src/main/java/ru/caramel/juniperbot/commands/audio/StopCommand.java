@@ -11,7 +11,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         key = "стоп",
         description = "Остановить воспроизведение с очисткой плейлиста",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 107)
 public class StopCommand extends AudioCommand {
 
     @Override
