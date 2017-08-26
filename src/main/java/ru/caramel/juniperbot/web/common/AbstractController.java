@@ -10,6 +10,7 @@ import ru.caramel.juniperbot.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.model.exception.NotFoundException;
 import ru.caramel.juniperbot.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.security.model.DiscordGuildDetails;
+import ru.caramel.juniperbot.service.ConfigService;
 import ru.caramel.juniperbot.web.common.flash.Flash;
 
 import java.util.Collections;
@@ -25,6 +26,9 @@ public abstract class AbstractController {
 
     @Autowired
     protected DiscordTokenServices tokenServices;
+
+    @Autowired
+    protected ConfigService configService;
 
     protected ModelAndView createModel(String modelName, long serverId) {
         ModelAndView mv = new ModelAndView(modelName);

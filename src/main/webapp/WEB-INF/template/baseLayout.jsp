@@ -20,6 +20,7 @@
 
     <link rel="stylesheet" media="screen" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap-dialog.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/ionicons.min.css"/>">
@@ -27,8 +28,17 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/skin-yellow-light.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>">
 
+    <script type="text/javascript">
+        <c:set var="req" value="${pageContext.request}" />
+        <c:set var="url">${req.requestURL}</c:set>
+        <c:set var="uri" value="${req.requestURI}" />
+        var contextPath = '${fn:substring(url, 0, fn:length(url) - fn:length(uri))}${req.contextPath}/';
+        var serverId = '${serverId}';
+    </script>
+
     <script type="text/javascript" src="<c:url value="/resources/js/jquery.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-dialog.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js"/>"></script>

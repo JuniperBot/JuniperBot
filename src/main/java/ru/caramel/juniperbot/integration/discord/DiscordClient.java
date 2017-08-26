@@ -152,6 +152,9 @@ public class DiscordClient extends ListenerAdapter {
     }
 
     public boolean executeWebHook(WebHook webHook, WebHookMessage message, Consumer<WebHook> onAbsent) {
+        if (message.isEmpty()) {
+            return false;
+        }
         JSONObject obj = message.toJSONObject();
         RestAction<JSONObject> action = new RestAction<JSONObject>(jda, Route.Custom.POST_ROUTE.compile(String.format("webhooks/%s/%s", webHook.getHookId(), webHook.getToken())), obj) {
 

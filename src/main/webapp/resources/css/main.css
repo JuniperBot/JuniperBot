@@ -126,7 +126,7 @@ body.no-sidebar h4 {
     text-shadow: 0 0 20px #000000;
 }
 
-.form-group input[type=checkbox] {
+.form-group.checkbox-group input[type=checkbox] {
     margin-top: 10px;
 }
 
@@ -241,6 +241,13 @@ body.no-sidebar h4 {
     .jumbotron .btn-add {
         margin-top: 5px !important;
         padding: 15px 0;
+    }
+
+}
+
+@media (max-width: 992px) {
+    #vk-confirmation-code {
+        margin-bottom: 15px;
     }
 }
 

@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -41,4 +42,7 @@ public class ConfigDto implements Serializable {
 
     @Valid
     private WebHookDto webHook;
+
+    @Valid
+    private List<VkConnectionDto> vkConnections;
 }

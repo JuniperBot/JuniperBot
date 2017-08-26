@@ -5,7 +5,7 @@
 
     <groupId>ru.caramel</groupId>
     <artifactId>juniperbot</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.3.x-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>JuniperBot</name>
@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <JDA.version>3.2.0_241</JDA.version>
+        <JDA.version>3.2.0_250</JDA.version>
         <lombok.version>1.16.18</lombok.version>
         <json.version>20160810</json.version>
         <apache.commons.lang3.version>3.6</apache.commons.lang3.version>
@@ -34,6 +34,7 @@
         <org.mapstruct.version>1.1.0.Final</org.mapstruct.version>
         <postgresql.version>42.1.4</postgresql.version>
         <liquibase.version>3.5.3</liquibase.version>
+        <vk.sdk.version>0.5.8</vk.sdk.version>
     </properties>
 
     <repositories>
@@ -148,6 +149,12 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vk.api</groupId>
+            <artifactId>sdk</artifactId>
+            <version>${vk.sdk.version}</version>
         </dependency>
 
         <!-- WEB DEPENDENCIES -->
