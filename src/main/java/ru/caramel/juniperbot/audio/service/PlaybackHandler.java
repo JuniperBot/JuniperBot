@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
@@ -22,8 +23,6 @@ import ru.caramel.juniperbot.service.ConfigService;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 @Component
@@ -50,12 +49,15 @@ public class PlaybackHandler extends AudioEventAdapter {
     @Autowired
     private ConfigService configService;
 
-    private AudioPlayer player;
+    @Getter
+    private RepeatMode mode = RepeatMode.NONE;
 
     @Getter
-    private TrackRequest current;
+    private AudioPlayer player;
 
-    private final BlockingQueue<TrackRequest> queue = new LinkedBlockingQueue<>();
+    private final List<TrackRequest> playlist = Collections.synchronizedList(new ArrayList<>());
+
+    private int cursor = -1;
 
     @PostConstruct
     public void init() {
@@ -76,16 +78,18 @@ public class PlaybackHandler extends AudioEventAdapter {
     }
 
     public void play(List<TrackRequest> requests) {
-        if (CollectionUtils.isNotEmpty(requests)) {
-            play(requests.get(0));
-            if (requests.size() > 1) {
-                requests.subList(1, requests.size()).forEach(queue::offer);
+        synchronized (playlist) {
+            if (CollectionUtils.isNotEmpty(requests)) {
+                play(requests.get(0));
+                if (requests.size() > 1) {
+                    requests.subList(1, requests.size()).forEach(this::offer);
+                }
             }
         }
     }
 
     public void play(TrackRequest request) {
-        messageManager.onTrackAdd(request, player.getPlayingTrack() == null && queue.isEmpty());
+        messageManager.onTrackAdd(request, cursor < 0);
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             VoiceChannel channel = getDesiredChannel();
             if (channel == null) {
@@ -93,16 +97,13 @@ public class PlaybackHandler extends AudioEventAdapter {
             }
             audioManager.openAudioConnection(channel);
         }
-        // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
-        // something is playing, it returns false and does nothing. In that case the player was already playing so this
-        // track goes to the queue instead.
-        synchronized (queue) {
+        synchronized (playlist) {
+            offer(request);
             if (player.getPlayingTrack() == null) {
-                current = request;
+                mode = RepeatMode.NONE;
+                cursor = 0;
                 player.setPaused(false);
                 player.playTrack(request.getTrack());
-            } else {
-                queue.offer(request);
             }
         }
     }
@@ -113,6 +114,10 @@ public class PlaybackHandler extends AudioEventAdapter {
     }
 
     public void nextTrack() {
+        // сбросим режим если принудительно вызвали следующий
+        if (RepeatMode.CURRENT.equals(mode)) {
+            mode = RepeatMode.NONE;
+        }
         onTrackEnd(player, player.getPlayingTrack(), AudioTrackEndReason.FINISHED);
     }
 
@@ -140,40 +145,58 @@ public class PlaybackHandler extends AudioEventAdapter {
         return active;
     }
 
+    public boolean setMode(RepeatMode mode) {
+        boolean result = isActive();
+        if (result) {
+            this.mode = mode;
+        }
+        return result;
+    }
+
     public void setVolume(int volume) {
         player.setVolume(volume);
     }
 
     public boolean shuffle() {
-        synchronized (queue) {
-            if (queue.isEmpty()) {
+        synchronized (playlist) {
+            if (playlist.isEmpty()) {
                 return false;
             }
-            List<TrackRequest> requests = new ArrayList<>(queue);
-            Collections.shuffle(requests);
-            queue.clear();
-            queue.addAll(requests);
+            Collections.shuffle(getOnGoing());
             return true;
+        }
+    }
+
+    private List<TrackRequest> getPast() {
+        synchronized (playlist) {
+            return cursor < 0 ? Collections.emptyList() : playlist.subList(0, cursor);
+        }
+    }
+
+    private List<TrackRequest> getOnGoing() {
+        synchronized (playlist) {
+            return cursor < 0 || cursor == playlist.size() - 1
+                    ? Collections.emptyList() : playlist.subList(cursor + 1, playlist.size());
         }
     }
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
         if (isActive()) {
-            messageManager.onTrackPause(current);
+            messageManager.onTrackPause(getCurrent());
         }
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
         if (isActive()) {
-            messageManager.onTrackResume(current);
+            messageManager.onTrackResume(getCurrent());
         }
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        messageManager.onTrackStart(current);
+        messageManager.onTrackStart(getCurrent());
     }
 
     @Override
@@ -181,29 +204,41 @@ public class PlaybackHandler extends AudioEventAdapter {
         if (track == null) {
             return;
         }
-        synchronized (queue) {
-            messageManager.onTrackEnd(current);
+        synchronized (playlist) {
+            messageManager.onTrackEnd(getCurrent());
             switch (endReason) {
                 case STOPPED:
                 case CLEANUP:
-                    queue.clear();
+                    mode = RepeatMode.NONE;
+                    playlist.clear();
+                    cursor = -1;
                     break;
                 case REPLACED:
                     return;
                 case FINISHED:
                 case LOAD_FAILED:
-                    if (!queue.isEmpty()) {
-                        // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
-                        // giving null to startTrack, which is a valid argument and will simply stop the player.
-                        current = queue.poll();
-                        player.playTrack(current.getTrack());
+                    if (RepeatMode.CURRENT.equals(mode)) {
+                        getCurrent().reset();
+                        player.playTrack(getCurrent().getTrack());
                         return;
                     }
-                    messageManager.onQueueEnd(current);
+                    if (cursor < playlist.size() - 1) {
+                        cursor++;
+                        player.playTrack(getCurrent().getTrack());
+                        return;
+                    }
+                    if (RepeatMode.ALL.equals(mode)) {
+                        cursor = 0;
+                        playlist.forEach(TrackRequest::reset);
+                        player.playTrack(getCurrent().getTrack());
+                        return;
+                    }
+                    messageManager.onQueueEnd(getCurrent());
                     break;
             }
             player.playTrack(null);
-            current = null;
+            playlist.clear();
+            cursor = -1;
         }
         if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
             audioManager.closeAudioConnection();
@@ -215,21 +250,40 @@ public class PlaybackHandler extends AudioEventAdapter {
         LOGGER.error("Track error", exception);
     }
 
+    public TrackRequest getCurrent() {
+        synchronized (playlist) {
+            return cursor < 0 ? null : playlist.get(cursor);
+        }
+    }
+
     public List<TrackRequest> getQueue() {
-        synchronized (queue) {
+        synchronized (playlist) {
             List<TrackRequest> result = new ArrayList<>();
-            if (current != null) {
-                result.add(current);
+            if (getCurrent() != null) {
+                result.add(getCurrent());
             }
-            result.addAll(queue);
+            result.addAll(getOnGoing());
             return Collections.unmodifiableList(result);
         }
     }
 
     public List<TrackRequest> getQueue(User user) {
-        synchronized (queue) {
+        synchronized (playlist) {
             return getQueue().stream().filter(e -> user.equals(e.getUser())).collect(Collectors.toList());
         }
+    }
+
+    public boolean seek(long position) {
+        if (isActive() && !player.getPlayingTrack().isSeekable()) {
+            return false;
+        }
+        player.getPlayingTrack().setPosition(position);
+        return true;
+    }
+
+    private void offer(TrackRequest request) {
+        request.setOwner(this);
+        playlist.add(request);
     }
 
     public boolean isActive() {

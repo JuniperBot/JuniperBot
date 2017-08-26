@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 
 import java.util.*;
@@ -59,6 +60,18 @@ public class PlaybackHandlerService {
 
     public boolean stop(Guild guild) {
         return getHandler(guild).stop();
+    }
+
+    public boolean seek(Guild guild, long position) {
+        return getHandler(guild).seek(position);
+    }
+
+    public boolean setMode(Guild guild, RepeatMode mode) {
+        return getHandler(guild).setMode(mode);
+    }
+
+    public TrackRequest getCurrent(Guild guild) {
+        return getHandler(guild).getCurrent();
     }
 
     public List<TrackRequest> getQueue(Guild guild) {

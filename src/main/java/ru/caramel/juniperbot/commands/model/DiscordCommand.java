@@ -18,5 +18,7 @@ public @interface DiscordCommand {
 
     CommandGroup group() default CommandGroup.COMMON;
 
+    int priority() default 1;
+
     boolean hidden() default false;
 }

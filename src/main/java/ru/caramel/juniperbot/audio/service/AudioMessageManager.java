@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
@@ -47,6 +48,7 @@ public class AudioMessageManager {
 
     public void onTrackStart(TrackRequest request) {
         try {
+            request.setResetMessage(false);
             request.getChannel()
                     .sendMessage(getPlayMessage(request).build())
                     .queue(e -> {
@@ -166,7 +168,17 @@ public class AudioMessageManager {
     private void runUpdater(TrackRequest request) {
         if (discordConfig.getPlayRefreshInterval() != null) {
             ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> {
-                Message message = request.getInfoMessage();
+                Message message;
+                if (request.isResetMessage()) {
+                    request.getInfoMessage().delete().queue();
+                    message = request.getChannel()
+                            .sendMessage(getPlayMessage(request).build())
+                            .complete();
+                    request.setInfoMessage(message);
+                    request.setResetMessage(false);
+                    return;
+                }
+                message = request.getInfoMessage();
                 if (message != null) {
                     try {
                         message.editMessage(getPlayMessage(request).build()).complete();
@@ -188,6 +200,18 @@ public class AudioMessageManager {
         builder.setDescription(null);
         builder.addField("Длительность", getTextProgress(request.getTrack()), true);
         builder.addField("Поставил", request.getUser().getName(), true);
+
+        PlaybackHandler handler = request.getOwner();
+        if (handler != null) {
+            if (handler.getPlayer().getVolume() < 100) {
+                int volume = handler.getPlayer().getVolume();
+                builder.addField("Громкость", String.format("%d%% %s", volume,
+                        CommonUtils.getVolumeIcon(volume)), true);
+            }
+            if (!RepeatMode.NONE.equals(handler.getMode())) {
+                builder.addField("Повтор", handler.getMode().getEmoji(), true);
+            }
+        }
         return builder;
     }
 

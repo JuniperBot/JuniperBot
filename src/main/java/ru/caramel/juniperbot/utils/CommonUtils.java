@@ -37,4 +37,15 @@ public final class CommonUtils {
     public static String mdLink(String title, String url) {
         return String.format("[%s](%s)", StringUtils.isEmpty(title) ? url : title, url);
     }
+
+    public static String getVolumeIcon(int volume) {
+        if (volume > 66) {
+            return ":loud_sound:";
+        } else if (volume > 33) {
+            return ":sound:";
+        } else if (volume > 0) {
+            return ":speaker:";
+        }
+        return ":mute:";
+    }
 }

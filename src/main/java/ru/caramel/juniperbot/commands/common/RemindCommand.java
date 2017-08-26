@@ -16,7 +16,7 @@ import ru.caramel.juniperbot.service.ReminderService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@DiscordCommand(key = "напомни", description = "Напомнить о чем-либо. Дата в формате дд.ММ.гггг чч:мм и сообщение")
+@DiscordCommand(key = "напомни", description = "Напомнить о чем-либо. Дата в формате дд.ММ.гггг чч:мм и сообщение", priority = 2)
 public class RemindCommand implements Command {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(DateTimeZone.forID("Europe/Moscow"));

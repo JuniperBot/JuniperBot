@@ -11,7 +11,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         key = "старт",
         description = "Восстановить воспроизведение текущего трека",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 106)
 public class StartCommand extends AudioCommand {
 
     @Override

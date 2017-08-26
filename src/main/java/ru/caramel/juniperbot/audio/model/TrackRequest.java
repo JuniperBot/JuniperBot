@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import ru.caramel.juniperbot.audio.service.PlaybackHandler;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.ScheduledFuture;
 @Setter
 public class TrackRequest {
 
-    private final AudioTrack track;
+    private AudioTrack track;
 
     private final User user;
 
@@ -23,9 +24,19 @@ public class TrackRequest {
 
     private Message infoMessage;
 
+    private PlaybackHandler owner;
+
+    private boolean resetMessage;
+
     public TrackRequest(AudioTrack track, User user, TextChannel channel) {
         this.track = track;
         this.user = user;
         this.channel = channel;
+    }
+
+    public void reset() {
+        if (track != null) {
+            track = track.makeClone();
+        }
     }
 }

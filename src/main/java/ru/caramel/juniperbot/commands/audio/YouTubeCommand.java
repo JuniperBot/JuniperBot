@@ -21,7 +21,8 @@ import java.util.List;
         key = "ютуб",
         description = "Произвести поиск по указанному запросу по YouTube для выбора воспроизведения",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC)
+        group = CommandGroup.MUSIC,
+        priority = 103)
 public class YouTubeCommand extends AudioCommand {
 
     @Autowired
