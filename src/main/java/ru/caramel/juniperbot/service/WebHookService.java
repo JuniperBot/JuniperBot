@@ -8,4 +8,6 @@ public interface WebHookService {
     WebHookDto getDtoForView(long guildId, WebHook webHook);
 
     void updateWebHook(long guildId, Long channelId, WebHook webHook, String name);
+
+    boolean delete(long guildId, WebHook webHook);
 }

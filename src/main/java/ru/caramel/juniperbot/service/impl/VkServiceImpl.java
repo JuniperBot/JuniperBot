@@ -33,6 +33,7 @@ import ru.caramel.juniperbot.persistence.repository.VkConnectionRepository;
 import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.service.VkService;
+import ru.caramel.juniperbot.service.WebHookService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,6 +82,9 @@ public class VkServiceImpl implements VkService {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private WebHookService webHookService;
+
     @Override
     @Transactional
     public VkConnection create(GuildConfig config, String name, String code) {
@@ -106,6 +110,7 @@ public class VkServiceImpl implements VkService {
             throw new IllegalStateException("Trying to delete not own connection!");
         }
         repository.delete(connection);
+        webHookService.delete(config.getGuildId(), connection.getWebHook());
     }
 
     @Override

@@ -69,6 +69,21 @@ public class WebHookServiceImpl implements WebHookService {
         }
     }
 
+    public boolean delete(long guildId, WebHook webHook) {
+        if (discordClient.isConnected()) {
+            JDA jda = discordClient.getJda();
+            Guild guild = jda.getGuildById(guildId);
+            if (guild != null && permissionsService.hasWebHooksAccess(guild)) {
+                Webhook webhook = getWebHook(guild, webHook);
+                if (webhook != null) {
+                    webhook.delete().queue();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private Webhook getWebHook(Guild guild, WebHook webHook) {
         if (webHook.getHookId() != null && webHook.getToken() != null) {
             List<Webhook> webHooks = guild.getWebhooks().complete();
