@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.commands.audio;
+package ru.caramel.juniperbot.commands.audio.timing;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

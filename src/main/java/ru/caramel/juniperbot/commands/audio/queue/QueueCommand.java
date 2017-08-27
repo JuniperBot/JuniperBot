@@ -1,9 +1,10 @@
-package ru.caramel.juniperbot.commands.audio;
+package ru.caramel.juniperbot.commands.audio.queue;
 
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.commands.audio.AudioCommand;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
