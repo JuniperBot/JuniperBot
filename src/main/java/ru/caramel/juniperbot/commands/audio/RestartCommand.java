@@ -12,7 +12,7 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         description = "Начать воспроизведение текущей композиции с начала",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
-        priority = 110)
+        priority = 112)
 public class RestartCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

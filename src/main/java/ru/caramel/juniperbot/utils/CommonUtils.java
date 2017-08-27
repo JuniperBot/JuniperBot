@@ -2,11 +2,20 @@ package ru.caramel.juniperbot.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class CommonUtils {
+
+    private final static DateTimeFormatter HOURS_FORMAT = DateTimeFormat.forPattern("HH:mm:ss").withZone(DateTimeZone.UTC);
+
+    private final static DateTimeFormatter MINUTES_FORMAT = DateTimeFormat.forPattern("mm:ss").withZone(DateTimeZone.UTC);
+
+    private final static DateTimeFormatter SECONDS_FORMAT = DateTimeFormat.forPattern("ss").withZone(DateTimeZone.UTC);
 
     private CommonUtils() {
         // helper class
@@ -47,5 +56,18 @@ public final class CommonUtils {
             return ":speaker:";
         }
         return ":mute:";
+    }
+
+    public static Long parseMillis(String string) {
+        if (StringUtils.isNotEmpty(string)) {
+            if (string.matches("^[0-2]?[0-3]:[0-5][0-9]:[0-5][0-9]$")) {
+                return HOURS_FORMAT.parseMillis(string);
+            } else if (string.matches("^[0-5]?[0-9]:[0-5][0-9]$")) {
+                return MINUTES_FORMAT.parseMillis(string);
+            } else if (string.matches("^[0-5]?[0-9]$")) {
+                return SECONDS_FORMAT.parseMillis(string);
+            }
+        }
+        return null;
     }
 }

@@ -12,7 +12,7 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
         description = "Перейти к воспроизведению следующего трека",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
-        priority = 111)
+        priority = 110)
 public class SkipCommand extends AudioCommand {
 
     @Override
