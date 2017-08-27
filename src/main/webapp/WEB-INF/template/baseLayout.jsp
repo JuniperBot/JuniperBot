@@ -5,6 +5,7 @@
 <tilesx:useAttribute id="sidebarVisible"    name="sidebarVisible"    classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="breadcrumbVisible" name="breadcrumbVisible" classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="userDetails"       name="userDetails"       classname="ru.caramel.juniperbot.security.model.DiscordUserDetails" ignore="true" scope="request" />
+<spring:eval expression="@environment.getProperty('build.timestamp')" var="buildTimestamp" scope="request" />
 
 <html>
 <head>
@@ -26,7 +27,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/ionicons.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/AdminLTE.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/skin-yellow-light.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/css/main.css?v=${buildTimestamp}"/>">
 
     <script type="text/javascript">
         <c:set var="req" value="${pageContext.request}" />
@@ -40,8 +41,8 @@
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-dialog.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/utils.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/script.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
 
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-32x32.png"/>" sizes="32x32" />
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-16x16.png"/>" sizes="16x16" />

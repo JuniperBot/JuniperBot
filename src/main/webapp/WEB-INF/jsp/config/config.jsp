@@ -241,7 +241,7 @@
     </div>
 </form:form>
 
-<script type="text/javascript" src="<c:url value="/resources/js/vk-connector.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/vk-connector.js?v=${buildTimestamp}"/>"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var connector = new VkConnector();
