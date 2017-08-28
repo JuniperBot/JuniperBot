@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,24 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void sendMessageSilent(Function<MessageEmbed, RestAction<Message>> action, MessageEmbed embed) {
+    public void onMessage(MessageChannel sourceChannel, String message) {
+        onMessage(sourceChannel, null, message);
+    }
+
+
+    @Override
+    public void onMessage(MessageChannel sourceChannel, String title, String message) {
+        if (StringUtils.isEmpty(title)) {
+            sendMessageSilent(sourceChannel::sendMessage, message);
+            return;
+        }
+        sendMessageSilent(sourceChannel::sendMessage, getBaseEmbed()
+                .setTitle(title, null)
+                .setDescription(message).build());
+    }
+
+    @Override
+    public <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed) {
         try {
             action.apply(embed).queue();
         } catch (PermissionException e) {
