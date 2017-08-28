@@ -8,6 +8,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;
@@ -23,6 +24,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.security.model.DiscordGuildDetails;
 import ru.caramel.juniperbot.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.security.utils.SecurityUtils;
@@ -49,6 +51,9 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
     private final OAuth2ProtectedResourceDetails resource;
 
     private Map<String, OAuth2RestTemplate> restTemplates = new ConcurrentHashMap<>();
+
+    @Autowired
+    private DiscordConfig discordConfig;
 
     @Setter
     @Getter
@@ -110,11 +115,13 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
     }
 
     public List<DiscordGuildDetails> getCurrentGuilds(boolean editable) {
-        return getCurrentGuilds().stream().filter(e -> !editable || (editable && hasPermission(e))).collect(Collectors.toList());
+        return getCurrentGuilds().stream().filter(e -> !editable || hasPermission(e)).collect(Collectors.toList());
     }
 
     public boolean hasPermission(DiscordGuildDetails details) {
-        return details.isOwner() || details.getPermissions().contains(Permission.ADMINISTRATOR);
+        DiscordUserDetails user = SecurityUtils.getCurrentUser();
+        return details.isOwner() || details.getPermissions().contains(Permission.ADMINISTRATOR)
+                || (discordConfig.getSuperUserId() != null && user != null && Objects.equals(discordConfig.getSuperUserId(), user.getId()));
     }
 
     public DiscordGuildDetails getGuildById(long id) {

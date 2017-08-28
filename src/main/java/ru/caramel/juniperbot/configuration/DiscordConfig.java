@@ -38,6 +38,8 @@ public class DiscordConfig {
 
     private String copyContent;
 
+    private String superUserId;
+
     @PostConstruct
     public void validate() {
         Objects.requireNonNull(token, "No discord token specified!");
