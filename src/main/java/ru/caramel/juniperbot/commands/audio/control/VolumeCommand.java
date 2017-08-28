@@ -1,16 +1,17 @@
-package ru.caramel.juniperbot.commands.audio;
+package ru.caramel.juniperbot.commands.audio.control;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import ru.caramel.juniperbot.commands.audio.AudioCommand;
 import ru.caramel.juniperbot.commands.model.*;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
         key = "громкость",
-        description = "Установить громкость воспроизведения (параметр 10-100%, без параметра 100%)",
+        description = "Установить громкость воспроизведения (параметр 1-100%, без параметра 100%)",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
-        priority = 112)
+        priority = 111)
 public class VolumeCommand extends AudioCommand {
 
     @Override

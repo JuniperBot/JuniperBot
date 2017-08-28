@@ -1,5 +1,7 @@
 package ru.caramel.juniperbot.web.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +12,8 @@ import ru.caramel.juniperbot.model.exception.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -30,8 +34,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleExceptiond(Exception ex) {
+        LOGGER.error("Error", ex);
         return "error500";
     }
 }

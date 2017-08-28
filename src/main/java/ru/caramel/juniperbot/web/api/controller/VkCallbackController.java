@@ -97,7 +97,7 @@ public class VkCallbackController extends AbstractController {
     }
 
     @RequestMapping(value = "/vk/delete/{serverId}", method = RequestMethod.POST)
-    public void create(
+    public void delete(
             @PathVariable("serverId") long serverId,
             @RequestParam("id") long id) {
         validateGuildId(serverId);

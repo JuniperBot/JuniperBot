@@ -50,23 +50,43 @@ public class WebHookServiceImpl implements WebHookService {
         if (discordClient.isConnected()) {
             JDA jda = discordClient.getJda();
             Guild guild = jda.getGuildById(guildId);
-            if (guild != null && channelId != null && permissionsService.hasWebHooksAccess(guild)) {
+            if (webHook.isValid() && guild != null && channelId != null && permissionsService.hasWebHooksAccess(guild)) {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
-                    webhook = guild.getController().createWebhook(channel, name).complete();
-                }
-                if (!channelId.equals(webhook.getChannel().getIdLong())) {
-                    TextChannel channel = guild.getTextChannelById(channelId);
-                    if (channel == null) {
-                        throw new IllegalStateException("Tried to set non-existent channel");
+                    if (permissionsService.hasWebHooksAccess(channel)) {
+                        webhook = guild.getController().createWebhook(channel, name).complete();
                     }
-                    webhook.getManager().setChannel(channel).complete();
                 }
-                webHook.setHookId(webhook.getIdLong());
-                webHook.setToken(webhook.getToken());
+                if (webhook != null) {
+                    if (!channelId.equals(webhook.getChannel().getIdLong())) {
+                        TextChannel channel = guild.getTextChannelById(channelId);
+                        if (channel == null) {
+                            throw new IllegalStateException("Tried to set non-existent channel");
+                        }
+                        webhook.getManager().setChannel(channel).complete();
+                    }
+                    webHook.setHookId(webhook.getIdLong());
+                    webHook.setToken(webhook.getToken());
+                }
+
             }
         }
+    }
+
+    public boolean delete(long guildId, WebHook webHook) {
+        if (discordClient.isConnected()) {
+            JDA jda = discordClient.getJda();
+            Guild guild = jda.getGuildById(guildId);
+            if (guild != null && permissionsService.hasWebHooksAccess(guild)) {
+                Webhook webhook = getWebHook(guild, webHook);
+                if (webhook != null) {
+                    webhook.delete().queue();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private Webhook getWebHook(Guild guild, WebHook webHook) {

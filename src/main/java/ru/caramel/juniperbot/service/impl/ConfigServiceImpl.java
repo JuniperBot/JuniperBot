@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.service.impl;
 
 import net.dv8tion.jda.core.entities.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,12 +86,14 @@ public class ConfigServiceImpl implements ConfigService {
         WebHook webHook = config.getWebHook();
         WebHookDto hookDto = webHookService.getDtoForView(config.getGuildId(), webHook);
         dto.setWebHook(hookDto);
-        for (VkConnection connection : config.getVkConnections()) {
-            WebHookDto vkHookDto = webHookService.getDtoForView(config.getGuildId(), connection.getWebHook());
-            dto.getVkConnections().stream()
-                    .filter(e -> e.getId().equals(connection.getId()))
-                    .findFirst()
-                    .ifPresent(e -> e.setWebHook(vkHookDto));
+        if (CollectionUtils.isNotEmpty(config.getVkConnections())) {
+            for (VkConnection connection : config.getVkConnections()) {
+                WebHookDto vkHookDto = webHookService.getDtoForView(config.getGuildId(), connection.getWebHook());
+                dto.getVkConnections().stream()
+                        .filter(e -> e.getId().equals(connection.getId()))
+                        .findFirst()
+                        .ifPresent(e -> e.setWebHook(vkHookDto));
+            }
         }
         return dto;
     }

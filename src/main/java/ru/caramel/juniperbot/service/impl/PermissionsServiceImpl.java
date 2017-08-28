@@ -1,14 +1,12 @@
 package ru.caramel.juniperbot.service.impl;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.service.PermissionsService;
-
-import java.util.List;
 
 @Service
 public class PermissionsServiceImpl implements PermissionsService {
@@ -25,12 +23,26 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
+    public boolean hasWebHooksAccess(Channel channel) {
+        if (!discordClient.isConnected() || channel == null) {
+            return false;
+        }
+        return checkPermission(channel, Permission.MANAGE_WEBHOOKS);
+    }
+
+    @Override
     public boolean checkPermission(Guild guild, Permission permission) {
         if (!discordClient.isConnected()) {
             return false;
         }
-        Member member = guild.getMember(guild.getJDA().getSelfUser());
-        List<Permission> permissionList = member.getPermissions();
-        return permissionList.contains(Permission.ADMINISTRATOR) || permissionList.contains(permission);
+        return guild.getSelfMember().hasPermission(permission);
+    }
+
+    @Override
+    public boolean checkPermission(Channel channel, Permission permission) {
+        if (!discordClient.isConnected()) {
+            return false;
+        }
+        return channel.getGuild().getSelfMember().hasPermission(channel, permission);
     }
 }
