@@ -2,6 +2,7 @@ package ru.caramel.juniperbot.commands.common;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -25,7 +26,7 @@ public class RemindCommand implements Command {
 
     private static final Pattern PATTERN = Pattern.compile("^(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(\\d{2}:\\d{2})\\s+(.*)$");
 
-    private static final Pattern RELATIVE_PATTERN = Pattern.compile("^\\s*через\\s+(.*)\\s+(.*)$");
+    private static final Pattern RELATIVE_PATTERN = Pattern.compile("^\\s*через\\s+(\\d+\\s+[a-zA-Zа-яА-Я]+(?:\\s+\\d+\\s+[a-zA-Zа-яА-Я]+)*)\\s+(.*)$");
 
     private static final TimeSequenceParser SEQUENCE_PARSER = new TimeSequenceParser();
 
@@ -54,8 +55,8 @@ public class RemindCommand implements Command {
             m = RELATIVE_PATTERN.matcher(content);
             if (m.find()) {
                 Long millis = SEQUENCE_PARSER.parse(m.group(1));
-                if (millis != null) {
-                    reminder = m.group(2);
+                reminder = m.group(2);
+                if (millis != null && StringUtils.isNotEmpty(reminder)) {
                     date = DateTime.now().plus(millis);
                 }
             }
