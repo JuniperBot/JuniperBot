@@ -55,6 +55,9 @@ public class GuildConfig extends BaseEntity {
     @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VkConnection> vkConnections;
 
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CustomCommand> commands;
+
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }

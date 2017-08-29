@@ -51,6 +51,11 @@
         <put-attribute name="title" value="Конфигурация" />
     </definition>
 
+    <definition name="commands" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/config/commands.jsp"/>
+        <put-attribute name="title" value="Пользовательские команды" />
+    </definition>
+
     <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
 
 </tiles-definitions>

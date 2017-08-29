@@ -3,19 +3,25 @@ package ru.caramel.juniperbot.commands.common;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.commands.Command;
+import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.persistence.entity.CustomCommand;
+import ru.caramel.juniperbot.service.CommandsService;
 import ru.caramel.juniperbot.service.MessageService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @DiscordCommand(key = "хелп", description = "Отображает эту справку", priority = 1)
@@ -27,7 +33,7 @@ public class HelpCommand implements Command {
     private DiscordConfig discordConfig;
 
     @Autowired
-    private DiscordClient discordClient;
+    private CommandsService commandsService;
 
     @Autowired
     private MessageService messageService;
@@ -36,7 +42,7 @@ public class HelpCommand implements Command {
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
         boolean direct = context.getConfig() != null && Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
-        List<DiscordCommand> discordCommands = discordClient.getCommands().entrySet().stream()
+        List<DiscordCommand> discordCommands = commandsService.getCommands().entrySet().stream()
                 .filter(e -> e.getValue().isApplicable(message.getChannel()))
                 .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
                 .filter(e -> !e.hidden())
@@ -72,6 +78,23 @@ public class HelpCommand implements Command {
                             commands.stream().map(e -> '`' + context.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
                 }
             });
+
+            // Пользовательские команды
+            if (message.getChannelType().isGuild() && context.getConfig() != null) {
+                List<CustomCommand> commands = context.getConfig().getCommands();
+                if (CollectionUtils.isNotEmpty(commands)) {
+                    StringBuilder list = new StringBuilder();
+                    commands.forEach(e -> {
+                        if (list.length() > 0) {
+                            list.append(", ");
+                        }
+                        list.append('`').append(context.getPrefix()).append(e.getKey()).append('`');
+                    });
+                    if (list.length() > 0) {
+                        embedBuilder.addField(CommandGroup.CUSTOM.getTitle() + ":", list.toString(), false);
+                    }
+                }
+            }
         }
 
         MessageChannel channel = null;

@@ -276,3 +276,24 @@ div.discord-header-icon {
     width: 18px;
     background: url(../img/discord-logo-small.svg) no-repeat top center;
 }
+
+.submit-group .btn {
+    margin: 5px 10px 0 0;
+}
+
+.badge-delete {
+    border-radius: 15px;
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px 0 0 0;
+    cursor: pointer;
+}
+
+.hide {
+    display: none;
+}

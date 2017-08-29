@@ -77,7 +77,7 @@ public class RemindCommand implements Command {
         current = current.plusMinutes(1);
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle("Пример использования команды напоминания:");
-        builder.addField("Использование даты в формате дд.ММ.гггг чч:мм", String.format("Например: `%sнапомни %s фыр!`", context.getPrefix(), FORMATTER.print(current)), false);
+        builder.addField("Использование даты в формате дд.ММ.гггг чч:мм (МСК)", String.format("Например: `%sнапомни %s фыр!`", context.getPrefix(), FORMATTER.print(current)), false);
         builder.addField("Использование выражения \"через\"", String.format("```\n" +
                 "%1$sнапомни через 60 секунд фыр!\n" +
                 "%1$sнапомни через 5 минут фыр!\n" +

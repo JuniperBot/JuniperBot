@@ -8,4 +8,6 @@ import java.util.Date;
 
 public interface ReminderService {
     Reminder createReminder(MessageChannel channel, Member member, String message, Date date);
+
+    void loadAll();
 }

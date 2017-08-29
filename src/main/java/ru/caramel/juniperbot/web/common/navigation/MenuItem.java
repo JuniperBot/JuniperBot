@@ -61,6 +61,10 @@ public class MenuItem implements Serializable {
         this.active = active;
     }
 
+    public boolean addChild(MenuItem child) {
+        return childs.add(child);
+    }
+
     public boolean isActive() {
         return active || childs.stream().anyMatch(MenuItem::isActive);
     }
