@@ -18,7 +18,7 @@ public class ShuffleCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (handlerService.shuffleTracks(message.getGuild())) {
+        if (playerService.getInstance(message.getGuild()).shuffle()) {
             messageManager.onMessage(message.getChannel(), "Очередь воспроизведения перемешана :twisted_rightwards_arrows:");
         } else {
             messageManager.onEmptyQueue(message.getChannel());

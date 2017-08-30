@@ -1,7 +1,6 @@
 package ru.caramel.juniperbot.commands.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -12,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
+import ru.caramel.juniperbot.audio.service.PlaybackInstance;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.audio.service.*;
 import ru.caramel.juniperbot.commands.model.*;
@@ -34,9 +34,6 @@ public class PlayCommand extends AudioCommand {
 
     @Autowired
     protected ValidationService validationService;
-
-    @Autowired
-    protected AudioPlayerManager playerManager;
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
@@ -63,14 +60,13 @@ public class PlayCommand extends AudioCommand {
     }
 
     public void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
-        PlaybackHandler musicManager = handlerService.getHandler(channel.getGuild());
-
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        PlaybackInstance instance = playerService.getInstance(channel.getGuild());
+        playerService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 try {
                     validationService.validateSingle(track, requestedBy, context);
-                    musicManager.play(new TrackRequest(track, requestedBy, channel));
+                    playerService.play(new TrackRequest(track, requestedBy, channel));
                 } catch (ValidationException e) {
                     messageManager.onQueueError(channel, e.getMessage());
                 }
@@ -80,7 +76,7 @@ public class PlayCommand extends AudioCommand {
             public void playlistLoaded(AudioPlaylist playlist) {
                 try {
                     List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
-                    musicManager.play(tracks.stream().map(e -> new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
+                    playerService.play(tracks.stream().map(e -> new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
                 } catch (ValidationException e) {
                     messageManager.onQueueError(channel, e.getMessage());
                 }

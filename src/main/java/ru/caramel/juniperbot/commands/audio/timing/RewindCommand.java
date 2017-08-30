@@ -23,7 +23,7 @@ public class RewindCommand extends TimingCommand {
 
         millis = Math.min(position, millis);
 
-        if (handlerService.seek(message.getGuild(), position - millis)) {
+        if (playerService.getInstance(message.getGuild()).seek(position - millis)) {
             messageManager.onMessage(message.getChannel(), String.format("**%s** перемотан назад на `%s`", track.getInfo().title,  CommonUtils.formatDuration(millis)));
             request.setResetMessage(true);
         }

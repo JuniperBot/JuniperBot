@@ -23,7 +23,7 @@ public class RepeatCommand extends AudioCommand {
             messageManager.onMessage(message.getChannel(), "Выберите режим повтора: " + RepeatMode.options());
             return false;
         }
-        messageManager.onMessage(message.getChannel(), handlerService.setMode(message.getGuild(), mode)
+        messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).setMode(mode)
                 ? "Установлен режим воспроизведения " + mode.getEmoji() : "Воспроизведение не запущено");
         return true;
     }

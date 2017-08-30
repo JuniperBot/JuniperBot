@@ -24,7 +24,7 @@ public class ForwardCommand extends TimingCommand {
 
         millis = Math.min(duration - position, millis);
 
-        if (handlerService.seek(message.getGuild(), position + millis)) {
+        if (playerService.getInstance(message.getGuild()).seek(position + millis)) {
             messageManager.onMessage(message.getChannel(), String.format("**%s** перемотан вперед на `%s`", track.getInfo().title,  CommonUtils.formatDuration(millis)));
             request.setResetMessage(true);
         }

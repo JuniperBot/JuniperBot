@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class ValidationService {
 
     @Autowired
-    private PlaybackHandlerService handlerService;
+    private PlayerService playerService;
 
     private boolean compareTracks(AudioTrack track1, AudioTrack track2) {
         if (Objects.equals(track1, track2)) {
@@ -42,20 +42,20 @@ public class ValidationService {
         Long queueLimit = context.getConfig().getMusicQueueLimit();
         Long durationLimit = context.getConfig().getMusicDurationLimit();
         Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
-        PlaybackHandler handler = handlerService.getHandler(context.getGuild());
+        PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
         if (track.getInfo().isStream && !context.getConfig().isMusicStreamsEnabled()) {
             throw new ValidationException("Потоковое аудио запрещено на этом сервере :raised_hand:");
         }
 
         if (queueLimit != null) {
-            List<TrackRequest> userQueue = handler.getQueue(requestedBy);
+            List<TrackRequest> userQueue = instance.getQueue(requestedBy);
             if (userQueue.size() >= queueLimit) {
                 throw new ValidationException(String.format("Вы превысили лимит треков в очереди (%s) :raised_hand:", queueLimit));
             }
         }
         if (duplicateLimit != null) {
-            List<TrackRequest> userQueue = handler.getQueue().stream().filter(e -> compareTracks(e.getTrack(), track)).collect(Collectors.toList());
+            List<TrackRequest> userQueue = instance.getQueue().stream().filter(e -> compareTracks(e.getTrack(), track)).collect(Collectors.toList());
             if (userQueue.size() >= duplicateLimit) {
                 throw new ValidationException(String.format("Превышен лимит одинаковых треков в очереди (%s) :raised_hand:", duplicateLimit));
             }
@@ -69,7 +69,7 @@ public class ValidationService {
         Long queueLimit = context.getConfig().getMusicQueueLimit();
         Long durationLimit = context.getConfig().getMusicDurationLimit();
         Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
-        PlaybackHandler handler = handlerService.getHandler(context.getGuild());
+        PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
         if (!Boolean.TRUE.equals(context.getConfig().getMusicPlaylistEnabled())) {
             throw new ValidationException("Плейлисты запрещены на этом сервере :raised_hand:");
@@ -91,7 +91,7 @@ public class ValidationService {
         }
 
         if (!tracks.isEmpty() && duplicateLimit != null) {
-            List<TrackRequest> queue = handler.getQueue();
+            List<TrackRequest> queue = instance.getQueue();
             tracks = tracks.stream().filter(e -> queue.stream().filter(e2 -> compareTracks(e2.getTrack(), e)).count() < duplicateLimit).collect(Collectors.toList());
             if (tracks.isEmpty()) {
                 throw new ValidationException(String.format("Ни один трек плейлиста не подходит под ограничение %d одинаковых треков :raised_hand:", duplicateLimit));
@@ -103,7 +103,7 @@ public class ValidationService {
         }
 
         if (queueLimit != null) {
-            List<TrackRequest> userQueue = handler.getQueue(requestedBy);
+            List<TrackRequest> userQueue = instance.getQueue(requestedBy);
             int availableSlots = queueLimit.intValue() - userQueue.size();
             if (availableSlots <= 0) {
                 throw new ValidationException(String.format("Вы превысили лимит треков в очереди (%s) :raised_hand:", queueLimit));

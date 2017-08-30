@@ -17,7 +17,7 @@ public class VolumeCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int volume = parseCount(content);
-        handlerService.setVolume(message.getGuild(), volume);
+        playerService.getInstance(message.getGuild()).setVolume(volume);
         messageManager.onMessage(message.getChannel(), String.format("Громкость установлена на %d%% %s", volume, CommonUtils.getVolumeIcon(volume)));
         return true;
     }

@@ -201,7 +201,7 @@ public class AudioMessageManager {
         builder.addField("Длительность", getTextProgress(request.getTrack()), true);
         builder.addField("Поставил", request.getUser().getName(), true);
 
-        PlaybackHandler handler = request.getOwner();
+        PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
         if (handler != null) {
             if (handler.getPlayer().getVolume() < 100) {
                 int volume = handler.getPlayer().getVolume();
