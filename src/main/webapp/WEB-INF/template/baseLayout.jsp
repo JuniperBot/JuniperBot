@@ -43,6 +43,7 @@
     <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/dynamic-list.js?v=${buildTimestamp}"/>"></script>
 
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-32x32.png"/>" sizes="32x32" />
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-16x16.png"/>" sizes="16x16" />

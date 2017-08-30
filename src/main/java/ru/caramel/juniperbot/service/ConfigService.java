@@ -9,5 +9,7 @@ public interface ConfigService {
 
     void saveConfig(ConfigDto dto, long serverId);
 
+    void save(GuildConfig config);
+
     GuildConfig getOrCreate(long serverId);
 }

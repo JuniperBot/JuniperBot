@@ -53,6 +53,12 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional
+    public void save(GuildConfig config) {
+        repository.save(config);
+    }
+
+    @Override
+    @Transactional
     public GuildConfig getOrCreate(long serverId) {
         GuildConfig config = repository.findByGuildId(serverId);
 

@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum CommandGroup {
 
     COMMON("Основное"),
-    MUSIC("Музыка");
+    MUSIC("Музыка"),
+    CUSTOM("Пользовательские команды");
 
     @Getter
     private String title;

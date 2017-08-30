@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="29082017-1-1" author="caramel">
+        <createTable tableName="custom_command">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_custom_command"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_custom_command_guild_config" references="guild_config(id)" />
+            </column>
+            <column name="type" type="VARCHAR(10)">
+                <constraints nullable="false" />
+            </column>
+            <column name="key" type="VARCHAR(25)">
+                <constraints nullable="false" />
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="29082017-1-2" author="caramel">
+        <createIndex indexName="idx_custom_command_entry"
+                     tableName="custom_command" unique="true">
+            <column name="guild_config_id" type="BIGINT)" />
+            <column name="key" type="VARCHAR(25)" />
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -28,9 +28,11 @@ public class PlaybackHandlerService {
 
     public PlaybackHandler getHandler(Guild guild) {
         synchronized (handlerMap) {
-            long guildId = Long.parseLong(guild.getId());
-            return handlerMap.computeIfAbsent(guildId,
-                    e -> applicationContext.getBean(PlaybackHandler.class));
+            return handlerMap.computeIfAbsent(guild.getIdLong(),
+                    e -> {
+                        activeTime.put(e, System.currentTimeMillis());
+                        return applicationContext.getBean(PlaybackHandler.class);
+                    });
         }
     }
 
@@ -98,7 +100,7 @@ public class PlaybackHandlerService {
                 }
             });
             inactiveIds.forEach(e -> {
-                handlerMap.remove(e);
+                handlerMap.remove(e).stop();
                 activeTime.remove(e);
             });
         }

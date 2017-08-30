@@ -14,7 +14,7 @@ import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 
 @Controller
-@Navigation(PageElement.CONFIG)
+@Navigation(PageElement.CONFIG_COMMON)
 public class ConfigurationController extends AbstractController {
 
     @RequestMapping("/config/{serverId}")

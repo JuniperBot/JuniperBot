@@ -39,7 +39,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
             if (navigation != null) {
                 PageElement pageElement = navigation.value();
 
-                MenuItem item = menuItems.stream().filter(e -> pageElement.equals(e.getElement())).findFirst().orElse(null);
+                MenuItem item = findForElement(pageElement, menuItems);
                 if (item != null) {
                     item.setCurrent(true);
 
@@ -58,6 +58,21 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
             }
         }
         parseMenu(modelAndView, toParse);
+    }
+
+    private MenuItem findForElement(PageElement element, List<MenuItem> items) {
+        for (MenuItem item : items) {
+            if (element.equals(item.getElement())) {
+                return item;
+            }
+            if (item.getChilds() != null) {
+                MenuItem child = findForElement(element, item.getChilds());
+                if (child != null) {
+                    return child;
+                }
+            }
+        }
+        return null;
     }
 
     private Collection<MenuItem> parseMenu(ModelAndView modelAndView, Collection<MenuItem> items) {

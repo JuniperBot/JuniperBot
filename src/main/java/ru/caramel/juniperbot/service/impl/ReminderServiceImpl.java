@@ -8,19 +8,17 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.persistence.entity.Reminder;
 import ru.caramel.juniperbot.persistence.repository.ReminderRepository;
 import ru.caramel.juniperbot.service.ReminderService;
 
 @Service
-public class ReminderServiceImpl implements ReminderService, ApplicationListener<DiscordEvent> {
+public class ReminderServiceImpl implements ReminderService {
 
     @Autowired
     private ReminderRepository repository;
@@ -92,9 +90,7 @@ public class ReminderServiceImpl implements ReminderService, ApplicationListener
     }
 
     @Override
-    public void onApplicationEvent(DiscordEvent readyEvent) {
-        if (readyEvent.isType(ReadyEvent.class)) {
-            repository.findAll().forEach(this::schedule);
-        }
+    public void loadAll() {
+        repository.findAll().forEach(this::schedule);
     }
 }
