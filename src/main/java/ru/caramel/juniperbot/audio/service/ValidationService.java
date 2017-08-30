@@ -71,6 +71,10 @@ public class ValidationService {
         Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
         PlaybackHandler handler = handlerService.getHandler(context.getGuild());
 
+        if (!Boolean.TRUE.equals(context.getConfig().getMusicPlaylistEnabled())) {
+            throw new ValidationException("Плейлисты запрещены на этом сервере :raised_hand:");
+        }
+
         List<AudioTrack> tracks = playlist.getTracks();
         if (!tracks.isEmpty() && !context.getConfig().isMusicStreamsEnabled()) {
             tracks = tracks.stream().filter(e -> !e.getInfo().isStream).collect(Collectors.toList());
