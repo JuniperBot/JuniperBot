@@ -8,7 +8,7 @@ public enum PageElement {
     DASHBOARD("Мониторинг", "fa fa-dashboard", "/dashboard/${serverId}"),
     CONFIG("Конфигурация", "fa fa-cogs", null),
     CONFIG_COMMON("Основные настройки", "fa fa-cog", "/config/${serverId}"),
-    CONFIG_COMMANDS("Пользовательские команды", "fa fa-terminal", "/commands/${serverId}")
+    CONFIG_COMMANDS("Польз. команды", "fa fa-terminal", "/commands/${serverId}")
     ;
 
     @Getter

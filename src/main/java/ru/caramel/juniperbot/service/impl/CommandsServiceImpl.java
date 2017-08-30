@@ -16,7 +16,6 @@ import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.ValidationException;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
-import ru.caramel.juniperbot.integration.discord.DiscordBeanProviders;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.model.CustomCommandDto;
 import ru.caramel.juniperbot.persistence.entity.CustomCommand;
@@ -38,9 +37,6 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Autowired
     private DiscordConfig config;
-
-    @Autowired
-    private DiscordBeanProviders discordBeanProviders;
 
     @Autowired
     private ConfigService configService;
@@ -68,7 +64,6 @@ public class CommandsServiceImpl implements CommandsService {
         if (event.getAuthor().isBot()) {
             return;
         }
-        discordBeanProviders.setMessageContext(event);
         GuildConfig guildConfig = null;
         if (event.getChannelType().isGuild() && event.getGuild() != null) {
             guildConfig = configService.getOrCreate(event.getGuild().getIdLong());

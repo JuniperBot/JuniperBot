@@ -13,7 +13,7 @@ public abstract class TimingCommand extends AudioCommand {
 
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        TrackRequest current = handlerService.getCurrent(message.getGuild());
+        TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
         if (current == null) {
             messageManager.onMessage(message.getChannel(), "Воспроизведение не запущено");
             return false;

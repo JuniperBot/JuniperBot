@@ -1,0 +1,232 @@
+package ru.caramel.juniperbot.audio.service;
+
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.audio.model.RepeatMode;
+import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.service.ConfigService;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
+public class PlayerService extends AudioEventAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerService.class);
+
+    private final static long TIMEOUT = 180000; // 3 minutes
+
+    @Autowired
+    private AudioMessageManager messageManager;
+
+    @Autowired
+    private DiscordClient discordClient;
+
+    @Autowired
+    private ConfigService configService;
+
+    @Getter
+    private AudioPlayerManager playerManager;
+
+    private final Map<Guild, PlaybackInstance> instances = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    public void init() {
+        playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        instances.values().forEach(PlaybackInstance::stop);
+        playerManager.shutdown();
+    }
+
+    public PlaybackInstance getInstance(Guild guild) {
+        return instances.computeIfAbsent(guild, e -> {
+            AudioPlayer player = playerManager.createPlayer();
+            player.addListener(this);
+            return new PlaybackInstance(player, e);
+        });
+    }
+
+    public void play(List<TrackRequest> requests) throws DiscordException {
+        if (CollectionUtils.isEmpty(requests)) {
+            return;
+        }
+        TrackRequest request = requests.get(0);
+        PlaybackInstance instance = getInstance(request.getChannel().getGuild());
+        play(request, instance);
+        if (requests.size() > 1) {
+            requests.subList(1, requests.size()).forEach(instance::offer);
+        }
+    }
+
+    public void play(TrackRequest request) throws DiscordException {
+        PlaybackInstance instance = getInstance(request.getChannel().getGuild());
+        play(request, instance);
+    }
+
+    public void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
+        messageManager.onTrackAdd(request, instance.getCursor() < 0);
+        if (!instance.isConnected()) {
+            VoiceChannel channel = getDesiredChannel(request.getMember());
+            if (channel == null) {
+                return;
+            }
+            if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+                throw new DiscordException("У меня нет доступа в этот голосовой канал!");
+            }
+            instance.openAudioConnection(channel);
+        }
+        instance.play(request);
+    }
+
+    public void skipTrack(Guild guild) {
+        PlaybackInstance instance = getInstance(guild);
+        // сбросим режим если принудительно вызвали следующий
+        if (RepeatMode.CURRENT.equals(instance.getMode())) {
+            instance.setMode(RepeatMode.NONE);
+        }
+        onTrackEnd(instance.getPlayer(), instance.getPlayer().getPlayingTrack(), AudioTrackEndReason.FINISHED);
+    }
+
+    public boolean isInChannel(Member member) {
+        PlaybackInstance instance = getInstance(member.getGuild());
+        VoiceChannel channel = getChannel(member, instance);
+        return channel != null && channel.getMembers().contains(member);
+    }
+
+    private VoiceChannel getDesiredChannel(Member member) {
+        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
+        VoiceChannel channel = null;
+        if (config.isMusicUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+            channel = member.getVoiceState().getChannel();
+        }
+        if (channel == null && config.getMusicChannelId() != null) {
+            channel = discordClient.getJda().getVoiceChannelById(config.getMusicChannelId());
+        }
+        if (channel == null) {
+            List<VoiceChannel> channels = member.getGuild().getVoiceChannels();
+            if (!channels.isEmpty()) {
+                channel = channels.get(0);
+            }
+        }
+        return channel;
+    }
+
+    public VoiceChannel getChannel(Member member) {
+        PlaybackInstance instance = getInstance(member.getGuild());
+        return getChannel(member, instance);
+    }
+
+    private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
+        return instance.isActive() ? instance.getAudioManager().getConnectedChannel() : getDesiredChannel(member);
+    }
+
+    private long countListeners(PlaybackInstance instance) {
+        if (instance.isActive()) {
+            return instance.getAudioManager().getConnectedChannel().getMembers()
+                    .stream()
+                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
+        }
+        return 0;
+    }
+
+    @Scheduled(fixedDelay = 15000)
+    public void monitor() {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        Set<Guild> inactiveIds = new HashSet<>();
+        instances.forEach((k, v) -> {
+            long lastMillis = v.getActiveTime();
+            TrackRequest current = v.getCurrent();
+            if (!discordClient.isConnected() || countListeners(v) > 0) {
+                v.setActiveTime(currentTimeMillis);
+                return;
+            }
+            if (current != null && currentTimeMillis - lastMillis > TIMEOUT) {
+                messageManager.onTimeout(current.getChannel());
+                v.stop();
+                inactiveIds.add(k);
+            }
+        });
+        inactiveIds.forEach(instances::remove);
+    }
+
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        if (track == null) {
+            return;
+        }
+
+        PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+        TrackRequest current = instance.getCurrent();
+        messageManager.onTrackEnd(current);
+        switch (endReason) {
+            case STOPPED:
+            case CLEANUP:
+                break;
+            case REPLACED:
+                return;
+            case FINISHED:
+            case LOAD_FAILED:
+                if (instance.playNext()) {
+                    return;
+                }
+                messageManager.onQueueEnd(current);
+                break;
+        }
+        instance.reset();
+    }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+        messageManager.onTrackStart(instance.getCurrent());
+    }
+
+    @Override
+    public void onPlayerPause(AudioPlayer player) {
+        PlaybackInstance instance = player.getPlayingTrack().getUserData(PlaybackInstance.class);
+        if (instance.isActive()) {
+            messageManager.onTrackPause(instance.getCurrent());
+        }
+    }
+
+    @Override
+    public void onPlayerResume(AudioPlayer player) {
+        PlaybackInstance instance = player.getPlayingTrack().getUserData(PlaybackInstance.class);
+        if (instance.isActive()) {
+            messageManager.onTrackResume(instance.getCurrent());
+        }
+    }
+
+    @Override
+    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+        LOGGER.error("Track error", exception);
+    }
+}

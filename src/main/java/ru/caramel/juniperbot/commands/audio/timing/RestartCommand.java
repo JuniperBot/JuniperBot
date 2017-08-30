@@ -17,7 +17,7 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 public class RestartCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (!handlerService.seek(message.getGuild(), 0)) {
+        if (!playerService.getInstance(message.getGuild()).seek(0)) {
             messageManager.onMessage(message.getChannel(), "Данную композицию нельзя воспроизвести с начала");
         }
         return false;

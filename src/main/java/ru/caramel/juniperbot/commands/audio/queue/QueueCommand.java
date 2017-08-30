@@ -35,7 +35,7 @@ public class QueueCommand extends AudioCommand {
             messageManager.onQueueError(message.getTextChannel(), "Укажите корректный номер страницы");
             return false;
         }
-        return print(message.getTextChannel(), context, handlerService.getQueue(message.getGuild()), pageNum);
+        return print(message.getTextChannel(), context, playerService.getInstance(message.getGuild()).getQueue(), pageNum);
     }
 
     private boolean print(TextChannel channel, BotContext context, List<TrackRequest> requests, int pageNum) {

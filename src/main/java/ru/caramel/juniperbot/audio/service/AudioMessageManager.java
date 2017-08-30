@@ -24,6 +24,7 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
@@ -140,6 +141,12 @@ public class AudioMessageManager {
         final int totalPages = parts.size();
         final int offset = (pageNum - 1) * pageSize + 1;
 
+        final long totalDuration = requests.stream()
+                .filter(Objects::nonNull)
+                .map(TrackRequest::getTrack)
+                .filter(Objects::nonNull)
+                .mapToLong(AudioTrack::getDuration).sum();
+
         if (pageNum > totalPages) {
             onQueueError(sourceChannel, String.format("Всего страниц: %d", parts.size()));
             return;
@@ -153,15 +160,16 @@ public class AudioMessageManager {
             AudioTrackInfo info = track.getInfo();
 
             int rowNum = i + offset;
-            String title = String.format("%d. %s [%s](%s) от %s", rowNum, rowNum == 1 ? ":musical_note: " : "",
-                    info.title, info.uri, request.getUser().getName());
+            String title = String.format("%d. `[%s]` %s [%s](%s)  от %s", rowNum,
+                    CommonUtils.formatDuration(track.getDuration()), rowNum == 1 ? ":musical_note: " : "",
+                    info.title, info.uri, request.getMember().getEffectiveName());
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
-        if (totalPages > 1) {
-            builder.setFooter(String.format("Страница %d из %d, всего %d в очереди. Введите: %sочередь <номер>",
-                    pageNum, totalPages, requests.size(), context.getPrefix()), null);
-        }
-
+        builder.setFooter(totalPages > 1
+                ? String.format("Страница %d из %d, всего %d в очереди общей длительностью %s. Введите: %sочередь <страница>",
+                pageNum, totalPages, requests.size(), CommonUtils.formatDuration(totalDuration), context.getPrefix())
+                : String.format("Всего %d в очереди общей длительностью %s",
+                requests.size(), CommonUtils.formatDuration(totalDuration)), null);
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
@@ -199,9 +207,9 @@ public class AudioMessageManager {
         EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
         builder.addField("Длительность", getTextProgress(request.getTrack()), true);
-        builder.addField("Поставил", request.getUser().getName(), true);
+        builder.addField("Поставил", request.getMember().getEffectiveName(), true);
 
-        PlaybackHandler handler = request.getOwner();
+        PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
         if (handler != null) {
             if (handler.getPlayer().getVolume() < 100) {
                 int volume = handler.getPlayer().getVolume();

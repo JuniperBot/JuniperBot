@@ -21,7 +21,7 @@ public class SeekCommand extends TimingCommand {
         AudioTrack track = request.getTrack();
         long duration = track.getDuration();
         millis = Math.min(duration, millis);
-        if (handlerService.seek(message.getGuild(), millis)) {
+        if (playerService.getInstance(message.getGuild()).seek(millis)) {
             messageManager.onMessage(message.getChannel(), String.format("**%s** перемотан на `%s`", track.getInfo().title,  CommonUtils.formatDuration(millis)));
             request.setResetMessage(true);
         }

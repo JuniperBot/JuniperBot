@@ -3,12 +3,41 @@
 
 <spring:url value="/commands/${serverId}" var="actionUrl"/>
 
+<div id="help-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Справка по пользовательским командам</h4>
+            </div>
+            <div class="modal-body">
+                <p>Здесь вы можете добавить свои собственные команды с какой-нибудь информацией или еще чем-нибудь. Поддерживается два типа команд:</p>
+                <ol>
+                    <li>Сообщение — распечатает указанное сообщение в ответ на команду;</li>
+                    <li>Перенаправление — является псевдонимом другой команды. Например, для сокращения можно создать команду <code>рик</code>
+                        с телом <code>плей Rick Roll</code>, которая запустит воспроизведение указанной композиции.</li>
+                </ol>
+                <p>В теле команды поддерживаются ключевые слова:</p>
+                <ul>
+                    <li><code>{автор}</code> — заменяется на упоминание пользователя, запросившего команду;</li>
+                    <li><code>{сервер}</code> — заменяется на название вашего сервера;</li>
+                    <li><code>{текст}</code> — заменяется на текст, следуемый за командой (аргументы).</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form:form id="commandsForm" modelAttribute="commandsContainer" method="post" action="${actionUrl}">
     <div class="row">
         <div class="col-md-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Пользовательские команды</h3>
+                    <h3 class="box-title">Пользовательские команды
+                        <i class="fa fa-question-circle" style="cursor: pointer" data-toggle="modal" data-target="#help-dialog"></i></h3>
                 </div>
                 <div id="commandsContainer" class="box-body">
                     <div class="noCommandsItem" style="display: none;">Нет пользовательских команд</div>
