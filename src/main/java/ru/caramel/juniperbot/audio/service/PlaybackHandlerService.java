@@ -1,6 +1,7 @@
 package ru.caramel.juniperbot.audio.service;
 
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -8,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
+import ru.caramel.juniperbot.integration.discord.DiscordClient;
 
 import java.util.*;
 
@@ -21,6 +23,9 @@ public class PlaybackHandlerService {
 
     @Autowired
     private AudioMessageManager messageManager;
+
+    @Autowired
+    private DiscordClient discordClient;
 
     private final Map<Long, PlaybackHandler> handlerMap = new HashMap<>();
 
@@ -44,8 +49,8 @@ public class PlaybackHandlerService {
         getHandler(guild).setVolume(volume);
     }
 
-    public boolean isInChannel(Guild guild, User user) {
-        return getHandler(guild).isInChannel(user);
+    public boolean isInChannel(Member member) {
+        return getHandler(member.getGuild()).isInChannel(member);
     }
 
     public boolean pauseTrack(Guild guild) {
@@ -89,7 +94,8 @@ public class PlaybackHandlerService {
             handlerMap.forEach((k, v) -> {
                 long lastMillis = activeTime.computeIfAbsent(k, e -> currentTimeMillis);
                 TrackRequest current = v.getCurrent();
-                if (v.getChannel().getMembers().stream().filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count() > 0) {
+                if (!discordClient.isConnected() || v.getChannel() != null && v.getChannel().getMembers().stream()
+                        .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count() > 0) {
                     activeTime.put(k, currentTimeMillis);
                     return;
                 }

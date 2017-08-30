@@ -32,13 +32,7 @@ public class PlaybackHandler extends AudioEventAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlaybackHandler.class);
 
     @Autowired
-    private Guild guild;
-
-    @Autowired
     private DiscordClient discordClient;
-
-    @Autowired
-    private AudioManager audioManager;
 
     @Autowired
     private AudioPlayerManager playerManager;
@@ -55,25 +49,31 @@ public class PlaybackHandler extends AudioEventAdapter {
     @Getter
     private AudioPlayer player;
 
+    private AudioManager audioManager;
+
     private final List<TrackRequest> playlist = Collections.synchronizedList(new ArrayList<>());
 
     private int cursor = -1;
+
+    private Long guildId = null;
 
     @PostConstruct
     public void init() {
         player = playerManager.createPlayer();
         player.addListener(this);
-        audioManager.setSendingHandler(new GuildAudioSendHandler(player));
     }
 
     private VoiceChannel getDesiredChannel() {
-        GuildConfig config = configService.getOrCreate(guild.getIdLong());
+        if (guildId == null) {
+            return null;
+        }
+        GuildConfig config = configService.getOrCreate(guildId);
         return config.getMusicChannelId() != null
                 ? discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) : null;
     }
 
     public VoiceChannel getChannel() {
-        return audioManager.isConnected() && audioManager.getConnectedChannel() != null
+        return audioManager != null && audioManager.isConnected() && audioManager.getConnectedChannel() != null
                 ? audioManager.getConnectedChannel() : getDesiredChannel();
     }
 
@@ -89,6 +89,14 @@ public class PlaybackHandler extends AudioEventAdapter {
     }
 
     public void play(TrackRequest request) {
+        Guild guild = request.getChannel().getGuild();
+        if (guildId == null) {
+            guildId = guild.getIdLong();
+        }
+        if (audioManager == null) {
+            audioManager = guild.getAudioManager();
+            audioManager.setSendingHandler(new GuildAudioSendHandler(player));
+        }
         messageManager.onTrackAdd(request, cursor < 0);
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
             VoiceChannel channel = getDesiredChannel();
@@ -108,9 +116,12 @@ public class PlaybackHandler extends AudioEventAdapter {
         }
     }
 
-    public boolean isInChannel(User user) {
+    public boolean isInChannel(Member member) {
+        if (guildId == null) {
+            guildId = member.getGuild().getIdLong();
+        }
         VoiceChannel channel = getChannel();
-        return channel != null && channel.getMembers().stream().map(Member::getUser).anyMatch(user::equals);
+        return channel != null && channel.getMembers().contains(member);
     }
 
     public void nextTrack() {
@@ -287,6 +298,7 @@ public class PlaybackHandler extends AudioEventAdapter {
     }
 
     public boolean isActive() {
-        return audioManager.isConnected() && audioManager.getConnectedChannel() != null && player.getPlayingTrack() != null;
+        return audioManager != null && audioManager.isConnected()
+                && audioManager.getConnectedChannel() != null && player.getPlayingTrack() != null;
     }
 }

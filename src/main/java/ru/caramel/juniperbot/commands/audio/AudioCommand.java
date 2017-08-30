@@ -21,7 +21,7 @@ public abstract class AudioCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (isChannelRestricted() && !handlerService.isInChannel(message.getGuild(), message.getAuthor())) {
+        if (isChannelRestricted() && !handlerService.isInChannel(message.getMember())) {
             throw new ValidationException("Сперва вы должны зайти в голосовой канал :raised_hand:");
         }
         doInternal(message, context, content);
