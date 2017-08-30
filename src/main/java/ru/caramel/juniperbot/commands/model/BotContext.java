@@ -1,13 +1,13 @@
 package ru.caramel.juniperbot.commands.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.requests.RequestFuture;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
@@ -19,9 +19,29 @@ public class BotContext {
 
     private GuildConfig config;
 
-    private Message searchMessage;
+    @Getter(AccessLevel.PRIVATE)
+    private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
-    private List<String> searchResults;
+    public Object getAttribute(String key) {
+        return attributes.get(key);
+    }
 
-    private List<RequestFuture<Void>> searchActions;
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(Class<T> type, String key) {
+        Object value = getAttribute(key);
+        return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;
+    }
+
+    public Object putAttribute(String key, Object value) {
+        return attributes.put(key, value);
+    }
+
+    public Object removeAttribute(String key) {
+        return attributes.get(key);
+    }
+
+    public <T> T removeAttribute(Class<T> type, String key) {
+        Object value = removeAttribute(key);
+        return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;
+    }
 }

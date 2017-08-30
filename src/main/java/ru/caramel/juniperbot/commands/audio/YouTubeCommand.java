@@ -72,16 +72,16 @@ public class YouTubeCommand extends PlayCommand {
             } catch (Exception ex) {
                 // ignore
             }
-            context.setSearchResults(urls);
-            context.setSearchMessage(e);
-            context.setSearchActions(actions);
+            context.putAttribute(ATTR_SEARCH_RESULTS, urls);
+            context.putAttribute(ATTR_SEARCH_MESSAGE, e);
+            context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
             reactionsListener.onReaction(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getEmote().getName();
                     int index = ArrayUtils.indexOf(CHOICES, emote);
-                    if (index >= 0 && playerService.isInChannel(e.getMember())) {
+                    if (index >= 0 && playerService.isInChannel(event.getMember())) {
                         String query = getChoiceUrl(context, index);
-                        loadAndPlay(message.getTextChannel(), context, e.getAuthor(), query);
+                        loadAndPlay(message.getTextChannel(), context, event.getUser(), query);
                         return true;
                     }
                 }

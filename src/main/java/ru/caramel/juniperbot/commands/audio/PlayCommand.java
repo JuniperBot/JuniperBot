@@ -4,9 +4,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,12 @@ import java.util.stream.Collectors;
         priority = 104)
 public class PlayCommand extends AudioCommand {
 
+    protected static final String ATTR_SEARCH_MESSAGE = "search-message";
+
+    protected static final String ATTR_SEARCH_RESULTS = "search-results";
+
+    protected static final String ATTR_SEARCH_ACTIONS = "search-actions";
+
     @Autowired
     private YouTubeClient youTubeClient;
 
@@ -40,11 +48,13 @@ public class PlayCommand extends AudioCommand {
         if (!message.getMessage().getAttachments().isEmpty()) {
             query = message.getMessage().getAttachments().get(0).getUrl();
         }
-        if (StringUtils.isNumeric(query) && CollectionUtils.isNotEmpty(context.getSearchResults())) {
+
+        List<String> results = (List<String>) context.getAttribute(ATTR_SEARCH_RESULTS);
+        if (StringUtils.isNumeric(query) && CollectionUtils.isNotEmpty(results)) {
             int index = Integer.parseInt(query) - 1;
             query = getChoiceUrl(context, index);
             if (query == null) {
-                messageManager.onQueueError(message.getChannel(), String.format("Введите номер от 1 до %s", context.getSearchResults().size()));
+                messageManager.onQueueError(message.getChannel(), String.format("Введите номер от 1 до %s", results.size()));
                 return false;
             }
         }
@@ -56,17 +66,19 @@ public class PlayCommand extends AudioCommand {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     protected String getChoiceUrl(BotContext context, int index) {
-        if (index < 0 || index > context.getSearchResults().size() - 1) {
+        List<String> results = (List<String>) context.getAttribute(ATTR_SEARCH_RESULTS);
+        if (index < 0 || CollectionUtils.isEmpty(results) || index > results.size() - 1) {
             return null;
         }
-        String query = context.getSearchResults().get(index);
-        context.getSearchActions().forEach(e1 -> e1.cancel(true));
-        context.setSearchActions(null);
-        context.getSearchMessage().delete().queue();
-        context.setSearchMessage(null);
-        context.setSearchResults(null);
-        return query;
+        List<RequestFuture<Void>> actions = (List<RequestFuture<Void>>) context.getAttribute(ATTR_SEARCH_ACTIONS);
+        if (actions != null) {
+            actions.forEach(e1 -> e1.cancel(true));
+            context.removeAttribute(ATTR_SEARCH_ACTIONS);
+        }
+        context.removeAttribute(Message.class, ATTR_SEARCH_MESSAGE).delete().queue();
+        return (String) context.removeAttribute(List.class, ATTR_SEARCH_RESULTS).get(index);
     }
 
     protected void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
