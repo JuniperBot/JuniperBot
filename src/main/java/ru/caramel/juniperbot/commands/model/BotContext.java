@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public class BotContext {
     private Message searchMessage;
 
     private List<String> searchResults;
+
+    private List<RequestFuture<Void>> searchActions;
 }

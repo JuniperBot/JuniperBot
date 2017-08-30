@@ -42,24 +42,34 @@ public class PlayCommand extends AudioCommand {
         }
         if (StringUtils.isNumeric(query) && CollectionUtils.isNotEmpty(context.getSearchResults())) {
             int index = Integer.parseInt(query) - 1;
-            if (index < 0 || index > context.getSearchResults().size() - 1) {
+            query = getChoiceUrl(context, index);
+            if (query == null) {
                 messageManager.onQueueError(message.getChannel(), String.format("Введите номер от 1 до %s", context.getSearchResults().size()));
                 return false;
             }
-            query = context.getSearchResults().get(index);
-            context.getSearchMessage().delete().queue();
-            context.setSearchMessage(null);
         }
         if (!ResourceUtils.isUrl(query)) {
             String result = youTubeClient.searchForUrl(query);
             query = result != null ? result : query;
         }
         loadAndPlay(message.getTextChannel(), context, message.getAuthor(), query);
-        context.setSearchResults(null);
         return true;
     }
 
-    public void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
+    protected String getChoiceUrl(BotContext context, int index) {
+        if (index < 0 || index > context.getSearchResults().size() - 1) {
+            return null;
+        }
+        String query = context.getSearchResults().get(index);
+        context.getSearchActions().forEach(e1 -> e1.cancel(true));
+        context.setSearchActions(null);
+        context.getSearchMessage().delete().queue();
+        context.setSearchMessage(null);
+        context.setSearchResults(null);
+        return query;
+    }
+
+    protected void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
         PlaybackInstance instance = playerService.getInstance(channel.getGuild());
         playerService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
             @Override
