@@ -26,6 +26,8 @@ public class ConfigDto implements Serializable {
     @NotNull
     private Boolean musicPlaylistEnabled;
 
+    private boolean musicUserJoinEnabled;
+
     private boolean musicStreamsEnabled;
 
     @NotNull

@@ -1,5 +1,6 @@
 package ru.caramel.juniperbot.commands.audio;
 
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.audio.service.PlayerService;
@@ -22,7 +23,8 @@ public abstract class AudioCommand implements Command {
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (isChannelRestricted() && !playerService.isInChannel(message.getMember())) {
-            throw new ValidationException("Сперва вы должны зайти в голосовой канал :raised_hand:");
+            VoiceChannel channel = playerService.getChannel(message.getMember());
+            throw new ValidationException(String.format("Сперва вы должны зайти в голосовой канал (%s) :raised_hand:", channel.getName()));
         }
         doInternal(message, context, content);
         return false;

@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.service.ConfigService;
 
@@ -71,7 +73,7 @@ public class PlayerService extends AudioEventAdapter {
         });
     }
 
-    public void play(List<TrackRequest> requests) {
+    public void play(List<TrackRequest> requests) throws DiscordException {
         if (CollectionUtils.isEmpty(requests)) {
             return;
         }
@@ -83,17 +85,20 @@ public class PlayerService extends AudioEventAdapter {
         }
     }
 
-    public void play(TrackRequest request) {
+    public void play(TrackRequest request) throws DiscordException {
         PlaybackInstance instance = getInstance(request.getChannel().getGuild());
         play(request, instance);
     }
 
-    public void play(TrackRequest request, PlaybackInstance instance) {
+    public void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
         messageManager.onTrackAdd(request, instance.getCursor() < 0);
         if (!instance.isConnected()) {
-            VoiceChannel channel = getDesiredChannel(instance.getGuild());
+            VoiceChannel channel = getDesiredChannel(request.getMember());
             if (channel == null) {
                 return;
+            }
+            if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+                throw new DiscordException("У меня нет доступа в этот голосовой канал!");
             }
             instance.openAudioConnection(channel);
         }
@@ -110,22 +115,45 @@ public class PlayerService extends AudioEventAdapter {
     }
 
     public boolean isInChannel(Member member) {
-        VoiceChannel channel = getChannel(member.getGuild());
+        PlaybackInstance instance = getInstance(member.getGuild());
+        VoiceChannel channel = getChannel(member, instance);
         return channel != null && channel.getMembers().contains(member);
     }
 
-    private VoiceChannel getDesiredChannel(Guild guild) {
-        GuildConfig config = configService.getOrCreate(guild.getIdLong());
-        return config.getMusicChannelId() != null
-                ? discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) : null;
+    private VoiceChannel getDesiredChannel(Member member) {
+        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
+        VoiceChannel channel = null;
+        if (config.isMusicUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+            channel = member.getVoiceState().getChannel();
+        }
+        if (channel == null && config.getMusicChannelId() != null) {
+            channel = discordClient.getJda().getVoiceChannelById(config.getMusicChannelId());
+        }
+        if (channel == null) {
+            List<VoiceChannel> channels = member.getGuild().getVoiceChannels();
+            if (!channels.isEmpty()) {
+                channel = channels.get(0);
+            }
+        }
+        return channel;
     }
 
-    public VoiceChannel getChannel(Guild guild) {
-        return getChannel(getInstance(guild));
+    public VoiceChannel getChannel(Member member) {
+        PlaybackInstance instance = getInstance(member.getGuild());
+        return getChannel(member, instance);
     }
 
-    public VoiceChannel getChannel(PlaybackInstance instance) {
-        return instance.isActive() ? instance.getAudioManager().getConnectedChannel() : getDesiredChannel(instance.getGuild());
+    private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
+        return instance.isActive() ? instance.getAudioManager().getConnectedChannel() : getDesiredChannel(member);
+    }
+
+    private long countListeners(PlaybackInstance instance) {
+        if (instance.isActive()) {
+            return instance.getAudioManager().getConnectedChannel().getMembers()
+                    .stream()
+                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
+        }
+        return 0;
     }
 
     @Scheduled(fixedDelay = 15000)
@@ -136,8 +164,7 @@ public class PlayerService extends AudioEventAdapter {
         instances.forEach((k, v) -> {
             long lastMillis = v.getActiveTime();
             TrackRequest current = v.getCurrent();
-            if (!discordClient.isConnected() || getChannel(v) != null && getChannel(v).getMembers().stream()
-                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count() > 0) {
+            if (!discordClient.isConnected() || countListeners(v) > 0) {
                 v.setActiveTime(currentTimeMillis);
                 return;
             }

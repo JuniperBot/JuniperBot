@@ -158,8 +158,8 @@ public class PlaybackInstance {
         return Collections.unmodifiableList(result);
     }
 
-    public synchronized List<TrackRequest> getQueue(User user) {
-        return getQueue().stream().filter(e -> user.equals(e.getUser())).collect(Collectors.toList());
+    public synchronized List<TrackRequest> getQueue(Member member) {
+        return getQueue().stream().filter(e -> member.equals(e.getMember())).collect(Collectors.toList());
     }
 
     public synchronized boolean seek(long position) {

@@ -81,7 +81,7 @@ public class YouTubeCommand extends PlayCommand {
                     int index = ArrayUtils.indexOf(CHOICES, emote);
                     if (index >= 0 && playerService.isInChannel(event.getMember())) {
                         String query = getChoiceUrl(context, index);
-                        loadAndPlay(message.getTextChannel(), context, event.getUser(), query);
+                        loadAndPlay(message.getTextChannel(), context, event.getMember(), query);
                         return true;
                     }
                 }

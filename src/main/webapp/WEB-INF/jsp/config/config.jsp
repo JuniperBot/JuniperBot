@@ -91,6 +91,15 @@
                                 <form:select id="music-channel" path="musicChannelId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;"
                                              items="${voiceChannels}" itemValue="idLong" itemLabel="name" />
                                 <form:errors path="musicChannelId" class="help-block" />
+                                <spring:bind path="musicUserJoinEnabled">
+                                    <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
+                                        <label>
+                                            <form:checkbox path="musicUserJoinEnabled" cssStyle="margin-top: 4px;" />
+                                            Разрешить присоединяться в канал пользователя
+                                        </label>
+                                        <form:errors path="musicUserJoinEnabled" class="help-block" />
+                                    </div>
+                                </spring:bind>
                             </div>
                         </div>
                     </spring:bind>

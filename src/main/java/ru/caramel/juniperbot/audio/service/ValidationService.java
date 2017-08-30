@@ -3,7 +3,7 @@ package ru.caramel.juniperbot.audio.service;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
@@ -38,7 +38,7 @@ public class ValidationService {
         return Objects.equals(info1, info1);
     }
 
-    public void validateSingle(AudioTrack track, User requestedBy, BotContext context) throws ValidationException {
+    public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
         Long queueLimit = context.getConfig().getMusicQueueLimit();
         Long durationLimit = context.getConfig().getMusicDurationLimit();
         Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
@@ -65,7 +65,7 @@ public class ValidationService {
         }
     }
 
-    public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, User requestedBy, BotContext context) throws ValidationException {
+    public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
         Long queueLimit = context.getConfig().getMusicQueueLimit();
         Long durationLimit = context.getConfig().getMusicDurationLimit();
         Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();

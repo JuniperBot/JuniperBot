@@ -4,9 +4,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,7 +62,7 @@ public class PlayCommand extends AudioCommand {
             String result = youTubeClient.searchForUrl(query);
             query = result != null ? result : query;
         }
-        loadAndPlay(message.getTextChannel(), context, message.getAuthor(), query);
+        loadAndPlay(message.getTextChannel(), context, message.getMember(), query);
         return true;
     }
 
@@ -81,7 +81,7 @@ public class PlayCommand extends AudioCommand {
         return (String) context.removeAttribute(List.class, ATTR_SEARCH_RESULTS).get(index);
     }
 
-    protected void loadAndPlay(final TextChannel channel, final BotContext context, final User requestedBy, final String trackUrl) {
+    protected void loadAndPlay(final TextChannel channel, final BotContext context, final Member requestedBy, final String trackUrl) {
         PlaybackInstance instance = playerService.getInstance(channel.getGuild());
         playerService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -89,7 +89,7 @@ public class PlayCommand extends AudioCommand {
                 try {
                     validationService.validateSingle(track, requestedBy, context);
                     playerService.play(new TrackRequest(track, requestedBy, channel));
-                } catch (ValidationException e) {
+                } catch (DiscordException e) {
                     messageManager.onQueueError(channel, e.getMessage());
                 }
             }
@@ -99,7 +99,7 @@ public class PlayCommand extends AudioCommand {
                 try {
                     List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
                     playerService.play(tracks.stream().map(e -> new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
-                } catch (ValidationException e) {
+                } catch (DiscordException e) {
                     messageManager.onQueueError(channel, e.getMessage());
                 }
             }
