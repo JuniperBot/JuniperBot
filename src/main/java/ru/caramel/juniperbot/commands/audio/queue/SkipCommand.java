@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.CommandSource;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "скип",
-        description = "Перейти к воспроизведению следующего трека",
+        key = "discord.command.skip.key",
+        description = "discord.command.skip.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 110)

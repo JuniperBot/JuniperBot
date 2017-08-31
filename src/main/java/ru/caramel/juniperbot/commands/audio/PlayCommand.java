@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @DiscordCommand(
-        key = "плей",
-        description = "Воспроизвести композицию в голосовом канале по названию, указанному URL или приложенному файлу",
+        key = "discord.command.play.key",
+        description = "discord.command.play.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 104)
@@ -54,7 +54,7 @@ public class PlayCommand extends AudioCommand {
             int index = Integer.parseInt(query) - 1;
             query = getChoiceUrl(context, index);
             if (query == null) {
-                messageManager.onQueueError(message.getChannel(), String.format("Введите номер от 1 до %s", results.size()));
+                messageManager.onQueueError(message.getChannel(), "discord.command.audio.play.select", results.size());
                 return false;
             }
         }

@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "позиция",
-        description = "Перемотать воспроизведение на указанную позицию: [[чч:]мм:]сс",
+        key = "discord.command.seek.key",
+        description = "discord.command.seek.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 114)

@@ -10,8 +10,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "текущая",
-        description = "Показать текущую воспроизводимую композицию",
+        key = "discord.command.current.key",
+        description = "discord.command.current.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 102)

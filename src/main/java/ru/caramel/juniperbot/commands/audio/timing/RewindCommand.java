@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "назад",
-        description = "Перемотать воспроизведение назад на заданное время: [[чч:]мм:]сс",
+        key = "discord.command.rewind.key",
+        description = "discord.command.rewind.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 113)

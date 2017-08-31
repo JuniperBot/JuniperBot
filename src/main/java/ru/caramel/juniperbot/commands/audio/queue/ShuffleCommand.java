@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "перемешать",
-        description = "Перемешать очередь воспроизведения",
+        key = "discord.command.shuffle.key",
+        description = "discord.command.shuffle.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 109)

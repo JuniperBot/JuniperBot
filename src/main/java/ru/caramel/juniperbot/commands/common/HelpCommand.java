@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@DiscordCommand(key = "хелп", description = "Отображает эту справку", priority = 1)
+@DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
 public class HelpCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
@@ -66,12 +66,16 @@ public class HelpCommand implements Command {
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
         messages.add(embedBuilder);
 
-        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
+        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
+                context.getPrefix() + messageService.getMessage(e.key()),
+                messageService.getMessage(e.description()), false));
         if (CommandGroup.COMMON.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
                 if (direct) {
                     EmbedBuilder groupBuilder = getBaseEmbed(group, message);
-                    commands.forEach(e -> groupBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
+                    commands.forEach(e -> groupBuilder.addField(
+                            context.getPrefix() + messageService.getMessage(e.key()),
+                            messageService.getMessage(e.description()), false));
                     messages.add(groupBuilder);
                 } else {
                     embedBuilder.addField(String.format("%s (%s%s %s):",
@@ -79,7 +83,8 @@ public class HelpCommand implements Command {
                             context.getPrefix(),
                             messageService.getMessage("discord.command.help.key"),
                             group.getTitle().toLowerCase()),
-                            commands.stream().map(e -> '`' + context.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
+                            commands.stream().map(e -> '`' + context.getPrefix() + messageService.getMessage(e.key()) + '`')
+                                    .collect(Collectors.joining(", ")), false);
                 }
             });
 

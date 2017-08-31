@@ -177,6 +177,6 @@ public class CommandsServiceImpl implements CommandsService {
     private void registerCommands(List<Command> commands) {
         this.commands = commands.stream()
                 .filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class))
-                .collect(Collectors.toMap(e -> e.getClass().getAnnotation(DiscordCommand.class).key(), e -> e));
+                .collect(Collectors.toMap(e -> messageService.getMessage(e.getClass().getAnnotation(DiscordCommand.class).key()), e -> e));
     }
 }

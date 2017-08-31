@@ -10,8 +10,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "повтор",
-        description = "Режим повтора воспроизведения: этой|всех|выкл",
+        key = "discord.command.repeat.key",
+        description = "discord.command.repeat.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 108)

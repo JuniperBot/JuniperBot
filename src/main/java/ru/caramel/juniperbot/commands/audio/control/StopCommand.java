@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "стоп",
-        description = "Остановить воспроизведение с очисткой плейлиста",
+        key = "discord.command.stop.key",
+        description = "discord.command.stop.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 107)

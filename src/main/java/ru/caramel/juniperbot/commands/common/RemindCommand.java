@@ -19,7 +19,7 @@ import ru.caramel.juniperbot.utils.TimeSequenceParser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@DiscordCommand(key = "напомни", description = "Напомнить о чем-либо. Введите команду без аргументов для полной справки", priority = 2)
+@DiscordCommand(key = "discord.command.remind.key", description = "discord.command.remind.desc", priority = 2)
 public class RemindCommand implements Command {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(DateTimeZone.forID("Europe/Moscow"));
@@ -38,7 +38,6 @@ public class RemindCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-
         try {
             DateTime date = null;
             String reminder = null;

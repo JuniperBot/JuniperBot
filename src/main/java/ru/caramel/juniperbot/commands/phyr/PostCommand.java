@@ -20,7 +20,7 @@ import ru.caramel.juniperbot.service.PostService;
 
 import java.util.List;
 
-@DiscordCommand(key = "фыр", description = "Фыркнуть посты из блога Джупи (можно указать количество постов, по-умолчанию одно)", priority = 3)
+@DiscordCommand(key = "discord.command.post.key", description = "discord.command.post.desc", priority = 3)
 public class PostCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);

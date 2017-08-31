@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "пауза",
-        description = "Приостановить воспроизведение текущего трека",
+        key = "discord.command.pause.key",
+        description = "discord.command.pause.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 105)

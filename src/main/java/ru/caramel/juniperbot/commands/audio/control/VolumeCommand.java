@@ -7,8 +7,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "громкость",
-        description = "Установить громкость воспроизведения (параметр 1-100%, без параметра 100%)",
+        key = "discord.command.volume.key",
+        description = "discord.command.volume.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 111)

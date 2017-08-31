@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "сначала",
-        description = "Начать воспроизведение текущей композиции с начала",
+        key = "discord.command.restart.key",
+        description = "discord.command.restart.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 112)

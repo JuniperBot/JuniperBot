@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.util.*;
 
 @DiscordCommand(
-        key = "ютуб",
-        description = "Произвести поиск по указанному запросу по YouTube для выбора воспроизведения",
+        key = "discord.command.youtube.key",
+        description = "discord.command.youtube.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 103)
