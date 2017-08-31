@@ -33,7 +33,9 @@ public class TrackRequest {
 
     public void reset() {
         if (track != null) {
+            Object data = track.getUserData();
             track = track.makeClone();
+            track.setUserData(data);
         }
     }
 }
