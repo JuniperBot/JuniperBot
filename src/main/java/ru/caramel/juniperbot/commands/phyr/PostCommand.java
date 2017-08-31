@@ -15,6 +15,7 @@ import ru.caramel.juniperbot.integration.instagram.InstagramClient;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.service.PostService;
 
 import java.util.List;
@@ -30,6 +31,9 @@ public class PostCommand implements Command {
     @Autowired
     protected PostService postService;
 
+    @Autowired
+    protected MessageService messageService;
+
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int count = parseCount(content);
@@ -40,25 +44,21 @@ public class PostCommand implements Command {
             LOGGER.error("Could not get instagram data", e);
         }
 
-        try {
-            if (medias == null) {
-                message.getChannel().sendMessage("Произошла какая-то ошибка у моего блога... Давай попробуем позже?").queue();
-                return false;
-            }
-            if (medias.isEmpty()) {
-                message.getChannel().sendMessage("Что-то мне и нечего показать...").queue();
-                return false;
-            }
-
-            if (count > medias.size()) {
-                message.getChannel().sendMessage(String.format("У меня есть всего %s сообщений...", medias.size())).queue();
-                count = medias.size();
-            }
-            medias = medias.subList(0, count);
-            postService.post(medias, message.getChannel());
-        } catch (PermissionException e) {
-            LOGGER.warn("No permissions to message", e);
+        if (medias == null) {
+            messageService.onError(message.getChannel(), "discord.command.post.error");
+            return false;
         }
+        if (medias.isEmpty()) {
+            messageService.onMessage(message.getChannel(), "discord.command.post.empty");
+            return false;
+        }
+
+        if (count > medias.size()) {
+            messageService.onMessage(message.getChannel(),"discord.command.post.exceed", medias.size());
+            count = medias.size();
+        }
+        medias = medias.subList(0, count);
+        postService.post(medias, message.getChannel());
         return true;
     }
 
@@ -68,14 +68,14 @@ public class PostCommand implements Command {
             try {
                 count = Integer.parseInt(content);
             } catch (NumberFormatException e) {
-                throw new ValidationException("Фыр на тебя. Число мне, число!");
+                throw new ValidationException("discord.global.integer.parseError");
             }
             if (count == 0) {
-                throw new ValidationException("Всмысле ноль? Ну ладно, не буду ничего присылать.");
+                throw new ValidationException("discord.command.post.parse.zero");
             } else if (count > DiscordConfig.MAX_DETAILED) {
-                throw new ValidationException("Не могу прислать больше 3 фырок :C");
+                throw new ValidationException("discord.command.post.parse.max");
             } else if (count < 0) {
-                throw new ValidationException("Фтооо ты хочешь от меня?");
+                throw new ValidationException("discord.global.integer.negative");
             }
         }
         return count;

@@ -99,39 +99,39 @@ public class AudioMessageManager {
 
     public void onQueueEnd(TrackRequest request) {
         EmbedBuilder builder = getQueueMessage();
-        builder.setDescription("Достигнут конец очереди воспроизведения :musical_note:");
+        builder.setDescription(messageService.getMessage("discord.command.audio.queue.end"));
         messageService.sendMessageSilent(request.getChannel()::sendMessage, builder.build());
     }
 
-    public void onMessage(MessageChannel sourceChannel, String message) {
+    public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
         EmbedBuilder builder = getQueueMessage();
-        builder.setDescription(message);
+        builder.setDescription(messageService.getMessage(code, args));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onNoMatches(MessageChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
-        builder.setDescription(String.format("По запросу **%s** ничего не найдено. :grey_question:", query));
+        builder.setDescription(messageService.getMessage("discord.command.audio.search.noMatches", query));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onQueueError(MessageChannel sourceChannel, String error) {
+    public void onQueueError(MessageChannel sourceChannel, String code, Object... args) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
-        builder.setDescription(error);
+        builder.setDescription(messageService.getMessage(code, args));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onEmptyQueue(MessageChannel sourceChannel) {
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
-        builder.setDescription("Очередь воспроизведения пуста :flag_white: ");
+        builder.setDescription(messageService.getMessage("discord.command.audio.queue.empty"));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onTimeout(MessageChannel sourceChannel) {
+    public void onIdle(MessageChannel sourceChannel) {
         EmbedBuilder builder = getQueueMessage();
-        builder.setDescription("Воспроизведение остановлено, поскольку не осталось слушателей");
+        builder.setDescription(messageService.getMessage("discord.command.audio.queue.idle"));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
@@ -148,7 +148,7 @@ public class AudioMessageManager {
                 .mapToLong(AudioTrack::getDuration).sum();
 
         if (pageNum > totalPages) {
-            onQueueError(sourceChannel, String.format("Всего страниц: %d", parts.size()));
+            onQueueError(sourceChannel, "discord.command.audio.queue.list.totalPages", parts.size());
             return;
         }
         List<TrackRequest> pageRequests = parts.get(pageNum - 1);
@@ -160,15 +160,15 @@ public class AudioMessageManager {
             AudioTrackInfo info = track.getInfo();
 
             int rowNum = i + offset;
-            String title = String.format("%d. `[%s]` %s [%s](%s)  от %s", rowNum,
+            String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
                     CommonUtils.formatDuration(track.getDuration()), rowNum == 1 ? ":musical_note: " : "",
                     info.title, info.uri, request.getMember().getEffectiveName());
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
         builder.setFooter(totalPages > 1
-                ? String.format("Страница %d из %d, всего %d в очереди общей длительностью %s. Введите: %sочередь <страница>",
+                ? messageService.getMessage("discord.command.audio.queue.list.pageFooter",
                 pageNum, totalPages, requests.size(), CommonUtils.formatDuration(totalDuration), context.getPrefix())
-                : String.format("Всего %d в очереди общей длительностью %s",
+                : messageService.getMessage("discord.command.audio.queue.list.footer",
                 requests.size(), CommonUtils.formatDuration(totalDuration)), null);
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
@@ -200,24 +200,27 @@ public class AudioMessageManager {
     }
 
     private EmbedBuilder getQueueMessage() {
-        return messageService.getBaseEmbed().setTitle("Очередь воспроизведения", null);
+        return messageService.getBaseEmbed().setTitle(messageService.getMessage("discord.command.audio.queue.title"), null);
     }
 
     private EmbedBuilder getPlayMessage(TrackRequest request) {
         EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
-        builder.addField("Длительность", getTextProgress(request.getTrack()), true);
-        builder.addField("Поставил", request.getMember().getEffectiveName(), true);
+        builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
+                getTextProgress(request.getTrack()), true);
+        builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
+                request.getMember().getEffectiveName(), true);
 
         PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
         if (handler != null) {
             if (handler.getPlayer().getVolume() < 100) {
                 int volume = handler.getPlayer().getVolume();
-                builder.addField("Громкость", String.format("%d%% %s", volume,
-                        CommonUtils.getVolumeIcon(volume)), true);
+                builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
+                        String.format("%d%% %s", volume, CommonUtils.getVolumeIcon(volume)), true);
             }
             if (!RepeatMode.NONE.equals(handler.getMode())) {
-                builder.addField("Повтор", handler.getMode().getEmoji(), true);
+                builder.addField(messageService.getMessage("discord.command.audio.panel.repeatMode"),
+                        handler.getMode().getEmoji(), true);
             }
         }
         return builder;
@@ -231,8 +234,7 @@ public class AudioMessageManager {
         builder.setTitle(info.title, info.uri);
         builder.setAuthor(info.author, info.uri, thumbUrl);
         builder.setThumbnail(thumbUrl);
-        builder.setDescription("Добавлено в очередь воспроизведения :musical_note:");
-
+        builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
         return builder;
     }
 
@@ -241,7 +243,9 @@ public class AudioMessageManager {
         if (!track.getInfo().isStream) {
             builder.append("/").append(CommonUtils.formatDuration(track.getDuration()));
         } else {
-            builder.append(" (поток)");
+            builder.append(" (")
+                    .append(messageService.getMessage("discord.command.audio.panel.stream"))
+                    .append(")");
         }
         return builder.toString();
     }

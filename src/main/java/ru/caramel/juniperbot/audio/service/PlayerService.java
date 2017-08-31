@@ -98,7 +98,7 @@ public class PlayerService extends AudioEventAdapter {
                 return;
             }
             if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-                throw new DiscordException("У меня нет доступа в этот голосовой канал!");
+                throw new DiscordException("discord.global.voice.noAccess");
             }
             instance.openAudioConnection(channel);
         }
@@ -169,7 +169,7 @@ public class PlayerService extends AudioEventAdapter {
                 return;
             }
             if (current != null && currentTimeMillis - lastMillis > TIMEOUT) {
-                messageManager.onTimeout(current.getChannel());
+                messageManager.onIdle(current.getChannel());
                 v.stop();
                 inactiveIds.add(k);
             }
@@ -182,8 +182,10 @@ public class PlayerService extends AudioEventAdapter {
         if (track == null) {
             return;
         }
-
         PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+        if (instance == null) {
+            return;
+        }
         TrackRequest current = instance.getCurrent();
         messageManager.onTrackEnd(current);
         switch (endReason) {

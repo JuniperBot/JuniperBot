@@ -58,7 +58,7 @@ public class HelpCommand implements Command {
             rootGroup = CommandGroup.getForTitle(query);
         }
         if (rootGroup == null || !groupedCommands.containsKey(rootGroup)) {
-            messageService.onError(message.getChannel(), "Указанной группы не существует");
+            messageService.onError(message.getChannel(), "discord.command.help.no-such-group");
             return false;
         }
 
@@ -74,7 +74,11 @@ public class HelpCommand implements Command {
                     commands.forEach(e -> groupBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
                     messages.add(groupBuilder);
                 } else {
-                    embedBuilder.addField(String.format("%s (%sхелп %s):", group.getTitle(), context.getPrefix(), group.getTitle().toLowerCase()),
+                    embedBuilder.addField(String.format("%s (%s%s %s):",
+                            group.getTitle(),
+                            context.getPrefix(),
+                            messageService.getMessage("discord.command.help.key"),
+                            group.getTitle().toLowerCase()),
                             commands.stream().map(e -> '`' + context.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
                 }
             });
@@ -116,7 +120,7 @@ public class HelpCommand implements Command {
             channel.sendMessage(builder.build()).queue();
         }
         if (direct && message.getAuthor() != null) {
-            message.getChannel().sendMessage(String.format("%s я отправила список команд тебе в личку :fox:", message.getAuthor().getAsMention())).queue();
+            messageService.onMessage(message.getChannel(),"discord.command.help.sent", message.getAuthor().getAsMention());
         }
         return true;
     }
@@ -124,9 +128,12 @@ public class HelpCommand implements Command {
     private EmbedBuilder getBaseEmbed(CommandGroup group, MessageReceivedEvent message) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-                .setColor(discordConfig.getAccentColor())
-                .setDescription(String.format("**Доступные команды%s:**", CommandGroup.COMMON.equals(group)
-                        ? "" : String.format(" группы \"%s\"", group.getTitle())));
+                .setColor(discordConfig.getAccentColor());
+        if (CommandGroup.COMMON.equals(group)) {
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
+        } else {
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", group.getTitle()));
+        }
         if (StringUtils.isNotEmpty(discordConfig.getCopyContent())) {
             embedBuilder.setFooter(discordConfig.getCopyContent(), discordConfig.getCopyImageUrl());
         }

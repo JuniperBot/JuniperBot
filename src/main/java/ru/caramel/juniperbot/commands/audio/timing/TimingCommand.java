@@ -15,17 +15,17 @@ public abstract class TimingCommand extends AudioCommand {
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
         if (current == null) {
-            messageManager.onMessage(message.getChannel(), "Воспроизведение не запущено");
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;
         }
         if (!current.getTrack().isSeekable()) {
-            messageManager.onQueueError(message.getChannel(), "Текущую композицию невозможно перематывать");
+            messageManager.onQueueError(message.getChannel(), "discord.command.audio.seek.notApplicable");
             return false;
         }
 
         Long millis = CommonUtils.parseMillis(content);
         if (millis == null) {
-            messageManager.onQueueError(message.getChannel(), "Введите корректный формат времени [[чч:]мм:]сс :stopwatch:");
+            messageManager.onQueueError(message.getChannel(), "discord.command.audio.seek.format");
             return false;
         }
         return doInternal(message, current, millis);

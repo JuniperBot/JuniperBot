@@ -26,7 +26,7 @@ public class RemindCommand implements Command {
 
     private static final Pattern PATTERN = Pattern.compile("^(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(\\d{2}:\\d{2})\\s+(.*)$");
 
-    private static final Pattern RELATIVE_PATTERN = Pattern.compile("^\\s*через\\s+(\\d+\\s+[a-zA-Zа-яА-Я]+(?:\\s+\\d+\\s+[a-zA-Zа-яА-Я]+)*)\\s+(.*)$");
+    private static final String RELATIVE_PATTERN_FORMAT = "^\\s*%s\\s+(\\d+\\s+[a-zA-Zа-яА-Я]+(?:\\s+\\d+\\s+[a-zA-Zа-яА-Я]+)*)\\s+(.*)$";
 
     private static final TimeSequenceParser SEQUENCE_PARSER = new TimeSequenceParser();
 
@@ -47,12 +47,13 @@ public class RemindCommand implements Command {
                 date = FORMATTER.parseDateTime(String.format("%s %s", m.group(1), m.group(2)));
                 reminder = m.group(3);
                 if (DateTime.now().isAfter(date)) {
-                    message.getChannel().sendMessage("Указывай дату в будущем, пожалуйста").queue();
+                    messageService.onError(message.getChannel(), "discord.command.remind.error.future");
                     return false;
                 }
             }
 
-            m = RELATIVE_PATTERN.matcher(content);
+            String keyWord = messageService.getMessage("discord.command.remind.keyWord");
+            m = Pattern.compile(String.format(RELATIVE_PATTERN_FORMAT, keyWord)).matcher(content);
             if (m.find()) {
                 Long millis = SEQUENCE_PARSER.parse(m.group(1));
                 reminder = m.group(2);
@@ -62,7 +63,7 @@ public class RemindCommand implements Command {
             }
 
             if (date != null && reminder != null) {
-                messageService.onMessage(message.getChannel(), "Лаааадно, напомню. Фыр.");
+                messageService.onMessage(message.getChannel(), "discord.command.remind.success");
                 reminderService.createReminder(message.getChannel(), message.getMember(), reminder, date.toDate());
                 return true;
             }
@@ -76,16 +77,13 @@ public class RemindCommand implements Command {
         DateTime current = DateTime.now();
         current = current.plusMinutes(1);
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle("Пример использования команды напоминания:");
-        builder.addField("Использование даты в формате дд.ММ.гггг чч:мм (МСК)", String.format("Например: `%sнапомни %s фыр!`", context.getPrefix(), FORMATTER.print(current)), false);
-        builder.addField("Использование выражения \"через\"", String.format("```\n" +
-                "%1$sнапомни через 60 секунд фыр!\n" +
-                "%1$sнапомни через 5 минут фыр!\n" +
-                "%1$sнапомни через 5 минут фыр!\n" +
-                "%1$sнапомни через 1 час 30 минут фыр!\n" +
-                "%1$sнапомни через 2 недели и 5 дней фыр!\n" +
-                "```\n" +
-                "Поддерживаются: месяц, неделя, дни, часы, минуты, секунды и даже миллисекунды о_О", context.getPrefix()), false);
+        builder.setTitle(messageService.getMessage("discord.command.remind.help.title"));
+        builder.addField(
+                messageService.getMessage("discord.command.remind.help.field1.title"),
+                messageService.getMessage("discord.command.remind.help.field1.value", context.getPrefix(), FORMATTER.print(current)), false);
+        builder.addField(
+                messageService.getMessage("discord.command.remind.help.field2.title"),
+                messageService.getMessage("discord.command.remind.help.field2.value", context.getPrefix()), false);
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return false;
     }

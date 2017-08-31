@@ -19,7 +19,7 @@ public class PauseCommand extends AudioCommand {
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).pauseTrack()
-                ? "Воспроизведение приостановлено :pause_button: " : "Воспроизведение не запущено");
+                ? "discord.command.audio.pause" : "discord.command.audio.notStarted");
         return true;
     }
 }

@@ -13,11 +13,13 @@ public interface MessageService {
 
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
-    void onMessage(MessageChannel sourceChannel, String message);
+    void onMessage(MessageChannel sourceChannel, String code, Object... args);
 
-    void onMessage(MessageChannel sourceChannel, String title, String message);
+    void onMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args);
 
-    void onError(MessageChannel sourceChannel, String error);
+    void onError(MessageChannel sourceChannel, String code, Object... args);
 
-    void onError(MessageChannel sourceChannel, String title, String error);
+    void onError(MessageChannel sourceChannel, String titleCode, String code, Object... args);
+
+    String getMessage(String code, Object... args);
 }

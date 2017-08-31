@@ -20,11 +20,14 @@ public class RepeatCommand extends AudioCommand {
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         RepeatMode mode = RepeatMode.getForTitle(content);
         if (mode == null) {
-            messageManager.onMessage(message.getChannel(), "Выберите режим повтора: " + RepeatMode.options());
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help", RepeatMode.options());
             return false;
         }
-        messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).setMode(mode)
-                ? "Установлен режим воспроизведения " + mode.getEmoji() : "Воспроизведение не запущено");
+        if (playerService.getInstance(message.getGuild()).setMode(mode)) {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
+        } else {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+        }
         return true;
     }
 }

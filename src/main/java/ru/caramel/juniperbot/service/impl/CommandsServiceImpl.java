@@ -107,9 +107,9 @@ public class CommandsServiceImpl implements CommandsService {
         try {
             command.doCommand(event, context, content);
         } catch (ValidationException e) {
-            messageService.onError(event.getChannel(), e.getMessage());
+            messageService.onError(event.getChannel(), e.getMessage(), e.getArgs());
         } catch (DiscordException e) {
-            messageService.onError(event.getChannel(), "Ой, произошла какая-то ошибка :C Покорми меня?");
+            messageService.onError(event.getChannel(), "discord.global.error");
             LOGGER.error("Command {} execution error", args[0], e);
         }
     }
@@ -130,11 +130,11 @@ public class CommandsServiceImpl implements CommandsService {
         }
     }
 
-    private static MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {
+    private MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("автор", event.getAuthor().getAsMention());
-        resolver.put("сервер", event.getGuild().getName());
-        resolver.put("текст", content);
+        resolver.put(messageService.getMessage("custom.commands.placeholder.author"), event.getAuthor().getAsMention());
+        resolver.put(messageService.getMessage("custom.commands.placeholder.guild"), event.getGuild().getName());
+        resolver.put(messageService.getMessage("custom.commands.placeholder.content"), content);
         return resolver;
     }
 

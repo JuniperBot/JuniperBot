@@ -24,7 +24,7 @@ public abstract class AudioCommand implements Command {
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (isChannelRestricted() && !playerService.isInChannel(message.getMember())) {
             VoiceChannel channel = playerService.getChannel(message.getMember());
-            throw new ValidationException(String.format("Сперва вы должны зайти в голосовой канал (%s) :raised_hand:", channel.getName()));
+            throw new ValidationException("discord.command.audio.joinChannel", channel.getName());
         }
         doInternal(message, context, content);
         return false;

@@ -45,23 +45,23 @@ public class ValidationService {
         PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
         if (track.getInfo().isStream && !context.getConfig().isMusicStreamsEnabled()) {
-            throw new ValidationException("Потоковое аудио запрещено на этом сервере :raised_hand:");
+            throw new ValidationException("discord.command.audio.queue.limits.streams");
         }
 
         if (queueLimit != null) {
             List<TrackRequest> userQueue = instance.getQueue(requestedBy);
             if (userQueue.size() >= queueLimit) {
-                throw new ValidationException(String.format("Вы превысили лимит треков в очереди (%s) :raised_hand:", queueLimit));
+                throw new ValidationException("discord.command.audio.queue.limits.items", queueLimit);
             }
         }
         if (duplicateLimit != null) {
             List<TrackRequest> userQueue = instance.getQueue().stream().filter(e -> compareTracks(e.getTrack(), track)).collect(Collectors.toList());
             if (userQueue.size() >= duplicateLimit) {
-                throw new ValidationException(String.format("Превышен лимит одинаковых треков в очереди (%s) :raised_hand:", duplicateLimit));
+                throw new ValidationException("discord.command.audio.queue.limits.duplicates", duplicateLimit);
             }
         }
         if (!track.getInfo().isStream && durationLimit != null && track.getDuration() >= (durationLimit * 60000)) {
-            throw new ValidationException(String.format("Запрещено ставить треки длительностью более %d мин :raised_hand:", durationLimit));
+            throw new ValidationException("discord.command.audio.queue.limits.duration", durationLimit);
         }
     }
 
@@ -72,21 +72,21 @@ public class ValidationService {
         PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
         if (!Boolean.TRUE.equals(context.getConfig().getMusicPlaylistEnabled())) {
-            throw new ValidationException("Плейлисты запрещены на этом сервере :raised_hand:");
+            throw new ValidationException("discord.command.audio.queue.limits.playlists");
         }
 
         List<AudioTrack> tracks = playlist.getTracks();
         if (!tracks.isEmpty() && !context.getConfig().isMusicStreamsEnabled()) {
             tracks = tracks.stream().filter(e -> !e.getInfo().isStream).collect(Collectors.toList());
             if (tracks.isEmpty()) {
-                throw new ValidationException("Потоковое аудио запрещено на этом сервере :raised_hand:");
+                throw new ValidationException("discord.command.audio.queue.limits.streams");
             }
         }
 
         if (!tracks.isEmpty() && durationLimit != null) {
             tracks = tracks.stream().filter(e -> e.getInfo().isStream || e.getDuration() < (durationLimit * 60000)).collect(Collectors.toList());
             if (tracks.isEmpty()) {
-                throw new ValidationException(String.format("Ни один трек плейлиста не подходит под ограничение %d мин :raised_hand:", durationLimit));
+                throw new ValidationException("discord.command.audio.queue.limits.duration.playlist", durationLimit);
             }
         }
 
@@ -94,19 +94,19 @@ public class ValidationService {
             List<TrackRequest> queue = instance.getQueue();
             tracks = tracks.stream().filter(e -> queue.stream().filter(e2 -> compareTracks(e2.getTrack(), e)).count() < duplicateLimit).collect(Collectors.toList());
             if (tracks.isEmpty()) {
-                throw new ValidationException(String.format("Ни один трек плейлиста не подходит под ограничение %d одинаковых треков :raised_hand:", duplicateLimit));
+                throw new ValidationException("discord.command.audio.queue.limits.duplicates.playlist", duplicateLimit);
             }
         }
 
         if (tracks.isEmpty()) {
-            throw new ValidationException("Указанный плейлист пуст");
+            throw new ValidationException("discord.command.audio.queue.limits.playlistEmpty");
         }
 
         if (queueLimit != null) {
             List<TrackRequest> userQueue = instance.getQueue(requestedBy);
             int availableSlots = queueLimit.intValue() - userQueue.size();
             if (availableSlots <= 0) {
-                throw new ValidationException(String.format("Вы превысили лимит треков в очереди (%s) :raised_hand:", queueLimit));
+                throw new ValidationException("discord.command.audio.queue.limits.items", queueLimit);
             }
             if (tracks.size() > availableSlots) {
                 tracks = tracks.subList(0, availableSlots);

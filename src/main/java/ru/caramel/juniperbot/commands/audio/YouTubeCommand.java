@@ -42,7 +42,7 @@ public class YouTubeCommand extends PlayCommand {
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         List<Video> results = youTubeClient.searchDetailed(content, 10L);
         if (results.isEmpty()) {
-            messageManager.onMessage(message.getChannel(), "Ничего не найдено по указанному запросу :flag_white:");
+            messageManager.onNoMatches(message.getChannel(), content);
             return false;
         }
 

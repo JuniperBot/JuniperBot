@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:task="http://www.springframework.org/schema/task" xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                 http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
@@ -27,4 +27,11 @@
     <task:executor id="executor" pool-size="5" queue-capacity="25"/>
     <task:scheduler id="scheduler" pool-size="10"/>
 
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
+          p:defaultEncoding="UTF-8"
+          p:basename="/messages"/>
+    <bean id ="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+          p:validationMessageSource-ref="messageSource"/>
+    <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"
+          p:validator-ref="validator" />
 </beans>

@@ -90,7 +90,7 @@ public class PlayCommand extends AudioCommand {
                     validationService.validateSingle(track, requestedBy, context);
                     playerService.play(new TrackRequest(track, requestedBy, channel));
                 } catch (DiscordException e) {
-                    messageManager.onQueueError(channel, e.getMessage());
+                    messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                 }
             }
 
@@ -100,7 +100,7 @@ public class PlayCommand extends AudioCommand {
                     List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
                     playerService.play(tracks.stream().map(e -> new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
                 } catch (DiscordException e) {
-                    messageManager.onQueueError(channel, e.getMessage());
+                    messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                 }
             }
 
