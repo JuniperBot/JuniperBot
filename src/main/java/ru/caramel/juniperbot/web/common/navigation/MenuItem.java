@@ -46,7 +46,7 @@ public class MenuItem implements Serializable {
     }
 
     public MenuItem(PageElement element, boolean active) {
-        this(element.getUrl(), element.getName(), element.getIcon(), active);
+        this(element.getUrl(), element.toString(), element.getIcon(), active);
         this.element = element;
     }
 

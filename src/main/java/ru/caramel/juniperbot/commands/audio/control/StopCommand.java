@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "стоп",
-        description = "Остановить воспроизведение с очисткой плейлиста",
+        key = "discord.command.stop.key",
+        description = "discord.command.stop.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 107)
@@ -19,7 +19,7 @@ public class StopCommand extends AudioCommand {
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).stop()
-                ? "Воспроизведение остановлено :stop_button: " :"Воспроизведение не запущено");
+                ? "discord.command.audio.stop" :"discord.command.audio.notStarted");
         return true;
     }
 }

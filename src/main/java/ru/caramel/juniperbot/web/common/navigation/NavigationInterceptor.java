@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import ru.caramel.juniperbot.service.MessageService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +15,9 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private MenuBuilder builder;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public void postHandle(
@@ -88,10 +92,10 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
         return items;
     }
 
-    private static Collection<MenuItem> parseItem(String[] search, String[] replace, Collection<MenuItem> items) {
+    private Collection<MenuItem> parseItem(String[] search, String[] replace, Collection<MenuItem> items) {
         for (MenuItem item : items) {
             item.setUrl(StringUtils.replaceEach(item.getUrl(), search, replace));
-            item.setName(StringUtils.replaceEach(item.getName(), search, replace));
+            item.setName(StringUtils.replaceEach(messageService.getMessage(item.getName()), search, replace));
             if (!item.getChilds().isEmpty()) {
                 parseItem(search, replace, item.getChilds());
             }

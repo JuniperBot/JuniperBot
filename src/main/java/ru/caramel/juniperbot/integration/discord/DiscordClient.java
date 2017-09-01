@@ -25,11 +25,11 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.model.DiscordEvent;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
+import ru.caramel.juniperbot.service.MessageService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
-import java.util.*;
 import java.util.function.Consumer;
 
 @Service
@@ -37,13 +37,14 @@ public class DiscordClient extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
 
-    private static Set<String> musicChannels = new HashSet<>(Arrays.asList("музыка", "music"));
-
     @Autowired
     private DiscordConfig config;
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private MessageService messageService;
 
     @Getter
     private JDA jda;
@@ -127,10 +128,13 @@ public class DiscordClient extends ListenerAdapter {
             return null;
         }
         VoiceChannel channel;
-        for (String name : musicChannels) {
-            channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
-            if (channel != null) {
-                return channel;
+        String channels = messageService.getMessage("discord.command.audio.channels");
+        if (StringUtils.isNotEmpty(channels)) {
+            for (String name : channels.split(",")) {
+                channel = guild.getVoiceChannelsByName(name, true).stream().findAny().orElse(null);
+                if (channel != null) {
+                    return channel;
+                }
             }
         }
         return guild.getVoiceChannels().stream().findAny().orElse(null);

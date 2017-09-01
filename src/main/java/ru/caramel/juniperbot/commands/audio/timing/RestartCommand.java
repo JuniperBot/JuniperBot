@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "сначала",
-        description = "Начать воспроизведение текущей композиции с начала",
+        key = "discord.command.restart.key",
+        description = "discord.command.restart.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 112)
@@ -18,8 +18,9 @@ public class RestartCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playerService.getInstance(message.getGuild()).seek(0)) {
-            messageManager.onMessage(message.getChannel(), "Данную композицию нельзя воспроизвести с начала");
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.restart.denied");
+            return false;
         }
-        return false;
+        return true;
     }
 }

@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "вперед",
-        description = "Перемотать воспроизведение вперед на заданное время: [[чч:]мм:]сс",
+        key = "discord.command.forward.key",
+        description = "discord.command.forward.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 113)
@@ -25,7 +25,8 @@ public class ForwardCommand extends TimingCommand {
         millis = Math.min(duration - position, millis);
 
         if (playerService.getInstance(message.getGuild()).seek(position + millis)) {
-            messageManager.onMessage(message.getChannel(), String.format("**%s** перемотан вперед на `%s`", track.getInfo().title,  CommonUtils.formatDuration(millis)));
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.forward", track.getInfo().title,
+                    CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
         }
         return true;

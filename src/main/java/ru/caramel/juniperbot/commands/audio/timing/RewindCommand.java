@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "назад",
-        description = "Перемотать воспроизведение назад на заданное время: [[чч:]мм:]сс",
+        key = "discord.command.rewind.key",
+        description = "discord.command.rewind.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 113)
@@ -20,11 +20,9 @@ public class RewindCommand extends TimingCommand {
     protected boolean doInternal(MessageReceivedEvent message, TrackRequest request, long millis) {
         AudioTrack track = request.getTrack();
         long position = track.getPosition();
-
         millis = Math.min(position, millis);
-
         if (playerService.getInstance(message.getGuild()).seek(position - millis)) {
-            messageManager.onMessage(message.getChannel(), String.format("**%s** перемотан назад на `%s`", track.getInfo().title,  CommonUtils.formatDuration(millis)));
+            messageManager.onMessage(message.getChannel(),"discord.command.audio.rewind", track.getInfo().title,  CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
         }
         return true;

@@ -9,22 +9,29 @@ import ru.caramel.juniperbot.commands.model.CommandSource;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @DiscordCommand(
-        key = "повтор",
-        description = "Режим повтора воспроизведения: этой|всех|выкл",
+        key = "discord.command.repeat.key",
+        description = "discord.command.repeat.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 108)
 public class RepeatCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RepeatMode mode = RepeatMode.getForTitle(content);
+        RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content);
         if (mode == null) {
-            messageManager.onMessage(message.getChannel(), "Выберите режим повтора: " + RepeatMode.options());
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help",
+                    Stream.of(RepeatMode.values()).map(messageService::getEnumTitle).collect(Collectors.joining("|")));
             return false;
         }
-        messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).setMode(mode)
-                ? "Установлен режим воспроизведения " + mode.getEmoji() : "Воспроизведение не запущено");
+        if (playerService.getInstance(message.getGuild()).setMode(mode)) {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
+        } else {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+        }
         return true;
     }
 }

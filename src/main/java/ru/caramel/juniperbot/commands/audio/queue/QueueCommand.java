@@ -14,8 +14,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import java.util.List;
 
 @DiscordCommand(
-        key = "очередь",
-        description = "Показать очередь воспроизведения",
+        key = "discord.command.queue.key",
+        description = "discord.command.queue.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 101)
@@ -32,7 +32,7 @@ public class QueueCommand extends AudioCommand {
             }
         }
         if (pageNum < 1) {
-            messageManager.onQueueError(message.getTextChannel(), "Укажите корректный номер страницы");
+            messageManager.onQueueError(message.getTextChannel(), "discord.command.audio.queue.list.selectPage");
             return false;
         }
         return print(message.getTextChannel(), context, playerService.getInstance(message.getGuild()).getQueue(), pageNum);

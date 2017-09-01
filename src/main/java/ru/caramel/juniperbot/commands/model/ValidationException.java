@@ -6,11 +6,11 @@ public class ValidationException extends DiscordException {
 
     private static final long serialVersionUID = 2474643174485112049L;
 
-    public ValidationException(String message) {
-        super(message);
+    public ValidationException(String message, Object... args) {
+        super(message, args);
     }
 
-    public ValidationException(String message, Throwable cause) {
-        super(message, cause);
+    public ValidationException(String message, Throwable cause, Object... args) {
+        super(message, cause, args);
     }
 }

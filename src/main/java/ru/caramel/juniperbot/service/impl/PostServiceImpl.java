@@ -14,6 +14,7 @@ import ru.caramel.juniperbot.integration.instagram.InstagramListener;
 import ru.caramel.juniperbot.model.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
+import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.service.PostService;
 
 import java.util.ArrayList;
@@ -33,15 +34,17 @@ public class PostServiceImpl implements PostService, InstagramListener {
     @Autowired
     private DiscordClient client;
 
-    private String latestId;
+    @Autowired
+    private MessageService messageService;
 
+    private String latestId;
 
     @Override
     public void post(List<MediaFeedData> medias, MessageChannel channel) {
         if (medias.size() > 0) {
             for (int i = 0; i < Math.min(DiscordConfig.MAX_DETAILED, medias.size()); i++) {
                 EmbedBuilder builder = convertToEmbed(medias.get(i));
-                channel.sendMessage(builder.build()).queue();
+                messageService.sendMessageSilent(channel::sendMessage, builder.build());
             }
         }
     }

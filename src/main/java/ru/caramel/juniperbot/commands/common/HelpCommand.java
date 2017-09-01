@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@DiscordCommand(key = "хелп", description = "Отображает эту справку", priority = 1)
+@DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
 public class HelpCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordClient.class);
@@ -55,10 +55,10 @@ public class HelpCommand implements Command {
 
         CommandGroup rootGroup = CommandGroup.COMMON;
         if (StringUtils.isNotEmpty(query)) {
-            rootGroup = CommandGroup.getForTitle(query);
+            rootGroup = messageService.getEnumeration(CommandGroup.class, query);
         }
         if (rootGroup == null || !groupedCommands.containsKey(rootGroup)) {
-            messageService.onError(message.getChannel(), "Указанной группы не существует");
+            messageService.onError(message.getChannel(), "discord.command.help.no-such-group");
             return false;
         }
 
@@ -66,16 +66,26 @@ public class HelpCommand implements Command {
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
         messages.add(embedBuilder);
 
-        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
+        groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
+                context.getPrefix() + messageService.getMessage(e.key()),
+                messageService.getMessage(e.description()), false));
         if (CommandGroup.COMMON.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
                 if (direct) {
                     EmbedBuilder groupBuilder = getBaseEmbed(group, message);
-                    commands.forEach(e -> groupBuilder.addField(context.getPrefix() + e.key(), e.description(), false));
+                    commands.forEach(e -> groupBuilder.addField(
+                            context.getPrefix() + messageService.getMessage(e.key()),
+                            messageService.getMessage(e.description()), false));
                     messages.add(groupBuilder);
                 } else {
-                    embedBuilder.addField(String.format("%s (%sхелп %s):", group.getTitle(), context.getPrefix(), group.getTitle().toLowerCase()),
-                            commands.stream().map(e -> '`' + context.getPrefix() + e.key() + '`').collect(Collectors.joining(", ")), false);
+                    String groupTitle = messageService.getEnumTitle(group);
+                    embedBuilder.addField(String.format("%s (%s%s %s):",
+                            groupTitle,
+                            context.getPrefix(),
+                            messageService.getMessage("discord.command.help.key"),
+                            groupTitle.toLowerCase()),
+                            commands.stream().map(e -> '`' + context.getPrefix() + messageService.getMessage(e.key()) + '`')
+                                    .collect(Collectors.joining(", ")), false);
                 }
             });
 
@@ -91,7 +101,7 @@ public class HelpCommand implements Command {
                         list.append('`').append(context.getPrefix()).append(e.getKey()).append('`');
                     });
                     if (list.length() > 0) {
-                        embedBuilder.addField(CommandGroup.CUSTOM.getTitle() + ":", list.toString(), false);
+                        embedBuilder.addField(messageService.getEnumTitle(CommandGroup.CUSTOM) + ":", list.toString(), false);
                     }
                 }
             }
@@ -116,7 +126,7 @@ public class HelpCommand implements Command {
             channel.sendMessage(builder.build()).queue();
         }
         if (direct && message.getAuthor() != null) {
-            message.getChannel().sendMessage(String.format("%s я отправила список команд тебе в личку :fox:", message.getAuthor().getAsMention())).queue();
+            messageService.onMessage(message.getChannel(),"discord.command.help.sent", message.getAuthor().getAsMention());
         }
         return true;
     }
@@ -124,9 +134,12 @@ public class HelpCommand implements Command {
     private EmbedBuilder getBaseEmbed(CommandGroup group, MessageReceivedEvent message) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-                .setColor(discordConfig.getAccentColor())
-                .setDescription(String.format("**Доступные команды%s:**", CommandGroup.COMMON.equals(group)
-                        ? "" : String.format(" группы \"%s\"", group.getTitle())));
+                .setColor(discordConfig.getAccentColor());
+        if (CommandGroup.COMMON.equals(group)) {
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
+        } else {
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", messageService.getEnumTitle(group)));
+        }
         if (StringUtils.isNotEmpty(discordConfig.getCopyContent())) {
             embedBuilder.setFooter(discordConfig.getCopyContent(), discordConfig.getCopyImageUrl());
         }

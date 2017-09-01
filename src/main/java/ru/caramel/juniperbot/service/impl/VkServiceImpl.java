@@ -59,14 +59,14 @@ public class VkServiceImpl implements VkService {
 
     static {
         Map<Integer, String> types = new HashMap<>();
-        types.put(1, "Текстовый документ");
-        types.put(2, "Архив");
-        types.put(3, "GIF-анимация");
-        types.put(4, "Изображение");
-        types.put(5, "Аудио");
-        types.put(6, "Видео");
-        types.put(7, "Электронные деньги");
-        types.put(8, "Неизвестный");
+        types.put(1, "vk.message.documentType.text");
+        types.put(2, "vk.message.documentType.archive");
+        types.put(3, "vk.message.documentType.gif");
+        types.put(4, "vk.message.documentType.picture");
+        types.put(5, "vk.message.documentType.audio");
+        types.put(6, "vk.message.documentType.video");
+        types.put(7, "vk.message.documentType.money");
+        types.put(8, "vk.message.documentType.unknown");
         DOC_TYPE_NAMES = Collections.unmodifiableMap(types);
     }
 
@@ -213,10 +213,10 @@ public class VkServiceImpl implements VkService {
                     return null;
                 }
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
-                    builder.addField("Исполнитель", audio.getArtist(), true);
+                    builder.addField(messageService.getMessage("vk.message.audio.artist"), audio.getArtist(), true);
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {
-                    builder.addField("Название композиции", audio.getTitle(), true);
+                    builder.addField(messageService.getMessage("vk.message.audio.title"), audio.getTitle(), true);
                 }
                 if (builder.getFields().isEmpty()) {
                     return null;
@@ -236,8 +236,9 @@ public class VkServiceImpl implements VkService {
                     return null;
                 }
                 String name = mdLink(doc.getTitle(), doc.getUrl());
-                builder.addField("Тип документа", type, true);
-                builder.addField("Скачать документ", name, true);
+                builder.addField(messageService.getMessage("vk.message.documentType"),
+                        messageService.getMessage(type), true);
+                builder.addField(messageService.getMessage("vk.message.documentType.download"), name, true);
                 if ((doc.getType() == 3 || doc.getType() == 4)
                         && doc.getPreview() != null && doc.getPreview().getPhoto() != null
                         && CollectionUtils.isNotEmpty(doc.getPreview().getPhoto().getSizes())) {
@@ -265,9 +266,10 @@ public class VkServiceImpl implements VkService {
                 if (link == null) {
                     return null;
                 }
-                builder.addField("Ссылка", trimTo(mdLink(link.getTitle(), link.getUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
+                builder.addField(messageService.getMessage("vk.message.link.title"),
+                        trimTo(mdLink(link.getTitle(), link.getUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
                 if (StringUtils.isNotEmpty(link.getCaption())) {
-                    builder.addField("Источник", link.getCaption(), true);
+                    builder.addField(messageService.getMessage("vk.message.link.source"), link.getCaption(), true);
                 }
                 if (link.getPhoto() != null) {
                     setPhoto(builder, message, link.getPhoto(), false);
@@ -283,15 +285,18 @@ public class VkServiceImpl implements VkService {
                 for (int i = 0; i < poll.getAnswers().size(); i++) {
                     answers.append(i + 1).append(". ").append(poll.getAnswers().get(0).getText()).append('\n');
                 }
-                builder.addField("Опрос", trimTo(poll.getQuestion(), MessageEmbed.TEXT_MAX_LENGTH), false);
-                builder.addField("Варианты ответов", trimTo(answers.toString(), MessageEmbed.TEXT_MAX_LENGTH), false);
+                builder.addField(messageService.getMessage("vk.message.poll"),
+                        trimTo(poll.getQuestion(), MessageEmbed.TEXT_MAX_LENGTH), false);
+                builder.addField(messageService.getMessage("vk.message.poll.answers"),
+                        trimTo(answers.toString(), MessageEmbed.TEXT_MAX_LENGTH), false);
                 return builder;
             case PAGE:
                 WikipageFull page = attachment.getPage();
                 if (page == null) {
                     return null;
                 }
-                builder.addField("Страница", trimTo(mdLink(page.getTitle(), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), false);
+                builder.addField(messageService.getMessage("vk.message.page"),
+                        trimTo(mdLink(page.getTitle(), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), false);
                 return builder;
             case ALBUM:
                 PhotoAlbum album = attachment.getAlbum();
@@ -300,8 +305,10 @@ public class VkServiceImpl implements VkService {
                 }
                 url = String.format(ALBUM_URL, message.getGroupId(), album.getId());
 
-                builder.addField("Альбом", trimTo(mdLink(album.getTitle(), url), MessageEmbed.TEXT_MAX_LENGTH), true);
-                builder.addField("Фотографий", String.valueOf(album.getSize()), true);
+                builder.addField(messageService.getMessage("vk.message.album"),
+                        trimTo(mdLink(album.getTitle(), url), MessageEmbed.TEXT_MAX_LENGTH), true);
+                builder.addField(messageService.getMessage("vk.message.album.photos"),
+                        String.valueOf(album.getSize()), true);
                 builder.setDescription(album.getDescription());
                 if (album.getThumb() != null) {
                     setPhoto(builder, message, album.getThumb(), false);
@@ -338,7 +345,7 @@ public class VkServiceImpl implements VkService {
             if (text.length() < 100) {
                 builder.setTitle(trimTo(text, MessageEmbed.TITLE_MAX_LENGTH), url);
             } else {
-                builder.setTitle("Открыть на стене", url);
+                builder.setTitle(messageService.getMessage("vk.message.open"), url);
                 builder.setDescription(trimTo(text, MessageEmbed.TEXT_MAX_LENGTH));
             }
         }

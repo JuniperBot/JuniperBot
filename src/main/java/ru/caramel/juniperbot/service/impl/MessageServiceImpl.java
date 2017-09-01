@@ -10,20 +10,31 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.service.MessageService;
 
 import java.awt.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
 
+    private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
+
     @Autowired
     private DiscordConfig discordConfig;
+
+    @Autowired
+    private ApplicationContext context;
 
     @Override
     public EmbedBuilder getBaseEmbed() {
@@ -31,33 +42,43 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void onError(MessageChannel sourceChannel, String error) {
-        onError(sourceChannel, "Ошибка", error);
+    public void onError(MessageChannel sourceChannel, String code, Object... args) {
+        onError(sourceChannel, "discord.message.title.error", code, args);
     }
 
     @Override
-    public void onError(MessageChannel sourceChannel, String title, String error) {
-        sendMessageSilent(sourceChannel::sendMessage, getBaseEmbed()
-                .setTitle(title, null)
-                .setColor(Color.RED)
-                .setDescription(error).build());
+    public void onError(MessageChannel sourceChannel, String titleCode, String code, Object... args) {
+        sendMessageSilent(sourceChannel::sendMessage, createMessage(titleCode, code, args)
+                .setColor(Color.RED).build());
     }
 
     @Override
-    public void onMessage(MessageChannel sourceChannel, String message) {
-        onMessage(sourceChannel, null, message);
+    public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
+        onMessage(sourceChannel, null, code);
     }
 
-
     @Override
-    public void onMessage(MessageChannel sourceChannel, String title, String message) {
-        if (StringUtils.isEmpty(title)) {
-            sendMessageSilent(sourceChannel::sendMessage, message);
+    public void onMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args) {
+        if (StringUtils.isEmpty(titleCode)) {
+            sendMessageSilent(sourceChannel::sendMessage, getMessage(code, args));
             return;
         }
-        sendMessageSilent(sourceChannel::sendMessage, getBaseEmbed()
-                .setTitle(title, null)
-                .setDescription(message).build());
+        sendMessageSilent(sourceChannel::sendMessage, createMessage(titleCode, code, args).build());
+    }
+
+    private EmbedBuilder createMessage(String titleCode, String code, Object... args) {
+        return getBaseEmbed()
+                .setTitle(getMessage(titleCode), null)
+                .setColor(Color.RED)
+                .setDescription(getMessage(code, args));
+    }
+
+    @Override
+    public String getMessage(String key, Object... args) {
+        if (key == null) {
+            return null;
+        }
+        return context.getMessage(key, args, key, Locale.US);
     }
 
     @Override
@@ -69,4 +90,19 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title) {
+        Map<String, Enum<?>> cache = enumCache.computeIfAbsent(clazz, e ->
+                Stream.of(clazz.getEnumConstants()).collect(Collectors.toMap(k -> getEnumTitle(k).toLowerCase(), v -> v)));
+        return (T) cache.get(title.toLowerCase());
+    }
+
+    @Override
+    public String getEnumTitle(Enum<?> value) {
+        if (value == null) {
+            return null;
+        }
+        return getMessage(value.getClass().getName() + "." + value.name());
+    }
 }

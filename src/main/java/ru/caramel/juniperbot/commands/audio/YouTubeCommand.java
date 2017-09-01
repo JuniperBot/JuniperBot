@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.util.*;
 
 @DiscordCommand(
-        key = "ютуб",
-        description = "Произвести поиск по указанному запросу по YouTube для выбора воспроизведения",
+        key = "discord.command.youtube.key",
+        description = "discord.command.youtube.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 103)
@@ -42,12 +42,12 @@ public class YouTubeCommand extends PlayCommand {
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         List<Video> results = youTubeClient.searchDetailed(content, 10L);
         if (results.isEmpty()) {
-            messageManager.onMessage(message.getChannel(), "Ничего не найдено по указанному запросу :flag_white:");
+            messageManager.onNoMatches(message.getChannel(), content);
             return false;
         }
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle("Результаты поиска:");
+        builder.setTitle(messageService.getMessage("discord.command.audio.search.results"));
 
         List<String> urls = new ArrayList<>();
         for (int i = 0; i < results.size(); i++) {
@@ -60,7 +60,7 @@ public class YouTubeCommand extends PlayCommand {
             urls.add(url);
         }
 
-        builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, String.format("Для воспроизведения нажмите на эмодзи-номер или введите команду `%sплей N`, где N — номер трека из списка выше",
+        builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
                 context.getPrefix()), false);
 
         message.getChannel().sendMessage(builder.build()).queue(e -> {

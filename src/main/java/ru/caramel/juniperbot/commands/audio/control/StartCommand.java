@@ -9,8 +9,8 @@ import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
 @DiscordCommand(
-        key = "старт",
-        description = "Восстановить воспроизведение текущего трека",
+        key = "discord.command.start.key",
+        description = "discord.command.start.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 106)
@@ -19,7 +19,7 @@ public class StartCommand extends AudioCommand {
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playerService.getInstance(message.getGuild()).resumeTrack()) {
-            messageManager.onMessage(message.getChannel(), "Воспроизведение не запущено");
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
         }
         return true;
     }

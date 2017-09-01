@@ -7,8 +7,8 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
 @DiscordCommand(
-        key = "громкость",
-        description = "Установить громкость воспроизведения (параметр 1-100%, без параметра 100%)",
+        key = "discord.command.volume.key",
+        description = "discord.command.volume.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 111)
@@ -18,7 +18,7 @@ public class VolumeCommand extends AudioCommand {
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int volume = parseCount(content);
         playerService.getInstance(message.getGuild()).setVolume(volume);
-        messageManager.onMessage(message.getChannel(), String.format("Громкость установлена на %d%% %s", volume, CommonUtils.getVolumeIcon(volume)));
+        messageManager.onMessage(message.getChannel(), "discord.command.audio.volume", volume, CommonUtils.getVolumeIcon(volume));
         return true;
     }
 
@@ -28,12 +28,12 @@ public class VolumeCommand extends AudioCommand {
             try {
                 count = Integer.parseInt(content);
             } catch (NumberFormatException e) {
-                throw new ValidationException("Фыр на тебя. Число мне, число!");
+                throw new ValidationException("discord.global.integer.parseError");
             }
             if (count < 0) {
-                throw new ValidationException("Фтооо ты хочешь от меня?");
+                throw new ValidationException("discord.global.integer.negative");
             } else if (count > 100) {
-                throw new ValidationException("Максимальная громкость 100%!");
+                throw new ValidationException("discord.command.audio.volume.max");
             }
         }
         return count;

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @DiscordCommand(
-        key = "плей",
-        description = "Воспроизвести композицию в голосовом канале по названию, указанному URL или приложенному файлу",
+        key = "discord.command.play.key",
+        description = "discord.command.play.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
         priority = 104)
@@ -54,7 +54,7 @@ public class PlayCommand extends AudioCommand {
             int index = Integer.parseInt(query) - 1;
             query = getChoiceUrl(context, index);
             if (query == null) {
-                messageManager.onQueueError(message.getChannel(), String.format("Введите номер от 1 до %s", results.size()));
+                messageManager.onQueueError(message.getChannel(), "discord.command.audio.play.select", results.size());
                 return false;
             }
         }
@@ -90,7 +90,7 @@ public class PlayCommand extends AudioCommand {
                     validationService.validateSingle(track, requestedBy, context);
                     playerService.play(new TrackRequest(track, requestedBy, channel));
                 } catch (DiscordException e) {
-                    messageManager.onQueueError(channel, e.getMessage());
+                    messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                 }
             }
 
@@ -100,7 +100,7 @@ public class PlayCommand extends AudioCommand {
                     List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
                     playerService.play(tracks.stream().map(e -> new TrackRequest(e , requestedBy, channel)).collect(Collectors.toList()));
                 } catch (DiscordException e) {
-                    messageManager.onQueueError(channel, e.getMessage());
+                    messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                 }
             }
 
@@ -111,7 +111,7 @@ public class PlayCommand extends AudioCommand {
 
             @Override
             public void loadFailed(FriendlyException e) {
-                messageManager.onQueueError(channel, "Произошла ошибка :interrobang::" + e.getMessage());
+                messageManager.onQueueError(channel, "discord.command.audio.error", e.getMessage());
             }
         });
     }
