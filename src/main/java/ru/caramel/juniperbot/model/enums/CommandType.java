@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.enums;
 
 public enum CommandType {
     MESSAGE, ALIAS;

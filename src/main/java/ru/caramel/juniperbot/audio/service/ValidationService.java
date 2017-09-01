@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,12 +40,13 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
-        Long queueLimit = context.getConfig().getMusicQueueLimit();
-        Long durationLimit = context.getConfig().getMusicDurationLimit();
-        Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
+        MusicConfig config = context.getConfig().getMusicConfig();
+        Long queueLimit = config.getQueueLimit();
+        Long durationLimit = config.getDurationLimit();
+        Long duplicateLimit = config.getDuplicateLimit();
         PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
-        if (track.getInfo().isStream && !context.getConfig().isMusicStreamsEnabled()) {
+        if (track.getInfo().isStream && !config.isStreamsEnabled()) {
             throw new ValidationException("discord.command.audio.queue.limits.streams");
         }
 
@@ -66,17 +68,18 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
-        Long queueLimit = context.getConfig().getMusicQueueLimit();
-        Long durationLimit = context.getConfig().getMusicDurationLimit();
-        Long duplicateLimit = context.getConfig().getMusicDuplicateLimit();
+        MusicConfig config = context.getConfig().getMusicConfig();
+        Long queueLimit = config.getQueueLimit();
+        Long durationLimit = config.getDurationLimit();
+        Long duplicateLimit = config.getDuplicateLimit();
         PlaybackInstance instance = playerService.getInstance(context.getGuild());
 
-        if (!Boolean.TRUE.equals(context.getConfig().getMusicPlaylistEnabled())) {
+        if (!Boolean.TRUE.equals(config.getPlaylistEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.playlists");
         }
 
         List<AudioTrack> tracks = playlist.getTracks();
-        if (!tracks.isEmpty() && !context.getConfig().isMusicStreamsEnabled()) {
+        if (!tracks.isEmpty() && !config.isStreamsEnabled()) {
             tracks = tracks.stream().filter(e -> !e.getInfo().isStream).collect(Collectors.toList());
             if (tracks.isEmpty()) {
                 throw new ValidationException("discord.command.audio.queue.limits.streams");

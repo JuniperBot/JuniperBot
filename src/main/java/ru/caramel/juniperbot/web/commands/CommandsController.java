@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.model.CommandType;
+import ru.caramel.juniperbot.model.enums.CommandType;
 import ru.caramel.juniperbot.model.CommandsContainer;
 import ru.caramel.juniperbot.service.CommandsService;
 import ru.caramel.juniperbot.web.common.AbstractController;

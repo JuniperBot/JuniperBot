@@ -11,7 +11,7 @@ import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.integration.instagram.InstagramListener;
-import ru.caramel.juniperbot.model.WebHookType;
+import ru.caramel.juniperbot.model.enums.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.service.MessageService;

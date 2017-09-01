@@ -27,29 +27,12 @@ public class GuildConfig extends BaseEntity {
     @Size(max = 20)
     private String prefix;
 
-    @Column(name = "music_channel_id")
-    private Long musicChannelId;
-
-    @Column(name = "music_playlist_enabled")
-    private Boolean musicPlaylistEnabled;
-
-    @Column(name = "music_streams_enabled")
-    private boolean musicStreamsEnabled;
-
-    @Column(name = "music_user_join_enabled")
-    private boolean musicUserJoinEnabled;
-
-    @Column(name = "music_queue_limit")
-    private Long musicQueueLimit;
-
-    @Column(name = "music_duration_limit")
-    private Long musicDurationLimit;
-
-    @Column(name = "music_duplicate_limit")
-    private Long musicDuplicateLimit;
-
     @Column(name = "is_help_private")
     private Boolean privateHelp;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "music_config_id")
+    private MusicConfig musicConfig;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "web_hook_id")

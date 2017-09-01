@@ -3,6 +3,7 @@ package ru.caramel.juniperbot.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
+import ru.caramel.juniperbot.model.enums.CommandType;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

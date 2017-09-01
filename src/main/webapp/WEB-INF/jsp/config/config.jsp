@@ -84,20 +84,20 @@
                     </spring:bind>
 
                     <hr />
-                    <spring:bind path="musicChannelId">
+                    <spring:bind path="musicConfig.channelId">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <label for="music-channel" class="col-sm-4 control-label">Музыкальный канал по-умолчанию</label>
                             <div class="col-sm-8">
-                                <form:select id="music-channel" path="musicChannelId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;"
+                                <form:select id="music-channel" path="musicConfig.channelId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;"
                                              items="${voiceChannels}" itemValue="idLong" itemLabel="name" />
-                                <form:errors path="musicChannelId" class="help-block" />
-                                <spring:bind path="musicUserJoinEnabled">
+                                <form:errors path="musicConfig.channelId" class="help-block" />
+                                <spring:bind path="musicConfig.userJoinEnabled">
                                     <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
                                         <label>
-                                            <form:checkbox path="musicUserJoinEnabled" cssStyle="margin-top: 4px;" />
+                                            <form:checkbox path="musicConfig.userJoinEnabled" cssStyle="margin-top: 4px;" />
                                             Разрешить присоединяться в канал пользователя
                                         </label>
-                                        <form:errors path="musicUserJoinEnabled" class="help-block" />
+                                        <form:errors path="musicConfig.userJoinEnabled" class="help-block" />
                                     </div>
                                 </spring:bind>
                             </div>
@@ -108,49 +108,49 @@
                         <label class="col-sm-4 control-label combo-control">Ограничения воспроизведения</label>
                         <div class="col-sm-8">
                             <div class="row">
-                                <spring:bind path="musicQueueLimit">
+                                <spring:bind path="musicConfig.queueLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
                                         <label for="queue-limit" class="control-label">Треков на участника</label>
-                                        <form:input id="queue-limit" type="number" min="1" path="musicQueueLimit" cssClass="form-control" placeholder="не ограничено" />
-                                        <form:errors path="musicQueueLimit" class="help-block" />
+                                        <form:input id="queue-limit" type="number" min="1" path="musicConfig.queueLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <form:errors path="musicConfig.queueLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
-                                <spring:bind path="musicDurationLimit">
+                                <spring:bind path="musicConfig.durationLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
                                         <label for="duration-limit" class="control-label">Длительность трека</label>
                                         <div class="input-group">
-                                            <form:input id="duration-limit" type="number" min="1" path="musicDurationLimit" cssClass="form-control" placeholder="не ограничено" />
+                                            <form:input id="duration-limit" type="number" min="1" path="musicConfig.durationLimit" cssClass="form-control" placeholder="не ограничено" />
                                             <span class="input-group-addon">мин</span>
                                         </div>
-                                        <form:errors path="musicDurationLimit" class="help-block" />
+                                        <form:errors path="musicConfig.durationLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
                             </div>
                             <div class="row">
-                                <spring:bind path="musicDuplicateLimit">
+                                <spring:bind path="musicConfig.duplicateLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
                                         <label for="duplicate-limit" class="control-label">Одинаковых треков</label>
-                                        <form:input id="duplicate-limit" type="number" min="1" path="musicDuplicateLimit" cssClass="form-control" placeholder="не ограничено" />
-                                        <form:errors path="musicDuplicateLimit" class="help-block" />
+                                        <form:input id="duplicate-limit" type="number" min="1" path="musicConfig.duplicateLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <form:errors path="musicConfig.duplicateLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
                                 <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
-                                    <spring:bind path="musicPlaylistEnabled">
+                                    <spring:bind path="musicConfig.playlistEnabled">
                                         <div class="checkbox play-checkbox ${status.error ? 'has-error' : ''}">
                                             <label>
-                                                <form:checkbox path="musicPlaylistEnabled" cssStyle="margin-top: 4px;" />
+                                                <form:checkbox path="musicConfig.playlistEnabled" cssStyle="margin-top: 4px;" />
                                                 Разрешить плейлисты
                                             </label>
-                                            <form:errors path="musicPlaylistEnabled" class="help-block" />
+                                            <form:errors path="musicConfig.playlistEnabled" class="help-block" />
                                         </div>
                                     </spring:bind>
-                                    <spring:bind path="musicStreamsEnabled">
+                                    <spring:bind path="musicConfig.streamsEnabled">
                                         <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
                                             <label>
-                                                <form:checkbox path="musicStreamsEnabled" cssStyle="margin-top: 4px;" />
+                                                <form:checkbox path="musicConfig.streamsEnabled" cssStyle="margin-top: 4px;" />
                                                 Разрешить потоковое аудио
                                             </label>
-                                            <form:errors path="musicStreamsEnabled" class="help-block" />
+                                            <form:errors path="musicConfig.streamsEnabled" class="help-block" />
                                         </div>
                                     </spring:bind>
                                 </div>

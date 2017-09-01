@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import ru.caramel.juniperbot.model.WebHookType;
+import ru.caramel.juniperbot.model.enums.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;

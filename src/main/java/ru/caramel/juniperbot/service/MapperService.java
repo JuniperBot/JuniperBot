@@ -4,14 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import ru.caramel.juniperbot.model.ConfigDto;
-import ru.caramel.juniperbot.model.CustomCommandDto;
-import ru.caramel.juniperbot.model.VkConnectionDto;
-import ru.caramel.juniperbot.model.WebHookDto;
-import ru.caramel.juniperbot.persistence.entity.CustomCommand;
-import ru.caramel.juniperbot.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.persistence.entity.WebHook;
+import ru.caramel.juniperbot.model.*;
+import ru.caramel.juniperbot.persistence.entity.*;
 
 import java.util.List;
 
@@ -23,6 +17,8 @@ public interface MapperService {
     VkConnectionDto getVkConnectionDto(VkConnection connection);
 
     CustomCommandDto getCommandDto(CustomCommand command);
+
+    MusicConfigDto getMusicDto(MusicConfig musicConfig);
 
     CustomCommand getCommand(CustomCommandDto command);
 
@@ -40,6 +36,8 @@ public interface MapperService {
 
     @Mapping(target = "id", ignore = true)
     void updateConnection(VkConnectionDto source, @MappingTarget VkConnection target);
+
+    void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
 
     @Mapping(target = "id", ignore = true)
     void updateCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
