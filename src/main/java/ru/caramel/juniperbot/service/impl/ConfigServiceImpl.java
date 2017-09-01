@@ -94,6 +94,12 @@ public class ConfigServiceImpl implements ConfigService {
         return shouldSave ? repository.save(config) : config;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public boolean exists(long serverId) {
+        return repository.existsByGuildId(serverId);
+    }
+
     private ConfigDto getConfigDto(GuildConfig config) {
         ConfigDto dto = mapper.getConfigDto(config);
         WebHook webHook = config.getWebHook();

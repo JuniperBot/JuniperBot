@@ -8,4 +8,6 @@ import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> {
 
     GuildConfig findByGuildId(long guildId);
+
+    boolean existsByGuildId(long guildId);
 }
