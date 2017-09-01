@@ -47,7 +47,7 @@ public class YouTubeCommand extends PlayCommand {
         }
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle("Результаты поиска:");
+        builder.setTitle(messageService.getMessage("discord.command.audio.search.results"));
 
         List<String> urls = new ArrayList<>();
         for (int i = 0; i < results.size(); i++) {
@@ -60,7 +60,7 @@ public class YouTubeCommand extends PlayCommand {
             urls.add(url);
         }
 
-        builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, String.format("Для воспроизведения нажмите на эмодзи-номер или введите команду `%sплей N`, где N — номер трека из списка выше",
+        builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
                 context.getPrefix()), false);
 
         message.getChannel().sendMessage(builder.build()).queue(e -> {

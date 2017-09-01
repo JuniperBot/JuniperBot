@@ -22,4 +22,8 @@ public interface MessageService {
     void onError(MessageChannel sourceChannel, String titleCode, String code, Object... args);
 
     String getMessage(String code, Object... args);
+
+    <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title);
+
+    String getEnumTitle(Enum<?> clazz);
 }

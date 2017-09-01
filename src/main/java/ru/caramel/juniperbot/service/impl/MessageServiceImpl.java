@@ -17,12 +17,18 @@ import ru.caramel.juniperbot.service.MessageService;
 
 import java.awt.*;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
+
+    private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
 
     @Autowired
     private DiscordConfig discordConfig;
@@ -37,7 +43,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void onError(MessageChannel sourceChannel, String code, Object... args) {
-        onError(sourceChannel, "discord.message.title.error", code);
+        onError(sourceChannel, "discord.message.title.error", code, args);
     }
 
     @Override
@@ -84,4 +90,19 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title) {
+        Map<String, Enum<?>> cache = enumCache.computeIfAbsent(clazz, e ->
+                Stream.of(clazz.getEnumConstants()).collect(Collectors.toMap(k -> getEnumTitle(k).toLowerCase(), v -> v)));
+        return (T) cache.get(title.toLowerCase());
+    }
+
+    @Override
+    public String getEnumTitle(Enum<?> value) {
+        if (value == null) {
+            return null;
+        }
+        return getMessage(value.getClass().getName() + "." + value.name());
+    }
 }

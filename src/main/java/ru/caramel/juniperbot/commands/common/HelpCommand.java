@@ -55,7 +55,7 @@ public class HelpCommand implements Command {
 
         CommandGroup rootGroup = CommandGroup.COMMON;
         if (StringUtils.isNotEmpty(query)) {
-            rootGroup = CommandGroup.getForTitle(query);
+            rootGroup = messageService.getEnumeration(CommandGroup.class, query);
         }
         if (rootGroup == null || !groupedCommands.containsKey(rootGroup)) {
             messageService.onError(message.getChannel(), "discord.command.help.no-such-group");
@@ -78,11 +78,12 @@ public class HelpCommand implements Command {
                             messageService.getMessage(e.description()), false));
                     messages.add(groupBuilder);
                 } else {
+                    String groupTitle = messageService.getEnumTitle(group);
                     embedBuilder.addField(String.format("%s (%s%s %s):",
-                            group.getTitle(),
+                            groupTitle,
                             context.getPrefix(),
                             messageService.getMessage("discord.command.help.key"),
-                            group.getTitle().toLowerCase()),
+                            groupTitle.toLowerCase()),
                             commands.stream().map(e -> '`' + context.getPrefix() + messageService.getMessage(e.key()) + '`')
                                     .collect(Collectors.joining(", ")), false);
                 }
@@ -100,7 +101,7 @@ public class HelpCommand implements Command {
                         list.append('`').append(context.getPrefix()).append(e.getKey()).append('`');
                     });
                     if (list.length() > 0) {
-                        embedBuilder.addField(CommandGroup.CUSTOM.getTitle() + ":", list.toString(), false);
+                        embedBuilder.addField(messageService.getEnumTitle(CommandGroup.CUSTOM) + ":", list.toString(), false);
                     }
                 }
             }
@@ -137,7 +138,7 @@ public class HelpCommand implements Command {
         if (CommandGroup.COMMON.equals(group)) {
             embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
         } else {
-            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", group.getTitle()));
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", messageService.getEnumTitle(group)));
         }
         if (StringUtils.isNotEmpty(discordConfig.getCopyContent())) {
             embedBuilder.setFooter(discordConfig.getCopyContent(), discordConfig.getCopyImageUrl());

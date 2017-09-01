@@ -9,6 +9,9 @@ import ru.caramel.juniperbot.commands.model.CommandSource;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @DiscordCommand(
         key = "discord.command.repeat.key",
         description = "discord.command.repeat.desc",
@@ -18,9 +21,10 @@ import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 public class RepeatCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RepeatMode mode = RepeatMode.getForTitle(content);
+        RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content);
         if (mode == null) {
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help", RepeatMode.options());
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help",
+                    Stream.of(RepeatMode.values()).map(messageService::getEnumTitle).collect(Collectors.joining("|")));
             return false;
         }
         if (playerService.getInstance(message.getGuild()).setMode(mode)) {

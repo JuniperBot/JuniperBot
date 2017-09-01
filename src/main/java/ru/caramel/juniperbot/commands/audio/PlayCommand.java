@@ -111,7 +111,7 @@ public class PlayCommand extends AudioCommand {
 
             @Override
             public void loadFailed(FriendlyException e) {
-                messageManager.onQueueError(channel, "Произошла ошибка :interrobang::" + e.getMessage());
+                messageManager.onQueueError(channel, "discord.command.audio.error", e.getMessage());
             }
         });
     }

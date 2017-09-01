@@ -61,8 +61,12 @@
                                     <div class="form-group ${status.error ? 'has-error' : ''}">
                                         <label class="col-sm-4 control-label">Тип</label>
                                         <div class="col-sm-8">
-                                            <form:select path="commands[${i.index}].type" cssClass="form-control" cssStyle="width: 100%;"
-                                                         items="${commandTypes}" itemLabel="title" />
+                                            <form:select path="commands[${i.index}].type" cssClass="form-control" cssStyle="width: 100%;">
+                                                <c:forEach items="${commandTypes}" var="type">
+                                                    <spring:message code="${type.toString()}" var="optionLabel" />
+                                                    <form:option value="${type}" label="${optionLabel}" />
+                                                </c:forEach>
+                                            </form:select>
                                             <form:errors path="commands[${i.index}].type" class="help-block error-message" />
                                         </div>
                                     </div>
@@ -99,7 +103,7 @@
                                     <div class="col-sm-8">
                                         <select name="commands[].type" class="form-control" style="width: 100%;">
                                             <c:forEach items="${commandTypes}" var="type">
-                                                <option value="${type}">${type.title}</option>
+                                                <option value="${type}"><spring:message code="${type.toString()}" /></option>
                                             </c:forEach>
                                         </select>
                                     </div>
