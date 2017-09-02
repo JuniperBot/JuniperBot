@@ -50,7 +50,7 @@ public class WebHookServiceImpl implements WebHookService {
         if (discordClient.isConnected()) {
             JDA jda = discordClient.getJda();
             Guild guild = jda.getGuildById(guildId);
-            if (webHook.isValid() && guild != null && channelId != null && permissionsService.hasWebHooksAccess(guild)) {
+            if (guild != null && channelId != null && permissionsService.hasWebHooksAccess(guild)) {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
