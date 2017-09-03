@@ -14,13 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.integration.instagram;
+package ru.caramel.juniperbot.model.enums;
 
-import org.jinstagram.entity.users.feed.MediaFeedData;
-
-import java.util.List;
-
-public interface InstagramListener {
-
-    void onInstagramUpdated(List<MediaFeedData> medias);
+public enum  VkConnectionStatus {
+    CONNECTED, CONFIRMATION
 }
