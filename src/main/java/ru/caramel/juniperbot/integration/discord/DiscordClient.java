@@ -86,7 +86,7 @@ public class DiscordClient extends ListenerAdapter {
     }
 
     public boolean executeWebHook(WebHook webHook, WebHookMessage message, Consumer<WebHook> onAbsent) {
-        if (message.isEmpty()) {
+        if (message == null || message.isEmpty()) {
             return false;
         }
         JSONObject obj = message.toJSONObject();

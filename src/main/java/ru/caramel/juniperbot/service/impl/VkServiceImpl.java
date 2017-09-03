@@ -13,6 +13,7 @@ import com.vk.api.sdk.objects.photos.PhotoSizes;
 import com.vk.api.sdk.objects.polls.Poll;
 import com.vk.api.sdk.objects.video.Video;
 import com.vk.api.sdk.objects.wall.Graffiti;
+import com.vk.api.sdk.objects.wall.PostType;
 import com.vk.api.sdk.objects.wall.PostedPhoto;
 import com.vk.api.sdk.objects.wall.WallpostAttachment;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -138,6 +139,9 @@ public class VkServiceImpl implements VkService {
 
     private WebHookMessage createMessage(CallbackMessage<CallbackWallPost> message) {
         CallbackWallPost post = message.getObject();
+        if (PostType.SUGGEST.equals(post.getPostType())) {
+            return null; // do not post suggestions
+        }
 
         List<EmbedBuilder> embeds = CollectionUtils.isNotEmpty(post.getAttachments())
                 ? post.getAttachments().stream()
