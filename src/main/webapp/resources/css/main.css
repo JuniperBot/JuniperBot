@@ -14,6 +14,10 @@
     margin: 20px 0;
 }
 
+.server-item-wrapper {
+    margin: 10px 0;
+}
+
 .server-item-wrapper img.server-item {
     width: 100%;
     border: 4px #FFF solid;
@@ -31,6 +35,11 @@
 
 .server-item-wrapper:hover img.server-item::after {
     opacity: 1;
+}
+
+.server-list {
+    max-height: 850px;
+    overflow: auto;
 }
 
 .discord-logo {

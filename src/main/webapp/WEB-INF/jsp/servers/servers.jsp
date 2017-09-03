@@ -14,12 +14,12 @@
         </div>
     </div>
 
-    <div class="row row-centered">
+    <div class="row row-centered server-list">
         <c:forEach var="server" items="${servers}">
             <div class="col-md-2 text-center col-centered">
                 <a href="<c:url value="/config/${server.id}" />">
                     <div class="server-item-wrapper">
-                        <img src="${server.avatarUrl}" class="img-circle server-item" title="${server.name}" data-toggle="tooltip" data-placement="bottom" />
+                        <img src="${server.avatarUrl}" class="img-circle server-item" title="${server.name}" data-toggle="tooltip" data-container="body" data-placement="bottom" />
                     </div>
                 </a>
             </div>
