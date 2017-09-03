@@ -3,6 +3,7 @@ package ru.caramel.juniperbot.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.NotEmpty;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
@@ -26,6 +27,10 @@ public class GuildConfig extends BaseEntity {
     @NotEmpty
     @Size(max = 20)
     private String prefix;
+
+    @Column(name = "disabled_commands", columnDefinition = "text[]")
+    @Type(type = "string-array")
+    private String[] disabledCommands;
 
     @Column(name = "is_help_private")
     private Boolean privateHelp;

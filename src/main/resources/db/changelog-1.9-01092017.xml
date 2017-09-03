@@ -74,4 +74,12 @@
         <dropColumn tableName="guild_config" columnName="music_duplicate_limit"/>
     </changeSet>
 
+    <changeSet id="1.9-01092017-6" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="disabled_commands" type="text[]">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

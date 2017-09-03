@@ -43,7 +43,7 @@ public class HelpCommand implements Command {
         boolean direct = context.getConfig() != null && Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
         List<DiscordCommand> discordCommands = commandsService.getCommands().entrySet().stream()
-                .filter(e -> e.getValue().isApplicable(message.getChannel()))
+                .filter(e -> e.getValue().isApplicable(message.getChannel(), context.getConfig()))
                 .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());

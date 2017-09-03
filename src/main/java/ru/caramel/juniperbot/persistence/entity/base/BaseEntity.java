@@ -1,20 +1,23 @@
 package ru.caramel.juniperbot.persistence.entity.base;
+
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import ru.caramel.juniperbot.persistence.types.StringArrayType;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
-
 @Getter
 @Setter
+@TypeDefs({
+        @TypeDef(
+                name = "string-array",
+                typeClass = StringArrayType.class
+        )
+})
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
