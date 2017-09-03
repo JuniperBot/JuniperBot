@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.*;
+import ru.caramel.juniperbot.model.enums.WebHookType;
+import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.MapperService;
@@ -76,15 +78,26 @@ public class ConfigServiceImpl implements ConfigService {
             shouldSave = true;
         }
 
-        if (discordClient.isConnected() && (config.getMusicChannelId() == null ||
-                discordClient.getJda().getVoiceChannelById(config.getMusicChannelId()) == null)) {
+        MusicConfig musicConfig = config.getMusicConfig();
+        if (musicConfig == null) {
+            config.setMusicConfig(musicConfig = new MusicConfig());
+        }
+
+        if (discordClient.isConnected() && (musicConfig.getChannelId() == null ||
+                discordClient.getJda().getVoiceChannelById(musicConfig.getChannelId()) == null)) {
             VoiceChannel channel = discordClient.getDefaultMusicChannel(config.getGuildId());
             if (channel != null) {
-                config.setMusicChannelId(channel.getIdLong());
+                musicConfig.setChannelId(channel.getIdLong());
                 shouldSave = true;
             }
         }
         return shouldSave ? repository.save(config) : config;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean exists(long serverId) {
+        return repository.existsByGuildId(serverId);
     }
 
     private ConfigDto getConfigDto(GuildConfig config) {

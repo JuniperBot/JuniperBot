@@ -5,6 +5,8 @@ import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 
 public interface ConfigService {
 
+    boolean exists(long serverId);
+
     ConfigDto getConfig(long serverId);
 
     void saveConfig(ConfigDto dto, long serverId);

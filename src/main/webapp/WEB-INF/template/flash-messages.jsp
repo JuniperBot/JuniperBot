@@ -24,7 +24,7 @@
             <c:set var="label" value="Выполнено!" />
         </c:when>
     </c:choose>
-    <div id="flash-${entry.key}" class="alert ${alertClass} alert-dismissible">
+    <div id="flash-${entry.key}" class="alert ${alertClass} alert-dismissible flash-message">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4><i class="icon ${iconClass}"></i> ${label}</h4>
         <spring:message message="${entry.resolvable}" />

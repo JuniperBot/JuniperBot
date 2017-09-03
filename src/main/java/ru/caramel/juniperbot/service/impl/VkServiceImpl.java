@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.model.VkConnectionStatus;
-import ru.caramel.juniperbot.model.WebHookType;
+import ru.caramel.juniperbot.model.enums.WebHookType;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.persistence.entity.WebHook;

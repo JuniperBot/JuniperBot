@@ -1,4 +1,4 @@
-package ru.caramel.juniperbot.web.commands;
+package ru.caramel.juniperbot.web.configuration.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.model.CommandType;
+import ru.caramel.juniperbot.model.enums.CommandType;
 import ru.caramel.juniperbot.model.CommandsContainer;
 import ru.caramel.juniperbot.service.CommandsService;
 import ru.caramel.juniperbot.web.common.AbstractController;
@@ -16,8 +16,8 @@ import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
 
 @Controller
-@Navigation(PageElement.CONFIG_COMMANDS)
-public class CommandsController extends AbstractController {
+@Navigation(PageElement.CONFIG_CUSTOM_COMMANDS)
+public class CustomCommandsController extends AbstractController {
 
     @Autowired
     private CommandsService commandsService;
@@ -30,25 +30,25 @@ public class CommandsController extends AbstractController {
         binder.setValidator(validator);
     }
 
-    @RequestMapping("/commands/{serverId}")
+    @RequestMapping("/custom-commands/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
-        return createModel("commands", serverId)
+        return createModel("custom-commands", serverId)
                 .addObject("commandsContainer",
                         new CommandsContainer(commandsService.getCustomForView(serverId)));
     }
 
-    @RequestMapping(value = "/commands/{serverId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/custom-commands/{serverId}", method = RequestMethod.POST)
     public ModelAndView save(
             @PathVariable long serverId,
             @Validated @ModelAttribute("commandsContainer") CommandsContainer container,
             BindingResult result) {
         validateGuildId(serverId);
         if (result.hasErrors()) {
-            return createModel("commands", serverId);
+            return createModel("custom-commands", serverId);
         }
         commandsService.saveCommands(container.getCommands(), serverId);
-        flash.success("flash.commands.save.success.message");
+        flash.success("flash.custom-commands.save.success.message");
         return view(serverId);
     }
 

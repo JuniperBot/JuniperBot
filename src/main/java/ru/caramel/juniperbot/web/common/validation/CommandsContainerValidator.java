@@ -30,7 +30,6 @@ public class CommandsContainerValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
-        Set<String> internalCommands = commandsService.getCommands().keySet();
         CommandsContainer container = (CommandsContainer) target;
 
         Set<String> existingKey = new HashSet<>();
@@ -41,7 +40,7 @@ public class CommandsContainerValidator implements Validator {
             if (StringUtils.isNotEmpty(key)) {
                 if (!existingKey.add(key)) {
                     errors.rejectValue(path + "key", "validation.commands.key.unique.message");
-                } else if (internalCommands.contains(key)) {
+                } else if (commandsService.getByLocale(key, true) != null) {
                     errors.rejectValue(path + "key", "validation.commands.key.service.message");
                 }
             }

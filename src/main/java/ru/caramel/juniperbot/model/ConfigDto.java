@@ -21,26 +21,11 @@ public class ConfigDto implements Serializable {
     @NotBlank(message = "{validation.config.prefix.NotBlank.message}")
     private String prefix;
 
-    private Long musicChannelId;
-
-    @NotNull
-    private Boolean musicPlaylistEnabled;
-
-    private boolean musicUserJoinEnabled;
-
-    private boolean musicStreamsEnabled;
-
     @NotNull
     private Boolean privateHelp;
 
-    @Min(0)
-    private Long musicQueueLimit;
-
-    @Min(0)
-    private Long musicDurationLimit;
-
-    @Min(0)
-    private Long musicDuplicateLimit;
+    @Valid
+    private MusicConfigDto musicConfig;
 
     @Valid
     private WebHookDto webHook;

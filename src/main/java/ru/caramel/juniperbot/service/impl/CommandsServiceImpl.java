@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.ValidationException;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
@@ -52,10 +53,14 @@ public class CommandsServiceImpl implements CommandsService {
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
+    private Map<String, Command> localizedCommands;
+
     @Getter
     private Map<String, Command> commands;
 
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
+
+    private Map<CommandGroup, List<DiscordCommand>> descriptors;
 
     @Override
     @Transactional
@@ -82,6 +87,16 @@ public class CommandsServiceImpl implements CommandsService {
         }
     }
 
+    @Override
+    public Command getByLocale(String localizedKey) {
+        return localizedCommands.get(localizedKey);
+    }
+
+    @Override
+    public Command getByLocale(String localizedKey, boolean anyLocale) {
+        return getByLocale(localizedKey); // TODO maybe should be implemented later
+    }
+
     private void sendCommand(MessageReceivedEvent event, String content, String prefix, GuildConfig guildConfig, boolean alias) {
         String[] args = content.split("\\s+");
         if (args.length == 0) {
@@ -89,8 +104,8 @@ public class CommandsServiceImpl implements CommandsService {
         }
         content = content.substring(args[0].length(), content.length()).trim();
 
-        Command command = commands.get(args[0]);
-        if (command != null && !command.isApplicable(event.getChannel())) {
+        Command command = getByLocale(args[0]);
+        if (command != null && !command.isApplicable(event.getChannel(), guildConfig)) {
             return;
         }
         if (command == null) {
@@ -175,8 +190,26 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Autowired
     private void registerCommands(List<Command> commands) {
-        this.commands = commands.stream()
-                .filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class))
-                .collect(Collectors.toMap(e -> messageService.getMessage(e.getClass().getAnnotation(DiscordCommand.class).key()), e -> e));
+        this.localizedCommands = new HashMap<>();
+        this.commands = new HashMap<>();
+        commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
+            String localized = messageService.getMessage(e.getClass().getAnnotation(DiscordCommand.class).key());
+            this.localizedCommands.put(localized, e);
+            this.commands.put(e.getClass().getAnnotation(DiscordCommand.class).key(), e);
+        });
+    }
+
+    @Override
+    public Map<CommandGroup, List<DiscordCommand>> getDescriptors() {
+        if (descriptors == null) {
+            List<DiscordCommand> discordCommands = commands.entrySet().stream()
+                    .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
+                    .filter(e -> !e.hidden())
+                    .collect(Collectors.toList());
+            discordCommands.sort(Comparator.comparingInt(DiscordCommand::priority));
+            descriptors = discordCommands
+                    .stream().collect(Collectors.groupingBy(DiscordCommand::group, LinkedHashMap::new, Collectors.toList()));
+        }
+        return descriptors;
     }
 }

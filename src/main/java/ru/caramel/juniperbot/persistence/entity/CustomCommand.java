@@ -2,7 +2,7 @@ package ru.caramel.juniperbot.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.model.CommandType;
+import ru.caramel.juniperbot.model.enums.CommandType;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;

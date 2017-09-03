@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.audio.model.TrackRequest;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.service.ConfigService;
 
 import javax.annotation.PostConstruct;
@@ -122,12 +123,13 @@ public class PlayerService extends AudioEventAdapter {
 
     private VoiceChannel getDesiredChannel(Member member) {
         GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
+        MusicConfig musicConfig = config.getMusicConfig();
         VoiceChannel channel = null;
-        if (config.isMusicUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+        if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
             channel = member.getVoiceState().getChannel();
         }
-        if (channel == null && config.getMusicChannelId() != null) {
-            channel = discordClient.getJda().getVoiceChannelById(config.getMusicChannelId());
+        if (channel == null && musicConfig.getChannelId() != null) {
+            channel = discordClient.getJda().getVoiceChannelById(musicConfig.getChannelId());
         }
         if (channel == null) {
             List<VoiceChannel> channels = member.getGuild().getVoiceChannels();

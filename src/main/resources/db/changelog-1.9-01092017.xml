@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1.9-01092017-1" author="caramel">
+        <createTable tableName="music_config">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_music_config"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="channel_id" type="BIGINT"/>
+            <column name="playlist_enabled" type="BOOLEAN"/>
+            <column name="streams_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_join_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="queue_limit" type="BIGINT"/>
+            <column name="duration_limit" type="BIGINT"/>
+            <column name="duplicate_limit" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.9-01092017-2" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="music_config_id" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="fk_guild_config_music_config" references="music_config(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.9-01092017-3" author="caramel">
+        <sql>
+            INSERT INTO music_config (
+            id,
+            version,
+            channel_id,
+            playlist_enabled,
+            streams_enabled,
+            user_join_enabled,
+            queue_limit,
+            duration_limit,
+            duplicate_limit
+            ) SELECT
+            id,
+            0,
+            music_channel_id,
+            music_playlist_enabled,
+            music_streams_enabled,
+            music_user_join_enabled,
+            music_queue_limit,
+            music_duration_limit,
+            music_duplicate_limit FROM guild_config;
+            SELECT setval('music_config_id_seq', (SELECT MAX(id) + 1 FROM music_config));
+            UPDATE guild_config SET music_config_id = id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="1.9-01092017-4" author="caramel">
+        <addNotNullConstraint tableName="guild_config" columnName="music_config_id" />
+    </changeSet>
+
+    <changeSet id="1.9-01092017-5" author="caramel">
+        <dropColumn tableName="guild_config" columnName="music_channel_id"/>
+        <dropColumn tableName="guild_config" columnName="music_playlist_enabled"/>
+        <dropColumn tableName="guild_config" columnName="music_streams_enabled"/>
+        <dropColumn tableName="guild_config" columnName="music_user_join_enabled"/>
+        <dropColumn tableName="guild_config" columnName="music_queue_limit"/>
+        <dropColumn tableName="guild_config" columnName="music_duration_limit"/>
+        <dropColumn tableName="guild_config" columnName="music_duplicate_limit"/>
+    </changeSet>
+
+    <changeSet id="1.9-01092017-6" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="disabled_commands" type="text[]">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

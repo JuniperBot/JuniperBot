@@ -5,7 +5,7 @@
 
     <groupId>ru.caramel</groupId>
     <artifactId>juniperbot</artifactId>
-    <version>1.7.x-SNAPSHOT</version>
+    <version>1.9.x-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>JuniperBot</name>

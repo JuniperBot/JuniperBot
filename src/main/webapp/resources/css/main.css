@@ -297,3 +297,11 @@ div.discord-header-icon {
 .hide {
     display: none;
 }
+
+.command-checkbox {
+    margin-top: 15px;
+}
+
+.box-tools.button-xs-group {
+    margin-top: 3px;
+}
