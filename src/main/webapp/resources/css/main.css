@@ -330,3 +330,11 @@ div.discord-header-icon {
 .box-tools.button-xs-group {
     margin-top: 3px;
 }
+
+.box-body.no-padding {
+    padding: 0;
+}
+
+table.command-table td {
+    padding: 0 16px 8px 10px !important;
+}

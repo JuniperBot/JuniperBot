@@ -32,20 +32,25 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             <a class="btn btn-default btn-xs uncheck-all">Отключить все</a>
                         </div>
                     </div>
-                    <div class="box-body">
-                        <c:forEach items="${commandType.value}" var="descriptor">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="pull-left">
-                                        <h4><span class="label label-warning"><c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/></span></h4>
-                                        <div><spring:message code="${descriptor.description}"/></div>
-                                    </div>
-                                    <div class="pull-right command-checkbox">
-                                        <form:checkbox path="commands" value="${descriptor.key}" data-toggle="toggle" data-onstyle="warning" data-on="Вкл" data-off="Выкл" />
-                                    </div>
-                                </div>
-                            </div>
-                        </c:forEach>
+                    <div class="box-body no-padding">
+                        <table class="table table-striped command-table">
+                            <tbody>
+                            <c:forEach items="${commandType.value}" var="descriptor">
+                                <tr>
+                                    <td>
+                                        <div class="pull-left">
+                                            <h4><span class="label label-warning"><c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/></span></h4>
+                                            <div><spring:message code="${descriptor.description}"/></div>
+                                        </div>
+                                        <div class="pull-right command-checkbox">
+                                            <form:checkbox path="commands" value="${descriptor.key}" data-toggle="toggle" data-onstyle="warning" data-on="Вкл" data-off="Выкл" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>
