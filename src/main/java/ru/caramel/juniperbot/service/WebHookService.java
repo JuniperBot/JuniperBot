@@ -26,4 +26,6 @@ public interface WebHookService {
     void updateWebHook(long guildId, Long channelId, WebHook webHook, String name);
 
     boolean delete(long guildId, WebHook webHook);
+
+    void invalidateCache(long guildId);
 }

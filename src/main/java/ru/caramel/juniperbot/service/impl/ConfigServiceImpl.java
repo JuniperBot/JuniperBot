@@ -171,6 +171,7 @@ public class ConfigServiceImpl implements ConfigService {
             });
             updateMap.forEach((k, v) -> webHookService.updateWebHook(config.getGuildId(), v, k.getWebHook(), k.getName()));
         }
+        webHookService.invalidateCache(config.getGuildId());
     }
 
     private GuildConfig createIfMissing(GuildConfig config, long serverId) {
