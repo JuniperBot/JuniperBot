@@ -32,9 +32,17 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "guild_config")
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = GuildConfig.COMMANDS_GRAPH, attributeNodes = @NamedAttributeNode("commands"))
+})
+@NamedQuery(name = GuildConfig.FIND_BY_GUILD_ID, query = "SELECT g FROM GuildConfig g WHERE g.guildId = :guildId")
 public class GuildConfig extends BaseEntity {
 
     private static final long serialVersionUID = 1599157155969887890L;
+
+    public static final String FIND_BY_GUILD_ID = "GuildConfig.findByGuildId";
+
+    public static final String COMMANDS_GRAPH = "GuildConfig.commandsGraph";
 
     @Column(name = "guild_id")
     private long guildId;

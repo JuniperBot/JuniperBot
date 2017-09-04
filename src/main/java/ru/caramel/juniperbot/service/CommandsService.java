@@ -37,7 +37,5 @@ public interface CommandsService {
 
     Command getByLocale(String localizedKey, boolean anyLocale);
 
-    List<CustomCommandDto> getCustomForView(long serverId);
-
     void saveCommands(List<CustomCommandDto> commands, long serverId);
 }

@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.service;
 
 import ru.caramel.juniperbot.model.ConfigDto;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 
 public interface ConfigService {
 
@@ -30,4 +31,10 @@ public interface ConfigService {
     void save(GuildConfig config);
 
     GuildConfig getOrCreate(long serverId);
+
+    GuildConfig getOrCreate(long serverId, String graph);
+
+    MusicConfig getMusicConfig(long serverId);
+
+    String getPrefix(long serverId);
 }

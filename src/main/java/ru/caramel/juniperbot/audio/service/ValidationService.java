@@ -57,6 +57,9 @@ public class ValidationService {
 
     public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
         MusicConfig config = context.getConfig().getMusicConfig();
+        if (config == null) {
+            context.getConfig().setMusicConfig(config = new MusicConfig());
+        }
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
@@ -85,6 +88,9 @@ public class ValidationService {
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
         MusicConfig config = context.getConfig().getMusicConfig();
+        if (config == null) {
+            context.getConfig().setMusicConfig(config = new MusicConfig());
+        }
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();

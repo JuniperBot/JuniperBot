@@ -35,6 +35,7 @@ import ru.caramel.juniperbot.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.service.ConfigService;
 import ru.caramel.juniperbot.service.WebHookService;
 
+import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private GuildConfigRepository repository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private DiscordConfig discordConfig;
@@ -80,35 +84,29 @@ public class ConfigServiceImpl implements ConfigService {
     @Transactional
     public GuildConfig getOrCreate(long serverId) {
         GuildConfig config = repository.findByGuildId(serverId);
+        return createIfMissing(config, serverId);
+    }
 
-        boolean shouldSave = false;
-        if (config == null) {
-            config = new GuildConfig(serverId);
-            config.setPrefix(discordConfig.getPrefix());
-            shouldSave = true;
-        }
+    @Override
+    @Transactional
+    public GuildConfig getOrCreate(long serverId, String graph) {
+        return createIfMissing(entityManager
+                .createNamedQuery(GuildConfig.FIND_BY_GUILD_ID, GuildConfig.class)
+                .setParameter("guildId", serverId)
+                .setHint(org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD.getKey(),
+                        entityManager.getEntityGraph(graph))
+                .getSingleResult(), serverId);
+    }
 
-        if (config.getWebHook() == null) {
-            WebHook webHook = new WebHook();
-            webHook.setType(WebHookType.INSTAGRAM);
-            config.setWebHook(webHook);
-            shouldSave = true;
-        }
+    @Override
+    public MusicConfig getMusicConfig(long serverId) {
+        return repository.findMusicConfig(serverId);
+    }
 
-        MusicConfig musicConfig = config.getMusicConfig();
-        if (musicConfig == null) {
-            config.setMusicConfig(musicConfig = new MusicConfig());
-        }
-
-        if (discordClient.isConnected() && (musicConfig.getChannelId() == null ||
-                discordClient.getJda().getVoiceChannelById(musicConfig.getChannelId()) == null)) {
-            VoiceChannel channel = discordClient.getDefaultMusicChannel(config.getGuildId());
-            if (channel != null) {
-                musicConfig.setChannelId(channel.getIdLong());
-                shouldSave = true;
-            }
-        }
-        return shouldSave ? repository.save(config) : config;
+    @Override
+    public String getPrefix(long serverId) {
+        String prefix = repository.findPrefixByGuildId(serverId);
+        return prefix != null ? prefix : getOrCreate(serverId).getPrefix();
     }
 
     @Transactional(readOnly = true)
@@ -131,12 +129,26 @@ public class ConfigServiceImpl implements ConfigService {
                         .ifPresent(e -> e.setWebHook(vkHookDto));
             }
         }
+
+        MusicConfigDto musicConfigDto = new MusicConfigDto();
+        if (discordClient.isConnected() && (musicConfigDto.getChannelId() == null ||
+                discordClient.getJda().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
+            VoiceChannel channel = discordClient.getDefaultMusicChannel(config.getGuildId());
+            if (channel != null) {
+                musicConfigDto.setChannelId(channel.getIdLong());
+            }
+        }
         return dto;
     }
 
     private void updateConfig(ConfigDto dto, GuildConfig config) {
-        mapper.updateConfig(dto, config);
         WebHook webHook = config.getWebHook();
+        if (webHook == null) {
+            webHook = new WebHook();
+            webHook.setType(WebHookType.INSTAGRAM);
+            config.setWebHook(webHook);
+        }
+        mapper.updateConfig(dto, config);
         WebHookDto hookDto = dto.getWebHook();
 
         if (hookDto != null) {
@@ -159,5 +171,18 @@ public class ConfigServiceImpl implements ConfigService {
             });
             updateMap.forEach((k, v) -> webHookService.updateWebHook(config.getGuildId(), v, k.getWebHook(), k.getName()));
         }
+    }
+
+    private GuildConfig createIfMissing(GuildConfig config, long serverId) {
+        if (config == null) {
+            config = new GuildConfig(serverId);
+            config.setPrefix(discordConfig.getPrefix());
+            config.setMusicConfig(new MusicConfig());
+            WebHook webHook = new WebHook();
+            webHook.setType(WebHookType.INSTAGRAM);
+            config.setWebHook(webHook);
+            repository.save(config);
+        }
+        return config;
     }
 }

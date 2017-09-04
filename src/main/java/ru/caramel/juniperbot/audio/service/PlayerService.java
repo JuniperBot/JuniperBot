@@ -138,20 +138,16 @@ public class PlayerService extends AudioEventAdapter {
     }
 
     private VoiceChannel getDesiredChannel(Member member) {
-        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
-        MusicConfig musicConfig = config.getMusicConfig();
+        MusicConfig musicConfig = configService.getMusicConfig(member.getGuild().getIdLong());
         VoiceChannel channel = null;
-        if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+        if (musicConfig != null && musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
             channel = member.getVoiceState().getChannel();
         }
-        if (channel == null && musicConfig.getChannelId() != null) {
+        if (channel == null && musicConfig != null && musicConfig.getChannelId() != null) {
             channel = discordClient.getJda().getVoiceChannelById(musicConfig.getChannelId());
         }
         if (channel == null) {
-            List<VoiceChannel> channels = member.getGuild().getVoiceChannels();
-            if (!channels.isEmpty()) {
-                channel = channels.get(0);
-            }
+            channel = discordClient.getDefaultMusicChannel(member.getGuild().getIdLong());
         }
         return channel;
     }

@@ -17,13 +17,21 @@
 package ru.caramel.juniperbot.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 
 @Repository
 public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> {
 
-    GuildConfig findByGuildId(long guildId);
+    GuildConfig findByGuildId(@Param("guildId") long guildId);
+
+    @Query("SELECT e.musicConfig FROM GuildConfig e WHERE e.guildId = :guildId")
+    MusicConfig findMusicConfig(@Param("guildId") long guildId);
 
     boolean existsByGuildId(long guildId);
+
+    String findPrefixByGuildId(long guildId);
 }

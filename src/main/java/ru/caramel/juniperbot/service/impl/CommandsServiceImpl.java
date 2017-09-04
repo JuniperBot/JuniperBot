@@ -198,12 +198,6 @@ public class CommandsServiceImpl implements CommandsService {
         commandRepository.delete(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
     }
 
-    @Transactional(readOnly = true)
-    public List<CustomCommandDto> getCustomForView(long serverId) {
-        GuildConfig config = configService.getOrCreate(serverId);
-        return mapperService.getCommandsDto(commandRepository.findByConfig(config));
-    }
-
     @Autowired
     private void registerCommands(List<Command> commands) {
         this.localizedCommands = new HashMap<>();

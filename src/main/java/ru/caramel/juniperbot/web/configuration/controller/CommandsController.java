@@ -46,9 +46,8 @@ public class CommandsController extends AbstractController {
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
-        CommandsDto dto = new CommandsDto();
-        dto.setCommands(ArrayUtil.reverse(String[].class, config.getDisabledCommands(), commandsService.getCommands().keySet()));
-        return createModel("commands", serverId)
+        CommandsDto dto = new CommandsDto(ArrayUtil.reverse(String[].class, config.getDisabledCommands(), commandsService.getCommands().keySet()));
+        return createModel("commands", serverId, config.getPrefix())
                 .addObject("commandsContainer", dto);
     }
 
@@ -65,6 +64,10 @@ public class CommandsController extends AbstractController {
     }
 
     protected ModelAndView createModel(String model, long serverId) {
+        return createModel(model, serverId, null);
+    }
+
+    protected ModelAndView createModel(String model, long serverId, String prefix) {
         Map<CommandGroup, List<CommandTypeDto>> descriptors = new LinkedHashMap<>();
         commandsService.getDescriptors().forEach((group, descriptor) -> {
             if (CommandGroup.CUSTOM.equals(group)) return;
@@ -72,6 +75,6 @@ public class CommandsController extends AbstractController {
         });
         return super.createModel(model, serverId)
                 .addObject("commandTypes", descriptors)
-                .addObject("commandPrefix", configService.getConfig(serverId).getPrefix());
+                .addObject("commandPrefix", prefix != null ? prefix : configService.getPrefix(serverId));
     }
 }

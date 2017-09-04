@@ -17,12 +17,17 @@
 package ru.caramel.juniperbot.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CommandsDto {
 
     private String[] commands;
 
+    public CommandsDto(String[] commands) {
+        this.commands = commands;
+    }
 }
