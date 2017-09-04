@@ -331,8 +331,8 @@ div.discord-header-icon {
     margin-top: 3px;
 }
 
-.box-body.no-padding {
-    padding: 0;
+.form-group.no-b-margin {
+    margin-bottom: 0 !important;
 }
 
 table.command-table td {

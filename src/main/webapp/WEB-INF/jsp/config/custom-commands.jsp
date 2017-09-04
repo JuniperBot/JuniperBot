@@ -55,82 +55,93 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     <h3 class="box-title">Пользовательские команды
                         <i class="fa fa-question-circle" style="cursor: pointer" data-toggle="modal" data-target="#help-dialog"></i></h3>
                 </div>
-                <div id="commandsContainer" class="box-body">
-                    <div class="noCommandsItem" style="display: none;">Нет пользовательских команд</div>
-                    <c:forEach items="${commandsContainer.commands}" var="command" varStatus="i" begin="0">
-                        <div class="row commandRow">
-                            <form:hidden path="commands[${i.index}].id" />
-                            <div class="col-md-3 form-horizontal">
-                                <spring:bind path="commands[${i.index}].key">
-                                    <div class="form-group ${status.error ? 'has-error' : ''}">
-                                        <label class="col-sm-4 control-label">Команда</label>
-                                        <div class="col-sm-8">
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
-                                                <form:input id="key${i.index}" path="commands[${i.index}].key" cssClass="form-control" placeholder="Название" />
+                <div class="box-body no-padding">
+                    <table id="commandsContainer" class="table table-striped">
+                        <tbody>
+                        <tr class="noCommandsItem" style="display: none;">
+                            <td>Нет пользовательских команд</td>
+                        </tr>
+                        <c:forEach items="${commandsContainer.commands}" var="command" varStatus="i" begin="0">
+                            <tr class="commandRow">
+                                <td>
+                                    <form:hidden path="commands[${i.index}].id" />
+                                    <div class="col-md-3 form-horizontal">
+                                        <spring:bind path="commands[${i.index}].key">
+                                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                                <label class="col-sm-4 control-label">Команда</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
+                                                        <form:input id="key${i.index}" path="commands[${i.index}].key" cssClass="form-control" placeholder="Название" />
+                                                    </div>
+                                                    <form:errors path="commands[${i.index}].key" class="help-block error-message" />
+                                                </div>
                                             </div>
-                                            <form:errors path="commands[${i.index}].key" class="help-block error-message" />
-                                        </div>
+                                        </spring:bind>
+                                        <spring:bind path="commands[${i.index}].type">
+                                            <div class="form-group no-b-margin ${status.error ? 'has-error' : ''}">
+                                                <label class="col-sm-4 control-label">Тип</label>
+                                                <div class="col-sm-8">
+                                                    <form:select path="commands[${i.index}].type" cssClass="form-control" cssStyle="width: 100%;">
+                                                        <c:forEach items="${commandTypes}" var="type">
+                                                            <spring:message code="${type.toString()}" var="optionLabel" />
+                                                            <form:option value="${type}" label="${optionLabel}" />
+                                                        </c:forEach>
+                                                    </form:select>
+                                                    <form:errors path="commands[${i.index}].type" class="help-block error-message" />
+                                                </div>
+                                            </div>
+                                        </spring:bind>
                                     </div>
-                                </spring:bind>
-                                <spring:bind path="commands[${i.index}].type">
-                                    <div class="form-group ${status.error ? 'has-error' : ''}">
-                                        <label class="col-sm-4 control-label">Тип</label>
-                                        <div class="col-sm-8">
-                                            <form:select path="commands[${i.index}].type" cssClass="form-control" cssStyle="width: 100%;">
-                                                <c:forEach items="${commandTypes}" var="type">
-                                                    <spring:message code="${type.toString()}" var="optionLabel" />
-                                                    <form:option value="${type}" label="${optionLabel}" />
-                                                </c:forEach>
-                                            </form:select>
-                                            <form:errors path="commands[${i.index}].type" class="help-block error-message" />
-                                        </div>
-                                    </div>
-                                </spring:bind>
-                            </div>
 
-                            <div class="col-md-9">
-                                <spring:bind path="commands[${i.index}].content">
-                                    <div class="form-group ${status.error ? 'has-error' : ''}">
-                                        <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
-                                        <form:textarea path="commands[${i.index}].content" cssClass="form-control" cssStyle="min-height: 83px;"
-                                                       rows="3" placeholder="Введите тело команды" />
-                                        <form:errors path="commands[${i.index}].content" class="help-block error-message" />
+                                    <div class="col-md-9">
+                                        <spring:bind path="commands[${i.index}].content">
+                                            <div class="form-group no-b-margin ${status.error ? 'has-error' : ''}">
+                                                <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
+                                                <form:textarea path="commands[${i.index}].content" cssClass="form-control" cssStyle="min-height: 83px;"
+                                                               rows="3" placeholder="Введите тело команды" />
+                                                <form:errors path="commands[${i.index}].content" class="help-block error-message" />
+                                            </div>
+                                        </spring:bind>
                                     </div>
-                                </spring:bind>
-                            </div>
-                        </div>
-                    </c:forEach>
-
-                    <c:if test="${commandsContainer.commands.size() == 0}">
-                        <div class="row commandRow defaultRow" style="display: none;">
-                            <div class="col-md-3 form-horizontal">
-                                <div class="form-group">
-                                    <label class="col-sm-4 control-label">Команда</label>
-                                    <div class="col-sm-8">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
-                                            <input class="form-control" type="text" name="commands[].key" value="" placeholder="Название" />
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${commandsContainer.commands.size() == 0}">
+                            <tr class="commandRow defaultRow" style="display: none;">
+                                <td>
+                                    <div class="col-md-3 form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Команда</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
+                                                    <input class="form-control" type="text" name="commands[].key" value="" placeholder="Название" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group no-b-margin">
+                                            <label class="col-sm-4 control-label">Тип</label>
+                                            <div class="col-sm-8">
+                                                <select name="commands[].type" class="form-control" style="width: 100%;">
+                                                    <c:forEach items="${commandTypes}" var="type">
+                                                        <option value="${type}"><spring:message code="${type.toString()}" /></option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4 control-label">Тип</label>
-                                    <div class="col-sm-8">
-                                        <select name="commands[].type" class="form-control" style="width: 100%;">
-                                            <c:forEach items="${commandTypes}" var="type">
-                                                <option value="${type}"><spring:message code="${type.toString()}" /></option>
-                                            </c:forEach>
-                                        </select>
+                                    <div class="col-md-9">
+                                        <div class="form-group no-b-margin">
+                                            <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
+                                            <textarea name="commands[].content" class="form-control" placeholder="Введите тело команды" rows="3" style="min-height: 83px;"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
-                                <textarea name="commands[].content" class="form-control" placeholder="Введите тело команды" rows="3" style="min-height: 83px;"></textarea>
-                            </div>
-                        </div>
-                    </c:if>
+                                </td>
+                            </tr>
+                        </c:if>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
