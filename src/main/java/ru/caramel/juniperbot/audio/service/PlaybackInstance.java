@@ -41,18 +41,18 @@ public class PlaybackInstance {
 
     private final List<TrackRequest> playlist = Collections.synchronizedList(new ArrayList<>());
 
-    private RepeatMode mode = RepeatMode.NONE;
+    private RepeatMode mode;
 
-    private int cursor = -1;
+    private int cursor;
 
     private Long activeTime;
 
     public PlaybackInstance(AudioPlayer player, Guild guild) {
         this.player = player;
         this.guild = guild;
-        audioManager = guild.getAudioManager();
-        audioManager.setSendingHandler(new GuildAudioSendHandler(player));
-        activeTime = System.currentTimeMillis();
+        this.audioManager = guild.getAudioManager();
+        this.audioManager.setSendingHandler(new GuildAudioSendHandler(player));
+        reset();
     }
 
     public synchronized void reset() {
@@ -60,12 +60,12 @@ public class PlaybackInstance {
         playlist.clear();
         player.playTrack(null);
         cursor = -1;
-        if (isConnected()) {
-            audioManager.closeAudioConnection();
-        }
+        audioManager.closeAudioConnection();
+        tick();
     }
 
     public synchronized void play(TrackRequest request) {
+        tick();
         offer(request);
         if (player.getPlayingTrack() == null) {
             mode = RepeatMode.NONE;
@@ -76,6 +76,7 @@ public class PlaybackInstance {
     }
 
     public synchronized boolean playNext() {
+        tick();
         if (RepeatMode.CURRENT.equals(mode)) {
             getCurrent().reset();
             player.playTrack(getCurrent().getTrack());
@@ -100,6 +101,7 @@ public class PlaybackInstance {
         if (active) {
             player.stopTrack();
         }
+        reset();
         return active;
     }
 
@@ -112,6 +114,7 @@ public class PlaybackInstance {
     }
 
     public synchronized boolean resumeTrack() {
+        tick();
         boolean paused = isActive() && player.isPaused();
         if (paused) {
             player.setPaused(false);
@@ -189,5 +192,9 @@ public class PlaybackInstance {
     public synchronized void offer(TrackRequest request) {
         request.getTrack().setUserData(this);
         playlist.add(request);
+    }
+
+    private synchronized void tick() {
+        activeTime = System.currentTimeMillis();
     }
 }
