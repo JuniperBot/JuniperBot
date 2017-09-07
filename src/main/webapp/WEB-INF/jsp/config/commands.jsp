@@ -1,3 +1,19 @@
+<%--
+This file is part of JuniperBotJ.
+
+JuniperBotJ is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JuniperBotJ is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
@@ -16,20 +32,25 @@
                             <a class="btn btn-default btn-xs uncheck-all">Отключить все</a>
                         </div>
                     </div>
-                    <div class="box-body">
-                        <c:forEach items="${commandType.value}" var="descriptor">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="pull-left">
-                                        <h4><span class="label label-warning"><c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/></span></h4>
-                                        <div><spring:message code="${descriptor.description}"/></div>
-                                    </div>
-                                    <div class="pull-right command-checkbox">
-                                        <form:checkbox path="commands" value="${descriptor.key}" data-toggle="toggle" data-onstyle="warning" data-on="Вкл" data-off="Выкл" />
-                                    </div>
-                                </div>
-                            </div>
-                        </c:forEach>
+                    <div class="box-body no-padding">
+                        <table class="table table-striped command-table">
+                            <tbody>
+                            <c:forEach items="${commandType.value}" var="descriptor">
+                                <tr>
+                                    <td>
+                                        <div class="pull-left">
+                                            <h4><span class="label label-warning"><c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/></span></h4>
+                                            <div><spring:message code="${descriptor.description}"/></div>
+                                        </div>
+                                        <div class="pull-right command-checkbox">
+                                            <form:checkbox path="commands" value="${descriptor.key}" data-toggle="toggle" data-onstyle="warning" data-on="Вкл" data-off="Выкл" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>

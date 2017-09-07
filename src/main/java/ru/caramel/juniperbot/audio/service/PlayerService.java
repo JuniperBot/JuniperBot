@@ -1,3 +1,19 @@
+/*
+ * This file is part of JuniperBotJ.
+ *
+ * JuniperBotJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBotJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ru.caramel.juniperbot.audio.service;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -122,20 +138,16 @@ public class PlayerService extends AudioEventAdapter {
     }
 
     private VoiceChannel getDesiredChannel(Member member) {
-        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
-        MusicConfig musicConfig = config.getMusicConfig();
+        MusicConfig musicConfig = configService.getMusicConfig(member.getGuild().getIdLong());
         VoiceChannel channel = null;
-        if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+        if (musicConfig != null && musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
             channel = member.getVoiceState().getChannel();
         }
-        if (channel == null && musicConfig.getChannelId() != null) {
+        if (channel == null && musicConfig != null && musicConfig.getChannelId() != null) {
             channel = discordClient.getJda().getVoiceChannelById(musicConfig.getChannelId());
         }
         if (channel == null) {
-            List<VoiceChannel> channels = member.getGuild().getVoiceChannels();
-            if (!channels.isEmpty()) {
-                channel = channels.get(0);
-            }
+            channel = discordClient.getDefaultMusicChannel(member.getGuild().getIdLong());
         }
         return channel;
     }

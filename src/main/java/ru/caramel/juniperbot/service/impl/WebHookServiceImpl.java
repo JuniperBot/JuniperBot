@@ -1,5 +1,24 @@
+/*
+ * This file is part of JuniperBotJ.
+ *
+ * JuniperBotJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBotJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ru.caramel.juniperbot.service.impl;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -13,7 +32,10 @@ import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.service.PermissionsService;
 import ru.caramel.juniperbot.service.WebHookService;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class WebHookServiceImpl implements WebHookService {
@@ -26,6 +48,19 @@ public class WebHookServiceImpl implements WebHookService {
 
     @Autowired
     private PermissionsService permissionsService;
+
+    private LoadingCache<Guild, List<Webhook>> webHooks = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .weakKeys()
+            .maximumSize(100)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<Guild, List<Webhook>>() {
+                        @ParametersAreNonnullByDefault
+                        public List<Webhook> load(Guild guild) {
+                            return guild.getWebhooks().complete();
+                        }
+                    });
 
     @Override
     public WebHookDto getDtoForView(long guildId, WebHook webHook) {
@@ -69,7 +104,6 @@ public class WebHookServiceImpl implements WebHookService {
                     webHook.setHookId(webhook.getIdLong());
                     webHook.setToken(webhook.getToken());
                 }
-
             }
         }
     }
@@ -89,12 +123,23 @@ public class WebHookServiceImpl implements WebHookService {
         return false;
     }
 
-    private Webhook getWebHook(Guild guild, WebHook webHook) {
+    @Override
+    public void invalidateCache(long guildId) {
+        Guild guild = webHooks.asMap().keySet().stream().filter(e -> e.getIdLong() == guildId).findFirst().orElse(null);
+        if (guild != null) {
+            webHooks.invalidate(guild);
+        }
+    }
+
+    private Webhook getWebHook(Guild guild, WebHook webHook)  {
         if (webHook.getHookId() != null && webHook.getToken() != null) {
-            List<Webhook> webHooks = guild.getWebhooks().complete();
-            return webHooks.stream()
-                    .filter(e -> webHook.getHookId().equals(e.getIdLong())
-                            && webHook.getToken().equals(e.getToken())).findFirst().orElse(null);
+            try {
+                return webHooks.get(guild).stream()
+                        .filter(e -> webHook.getHookId().equals(e.getIdLong())
+                                && webHook.getToken().equals(e.getToken())).findFirst().orElse(null);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }

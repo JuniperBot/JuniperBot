@@ -1,3 +1,19 @@
+/*
+ * This file is part of JuniperBotJ.
+ *
+ * JuniperBotJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBotJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ru.caramel.juniperbot.audio.service;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -41,6 +57,9 @@ public class ValidationService {
 
     public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
         MusicConfig config = context.getConfig().getMusicConfig();
+        if (config == null) {
+            context.getConfig().setMusicConfig(config = new MusicConfig());
+        }
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
@@ -69,6 +88,9 @@ public class ValidationService {
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
         MusicConfig config = context.getConfig().getMusicConfig();
+        if (config == null) {
+            context.getConfig().setMusicConfig(config = new MusicConfig());
+        }
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
