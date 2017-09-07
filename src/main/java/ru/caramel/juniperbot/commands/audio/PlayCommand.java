@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.audio.service.PlaybackInstance;
@@ -78,6 +79,7 @@ public class PlayCommand extends AudioCommand {
             String result = youTubeClient.searchForUrl(query);
             query = result != null ? result : query;
         }
+        Hibernate.initialize(context.getConfig().getMusicConfig());
         loadAndPlay(message.getTextChannel(), context, message.getMember(), query);
         return true;
     }
