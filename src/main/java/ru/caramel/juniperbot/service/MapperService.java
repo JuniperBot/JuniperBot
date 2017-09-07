@@ -36,6 +36,8 @@ public interface MapperService {
 
     MusicConfigDto getMusicDto(MusicConfig musicConfig);
 
+    WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
+
     @Mappings({
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "config", ignore = true),
@@ -92,6 +94,13 @@ public interface MapperService {
             @Mapping(target = "type", ignore = true)
     })
     void updateWebHook(WebHookDto source, @MappingTarget WebHook target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "config", ignore = true)
+    })
+    void updateWelcomeMessage(WelcomeMessageDto source, @MappingTarget WelcomeMessage target);
 
     default String trimmed(String s) { return s != null ? s.trim() : null; }
 }

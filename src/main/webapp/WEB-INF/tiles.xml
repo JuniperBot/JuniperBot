@@ -77,6 +77,11 @@
         <put-attribute name="title" value="Команды" />
     </definition>
 
+    <definition name="welcome" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/config/welcome.jsp"/>
+        <put-attribute name="title" value="Приветствия" />
+    </definition>
+
     <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
 
 </tiles-definitions>

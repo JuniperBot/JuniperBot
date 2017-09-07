@@ -31,6 +31,7 @@ public class MenuBuilder {
         items.add(new MenuItem(DASHBOARD));
         MenuItem config = new MenuItem(CONFIG);
         config.addChild(new MenuItem(CONFIG_COMMON));
+        config.addChild(new MenuItem(WELCOME_MESSAGES));
         config.addChild(new MenuItem(CONFIG_COMMANDS));
         config.addChild(new MenuItem(CONFIG_CUSTOM_COMMANDS));
         items.add(config);

@@ -26,11 +26,9 @@ import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.*;
 import ru.caramel.juniperbot.model.enums.VkConnectionStatus;
 import ru.caramel.juniperbot.model.enums.WebHookType;
-import ru.caramel.juniperbot.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.persistence.entity.WebHook;
+import ru.caramel.juniperbot.persistence.entity.*;
+import ru.caramel.juniperbot.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.service.MapperService;
-import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.service.ConfigService;
 import ru.caramel.juniperbot.service.WebHookService;
@@ -44,6 +42,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private GuildConfigRepository repository;
+
+    @Autowired
+    private WelcomeMessageRepository welcomeMessageRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -113,6 +114,31 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public boolean exists(long serverId) {
         return repository.existsByGuildId(serverId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public WelcomeMessageDto getWelcomeMessageDto(long serverId) {
+        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
+        return welcomeMessage != null ? mapper.getMessageDto(welcomeMessage) : new WelcomeMessageDto();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public WelcomeMessage getWelcomeMessage(long serverId) {
+        return welcomeMessageRepository.findByGuildId(serverId);
+    }
+
+    @Transactional
+    @Override
+    public void saveWelcomeMessage(WelcomeMessageDto dto, long serverId) {
+        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
+        if (welcomeMessage == null) {
+            welcomeMessage = new WelcomeMessage();
+            welcomeMessage.setConfig(getOrCreate(serverId));
+        }
+        mapper.updateWelcomeMessage(dto, welcomeMessage);
+        welcomeMessageRepository.save(welcomeMessage);
     }
 
     private ConfigDto getConfigDto(GuildConfig config) {

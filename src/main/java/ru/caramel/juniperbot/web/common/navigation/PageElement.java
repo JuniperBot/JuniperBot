@@ -25,7 +25,8 @@ public enum PageElement {
     CONFIG("fa fa-cogs", null),
     CONFIG_COMMON("fa fa-cog", "/config/${serverId}"),
     CONFIG_COMMANDS("fa fa-exclamation", "/commands/${serverId}"),
-    CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}")
+    CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),
+    WELCOME_MESSAGES("fa fa-user-plus", "/welcome/${serverId}")
     ;
 
     @Getter
