@@ -28,14 +28,12 @@ import com.vk.api.sdk.objects.photos.PhotoAlbum;
 import com.vk.api.sdk.objects.photos.PhotoSizes;
 import com.vk.api.sdk.objects.polls.Poll;
 import com.vk.api.sdk.objects.video.Video;
-import com.vk.api.sdk.objects.wall.Graffiti;
-import com.vk.api.sdk.objects.wall.PostType;
-import com.vk.api.sdk.objects.wall.PostedPhoto;
-import com.vk.api.sdk.objects.wall.WallpostAttachment;
+import com.vk.api.sdk.objects.wall.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +49,7 @@ import ru.caramel.juniperbot.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.service.VkService;
 import ru.caramel.juniperbot.service.WebHookService;
+import ru.caramel.juniperbot.utils.CommonUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,6 +73,9 @@ public class VkServiceImpl implements VkService {
 
     private final static Map<Integer, String> DOC_TYPE_NAMES;
 
+
+    private final static Map<WallpostAttachmentType, Integer> ATTACHMENT_PRIORITY;
+    // /[^0-9a-zA-Z_\.]/g
     static {
         Map<Integer, String> types = new HashMap<>();
         types.put(1, "vk.message.documentType.text");
@@ -85,6 +87,19 @@ public class VkServiceImpl implements VkService {
         types.put(7, "vk.message.documentType.money");
         types.put(8, "vk.message.documentType.unknown");
         DOC_TYPE_NAMES = Collections.unmodifiableMap(types);
+
+        Map<WallpostAttachmentType, Integer> priorities = new HashMap<>();
+        priorities.put(WallpostAttachmentType.PHOTO, 10);
+        priorities.put(WallpostAttachmentType.POSTED_PHOTO, 9);
+        priorities.put(WallpostAttachmentType.GRAFFITI, 8);
+        priorities.put(WallpostAttachmentType.ALBUM, 7);
+        priorities.put(WallpostAttachmentType.VIDEO, 6);
+        priorities.put(WallpostAttachmentType.LINK, 5);
+        priorities.put(WallpostAttachmentType.DOC, 4);
+        priorities.put(WallpostAttachmentType.AUDIO, 3);
+        priorities.put(WallpostAttachmentType.PAGE, 2);
+        priorities.put(WallpostAttachmentType.POLL, 1);
+        ATTACHMENT_PRIORITY = Collections.unmodifiableMap(priorities);
     }
 
     @Autowired
@@ -159,16 +174,20 @@ public class VkServiceImpl implements VkService {
             return null; // do not post suggestions
         }
 
-        List<EmbedBuilder> embeds = CollectionUtils.isNotEmpty(post.getAttachments())
-                ? post.getAttachments().stream()
-                .map(e -> getAttachmentEmbed(message, e))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()) : new ArrayList<>();
-        if (embeds.size() > 10) {
-            embeds = embeds.subList(0, 10); // max 10 embeds in message
-        }
+        List<WallpostAttachment> attachments = new ArrayList<>(CollectionUtils.isNotEmpty(post.getAttachments()) ? post.getAttachments() : Collections.emptyList());
+        attachments.sort((a, b) -> {
+            Integer aP = ATTACHMENT_PRIORITY.get(a.getType());
+            Integer bP = ATTACHMENT_PRIORITY.get(b.getType());
+            return bP.compareTo(aP);
+        });
 
-        String content = trimTo(post.getText(), 2000);
+        List<EmbedBuilder> processEmbeds = new ArrayList<>();
+
+        attachments.forEach(e -> processAttachment(processEmbeds, message, e));
+
+        List<EmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
+
+        String content = trimTo(CommonUtils.parseVkLinks(post.getText()), 2000);
         EmbedBuilder contentEmbed = null;
         if (embeds.size() == 1) {
             contentEmbed = embeds.get(0);
@@ -191,29 +210,76 @@ public class VkServiceImpl implements VkService {
                 .build();
     }
 
-    private EmbedBuilder getAttachmentEmbed(CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
-        EmbedBuilder builder = messageService.getBaseEmbed()
-                .setFooter(String.format(CLUB_URL, message.getGroupId()), null);
+    private EmbedBuilder initBuilder(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {
+        EmbedBuilder builder = messageService.getBaseEmbed().setFooter(String.format(CLUB_URL, message.getGroupId()), null);
+        builders.add(builder);
+        return builder;
+    }
+
+    private EmbedBuilder initBuilderIfRequired(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, int desiredLength) {
+        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        if (prevBuilder == null || prevBuilder.getFields().size() == 25) {
+            return initBuilder(message, builders);
+        }
+        MessageEmbed embed = prevBuilder.build();
+        return embed.getLength() + desiredLength <= MessageEmbed.EMBED_MAX_LENGTH_BOT
+                ? prevBuilder : initBuilder(message, builders);
+    }
+
+    private EmbedBuilder addField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
+        EmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
+        prevBuilder.addField(name, CommonUtils.maskDiscordFormat(value), inline);
+        return prevBuilder;
+    }
+
+    private EmbedBuilder addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
+        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        if (prevBuilder != null && prevBuilder.getFields().size() == 24) { // do not add last empty fields
+            initBuilder(message, builders);
+        }
+        if (prevBuilder.getFields().isEmpty()) { // do not add first field
+            return prevBuilder;
+        }
+        return addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
+    }
+
+    private boolean hasImage(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {
+        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        try {
+            if (prevBuilder != null && FieldUtils.readField(prevBuilder, "image", true) != null) {
+                return true;
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    private void processAttachment(List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
+        EmbedBuilder builder;
+
+        boolean hasImage = hasImage(message, builders);
         switch (attachment.getType()) {
             case PHOTO:
                 Photo photo = attachment.getPhoto();
                 if (photo == null) {
-                    return null;
+                    return;
                 }
+                builder = initBuilder(message, builders);
                 setPhoto(builder, message, photo, true);
-                return builder;
+                break;
             case POSTED_PHOTO:
                 PostedPhoto postedPhoto = attachment.getPostedPhoto();
                 if (postedPhoto == null) {
-                    return null;
+                    return;
                 }
-                builder.setImage(coalesce(postedPhoto.getPhoto604(),
-                        postedPhoto.getPhoto130()));
-                return builder;
+                builder = initBuilder(message, builders);
+                builder.setImage(coalesce(postedPhoto.getPhoto604(), postedPhoto.getPhoto130()));
+                break;
             case VIDEO:
                 Video video = attachment.getVideo();
                 if (video == null) {
-                    return null;
+                    return;
                 }
                 String url = String.format(VIDEO_URL,
                         Math.abs(message.getGroupId()),
@@ -221,44 +287,42 @@ public class VkServiceImpl implements VkService {
                         Math.abs(video.getOwnerId()),
                         video.getId());
 
+                builder = initBuilder(message, builders);
                 setText(builder, video.getTitle(), url);
                 builder.setImage(coalesce(video.getPhoto800(), video.getPhoto320(), video.getPhoto130()));
                 if (video.getDate() != null) {
                     builder.setTimestamp(new Date(((long) video.getDate()) * 1000).toInstant());
                 }
-                return builder;
+                break;
             case AUDIO:
                 AudioFull audio = attachment.getAudio();
                 if (audio == null) {
-                    return null;
+                    return;
+                }
+                if (hasImage(message, builders)) {
+                    initBuilder(message, builders);
+                }
+                if (StringUtils.isNotEmpty(audio.getArtist()) || StringUtils.isNotEmpty(audio.getTitle())) {
+                    addBlankField(message, builders, false);
                 }
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
-                    builder.addField(messageService.getMessage("vk.message.audio.artist"), audio.getArtist(), true);
+                    addField(message, builders, messageService.getMessage("vk.message.audio.artist"), audio.getArtist(), true);
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {
-                    builder.addField(messageService.getMessage("vk.message.audio.title"), audio.getTitle(), true);
+                    addField(message, builders, messageService.getMessage("vk.message.audio.title"), audio.getTitle(), true);
                 }
-                if (builder.getFields().isEmpty()) {
-                    return null;
-                }
-                if (audio.getDate() != null) {
-                    builder.setTimestamp(new Date(((long) audio.getDate()) * 1000).toInstant());
-                }
-                return builder;
-
+                break;
             case DOC:
                 Doc doc = attachment.getDoc();
                 if (doc == null) {
-                    return null;
+                    return;
                 }
                 String type = DOC_TYPE_NAMES.get(doc.getType());
                 if (type == null) {
-                    return null;
+                    return;
                 }
                 String name = mdLink(doc.getTitle(), doc.getUrl());
-                builder.addField(messageService.getMessage("vk.message.documentType"),
-                        messageService.getMessage(type), true);
-                builder.addField(messageService.getMessage("vk.message.documentType.download"), name, true);
+
                 if ((doc.getType() == 3 || doc.getType() == 4)
                         && doc.getPreview() != null && doc.getPreview().getPhoto() != null
                         && CollectionUtils.isNotEmpty(doc.getPreview().getPhoto().getSizes())) {
@@ -268,75 +332,98 @@ public class VkServiceImpl implements VkService {
                         Integer total = sizes.getWidth() * sizes.getHeight();
                         if (total > size && sizes.getSrc() != null) {
                             size = total;
+                            builder = initBuilder(message, builders);
                             builder.setImage(sizes.getSrc());
                         }
                     }
                 }
-                return builder;
+                if (hasImage) {
+                    initBuilder(message, builders);
+                }
+                addBlankField(message, builders, false);
+                addField(message, builders, messageService.getMessage("vk.message.documentType"), messageService.getMessage(type), true);
+                addField(message, builders, messageService.getMessage("vk.message.documentType.download"), name, true);
+                break;
             case GRAFFITI:
                 Graffiti graffiti = attachment.getGraffiti();
                 if (graffiti == null) {
-                    return null;
+                    return;
                 }
-                builder.setImage(coalesce(graffiti.getPhoto586(),
-                        graffiti.getPhoto200()));
-                return builder;
+                builder = initBuilder(message, builders);
+                builder.setImage(coalesce(graffiti.getPhoto586(), graffiti.getPhoto200()));
+                break;
             case LINK:
                 Link link = attachment.getLink();
                 if (link == null) {
-                    return null;
+                    return;
                 }
-                builder.addField(messageService.getMessage("vk.message.link.title"),
+
+                if (!hasImage && link.getPhoto() != null) {
+                    builder = initBuilder(message, builders);
+                    setPhoto(builder, message, link.getPhoto(), false);
+
+                }
+                if (hasImage) {
+                    initBuilder(message, builders);
+                }
+                addBlankField(message, builders, false);
+                addField(message, builders, messageService.getMessage("vk.message.link.title"),
                         trimTo(mdLink(link.getTitle(), link.getUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
                 if (StringUtils.isNotEmpty(link.getCaption())) {
-                    builder.addField(messageService.getMessage("vk.message.link.source"), link.getCaption(), true);
+                    addField(message, builders, messageService.getMessage("vk.message.link.source"), link.getCaption(), true);
                 }
-                if (link.getPhoto() != null) {
-                    setPhoto(builder, message, link.getPhoto(), false);
-                }
-                return builder;
+                break;
             case POLL:
                 Poll poll = attachment.getPoll();
                 if (poll == null) {
-                    return null;
+                    return;
                 }
 
                 StringBuilder answers = new StringBuilder();
                 for (int i = 0; i < poll.getAnswers().size(); i++) {
                     answers.append(i + 1).append(". ").append(poll.getAnswers().get(0).getText()).append('\n');
                 }
-                builder.addField(messageService.getMessage("vk.message.poll"),
-                        trimTo(poll.getQuestion(), MessageEmbed.TEXT_MAX_LENGTH), false);
-                builder.addField(messageService.getMessage("vk.message.poll.answers"),
-                        trimTo(answers.toString(), MessageEmbed.TEXT_MAX_LENGTH), false);
-                return builder;
+                if (hasImage) {
+                    initBuilder(message, builders);
+                }
+                addBlankField(message, builders, false);
+                addField(message, builders, messageService.getMessage("vk.message.poll"),
+                        trimTo(poll.getQuestion(), MessageEmbed.TEXT_MAX_LENGTH), true);
+                addField(message, builders, messageService.getMessage("vk.message.poll.answers"),
+                        trimTo(answers.toString(), MessageEmbed.TEXT_MAX_LENGTH), true);
+                break;
             case PAGE:
                 WikipageFull page = attachment.getPage();
                 if (page == null) {
-                    return null;
+                    return;
                 }
-                builder.addField(messageService.getMessage("vk.message.page"),
-                        trimTo(mdLink(page.getTitle(), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), false);
-                return builder;
+                if (hasImage) {
+                    initBuilder(message, builders);
+                }
+                addBlankField(message, builders, false);
+                addField(message, builders, messageService.getMessage("vk.message.page"),
+                        trimTo(mdLink(page.getTitle(), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
+                break;
             case ALBUM:
                 PhotoAlbum album = attachment.getAlbum();
                 if (album == null) {
-                    return null;
+                    return;
                 }
                 url = String.format(ALBUM_URL, message.getGroupId(), album.getId());
 
-                builder.addField(messageService.getMessage("vk.message.album"),
-                        trimTo(mdLink(album.getTitle(), url), MessageEmbed.TEXT_MAX_LENGTH), true);
-                builder.addField(messageService.getMessage("vk.message.album.photos"),
-                        String.valueOf(album.getSize()), true);
-                builder.setDescription(album.getDescription());
+                builder = initBuilder(message, builders);
                 if (album.getThumb() != null) {
                     setPhoto(builder, message, album.getThumb(), false);
                 }
+                builder.setDescription(album.getDescription());
 
-                return builder;
+                addBlankField(message, builders, false);
+                addField(message, builders, messageService.getMessage("vk.message.album"),
+                        trimTo(mdLink(album.getTitle(), url), MessageEmbed.TEXT_MAX_LENGTH), true);
+                addField(message, builders, messageService.getMessage("vk.message.album.photos"),
+                        String.valueOf(album.getSize()), true);
+                break;
         }
-        return null;
     }
 
     private void setPhoto(EmbedBuilder builder, CallbackMessage<CallbackWallPost> message, Photo photo, boolean showText) {
@@ -362,12 +449,8 @@ public class VkServiceImpl implements VkService {
 
     private void setText(EmbedBuilder builder, String text, String url) {
         if (StringUtils.isNotEmpty(text)) {
-            if (text.length() < 100) {
-                builder.setTitle(trimTo(text, MessageEmbed.TITLE_MAX_LENGTH), url);
-            } else {
-                builder.setTitle(messageService.getMessage("vk.message.open"), url);
-                builder.setDescription(trimTo(text, MessageEmbed.TEXT_MAX_LENGTH));
-            }
+            builder.setTitle(messageService.getMessage("vk.message.open"), url);
+            builder.setDescription(CommonUtils.parseVkLinks(trimTo(text, MessageEmbed.TEXT_MAX_LENGTH)));
         }
     }
 }

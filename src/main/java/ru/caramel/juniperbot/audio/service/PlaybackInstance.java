@@ -76,7 +76,6 @@ public class PlaybackInstance {
     }
 
     public synchronized boolean playNext() {
-        tick();
         if (RepeatMode.CURRENT.equals(mode)) {
             getCurrent().reset();
             player.playTrack(getCurrent().getTrack());

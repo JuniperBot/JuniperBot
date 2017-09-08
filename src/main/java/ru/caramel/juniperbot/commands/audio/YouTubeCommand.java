@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.lang3.ArrayUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
@@ -79,6 +80,7 @@ public class YouTubeCommand extends PlayCommand {
         builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
                 context.getPrefix()), false);
 
+        Hibernate.initialize(context.getConfig().getMusicConfig());
         message.getChannel().sendMessage(builder.build()).queue(e -> {
             List<RequestFuture<Void>> actions = new ArrayList<>(10);
             try {

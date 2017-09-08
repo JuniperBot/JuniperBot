@@ -39,4 +39,10 @@ public class CommonUtilsTests {
         Assert.assertNull(parseMillis("25:01:02"));
         Assert.assertNull(parseMillis("12:60:02"));
     }
+
+    @Test
+    public void testVkParse() {
+        Assert.assertEquals("lol [test2](https://vk.com/test) [test4](https://vk.com/test3)",
+                parseVkLinks("lol [test|test2] [test3|test4]"));
+    }
 }
