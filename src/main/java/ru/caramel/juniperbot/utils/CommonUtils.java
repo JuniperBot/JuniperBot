@@ -21,8 +21,12 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.web.util.UriUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public final class CommonUtils {
@@ -32,6 +36,11 @@ public final class CommonUtils {
     private final static DateTimeFormatter MINUTES_FORMAT = DateTimeFormat.forPattern("mm:ss").withZone(DateTimeZone.UTC);
 
     private final static DateTimeFormatter SECONDS_FORMAT = DateTimeFormat.forPattern("ss").withZone(DateTimeZone.UTC);
+
+
+    private final static Pattern VK_LINK_TAG = Pattern.compile("\\[([0-9a-zA-Z_\\.]+)\\|([^\\|\\[\\]]+)\\]");
+
+    private final static Pattern VK_HASH_TAG = Pattern.compile("(#[0-9a-zA-Zа-яА-Я_#]+)");
 
     private CommonUtils() {
         // helper class
@@ -85,5 +94,46 @@ public final class CommonUtils {
             }
         }
         return null;
+    }
+
+    public static String parseVkLinks(String string) {
+        return parseVkLinks(string, false);
+    }
+
+    public static String parseVkLinks(String string, boolean noLink) {
+        if (StringUtils.isEmpty(string)) return string;
+        Matcher m = VK_LINK_TAG.matcher(string);
+        StringBuffer sb = new StringBuffer(string.length());
+        while (m.find()) {
+            m.appendReplacement(sb, noLink ? m.group(2)
+                    : String.format("[%s](https://vk.com/%s)", m.group(2), m.group(1)));
+        }
+        m.appendTail(sb);
+
+        string = sb.toString();
+
+        if (!noLink) {
+            try {
+                m = VK_HASH_TAG.matcher(string);
+                sb = new StringBuffer(string.length());
+                while (m.find()) {
+                    m.appendReplacement(sb, noLink ? m.group(2)
+                            : String.format("[%s](https://vk.com/feed?section=search&q=%s)", m.group(1), UriUtils.encode(m.group(1), "UTF-8")));
+                }
+                m.appendTail(sb);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            string = sb.toString();
+        }
+        return maskDiscordFormat(string);
+    }
+
+    public static String maskDiscordFormat(String string) {
+        if (StringUtils.isEmpty(string)) return string;
+        return string
+                .replace("*", "\\*")
+                .replace("_", "\\_")
+                .replace("~~", "\\~\\~");
     }
 }
