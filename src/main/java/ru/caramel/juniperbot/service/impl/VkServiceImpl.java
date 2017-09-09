@@ -256,7 +256,7 @@ public class VkServiceImpl implements VkService {
     }
 
     private void processAttachment(List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
-        EmbedBuilder builder;
+        EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;;
 
         boolean hasImage = hasImage(message, builders);
         switch (attachment.getType()) {
@@ -323,6 +323,7 @@ public class VkServiceImpl implements VkService {
                 }
                 String name = mdLink(doc.getTitle(), doc.getUrl());
 
+                String imgUrl = null;
                 if ((doc.getType() == 3 || doc.getType() == 4)
                         && doc.getPreview() != null && doc.getPreview().getPhoto() != null
                         && CollectionUtils.isNotEmpty(doc.getPreview().getPhoto().getSizes())) {
@@ -332,17 +333,17 @@ public class VkServiceImpl implements VkService {
                         Integer total = sizes.getWidth() * sizes.getHeight();
                         if (total > size && sizes.getSrc() != null) {
                             size = total;
-                            builder = initBuilder(message, builders);
-                            builder.setImage(sizes.getSrc());
+                            imgUrl = sizes.getSrc();
                         }
                     }
                 }
-                if (hasImage) {
-                    initBuilder(message, builders);
+                if (imgUrl != null) {
+                    if (builder == null || hasImage) {
+                        builder = initBuilder(message, builders);
+                    }
+                    builder.setImage(imgUrl);
                 }
-                addBlankField(message, builders, false);
-                addField(message, builders, messageService.getMessage("vk.message.documentType"), messageService.getMessage(type), true);
-                addField(message, builders, messageService.getMessage("vk.message.documentType.download"), name, true);
+                addField(message, builders, messageService.getMessage("vk.message.documentType", messageService.getMessage(type)), name, true);
                 break;
             case GRAFFITI:
                 Graffiti graffiti = attachment.getGraffiti();
@@ -361,15 +362,18 @@ public class VkServiceImpl implements VkService {
                 if (!hasImage && link.getPhoto() != null) {
                     builder = initBuilder(message, builders);
                     setPhoto(builder, message, link.getPhoto(), false);
-
                 }
                 if (hasImage) {
                     initBuilder(message, builders);
                 }
-                addBlankField(message, builders, false);
+
+                boolean hasCaption = StringUtils.isNotEmpty(link.getCaption());
+                if (hasCaption) {
+                    addBlankField(message, builders, false);
+                }
                 addField(message, builders, messageService.getMessage("vk.message.link.title"),
                         trimTo(mdLink(link.getTitle(), link.getUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
-                if (StringUtils.isNotEmpty(link.getCaption())) {
+                if (hasCaption) {
                     addField(message, builders, messageService.getMessage("vk.message.link.source"), link.getCaption(), true);
                 }
                 break;
