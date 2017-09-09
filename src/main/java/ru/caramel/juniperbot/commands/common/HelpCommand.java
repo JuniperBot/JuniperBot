@@ -142,7 +142,7 @@ public class HelpCommand implements Command {
             channel.sendMessage(builder.build()).queue();
         }
         if (direct && message.getAuthor() != null) {
-            messageService.onMessage(message.getChannel(),"discord.command.help.sent", message.getAuthor().getAsMention());
+            messageService.onMessage(message.getChannel(), null, "discord.command.help.sent", message.getAuthor().getAsMention());
         }
         return true;
     }
