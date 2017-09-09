@@ -69,11 +69,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
-        onMessage(sourceChannel, null, code);
+        onTitledMessage(sourceChannel, null, code);
     }
 
     @Override
-    public void onMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args) {
+    public void onTitledMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args) {
         if (StringUtils.isEmpty(titleCode)) {
             sendMessageSilent(sourceChannel::sendMessage, getMessage(code, args));
             return;
