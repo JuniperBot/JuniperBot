@@ -37,6 +37,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
+import org.springframework.web.util.UriUtils;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.integration.discord.model.WebHookMessage;
 import ru.caramel.juniperbot.model.enums.VkConnectionStatus;
@@ -51,6 +53,7 @@ import ru.caramel.juniperbot.service.VkService;
 import ru.caramel.juniperbot.service.WebHookService;
 import ru.caramel.juniperbot.utils.CommonUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,8 @@ public class VkServiceImpl implements VkService {
     private final static String VIDEO_URL = WALL_URL + "?z=video-%s_%s";
 
     private final static String ALBUM_URL = "https://vk.com/album-%s_%s";
+
+    private final static String ARTIST_URL = "https://vk.com/search?c[section]=audio&c[q]=%s&c[performer]=1";
 
     private final static Map<Integer, String> DOC_TYPE_NAMES;
 
@@ -187,7 +192,7 @@ public class VkServiceImpl implements VkService {
 
         List<EmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
 
-        String content = trimTo(CommonUtils.parseVkLinks(post.getText()), 2000);
+        String content = trimTo(CommonUtils.parseVkLinks(HtmlUtils.htmlUnescape(post.getText())), 2000);
         EmbedBuilder contentEmbed = null;
         if (embeds.size() == 1) {
             contentEmbed = embeds.get(0);
@@ -306,10 +311,19 @@ public class VkServiceImpl implements VkService {
                     addBlankField(message, builders, false);
                 }
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
-                    addField(message, builders, messageService.getMessage("vk.message.audio.artist"), audio.getArtist(), true);
+                    String artist = HtmlUtils.htmlUnescape(audio.getArtist());
+                    String artistUrl = artist;
+                    try {
+                        artistUrl = String.format(ARTIST_URL, UriUtils.encode(artist, "UTF-8"));
+                        artistUrl = String.format("[%s](%s)", artist, artistUrl);
+                    } catch (UnsupportedEncodingException e) {
+                        // fall down
+                    }
+                    addField(message, builders, messageService.getMessage("vk.message.audio.artist"), artistUrl, true);
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {
-                    addField(message, builders, messageService.getMessage("vk.message.audio.title"), audio.getTitle(), true);
+                    String title = HtmlUtils.htmlUnescape(audio.getTitle());
+                    addField(message, builders, messageService.getMessage("vk.message.audio.title"), title, true);
                 }
                 break;
             case DOC:
@@ -321,7 +335,7 @@ public class VkServiceImpl implements VkService {
                 if (type == null) {
                     return;
                 }
-                String name = mdLink(doc.getTitle(), doc.getUrl());
+                String name = mdLink(HtmlUtils.htmlUnescape(doc.getTitle()), doc.getUrl());
 
                 String imgUrl = null;
                 if ((doc.getType() == 3 || doc.getType() == 4)
@@ -374,7 +388,7 @@ public class VkServiceImpl implements VkService {
                 addField(message, builders, messageService.getMessage("vk.message.link.title"),
                         trimTo(mdLink(link.getTitle(), link.getUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
                 if (hasCaption) {
-                    addField(message, builders, messageService.getMessage("vk.message.link.source"), link.getCaption(), true);
+                    addField(message, builders, messageService.getMessage("vk.message.link.source"), HtmlUtils.htmlUnescape(link.getCaption()), true);
                 }
                 break;
             case POLL:
@@ -385,14 +399,14 @@ public class VkServiceImpl implements VkService {
 
                 StringBuilder answers = new StringBuilder();
                 for (int i = 0; i < poll.getAnswers().size(); i++) {
-                    answers.append(i + 1).append(". ").append(poll.getAnswers().get(0).getText()).append('\n');
+                    answers.append(i + 1).append(". ").append(HtmlUtils.htmlUnescape(poll.getAnswers().get(i).getText())).append('\n');
                 }
                 if (hasImage) {
                     initBuilder(message, builders);
                 }
                 addBlankField(message, builders, false);
                 addField(message, builders, messageService.getMessage("vk.message.poll"),
-                        trimTo(poll.getQuestion(), MessageEmbed.TEXT_MAX_LENGTH), true);
+                        trimTo(HtmlUtils.htmlUnescape(poll.getQuestion()), MessageEmbed.TEXT_MAX_LENGTH), true);
                 addField(message, builders, messageService.getMessage("vk.message.poll.answers"),
                         trimTo(answers.toString(), MessageEmbed.TEXT_MAX_LENGTH), true);
                 break;
@@ -406,7 +420,7 @@ public class VkServiceImpl implements VkService {
                 }
                 addBlankField(message, builders, false);
                 addField(message, builders, messageService.getMessage("vk.message.page"),
-                        trimTo(mdLink(page.getTitle(), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
+                        trimTo(mdLink(HtmlUtils.htmlUnescape(page.getTitle()), page.getViewUrl()), MessageEmbed.TEXT_MAX_LENGTH), true);
                 break;
             case ALBUM:
                 PhotoAlbum album = attachment.getAlbum();
@@ -419,11 +433,11 @@ public class VkServiceImpl implements VkService {
                 if (album.getThumb() != null) {
                     setPhoto(builder, message, album.getThumb(), false);
                 }
-                builder.setDescription(album.getDescription());
+                builder.setDescription(HtmlUtils.htmlUnescape(album.getDescription()));
 
                 addBlankField(message, builders, false);
                 addField(message, builders, messageService.getMessage("vk.message.album"),
-                        trimTo(mdLink(album.getTitle(), url), MessageEmbed.TEXT_MAX_LENGTH), true);
+                        trimTo(mdLink(HtmlUtils.htmlUnescape(album.getTitle()), url), MessageEmbed.TEXT_MAX_LENGTH), true);
                 addField(message, builders, messageService.getMessage("vk.message.album.photos"),
                         String.valueOf(album.getSize()), true);
                 break;
@@ -454,7 +468,7 @@ public class VkServiceImpl implements VkService {
     private void setText(EmbedBuilder builder, String text, String url) {
         if (StringUtils.isNotEmpty(text)) {
             builder.setTitle(messageService.getMessage("vk.message.open"), url);
-            builder.setDescription(CommonUtils.parseVkLinks(trimTo(text, MessageEmbed.TEXT_MAX_LENGTH)));
+            builder.setDescription(CommonUtils.parseVkLinks(trimTo(HtmlUtils.htmlUnescape(text), MessageEmbed.TEXT_MAX_LENGTH)));
         }
     }
 }
