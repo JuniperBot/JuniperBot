@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.integration.discord;
 import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
@@ -62,6 +63,9 @@ public class DiscordClient extends ListenerAdapter {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private IAudioSendFactory audioSendFactory;
+
     @Getter
     private JDA jda;
 
@@ -71,6 +75,7 @@ public class DiscordClient extends ListenerAdapter {
             jda = new JDABuilder(config.getAccountType())
                     .setToken(config.getToken())
                     .addEventListener(this)
+                    .setAudioSendFactory(audioSendFactory)
                     .buildAsync();
         } catch (LoginException e) {
             LOGGER.error("Could not login user with specified token", e);

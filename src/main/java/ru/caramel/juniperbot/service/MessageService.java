@@ -31,7 +31,7 @@ public interface MessageService {
 
     void onMessage(MessageChannel sourceChannel, String code, Object... args);
 
-    void onMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args);
+    void onTitledMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args);
 
     void onError(MessageChannel sourceChannel, String code, Object... args);
 
