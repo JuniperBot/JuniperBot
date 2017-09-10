@@ -72,8 +72,8 @@ public class YouTubeCommand extends PlayCommand {
             Video result = results.get(i);
             long duration = Duration.parse(result.getContentDetails().getDuration()).toMillis();
             String url = youTubeClient.getUrl(result);
-            String title = String.format("%d. [%s](%s) [%s]", i + 1, result.getSnippet().getTitle(),
-                    url, CommonUtils.formatDuration(duration));
+            String title = String.format("%d. `[%s]` [%s](%s)", i + 1, CommonUtils.formatDuration(duration), result.getSnippet().getTitle(),
+                    url);
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
             urls.add(url);
         }
