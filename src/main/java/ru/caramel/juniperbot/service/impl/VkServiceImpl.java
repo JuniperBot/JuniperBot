@@ -74,7 +74,7 @@ public class VkServiceImpl implements VkService {
 
     private final static String ALBUM_URL = "https://vk.com/album-%s_%s";
 
-    private final static String ARTIST_URL = "https://vk.com/search?c[section]=audio&c[q]=%s&c[performer]=1";
+    private final static String AUDIO_URL = "https://vk.com/search?c[section]=audio&c[q]=%s&c[performer]=1";
 
     private final static Map<Integer, String> DOC_TYPE_NAMES;
 
@@ -310,12 +310,12 @@ public class VkServiceImpl implements VkService {
                 if (StringUtils.isNotEmpty(audio.getArtist()) || StringUtils.isNotEmpty(audio.getTitle())) {
                     addBlankField(message, builders, false);
                 }
+                String artist = null;
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
-                    String artist = HtmlUtils.htmlUnescape(audio.getArtist());
+                    artist = HtmlUtils.htmlUnescape(audio.getArtist());
                     String artistUrl = artist;
                     try {
-                        artistUrl = String.format(ARTIST_URL, UriUtils.encode(artist, "UTF-8"));
-                        artistUrl = String.format("[%s](%s)", artist, artistUrl);
+                        artistUrl = CommonUtils.makeLink(artist, String.format(AUDIO_URL, UriUtils.encode(artist, "UTF-8")));
                     } catch (UnsupportedEncodingException e) {
                         // fall down
                     }
@@ -323,7 +323,14 @@ public class VkServiceImpl implements VkService {
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {
                     String title = HtmlUtils.htmlUnescape(audio.getTitle());
-                    addField(message, builders, messageService.getMessage("vk.message.audio.title"), title, true);
+                    String titleUrl = title;
+                    try {
+                        String fullTitle = (artist != null ? (artist + " - ") : "") + title;
+                        titleUrl = CommonUtils.makeLink(title, String.format(AUDIO_URL, UriUtils.encode(fullTitle, "UTF-8")));
+                    } catch (UnsupportedEncodingException e) {
+                        // fall down
+                    }
+                    addField(message, builders, messageService.getMessage("vk.message.audio.title"), titleUrl, true);
                 }
                 break;
             case DOC:

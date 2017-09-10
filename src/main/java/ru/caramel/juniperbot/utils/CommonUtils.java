@@ -136,4 +136,8 @@ public final class CommonUtils {
                 .replace("_", "\\_")
                 .replace("~~", "\\~\\~");
     }
+
+    public static String makeLink(String title, String url) {
+        return String.format("[%s](%s)", title, url);
+    }
 }
