@@ -69,7 +69,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
-        onTitledMessage(sourceChannel, null, code);
+        onTitledMessage(sourceChannel, null, code, args);
     }
 
     @Override
