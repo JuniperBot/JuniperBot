@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.model.CommandTypeDto;
 import ru.caramel.juniperbot.model.CommandsDto;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.service.CommandsHolderService;
 import ru.caramel.juniperbot.service.CommandsService;
 import ru.caramel.juniperbot.utils.ArrayUtil;
 import ru.caramel.juniperbot.web.common.AbstractController;
@@ -42,11 +43,14 @@ public class CommandsController extends AbstractController {
     @Autowired
     private CommandsService commandsService;
 
+    @Autowired
+    private CommandsHolderService holderService;
+
     @RequestMapping("/commands/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
-        CommandsDto dto = new CommandsDto(ArrayUtil.reverse(String[].class, config.getDisabledCommands(), commandsService.getCommands().keySet()));
+        CommandsDto dto = new CommandsDto(ArrayUtil.reverse(String[].class, config.getDisabledCommands(), holderService.getCommands().keySet()));
         return createModel("commands", serverId, config.getPrefix())
                 .addObject("commandsContainer", dto);
     }
@@ -57,7 +61,7 @@ public class CommandsController extends AbstractController {
             @ModelAttribute("commandsContainer") CommandsDto container) {
         validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
-        config.setDisabledCommands(ArrayUtil.reverse(String[].class, container.getCommands(), commandsService.getCommands().keySet()));
+        config.setDisabledCommands(ArrayUtil.reverse(String[].class, container.getCommands(), holderService.getCommands().keySet()));
         configService.save(config);
         flash.success("flash.commands.save.success.message");
         return view(serverId);
@@ -69,7 +73,7 @@ public class CommandsController extends AbstractController {
 
     protected ModelAndView createModel(String model, long serverId, String prefix) {
         Map<CommandGroup, List<CommandTypeDto>> descriptors = new LinkedHashMap<>();
-        commandsService.getDescriptors().forEach((group, descriptor) -> {
+        holderService.getDescriptors().forEach((group, descriptor) -> {
             if (CommandGroup.CUSTOM.equals(group)) return;
             descriptors.put(group, descriptor.stream().map(CommandTypeDto::new).collect(Collectors.toList()));
         });

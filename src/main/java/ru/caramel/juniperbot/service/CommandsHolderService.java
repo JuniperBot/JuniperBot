@@ -16,14 +16,21 @@
  */
 package ru.caramel.juniperbot.service;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.model.CustomCommandDto;
+import ru.caramel.juniperbot.commands.Command;
+import ru.caramel.juniperbot.commands.model.CommandGroup;
+import ru.caramel.juniperbot.commands.model.DiscordCommand;
 
 import java.util.List;
+import java.util.Map;
 
-public interface CommandsService {
+public interface CommandsHolderService {
 
-    void onMessageReceived(MessageReceivedEvent event);
+    Map<String, Command> getCommands();
 
-    void saveCommands(List<CustomCommandDto> commands, long serverId);
+    Map<CommandGroup, List<DiscordCommand>> getDescriptors();
+
+    Command getByLocale(String localizedKey);
+
+    Command getByLocale(String localizedKey, boolean anyLocale);
+
 }

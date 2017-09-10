@@ -39,8 +39,10 @@
         ru.caramel.juniperbot.service,
         ru.caramel.juniperbot.persistence"/>
 
+    <task:executor id="executor" pool-size="25" queue-capacity="100"/>
+    <task:executor id="commandsExecutor" pool-size="10-25" queue-capacity="100" />
+
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
-    <task:executor id="executor" pool-size="5" queue-capacity="25"/>
     <task:scheduler id="scheduler" pool-size="10"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"

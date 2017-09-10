@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.model.CommandsContainer;
 import ru.caramel.juniperbot.model.CustomCommandDto;
-import ru.caramel.juniperbot.service.CommandsService;
+import ru.caramel.juniperbot.service.CommandsHolderService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class CommandsContainerValidator implements Validator {
     private SpringValidatorAdapter validatorAdapter;
 
     @Autowired
-    private CommandsService commandsService;
+    private CommandsHolderService holderService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -56,7 +56,7 @@ public class CommandsContainerValidator implements Validator {
             if (StringUtils.isNotEmpty(key)) {
                 if (!existingKey.add(key)) {
                     errors.rejectValue(path + "key", "validation.commands.key.unique.message");
-                } else if (commandsService.getByLocale(key, true) != null) {
+                } else if (holderService.getByLocale(key, true) != null) {
                     errors.rejectValue(path + "key", "validation.commands.key.service.message");
                 }
             }

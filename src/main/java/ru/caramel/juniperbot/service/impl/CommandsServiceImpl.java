@@ -24,13 +24,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.BotContext;
-import ru.caramel.juniperbot.commands.model.CommandGroup;
-import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.commands.model.ValidationException;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
@@ -38,10 +37,7 @@ import ru.caramel.juniperbot.model.CustomCommandDto;
 import ru.caramel.juniperbot.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.repository.CustomCommandRepository;
-import ru.caramel.juniperbot.service.CommandsService;
-import ru.caramel.juniperbot.service.ConfigService;
-import ru.caramel.juniperbot.service.MapperService;
-import ru.caramel.juniperbot.service.MessageService;
+import ru.caramel.juniperbot.service.*;
 import ru.caramel.juniperbot.utils.MapPlaceholderResolver;
 
 import java.util.*;
@@ -67,19 +63,16 @@ public class CommandsServiceImpl implements CommandsService {
     @Autowired
     private MapperService mapperService;
 
+    @Autowired
+    private CommandsHolderService commandsHolderService;
+
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
-
-    private Map<String, Command> localizedCommands;
-
-    @Getter
-    private Map<String, Command> commands;
 
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
 
-    private Map<CommandGroup, List<DiscordCommand>> descriptors;
-
     @Override
     @Transactional
+    @Async("commandsExecutor")
     public void onMessageReceived(MessageReceivedEvent event) {
         JDA jda = event.getJDA();
         if (event.getAuthor().isBot()) {
@@ -103,16 +96,6 @@ public class CommandsServiceImpl implements CommandsService {
         }
     }
 
-    @Override
-    public Command getByLocale(String localizedKey) {
-        return localizedCommands.get(localizedKey);
-    }
-
-    @Override
-    public Command getByLocale(String localizedKey, boolean anyLocale) {
-        return getByLocale(localizedKey); // TODO maybe should be implemented later
-    }
-
     private void sendCommand(MessageReceivedEvent event, String content, String prefix, GuildConfig guildConfig, boolean alias) {
         String[] args = content.split("\\s+");
         if (args.length == 0) {
@@ -120,7 +103,7 @@ public class CommandsServiceImpl implements CommandsService {
         }
         content = content.substring(args[0].length(), content.length()).trim();
 
-        Command command = getByLocale(args[0]);
+        Command command = commandsHolderService.getByLocale(args[0]);
         if (command != null && !command.isApplicable(event.getChannel(), guildConfig)) {
             return;
         }
@@ -196,30 +179,5 @@ public class CommandsServiceImpl implements CommandsService {
 
         // delete old
         commandRepository.delete(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
-    }
-
-    @Autowired
-    private void registerCommands(List<Command> commands) {
-        this.localizedCommands = new HashMap<>();
-        this.commands = new HashMap<>();
-        commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
-            String localized = messageService.getMessage(e.getClass().getAnnotation(DiscordCommand.class).key());
-            this.localizedCommands.put(localized, e);
-            this.commands.put(e.getClass().getAnnotation(DiscordCommand.class).key(), e);
-        });
-    }
-
-    @Override
-    public Map<CommandGroup, List<DiscordCommand>> getDescriptors() {
-        if (descriptors == null) {
-            List<DiscordCommand> discordCommands = commands.entrySet().stream()
-                    .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
-                    .filter(e -> !e.hidden())
-                    .collect(Collectors.toList());
-            discordCommands.sort(Comparator.comparingInt(DiscordCommand::priority));
-            descriptors = discordCommands
-                    .stream().collect(Collectors.groupingBy(DiscordCommand::group, LinkedHashMap::new, Collectors.toList()));
-        }
-        return descriptors;
     }
 }
