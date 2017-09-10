@@ -57,6 +57,7 @@ public class YouTubeCommand extends PlayCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        message.getTextChannel().sendTyping().queue();
         List<Video> results = youTubeClient.searchDetailed(content, 10L);
         if (results.isEmpty()) {
             messageManager.onNoMatches(message.getChannel(), content);
