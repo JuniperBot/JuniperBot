@@ -44,8 +44,6 @@ import java.util.*;
         priority = 103)
 public class YouTubeCommand extends PlayCommand {
 
-    private static final String[] CHOICES = new String[] { "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "\uD83D\uDD1F" };
-
     @Autowired
     private YouTubeClient youTubeClient;
 
@@ -86,7 +84,7 @@ public class YouTubeCommand extends PlayCommand {
             List<RequestFuture<Void>> actions = new ArrayList<>(10);
             try {
                 for (int i = 0; i < results.size(); i++) {
-                    actions.add(e.addReaction(CHOICES[i]).submit());
+                    actions.add(e.addReaction(ReactionsListener.CHOICES[i]).submit());
                 }
             } catch (Exception ex) {
                 // ignore
@@ -97,7 +95,7 @@ public class YouTubeCommand extends PlayCommand {
             reactionsListener.onReaction(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getEmote().getName();
-                    int index = ArrayUtils.indexOf(CHOICES, emote);
+                    int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                     if (index >= 0 && playerService.isInChannel(event.getMember())) {
                         String query = getChoiceUrl(context, index);
                         loadAndPlay(message.getTextChannel(), context, event.getMember(), query);
