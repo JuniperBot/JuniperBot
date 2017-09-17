@@ -7,12 +7,13 @@ import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.commands.audio.AudioCommand;
+import ru.caramel.juniperbot.commands.Command;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
 import ru.caramel.juniperbot.commands.model.DiscordCommand;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 import ru.caramel.juniperbot.integration.wiki.WikiFurClient;
+import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.service.listeners.ReactionsListener;
 
 import java.util.List;
@@ -22,16 +23,19 @@ import java.util.List;
         description = "discord.command.wikifur.desc",
         group = CommandGroup.COMMON,
         priority = 3)
-public class WikiFurCommand extends AudioCommand {
+public class WikiFurCommand implements Command {
 
     @Autowired
     private WikiFurClient wikiFurClient;
 
     @Autowired
+    private MessageService messageService;
+
+    @Autowired
     private ReactionsListener reactionsListener;
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (StringUtils.isEmpty(content)) {
             messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.empty");
             return false;
