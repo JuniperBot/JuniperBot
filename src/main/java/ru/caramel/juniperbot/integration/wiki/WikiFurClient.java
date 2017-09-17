@@ -4,11 +4,13 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.sourceforge.jwbf.core.actions.HttpActionClient;
 import net.sourceforge.jwbf.core.contentRep.Article;
+import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 import org.sweble.wikitext.engine.EngineException;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
@@ -23,6 +25,9 @@ import org.sweble.wikitext.parser.parser.LinkTargetException;
 import ru.caramel.juniperbot.service.MessageService;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class WikiFurClient {
@@ -52,8 +57,25 @@ public class WikiFurClient {
         client = new MediaWikiBot(httpActionClient);
     }
 
+    public String getUrl(String article) {
+        try {
+            return WIKI_URL + UriUtils.encode(article, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Article getArticle(String search) {
         return client.getArticle(search);
+    }
+
+    public List<SearchResult> search(String search) {
+        SearchQuery searchQuery = new SearchQuery(client, search);
+        List<SearchResult> results = new ArrayList<>();
+        while (searchQuery.hasNext()) {
+            results.add(searchQuery.next());
+        }
+        return results;
     }
 
     private EngProcessedPage processedPage(Article article) {
@@ -66,8 +88,8 @@ public class WikiFurClient {
         }
     }
 
-    public MessageEmbed renderArticle(Article article) {
-        return renderArticle(article, false);
+    public MessageEmbed renderArticle(String search) {
+        return renderArticle(getArticle(search), false);
     }
 
     private MessageEmbed renderArticle(Article article, boolean redirected) {
@@ -84,7 +106,11 @@ public class WikiFurClient {
         }
 
         EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-        embedBuilder.setTitle(article.getTitle(), WIKI_URL + article.getTitle());
+        try {
+            embedBuilder.setTitle(article.getTitle(), WIKI_URL + UriUtils.encode(article.getTitle(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         TextConverter converter = new TextConverter(config, embedBuilder);
         return (MessageEmbed) converter.go(processedPage.getPage());
     }
