@@ -51,6 +51,7 @@
         <postgresql.version>42.1.4</postgresql.version>
         <liquibase.version>3.5.3</liquibase.version>
         <vk.sdk.version>0.5.8</vk.sdk.version>
+        <jwbf.version>4.0.0-SNAPSHOT</jwbf.version>
     </properties>
 
     <repositories>
@@ -58,6 +59,14 @@
             <id>jcenter</id>
             <name>jcenter-bintray</name>
             <url>http://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -172,6 +181,19 @@
             <artifactId>sdk</artifactId>
             <version>${vk.sdk.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge</groupId>
+            <artifactId>jwbf</artifactId>
+            <version>${jwbf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sweble.wikitext</groupId>
+            <artifactId>swc-engine</artifactId>
+            <version>3.1.6</version>
+        </dependency>
+
 
         <!-- WEB DEPENDENCIES -->
 
