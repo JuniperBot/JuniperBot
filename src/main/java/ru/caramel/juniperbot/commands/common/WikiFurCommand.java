@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.commands.audio.AudioCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
@@ -31,6 +32,10 @@ public class WikiFurCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        if (StringUtils.isEmpty(content)) {
+            messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.empty");
+            return false;
+        }
         MessageEmbed embed = wikiFurClient.renderArticle(content);
         if (embed != null) {
             messageService.sendMessageSilent(message.getChannel()::sendMessage, embed);
