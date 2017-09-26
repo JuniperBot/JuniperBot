@@ -33,6 +33,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
@@ -63,6 +65,10 @@ public class PlayerService extends AudioEventAdapter {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    @Qualifier("executor")
+    private TaskExecutor taskExecutor;
 
     @Getter
     private AudioPlayerManager playerManager;
@@ -109,8 +115,13 @@ public class PlayerService extends AudioEventAdapter {
 
     public void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
         messageManager.onTrackAdd(request, instance.getCursor() < 0);
+        connectToChannel(instance, request.getMember());
+        instance.play(request);
+    }
+
+    public void connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
         if (!instance.isConnected()) {
-            VoiceChannel channel = getDesiredChannel(request.getMember());
+            VoiceChannel channel = getDesiredChannel(member);
             if (channel == null) {
                 return;
             }
@@ -119,7 +130,18 @@ public class PlayerService extends AudioEventAdapter {
             }
             instance.openAudioConnection(channel);
         }
-        instance.play(request);
+    }
+
+    public void reconnectAll() {
+        instances.forEach((k, v) -> {
+            if (v.getCurrent() != null) {
+                try {
+                    connectToChannel(v, v.getCurrent().getMember());
+                } catch (DiscordException e) {
+                    // fall down
+                }
+            }
+        });
     }
 
     public void skipTrack(Guild guild) {
@@ -216,7 +238,8 @@ public class PlayerService extends AudioEventAdapter {
                 messageManager.onQueueEnd(current);
                 break;
         }
-        instance.reset();
+        // execute instance reset out of current thread
+        taskExecutor.execute(instance::reset);
     }
 
     @Override

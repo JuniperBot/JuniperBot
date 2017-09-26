@@ -155,15 +155,15 @@ public class PlaybackInstance {
     }
 
     public synchronized TrackRequest getCurrent() {
-        return cursor < 0 ? null : playlist.get(cursor);
+        return cursor < 0 || playlist.isEmpty() ? null : playlist.get(cursor);
     }
 
     private synchronized List<TrackRequest> getPast() {
-        return cursor < 0 ? Collections.emptyList() : playlist.subList(0, cursor);
+        return cursor < 0 || playlist.isEmpty() ? Collections.emptyList() : playlist.subList(0, cursor);
     }
 
     private synchronized List<TrackRequest> getOnGoing() {
-        return cursor < 0 || cursor == playlist.size() - 1
+        return cursor < 0 || playlist.isEmpty() || cursor == playlist.size() - 1
                 ? Collections.emptyList() : playlist.subList(cursor + 1, playlist.size());
     }
 
