@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.sourceforge.jwbf.core.actions.HttpActionClient;
 import net.sourceforge.jwbf.core.contentRep.Article;
 import net.sourceforge.jwbf.core.contentRep.SearchResult;
+import net.sourceforge.jwbf.mediawiki.actions.queries.RandomPageTitle;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,10 @@ public class WikiFurClient {
     }
 
     public Article getArticle(String search) {
+        if (StringUtils.isEmpty(search)) {
+            RandomPageTitle randomPageTitle = new RandomPageTitle(client);
+            search = randomPageTitle.getTitle();
+        }
         return client.getArticle(search);
     }
 

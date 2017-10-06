@@ -73,7 +73,7 @@ public class PlayerService extends AudioEventAdapter {
     @Getter
     private AudioPlayerManager playerManager;
 
-    private final Map<Guild, PlaybackInstance> instances = new ConcurrentHashMap<>();
+    private final Map<Long, PlaybackInstance> instances = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -89,10 +89,10 @@ public class PlayerService extends AudioEventAdapter {
     }
 
     public PlaybackInstance getInstance(Guild guild) {
-        return instances.computeIfAbsent(guild, e -> {
+        return instances.computeIfAbsent(guild.getIdLong(), e -> {
             AudioPlayer player = playerManager.createPlayer();
             player.addListener(this);
-            return new PlaybackInstance(player, e);
+            return new PlaybackInstance(player);
         });
     }
 
@@ -196,7 +196,7 @@ public class PlayerService extends AudioEventAdapter {
     public void monitor() {
         long currentTimeMillis = System.currentTimeMillis();
 
-        Set<Guild> inactiveIds = new HashSet<>();
+        Set<Long> inactiveIds = new HashSet<>();
         instances.forEach((k, v) -> {
             long lastMillis = v.getActiveTime();
             TrackRequest current = v.getCurrent();
