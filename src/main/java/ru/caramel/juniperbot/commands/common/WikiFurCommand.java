@@ -36,10 +36,7 @@ public class WikiFurCommand implements Command {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (StringUtils.isEmpty(content)) {
-            messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.empty");
-            return false;
-        }
+        message.getTextChannel().sendTyping().queue();
         MessageEmbed embed = wikiFurClient.renderArticle(content);
         if (embed != null) {
             messageService.sendMessageSilent(message.getChannel()::sendMessage, embed);
@@ -91,6 +88,7 @@ public class WikiFurCommand implements Command {
                     if (index >= 0 && index < finalResult.size() && message.getAuthor().equals(event.getUser())) {
                         e.delete().queue();
                         SearchResult result = finalResult.get(index);
+                        message.getTextChannel().sendTyping().queue();
                         MessageEmbed searchEmbed = wikiFurClient.renderArticle(result.getTitle());
                         if (searchEmbed == null) {
                             messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");

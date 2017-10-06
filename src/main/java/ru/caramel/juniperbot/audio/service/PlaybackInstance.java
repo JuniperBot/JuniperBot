@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.audio.service;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
@@ -35,11 +36,9 @@ public class PlaybackInstance {
 
     private final AudioPlayer player;
 
-    private final AudioManager audioManager;
-
-    private final Guild guild;
-
     private final List<TrackRequest> playlist = Collections.synchronizedList(new ArrayList<>());
+
+    private AudioManager audioManager;
 
     private RepeatMode mode;
 
@@ -47,11 +46,8 @@ public class PlaybackInstance {
 
     private Long activeTime;
 
-    public PlaybackInstance(AudioPlayer player, Guild guild) {
+    public PlaybackInstance(AudioPlayer player) {
         this.player = player;
-        this.guild = guild;
-        this.audioManager = guild.getAudioManager();
-        this.audioManager.setSendingHandler(new GuildAudioSendHandler(player));
         reset();
     }
 
@@ -60,7 +56,9 @@ public class PlaybackInstance {
         playlist.clear();
         player.playTrack(null);
         cursor = -1;
-        audioManager.closeAudioConnection();
+        if (audioManager != null) {
+            audioManager.closeAudioConnection();
+        }
         tick();
     }
 
@@ -130,11 +128,13 @@ public class PlaybackInstance {
     }
 
     public synchronized void openAudioConnection(VoiceChannel channel) {
+        audioManager = channel.getGuild().getAudioManager();
+        audioManager.setSendingHandler(new GuildAudioSendHandler(player));
         audioManager.openAudioConnection(channel);
     }
 
     public synchronized boolean isConnected() {
-        return audioManager.isConnected() || audioManager.isAttemptingToConnect();
+        return audioManager != null && (audioManager.isConnected() || audioManager.isAttemptingToConnect());
     }
 
     public synchronized boolean isActive() {
