@@ -23,32 +23,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Objects;
 
 @Controller
 public class LetsEncryptController {
 
-    private static final String PARAM_CONTENT = "letsencrypt.content";
-
     @Value("${letsencrypt.secret:}")
     private String secret;
 
+    private String content;
+
     @RequestMapping("/.well-known/acme-challenge/set/{content}")
-    public @ResponseBody String set(HttpSession session, @PathVariable("content") String content, @RequestParam("secret") String secret) {
+    public @ResponseBody String set(@PathVariable("content") String content, @RequestParam("secret") String secret) {
         if (StringUtils.isEmpty(this.secret) || !Objects.equals(this.secret, secret)) {
             return "FAIL!";
         }
-        session.setAttribute(PARAM_CONTENT, content);
-        return "OK!";
+        this.content = content;
+        return "OK! " + content;
     }
 
     @RequestMapping(value = "/.well-known/acme-challenge/{token}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public String message(HttpSession session, HttpServletResponse response, @PathVariable("token") String token) {//REST Endpoint.
+    public String message(HttpServletResponse response, @PathVariable("token") String token) {//REST Endpoint.
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-
-        return (String) session.getAttribute(PARAM_CONTENT);
+        return content;
     }
 }
