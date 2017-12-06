@@ -21,7 +21,7 @@ import lombok.Getter;
 public enum RepeatMode {
     CURRENT(":repeat_one:"),
     ALL(":repeat:"),
-    NONE(":arrow_forward:");
+    NONE(":arrow_right:");
 
     @Getter
     private final String emoji;

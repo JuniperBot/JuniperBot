@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
@@ -57,6 +58,9 @@ public class AudioMessageManager {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private ApplicationContext context;
+
     public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
             messageService.sendMessageSilent(request.getChannel()::sendMessage, getBasicMessage(request).build());
@@ -69,7 +73,7 @@ public class AudioMessageManager {
             request.getChannel()
                     .sendMessage(getPlayMessage(request).build())
                     .queue(e -> {
-                        request.setInfoMessage(e);
+                        request.setMessageController(new MessageController(context, e));
                         runUpdater(request);
                     });
         } catch (PermissionException e) {
@@ -82,15 +86,40 @@ public class AudioMessageManager {
         if (task != null) {
             task.cancel(false);
         }
-        deleteMessage(request);
+        completeMessage(request);
+    }
+
+    private void completeMessage(TrackRequest request) {
+        ScheduledFuture<?> task = request.getUpdaterTask();
+        if (task != null) {
+            task.cancel(false);
+        }
+        MessageController controller = request.getMessageController();
+        if (controller != null) {
+            try {
+                controller.remove(true);
+                request.setMessageController(null);
+                try {
+                    controller.getMessage().editMessage(getPlayMessage(request, true).build()).complete();
+                } catch (Exception e) {
+                    // fall down and skip
+                }
+            } catch (PermissionException e) {
+                LOGGER.warn("No permission to delete", e);
+            } catch (ErrorResponseException e) {
+                if (e.getErrorCode() != 10008 /* Unknown message */) {
+                    throw e;
+                }
+            }
+        }
     }
 
     private void deleteMessage(TrackRequest request) {
-        Message message = request.getInfoMessage();
-        if (message != null) {
+        MessageController controller = request.getMessageController();
+        if (controller != null) {
             try {
-                message.delete().complete();
-                request.setInfoMessage(null);
+                controller.remove(false);
+                request.setMessageController(null);
             } catch (PermissionException e) {
                 LOGGER.warn("No permission to delete", e);
             } catch (ErrorResponseException e) {
@@ -102,6 +131,7 @@ public class AudioMessageManager {
     }
 
     public void onTrackPause(TrackRequest request) {
+        updateMessage(request);
         ScheduledFuture<?> task = request.getUpdaterTask();
         if (task != null) {
             task.cancel(false);
@@ -109,8 +139,12 @@ public class AudioMessageManager {
     }
 
     public void onTrackResume(TrackRequest request) {
-        deleteMessage(request);
-        onTrackStart(request);
+        if (request.isResetOnResume()) {
+            deleteMessage(request);
+            onTrackStart(request);
+        } else {
+            runUpdater(request);
+        }
     }
 
     public void onQueueEnd(TrackRequest request) {
@@ -191,27 +225,31 @@ public class AudioMessageManager {
 
     private void runUpdater(TrackRequest request) {
         if (discordConfig.getPlayRefreshInterval() != null) {
-            ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> {
-                Message message;
-                if (request.isResetMessage()) {
-                    request.getInfoMessage().delete().queue();
-                    message = request.getChannel()
-                            .sendMessage(getPlayMessage(request).build())
-                            .complete();
-                    request.setInfoMessage(message);
-                    request.setResetMessage(false);
-                    return;
-                }
-                message = request.getInfoMessage();
-                if (message != null) {
-                    try {
-                        message.editMessage(getPlayMessage(request).build()).complete();
-                    } catch (Exception e) {
-                        // fall down and skip
-                    }
-                }
-            }, discordConfig.getPlayRefreshInterval());
+            ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> updateMessage(request),
+                    discordConfig.getPlayRefreshInterval());
             request.setUpdaterTask(task);
+        }
+    }
+
+    public void updateMessage(TrackRequest request) {
+        Message message;
+        if (request.isResetMessage()) {
+            MessageController controller = request.getMessageController();
+            controller.remove(false);
+            message = request.getChannel()
+                    .sendMessage(getPlayMessage(request).build())
+                    .complete();
+            request.setMessageController(new MessageController(context, message));
+            request.setResetMessage(false);
+            return;
+        }
+        message = request.getMessageController().getMessage();
+        if (message != null) {
+            try {
+                message.editMessage(getPlayMessage(request).build()).complete();
+            } catch (Exception e) {
+                // fall down and skip
+            }
         }
     }
 
@@ -219,17 +257,28 @@ public class AudioMessageManager {
         return messageService.getBaseEmbed().setTitle(messageService.getMessage("discord.command.audio.queue.title"), null);
     }
 
-    private EmbedBuilder getPlayMessage(TrackRequest request) {
+    private EmbedBuilder getPlayMessage(TrackRequest request, boolean passed) {
         EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
+
+        String durationText;
+        if (passed) {
+            durationText = request.getTrack().getInfo().isStream
+                    ? messageService.getMessage("discord.command.audio.panel.duration.passedStream")
+                    : messageService.getMessage("discord.command.audio.panel.duration.passed",
+                    CommonUtils.formatDuration(request.getTrack().getDuration()));
+        } else {
+            durationText = getTextProgress(request.getTrack());
+        }
+
         builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
-                getTextProgress(request.getTrack()), true);
+                durationText, true);
         builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
                 request.getMember().getEffectiveName(), true);
 
         PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
-        if (handler != null) {
-            if (handler.getPlayer().getVolume() < 100) {
+        if (!passed && handler != null) {
+            if (handler.getPlayer().getVolume() != 100) {
                 int volume = handler.getPlayer().getVolume();
                 builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
                         String.format("%d%% %s", volume, CommonUtils.getVolumeIcon(volume)), true);
@@ -238,8 +287,16 @@ public class AudioMessageManager {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.repeatMode"),
                         handler.getMode().getEmoji(), true);
             }
+            if (handler.getPlayer().isPaused()) {
+                builder.addField(messageService.getMessage("discord.command.audio.panel.paused"),
+                        "\u23F8", true);
+            }
         }
         return builder;
+    }
+
+    private EmbedBuilder getPlayMessage(TrackRequest request) {
+        return getPlayMessage(request, false);
     }
 
     private EmbedBuilder getBasicMessage(TrackRequest request) {

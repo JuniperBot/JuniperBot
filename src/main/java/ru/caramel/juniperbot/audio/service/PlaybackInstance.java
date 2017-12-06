@@ -110,8 +110,12 @@ public class PlaybackInstance {
         return playing;
     }
 
-    public synchronized boolean resumeTrack() {
+    public synchronized boolean resumeTrack(boolean resetMessage) {
         tick();
+        TrackRequest current = getCurrent();
+        if (current != null) {
+            current.setResetOnResume(resetMessage);
+        }
         boolean paused = isActive() && player.isPaused();
         if (paused) {
             player.setPaused(false);
@@ -144,6 +148,22 @@ public class PlaybackInstance {
 
     public synchronized void setVolume(int volume) {
         player.setVolume(volume);
+    }
+
+    public synchronized boolean seekVolume(int amount, boolean up) {
+        int currentValue = player.getVolume();
+        if ((up && currentValue == 150) || (!up && currentValue == 0)) {
+            return false;
+        }
+        int newValue = currentValue + (amount * (up ? 1 : -1));
+        if (newValue < 0) {
+            newValue = 0;
+        }
+        if (newValue > 150) {
+            newValue = 150;
+        }
+        player.setVolume(newValue);
+        return true;
     }
 
     public synchronized boolean shuffle() {

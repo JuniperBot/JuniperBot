@@ -20,8 +20,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.audio.service.MessageController;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -37,9 +37,11 @@ public class TrackRequest {
 
     private ScheduledFuture<?> updaterTask;
 
-    private Message infoMessage;
+    private MessageController messageController;
 
     private boolean resetMessage;
+
+    private boolean resetOnResume;
 
     public TrackRequest(AudioTrack track, Member member, TextChannel channel) {
         this.track = track;
