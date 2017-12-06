@@ -83,7 +83,7 @@ public class PostServiceImpl implements PostService, InstagramListener {
                         .collect(Collectors.toList());
 
                 WebHookMessage message = WebHookMessage.builder()
-                        .avatarUrl(config.getAvatarUrl())
+                        .avatarUrl(client.getJda().getSelfUser().getAvatarUrl())
                         .username(config.getUserName())
                         .embeds(embeds)
                         .build();
