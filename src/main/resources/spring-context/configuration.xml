@@ -36,10 +36,8 @@
         <property name="accentColor" value="#FFA550"/>
         <property name="playRefreshInterval" value="5000"/>
         <property name="playingStatus" value="фыр-фыр !хелп"/>
-        <property name="copyImageUrl" value="https://cdn.discordapp.com/avatars/247734710682255361/87aadfe9d6560d21d59b64ec8d53caaa.png?size=64" />
+        <property name="copyImageUrl" value="https://juniperbot.ru/resources/img/copy_image.jpg"/>
         <property name="copyContent" value="Карамелька © 2017 Все права зафырканы" />
-        <property name="avatarUrl"
-                  value="https://cdn.discordapp.com/avatars/310848622642069504/17f82d64779394935f900df9f4bb4b38.png?size=128"/>
     </bean>
 
     <bean class="ru.caramel.juniperbot.configuration.YouTubeConfig">

@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.commands.audio.control;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import ru.caramel.juniperbot.audio.service.PlaybackInstance;
 import ru.caramel.juniperbot.commands.audio.AudioCommand;
 import ru.caramel.juniperbot.commands.model.*;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
@@ -33,7 +34,11 @@ public class VolumeCommand extends AudioCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int volume = parseCount(content);
-        playerService.getInstance(message.getGuild()).setVolume(volume);
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+        instance.setVolume(volume);
+        if (instance.getCurrent() != null) {
+            messageManager.updateMessage(instance.getCurrent());
+        }
         messageManager.onMessage(message.getChannel(), "discord.command.audio.volume", volume, CommonUtils.getVolumeIcon(volume));
         return true;
     }
@@ -48,7 +53,7 @@ public class VolumeCommand extends AudioCommand {
             }
             if (count < 0) {
                 throw new ValidationException("discord.global.integer.negative");
-            } else if (count > 100) {
+            } else if (count > 150) {
                 throw new ValidationException("discord.command.audio.volume.max");
             }
         }

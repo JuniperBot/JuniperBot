@@ -42,8 +42,6 @@ public class DiscordConfig {
 
     private String userName;
 
-    private String avatarUrl;
-
     private Color accentColor;
 
     private Long playRefreshInterval;

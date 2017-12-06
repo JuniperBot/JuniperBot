@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.commands.audio.control;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
+import ru.caramel.juniperbot.audio.service.PlaybackInstance;
 import ru.caramel.juniperbot.commands.audio.AudioCommand;
 import ru.caramel.juniperbot.commands.model.BotContext;
 import ru.caramel.juniperbot.commands.model.CommandGroup;
@@ -43,8 +44,12 @@ public class RepeatCommand extends AudioCommand {
                     Stream.of(RepeatMode.values()).map(messageService::getEnumTitle).collect(Collectors.joining("|")));
             return false;
         }
-        if (playerService.getInstance(message.getGuild()).setMode(mode)) {
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+        if (instance.setMode(mode)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
+            if (instance.getCurrent() != null) {
+                messageManager.updateMessage(instance.getCurrent());
+            }
         } else {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
         }
