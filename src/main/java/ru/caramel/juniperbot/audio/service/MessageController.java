@@ -88,9 +88,13 @@ public class MessageController {
 
             reactionsListener.onReaction(message.getId(), event -> {
                 if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
-                    String emote = event.getReaction().getEmote().getName();
+                    String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
-                    if (action != null && handleAction(action)) {
+                    if (action != null && playerService.isInChannel(event.getMember())) {
+                        handleAction(action);
+                    }
+                    if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
+                            Permission.MESSAGE_MANAGE)) {
                         event.getReaction().removeReaction(event.getUser()).submit();
                     }
                 }
@@ -99,10 +103,10 @@ public class MessageController {
         }
     }
 
-    private boolean handleAction(Action action) {
+    private void handleAction(Action action) {
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (instance == null || !instance.isActive()) {
-            return false;
+            return;
         }
 
         boolean updateMessage = false;
@@ -152,7 +156,6 @@ public class MessageController {
         if (updateMessage && instance.getCurrent() != null) {
             messageManager.updateMessage(instance.getCurrent());
         }
-        return true;
     }
 
     public void remove(boolean soft) {
