@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.core.audio.factory.IPacketProvider;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.springframework.stereotype.Service;
 
 import java.net.DatagramPacket;
@@ -51,7 +51,7 @@ public class AudioSendFactory implements IAudioSendFactory {
                     } catch (SocketException e) {
                         //Most likely the socket has been closed due to the audio connection be closed. Next iteration will kill loop.
                     } catch (Exception e) {
-                        AudioConnection.LOG.fatal(e);
+                        AudioConnection.LOG.error("Error while sending udp audio data", e);
                     } finally {
                         long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
                         if (sleepTime > 0) {
@@ -73,7 +73,7 @@ public class AudioSendFactory implements IAudioSendFactory {
             });
             sendThread.setUncaughtExceptionHandler((thread, throwable) ->
             {
-                SimpleLog.getLog(DefaultSendSystem.class).fatal(throwable);
+                JDALogger.getLog(DefaultSendSystem.class).error("Uncaught exception in audio send thread", throwable);
                 start();
             });
             sendThread.setDaemon(true);

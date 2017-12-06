@@ -97,7 +97,7 @@ public class DiscordClient extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         if (StringUtils.isNotEmpty(config.getPlayingStatus())) {
-            jda.getPresence().setGame(Game.of(config.getPlayingStatus()));
+            jda.getPresence().setGame(Game.playing(config.getPlayingStatus()));
         }
     }
 
