@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.audio.service;
 
 import lombok.Getter;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.service.listeners.ReactionsListener;
@@ -74,24 +76,27 @@ public class MessageController {
     }
 
     private void init() {
-        for (Action action : Action.values()) {
-            try {
-                reactionFutures.add(message.addReaction(action.code).submit());
-            } catch (Exception ex) {
-                // ignore
-            }
-        }
-
-        reactionsListener.onReaction(message.getId(), event -> {
-            if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
-                String emote = event.getReaction().getEmote().getName();
-                Action action = Action.getForCode(emote);
-                if (action != null && handleAction(action)) {
-                    event.getReaction().removeReaction(event.getUser()).submit();
+        if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
+                Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)) {
+            for (Action action : Action.values()) {
+                try {
+                    reactionFutures.add(message.addReaction(action.code).submit());
+                } catch (Exception ex) {
+                    // ignore
                 }
             }
-            return false;
-        });
+
+            reactionsListener.onReaction(message.getId(), event -> {
+                if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
+                    String emote = event.getReaction().getEmote().getName();
+                    Action action = Action.getForCode(emote);
+                    if (action != null && handleAction(action)) {
+                        event.getReaction().removeReaction(event.getUser()).submit();
+                    }
+                }
+                return false;
+            });
+        }
     }
 
     private boolean handleAction(Action action) {
@@ -153,8 +158,10 @@ public class MessageController {
     public void remove(boolean soft) {
         if (soft) {
             cancelled = true;
-            reactionFutures.forEach(e -> e.cancel(false));
-            message.clearReactions().complete();
+            if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+                reactionFutures.forEach(e -> e.cancel(false));
+                message.clearReactions().complete();
+            }
         } else {
             message.delete().complete();
         }
