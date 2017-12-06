@@ -38,7 +38,8 @@ public class RewindCommand extends TimingCommand {
         long position = track.getPosition();
         millis = Math.min(position, millis);
         if (playerService.getInstance(message.getGuild()).seek(position - millis)) {
-            messageManager.onMessage(message.getChannel(),"discord.command.audio.rewind", track.getInfo().title,  CommonUtils.formatDuration(millis));
+            messageManager.onMessage(message.getChannel(),"discord.command.audio.rewind",
+                    messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
         }
         return true;
