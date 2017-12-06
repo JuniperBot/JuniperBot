@@ -112,7 +112,8 @@ public class MessageController {
                 playerService.skipTrack(message.getGuild());
                 break;
             case STOP:
-                instance.stop();
+                messageManager.onMessage(message.getChannel(), instance.stop()
+                        ? "discord.command.audio.stop" :"discord.command.audio.notStarted");
                 break;
             case VOLUME_UP:
                 if (instance.seekVolume(10, true)) {
