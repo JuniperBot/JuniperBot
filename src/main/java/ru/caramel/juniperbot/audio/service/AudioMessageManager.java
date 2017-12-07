@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.audio.service;
 
 import com.google.common.collect.Lists;
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -212,7 +213,7 @@ public class AudioMessageManager {
             int rowNum = i + offset;
             String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
                     CommonUtils.formatDuration(track.getDuration()), rowNum == 1 ? ":musical_note: " : "",
-                    info.title, info.uri, request.getMember().getEffectiveName());
+                    getTitle(info), info.uri, request.getMember().getEffectiveName());
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
         builder.setFooter(totalPages > 1
@@ -304,8 +305,8 @@ public class AudioMessageManager {
         String thumbUrl = getThumbnail(info);
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(info.title, info.uri);
-        builder.setAuthor(info.author, info.uri, thumbUrl);
+        builder.setTitle(getTitle(info), info.uri);
+        builder.setAuthor(getArtist(info), info.uri, thumbUrl);
         builder.setThumbnail(thumbUrl);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
         return builder;
@@ -333,5 +334,15 @@ public class AudioMessageManager {
             // fall down
         }
         return null;
+    }
+
+    public String getTitle(AudioTrackInfo info) {
+        return MediaContainerDetection.UNKNOWN_TITLE.equals(info.title)
+                ? messageService.getMessage("discord.command.audio.panel.unknownTitle") : info.title;
+    }
+
+    public String getArtist(AudioTrackInfo info) {
+        return MediaContainerDetection.UNKNOWN_ARTIST.equals(info.author)
+                ? messageService.getMessage("discord.command.audio.panel.unknownArtist") : info.author;
     }
 }

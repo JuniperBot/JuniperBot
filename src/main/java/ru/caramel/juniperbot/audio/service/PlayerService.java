@@ -223,7 +223,9 @@ public class PlayerService extends AudioEventAdapter {
             return;
         }
         TrackRequest current = instance.getCurrent();
-        messageManager.onTrackEnd(current);
+        if (current != null) {
+            messageManager.onTrackEnd(current);
+        }
         switch (endReason) {
             case STOPPED:
             case CLEANUP:
@@ -235,7 +237,9 @@ public class PlayerService extends AudioEventAdapter {
                 if (instance.playNext()) {
                     return;
                 }
-                messageManager.onQueueEnd(current);
+                if (current != null) {
+                    messageManager.onQueueEnd(current);
+                }
                 break;
         }
         // execute instance reset out of current thread

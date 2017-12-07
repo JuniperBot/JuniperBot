@@ -41,8 +41,8 @@ public class ForwardCommand extends TimingCommand {
         millis = Math.min(duration - position, millis);
 
         if (playerService.getInstance(message.getGuild()).seek(position + millis)) {
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.forward", track.getInfo().title,
-                    CommonUtils.formatDuration(millis));
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.forward",
+                    messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
         }
         return true;
