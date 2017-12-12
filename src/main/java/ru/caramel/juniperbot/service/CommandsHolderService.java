@@ -16,9 +16,9 @@
  */
 package ru.caramel.juniperbot.service;
 
-import ru.caramel.juniperbot.commands.Command;
-import ru.caramel.juniperbot.commands.model.CommandGroup;
-import ru.caramel.juniperbot.commands.model.DiscordCommand;
+import ru.caramel.juniperbot.model.Command;
+import ru.caramel.juniperbot.model.enums.CommandGroup;
+import ru.caramel.juniperbot.model.DiscordCommand;
 
 import java.util.List;
 import java.util.Map;

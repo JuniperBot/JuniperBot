@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.service;
 
-import ru.caramel.juniperbot.model.WebHookDto;
+import ru.caramel.juniperbot.model.dto.WebHookDto;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 
 public interface WebHookService {

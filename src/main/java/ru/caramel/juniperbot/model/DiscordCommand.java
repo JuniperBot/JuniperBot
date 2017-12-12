@@ -16,23 +16,27 @@
  */
 package ru.caramel.juniperbot.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
+import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.model.enums.CommandGroup;
+import ru.caramel.juniperbot.model.enums.CommandSource;
 
-import javax.validation.Valid;
-import java.util.List;
+import java.lang.annotation.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class CommandsContainer {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Component
+@Inherited
+public @interface DiscordCommand {
 
-    @Valid
-    private List<CustomCommandDto> commands;
+    String key();
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
-    }
+    String description();
+
+    CommandSource[] source() default {};
+
+    CommandGroup group() default CommandGroup.COMMON;
+
+    int priority() default 1;
+
+    boolean hidden() default false;
 }

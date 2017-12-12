@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.entities.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.model.WebHookDto;
+import ru.caramel.juniperbot.model.dto.WebHookDto;
 import ru.caramel.juniperbot.persistence.entity.WebHook;
 import ru.caramel.juniperbot.service.MapperService;
 import ru.caramel.juniperbot.service.PermissionsService;

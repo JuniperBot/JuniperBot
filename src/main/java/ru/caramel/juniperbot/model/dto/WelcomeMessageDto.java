@@ -14,25 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
 
-import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class CommandsContainer {
+public class WelcomeMessageDto implements Serializable {
 
-    @Valid
-    private List<CustomCommandDto> commands;
+    private static final long serialVersionUID = 4047559433178553736L;
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
-    }
+    private boolean joinEnabled;        //
+
+    private boolean joinRichEnabled;    //
+
+    @Size(max = 1800)
+    private String joinMessage;         //
+
+    private Long joinChannelId;         //
+
+    private boolean joinToDM;
+
+    private boolean leaveEnabled;       //
+
+    private boolean leaveRichEnabled;   //
+
+    @Size(max = 1800)
+    private String leaveMessage;        //
+
+    private Long leaveChannelId;        //
 }

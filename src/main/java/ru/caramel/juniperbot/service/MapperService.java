@@ -20,7 +20,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import ru.caramel.juniperbot.model.*;
+import ru.caramel.juniperbot.model.dto.*;
 import ru.caramel.juniperbot.persistence.entity.*;
 
 import java.util.List;

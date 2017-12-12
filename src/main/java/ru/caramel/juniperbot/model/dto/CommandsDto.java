@@ -14,25 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommandsContainer {
+public class CommandsDto {
 
-    @Valid
-    private List<CustomCommandDto> commands;
+    private String[] commands;
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
+    public CommandsDto(String[] commands) {
         this.commands = commands;
     }
 }

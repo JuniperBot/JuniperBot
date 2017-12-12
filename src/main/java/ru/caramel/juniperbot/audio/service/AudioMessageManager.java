@@ -33,7 +33,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.RepeatMode;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
-import ru.caramel.juniperbot.commands.model.BotContext;
+import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.utils.CommonUtils;

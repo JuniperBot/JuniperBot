@@ -14,25 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
 
-import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class CommandsContainer {
+public class MusicConfigDto {
 
-    @Valid
-    private List<CustomCommandDto> commands;
+    private Long channelId;
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
-    }
+    @NotNull
+    private Boolean playlistEnabled;
+
+    private boolean userJoinEnabled;
+
+    private boolean streamsEnabled;
+
+    @Min(0)
+    private Long queueLimit;
+
+    @Min(0)
+    private Long durationLimit;
+
+    @Min(0)
+    private Long duplicateLimit;
+
 }

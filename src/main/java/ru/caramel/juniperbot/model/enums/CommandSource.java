@@ -14,25 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.enums;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
-
-import javax.validation.Valid;
-import java.util.List;
-
-@Getter
-@Setter
-@NoArgsConstructor
-public class CommandsContainer {
-
-    @Valid
-    private List<CustomCommandDto> commands;
-
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
-    }
+public enum CommandSource {
+    DM, GUILD
 }

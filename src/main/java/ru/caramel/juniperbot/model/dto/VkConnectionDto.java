@@ -14,25 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
+import ru.caramel.juniperbot.model.enums.VkConnectionStatus;
 
 import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class CommandsContainer {
+public class VkConnectionDto implements Serializable {
+
+    private static final long serialVersionUID = -3440888869725084354L;
+
+    @NotNull
+    private Long id;
+
+    private String token;
+
+    private String name;
+
+    private VkConnectionStatus status;
 
     @Valid
-    private List<CustomCommandDto> commands;
+    private WebHookDto webHook;
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
-    }
 }

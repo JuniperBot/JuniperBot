@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.model.VkConnectionDto;
+import ru.caramel.juniperbot.model.dto.VkConnectionDto;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.service.MapperService;

@@ -14,25 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.model;
+package ru.caramel.juniperbot.model.exception;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.caramel.juniperbot.model.dto.CustomCommandDto;
+import ru.caramel.juniperbot.integration.discord.model.DiscordException;
 
-import javax.validation.Valid;
-import java.util.List;
+public class ValidationException extends DiscordException {
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class CommandsContainer {
+    private static final long serialVersionUID = 2474643174485112049L;
 
-    @Valid
-    private List<CustomCommandDto> commands;
+    public ValidationException(String message, Object... args) {
+        super(message, args);
+    }
 
-    public CommandsContainer(List<CustomCommandDto> commands) {
-        this.commands = commands;
+    public ValidationException(String message, Throwable cause, Object... args) {
+        super(message, cause, args);
     }
 }
