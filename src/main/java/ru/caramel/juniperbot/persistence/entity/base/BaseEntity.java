@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import ru.caramel.juniperbot.persistence.types.StringArrayType;
+import ru.caramel.juniperbot.persistence.types.json.JsonBinaryType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,6 +33,10 @@ import java.util.Objects;
         @TypeDef(
                 name = "string-array",
                 typeClass = StringArrayType.class
+        ),
+        @TypeDef(
+                name = "jsonb",
+                typeClass = JsonBinaryType.class
         )
 })
 @MappedSuperclass

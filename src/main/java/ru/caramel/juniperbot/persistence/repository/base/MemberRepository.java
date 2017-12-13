@@ -25,4 +25,6 @@ import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
 public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
 
     List<T> findByGuildIdAndUserId(String guildId, String userId);
+
+    T findOneByGuildIdAndUserId(String guildId, String userId);
 }

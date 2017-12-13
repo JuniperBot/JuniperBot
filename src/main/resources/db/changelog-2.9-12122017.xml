@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBotJ.
+
+ JuniperBotJ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBotJ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2.9-12122017-1" author="caramel">
+        <createTable tableName="ranking_config">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ranking_config"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="announcement_enabled" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="is_whisper" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="cooldown" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="announcement" type="VARCHAR(1800)" />
+            <column name="banned_roles" type="text[]">
+                <constraints nullable="true" />
+            </column>
+            <column name="rewards" type="jsonb">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2.9-12122017-2" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="ranking_config_id" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="fk_guild_config_ranking_config" references="ranking_config(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2.9-12122017-3" author="caramel">
+        <sql>
+            INSERT INTO ranking_config (
+            id,
+            version
+            ) SELECT
+            id,
+            0 FROM guild_config;
+            SELECT setval('ranking_config_id_seq', (SELECT MAX(id) + 1 FROM ranking_config));
+            UPDATE guild_config SET ranking_config_id = id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="2.9-12122017-4" author="caramel">
+        <createTable tableName="member">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_member"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discriminator" type="VARCHAR(4)" />
+            <column name="effective_name" type="VARCHAR(255)" />
+            <column name="avatar_url" type="VARCHAR(255)" />
+            <column name="exp" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2.9-12122017-5" author="caramel">
+        <addNotNullConstraint tableName="guild_config" columnName="ranking_config_id" />
+        <createIndex indexName="idx_member_guild_id" tableName="member">
+            <column name="guild_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createIndex>
+        <createIndex indexName="idx_member_user_id" tableName="member">
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

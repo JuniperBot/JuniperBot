@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.caramel.juniperbot.model.dto.CustomCommandDto;
 
 import javax.validation.Valid;
 import java.util.List;

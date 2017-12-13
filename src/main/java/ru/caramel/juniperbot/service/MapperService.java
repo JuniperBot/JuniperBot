@@ -20,7 +20,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import ru.caramel.juniperbot.model.*;
+import ru.caramel.juniperbot.model.dto.*;
 import ru.caramel.juniperbot.persistence.entity.*;
 
 import java.util.List;
@@ -35,6 +35,8 @@ public interface MapperService {
     CustomCommandDto getCommandDto(CustomCommand command);
 
     MusicConfigDto getMusicDto(MusicConfig musicConfig);
+
+    RankingConfigDto getRankingDto(RankingConfig rankingConfig);
 
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
 
@@ -78,6 +80,12 @@ public interface MapperService {
             @Mapping(target = "version", ignore = true)
     })
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true)
+    })
+    void updateRankingConfig(RankingConfigDto source, @MappingTarget RankingConfig target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

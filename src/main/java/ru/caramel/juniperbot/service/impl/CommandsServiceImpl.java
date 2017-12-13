@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.service.impl;
 
-import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -28,12 +27,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
-import ru.caramel.juniperbot.commands.Command;
-import ru.caramel.juniperbot.commands.model.BotContext;
-import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.model.Command;
+import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.exception.ValidationException;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
-import ru.caramel.juniperbot.model.CustomCommandDto;
+import ru.caramel.juniperbot.model.dto.CustomCommandDto;
 import ru.caramel.juniperbot.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.persistence.repository.CustomCommandRepository;

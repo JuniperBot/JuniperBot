@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.service;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.model.CustomCommandDto;
+import ru.caramel.juniperbot.model.dto.CustomCommandDto;
 
 import java.util.List;
 

@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.audio.model.TrackRequest;
-import ru.caramel.juniperbot.commands.model.BotContext;
-import ru.caramel.juniperbot.commands.model.ValidationException;
+import ru.caramel.juniperbot.model.BotContext;
+import ru.caramel.juniperbot.model.exception.ValidationException;
 import ru.caramel.juniperbot.persistence.entity.MusicConfig;
 
 import java.util.List;

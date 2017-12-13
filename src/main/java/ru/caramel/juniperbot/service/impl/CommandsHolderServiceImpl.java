@@ -19,9 +19,9 @@ package ru.caramel.juniperbot.service.impl;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.commands.Command;
-import ru.caramel.juniperbot.commands.model.CommandGroup;
-import ru.caramel.juniperbot.commands.model.DiscordCommand;
+import ru.caramel.juniperbot.model.Command;
+import ru.caramel.juniperbot.model.enums.CommandGroup;
+import ru.caramel.juniperbot.model.DiscordCommand;
 import ru.caramel.juniperbot.service.CommandsHolderService;
 import ru.caramel.juniperbot.service.MessageService;
 

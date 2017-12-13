@@ -34,6 +34,7 @@
 
     <context:component-scan base-package="
         ru.caramel.juniperbot.audio,
+        ru.caramel.juniperbot.ranking,
         ru.caramel.juniperbot.integration,
         ru.caramel.juniperbot.commands,
         ru.caramel.juniperbot.service,

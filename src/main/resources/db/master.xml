@@ -32,5 +32,6 @@
     <include file="db/changelog-30082017-1.xml" />
     <include file="db/changelog-1.9-01092017.xml" />
     <include file="db/changelog-2.0-06092017.xml" />
+    <include file="db/changelog-2.9-12122017.xml" />
 
 </databaseChangeLog>
