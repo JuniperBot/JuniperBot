@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.persistence.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.persistence.entity.RankingConfig;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
+@Repository
+public interface RankingConfigRepository extends JpaRepository<RankingConfig, Long> {
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
-
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
-
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    @Query("SELECT r FROM RankingConfig r WHERE r.guildConfig.guildId = :guildId")
+    RankingConfig findByGuildId(@Param("guildId") long guildId);
 }

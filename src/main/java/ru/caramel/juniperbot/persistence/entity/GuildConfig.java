@@ -64,6 +64,10 @@ public class GuildConfig extends BaseEntity {
     private MusicConfig musicConfig;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ranking_config_id")
+    private RankingConfig rankingConfig;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "web_hook_id")
     private WebHook webHook;
 

@@ -14,17 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.ranking.service;
 
-import java.util.List;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.integration.discord.DiscordEventListener;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
+@Component
+public class RankingListener extends DiscordEventListener {
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
+    @Autowired
+    private RankingService rankingService;
 
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
-
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    @Override
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        rankingService.onMessage(event);
+    }
 }

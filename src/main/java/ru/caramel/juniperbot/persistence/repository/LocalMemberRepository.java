@@ -14,17 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.persistence.repository;
+
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.persistence.repository.base.MemberRepository;
 
 import java.util.List;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
+@Repository
+public interface LocalMemberRepository extends MemberRepository<LocalMember> {
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
-
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
-
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    List<LocalMember> findByGuildIdOrderByExpDesc(String guildId);
 }

@@ -36,6 +36,8 @@ public interface MapperService {
 
     MusicConfigDto getMusicDto(MusicConfig musicConfig);
 
+    RankingConfigDto getRankingDto(RankingConfig rankingConfig);
+
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
 
     @Mappings({
@@ -78,6 +80,12 @@ public interface MapperService {
             @Mapping(target = "version", ignore = true)
     })
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true)
+    })
+    void updateRankingConfig(RankingConfigDto source, @MappingTarget RankingConfig target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

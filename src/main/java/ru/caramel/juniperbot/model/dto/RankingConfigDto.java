@@ -14,17 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.model.dto;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
+public class RankingConfigDto implements Serializable {
+    private static final long serialVersionUID = 2028894220167975335L;
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
+    private boolean enabled;
 
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
+    private boolean announcementEnabled;
 
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    private boolean whisper;
+
+    private int cooldown;
+
+    private String announcement;
+
+    private String[] bannedRoles;
+
 }

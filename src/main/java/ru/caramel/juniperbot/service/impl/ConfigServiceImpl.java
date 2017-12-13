@@ -208,6 +208,7 @@ public class ConfigServiceImpl implements ConfigService {
             config = new GuildConfig(serverId);
             config.setPrefix(discordConfig.getPrefix());
             config.setMusicConfig(new MusicConfig());
+            config.setRankingConfig(new RankingConfig());
             WebHook webHook = new WebHook();
             webHook.setType(WebHookType.INSTAGRAM);
             config.setWebHook(webHook);

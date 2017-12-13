@@ -19,7 +19,8 @@ package ru.caramel.juniperbot.model.enums;
 public enum CommandGroup {
     COMMON,
     MUSIC,
-    CUSTOM;
+    CUSTOM,
+    RANKING;
 
     @Override
     public String toString() {

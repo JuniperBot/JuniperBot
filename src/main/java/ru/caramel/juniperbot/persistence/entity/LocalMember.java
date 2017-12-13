@@ -14,17 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.persistence.entity;
 
-import java.util.List;
-
-import org.springframework.data.repository.NoRepositoryBean;
+import lombok.Getter;
+import lombok.Setter;
 import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
+@Getter
+@Setter
+@Entity
+@Table(name = "member")
+public class LocalMember extends MemberEntity {
+    private static final long serialVersionUID = -1439894653981742656L;
 
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    @Column
+    private long exp;
+
+    @Column
+    private String name;
+
+    @Column
+    private String discriminator;
+
+    @Column(name = "effective_name")
+    private String effectiveName;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

@@ -14,17 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.ranking.model;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.MemberEntity;
+@Getter
+@Setter
+public class RankingInfo {
 
-@NoRepositoryBean
-public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
+    private long totalExp;
 
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
+    private int level;
 
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    private long remainingExp;
+
+    private long levelExp;
+
+    private int rank;
+
+    private int totalMembers;
 }
