@@ -61,4 +61,9 @@ public class SecurityUtils {
         }
         return null;
     }
+
+    public static boolean isAuthenticated() {
+        Authentication userAuth = getUserAuthentication();
+        return userAuth != null && userAuth.isAuthenticated();
+    }
 }

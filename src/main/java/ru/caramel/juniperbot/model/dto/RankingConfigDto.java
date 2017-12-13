@@ -16,8 +16,13 @@
  */
 package ru.caramel.juniperbot.model.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
 public class RankingConfigDto implements Serializable {
     private static final long serialVersionUID = 2028894220167975335L;
 
@@ -26,8 +31,6 @@ public class RankingConfigDto implements Serializable {
     private boolean announcementEnabled;
 
     private boolean whisper;
-
-    private int cooldown;
 
     private String announcement;
 

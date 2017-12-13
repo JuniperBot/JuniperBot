@@ -47,9 +47,6 @@ public class RankingConfig extends BaseEntity {
     private boolean whisper;
 
     @Column
-    private int cooldown;
-
-    @Column
     @Size(max = 1800)
     private String announcement;
 

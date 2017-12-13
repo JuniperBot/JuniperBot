@@ -79,7 +79,7 @@ public class CommandsServiceImpl implements CommandsService {
         }
         GuildConfig guildConfig = null;
         if (event.getChannelType().isGuild() && event.getGuild() != null) {
-            guildConfig = configService.getOrCreate(event.getGuild().getIdLong());
+            guildConfig = configService.getOrCreate(event.getGuild());
         }
 
         String content = event.getMessage().getRawContent().trim();

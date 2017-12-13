@@ -48,6 +48,13 @@ public class GuildConfig extends BaseEntity {
     private long guildId;
 
     @Basic
+    @Size(max = 100)
+    private String name;
+
+    @Column(name = "icon_url")
+    private String iconUrl;
+
+    @Basic
     @NotEmpty
     @Size(max = 20)
     private String prefix;

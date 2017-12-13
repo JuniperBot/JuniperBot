@@ -43,6 +43,7 @@
         <security:intercept-url pattern="/vk/callback/**" access="permitAll" />
         <security:intercept-url pattern="/favicon.ico" access="permitAll" />
         <security:intercept-url pattern="/.well-known/**" access="permitAll" />
+        <security:intercept-url pattern="/ranking/**" access="permitAll" />
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>

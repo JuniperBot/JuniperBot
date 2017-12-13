@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import ru.caramel.juniperbot.configuration.DiscordConfig;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.dto.ConfigDto;
@@ -39,6 +40,7 @@ import ru.caramel.juniperbot.service.WebHookService;
 import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ConfigServiceImpl implements ConfigService {
@@ -87,8 +89,35 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     @Transactional
     public GuildConfig getOrCreate(long serverId) {
-        GuildConfig config = repository.findByGuildId(serverId);
-        return createIfMissing(config, serverId);
+        return createIfMissing(getById(serverId), serverId);
+    }
+
+    @Override
+    @Transactional
+    public GuildConfig getOrCreate(Guild guild) {
+        Assert.notNull(guild, "Guild cannot be null");
+        GuildConfig config = getOrCreate(guild.getIdLong());
+
+
+        boolean shouldSave = false;
+        if (!Objects.equals(config.getName(), guild.getName())) {
+            config.setName(guild.getName());
+            shouldSave = true;
+        }
+        if (!Objects.equals(config.getIconUrl(), guild.getIconUrl())) {
+            config.setIconUrl(guild.getIconUrl());
+            shouldSave = true;
+        }
+        if (shouldSave) {
+            repository.save(config);
+        }
+        return config;
+    }
+
+    @Override
+    @Transactional
+    public GuildConfig getById(long serverId) {
+        return repository.findByGuildId(serverId);
     }
 
     @Override

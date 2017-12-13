@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.service;
 
+import net.dv8tion.jda.core.entities.Guild;
 import ru.caramel.juniperbot.model.dto.ConfigDto;
 import ru.caramel.juniperbot.model.dto.WelcomeMessageDto;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
@@ -32,7 +33,11 @@ public interface ConfigService {
 
     void save(GuildConfig config);
 
+    GuildConfig getById(long serverId);
+
     GuildConfig getOrCreate(long serverId);
+
+    GuildConfig getOrCreate(Guild guild);
 
     GuildConfig getOrCreate(long serverId, String graph);
 

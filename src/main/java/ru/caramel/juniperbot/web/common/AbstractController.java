@@ -19,13 +19,16 @@ package ru.caramel.juniperbot.web.common;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
 import ru.caramel.juniperbot.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.model.exception.NotFoundException;
+import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.security.model.DiscordGuildDetails;
+import ru.caramel.juniperbot.security.utils.SecurityUtils;
 import ru.caramel.juniperbot.service.ConfigService;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.web.common.flash.Flash;
@@ -51,22 +54,47 @@ public abstract class AbstractController {
     protected MessageService messageService;
 
     protected ModelAndView createModel(String modelName, long serverId) {
+        return createModel(modelName, serverId, true);
+    }
+
+    protected ModelAndView createModel(String modelName, long serverId, boolean checkConnection) {
         ModelAndView mv = new ModelAndView(modelName);
-        mv.addObject("serverId", serverId);
-        DiscordGuildDetails details = tokenServices.getGuildById(serverId);
-        if (details != null) {
-            mv.addObject("serverName", details.getName());
-        }
-        if (discordClient.isConnected()) {
-            boolean serverExists = discordClient.getJda().getGuildById(serverId) != null;
-            mv.addObject("serverAdded", serverExists);
-            if (!serverExists) {
-                flash.warn("flash.warning.unknown-server.message");
+        fillServerInfo(mv, serverId);
+        if (checkConnection) {
+            if (discordClient.isConnected()) {
+                boolean serverExists = discordClient.getJda().getGuildById(serverId) != null;
+                mv.addObject("serverAdded", serverExists);
+                if (!serverExists) {
+                    flash.warn("flash.warning.unknown-server.message");
+                }
+            } else {
+                flash.warn("flash.warning.connection-problem.message");
             }
-        } else {
-            flash.warn("flash.warning.connection-problem.message");
         }
         return mv;
+    }
+
+    private void fillServerInfo(ModelAndView mv, long serverId) {
+        String serverName = null;
+        String iconUrl = null;
+        GuildConfig config = configService.getById(serverId);
+        if (config != null) {
+            serverName = config.getName();
+            iconUrl = config.getIconUrl();
+        }
+
+        if (SecurityUtils.isAuthenticated() && (StringUtils.isEmpty(serverName) || StringUtils.isEmpty(iconUrl))) {
+            DiscordGuildDetails details = tokenServices.getGuildById(serverId);
+            if (StringUtils.isEmpty(serverName)) {
+                serverName = details.getName();
+            }
+            if (StringUtils.isEmpty(iconUrl)) {
+                iconUrl = details.getAvatarUrl();
+            }
+        }
+        mv.addObject("serverId", serverId);
+        mv.addObject("serverName", serverName);
+        mv.addObject("serverIcon", iconUrl);
     }
 
     protected void validateGuildId(long id) {
@@ -77,6 +105,11 @@ public abstract class AbstractController {
         if (!tokenServices.hasPermission(details)) {
             throw new AccessDeniedException();
         }
+    }
+
+    protected boolean isGuildAuthorized(long id) {
+        DiscordGuildDetails details = tokenServices.getGuildById(id);
+        return details != null && tokenServices.hasPermission(details);
     }
 
     protected Guild getGuild(long id) {
