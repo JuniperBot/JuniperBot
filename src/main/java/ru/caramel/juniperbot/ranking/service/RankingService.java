@@ -95,18 +95,36 @@ public class RankingService {
             return null;
         }
         LocalMember localMember = getOrCreateMember(member);
-        RankingInfo info = new RankingInfo();
-        info.setTotalExp(localMember.getExp());
-        info.setLevel(getLevelFromExp(localMember.getExp()));
+        RankingInfo info = calculate(localMember);
+        List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(member.getGuild().getId());
+        info.setRank(members.indexOf(localMember) + 1);
+        info.setTotalMembers(members.size());
+        return info;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RankingInfo> getRankingInfos(long serverId) {
+        List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(String.valueOf(serverId));
+        List<RankingInfo> result = new ArrayList<>(members.size());
+        for (int i = 0; i < members.size(); i++) {
+            RankingInfo info = calculate(members.get(i));
+            info.setRank(i + 1);
+            info.setTotalMembers(members.size());
+            result.add(info);
+        }
+        return result;
+    }
+
+    private RankingInfo calculate(LocalMember member) {
+        RankingInfo info = new RankingInfo(member);
+        info.setTotalExp(member.getExp());
+        info.setLevel(getLevelFromExp(member.getExp()));
         long remaining = info.getTotalExp();
         for (int i = 0; i < info.getLevel(); i++) {
             remaining -= getLevelExp(i);
         }
         info.setRemainingExp(remaining);
         info.setLevelExp(getLevelExp(info.getLevel()));
-        List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(member.getGuild().getId());
-        info.setRank(members.indexOf(localMember) + 1);
-        info.setTotalMembers(members.size());
         return info;
     }
 

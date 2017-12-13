@@ -18,12 +18,13 @@ package ru.caramel.juniperbot.ranking.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.persistence.entity.LocalMember;
 
 @Getter
 @Setter
 public class RankingInfo {
 
-    private long totalExp;
+    private final LocalMember member;
 
     private int level;
 
@@ -31,7 +32,17 @@ public class RankingInfo {
 
     private long levelExp;
 
+    private long totalExp;
+
     private int rank;
 
     private int totalMembers;
+
+    public RankingInfo(LocalMember member) {
+        this.member = member;
+    }
+
+    public int getPct() {
+        return (int) (((double) remainingExp / (double) levelExp) * 100);
+    }
 }

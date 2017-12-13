@@ -108,4 +108,24 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="2.9-12122017-6" author="caramel">
+        <dropColumn tableName="ranking_config" columnName="cooldown" />
+    </changeSet>
+
+    <changeSet id="2.9-12122017-7" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2.9-12122017-8" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="icon_url" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

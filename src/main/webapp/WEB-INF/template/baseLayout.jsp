@@ -20,6 +20,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <tilesx:useAttribute id="sidebarVisible"    name="sidebarVisible"    classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="breadcrumbVisible" name="breadcrumbVisible" classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="noContentPadding"  name="noContentPadding"  classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="userDetails"       name="userDetails"       classname="ru.caramel.juniperbot.security.model.DiscordUserDetails" ignore="true" scope="request" />
 <spring:eval expression="@environment.getProperty('build.timestamp')" var="buildTimestamp" scope="request" />
 
@@ -91,11 +92,11 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <c:if test="${sidebarVisible}">
             <jsp:include page="navigation/sidebar.jsp" />
         </c:if>
-        <div class="content-wrapper ">
+        <div class="content-wrapper">
             <c:if test="${breadcrumbVisible}">
                 <jsp:include page="navigation/breadcrumb.jsp" />
             </c:if>
-            <section class="content">
+            <section class="content ${noContentPadding ? 'no-content-padding' : ''}">
                 <jsp:include page="flash-messages.jsp" />
                 <tiles:insertAttribute name="content" />
             </section>

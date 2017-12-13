@@ -26,25 +26,26 @@
     <definition name="baseLayoutLite" extends="baseLayout">
         <put-attribute name="sidebarVisible" value="false" />
         <put-attribute name="breadcrumbVisible" value="false" />
-        <put-attribute name="body-class" value="juniper-background" />
+        <put-attribute name="landingMode" value="true" />
+        <put-attribute name="body-class" value="juniper-background landing-mode" />
     </definition>
 
     <definition name="error404" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/errors/404.jsp"/>
         <put-attribute name="title" value="Не найдено" />
-        <put-attribute name="body-class" value="not-found-background" />
+        <put-attribute name="body-class" value="not-found-background landing-mode" />
     </definition>
 
     <definition name="error403" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/errors/403.jsp"/>
         <put-attribute name="title" value="Доступ запрещен" />
-        <put-attribute name="body-class" value="forbidden-background" />
+        <put-attribute name="body-class" value="forbidden-background landing-mode" />
     </definition>
 
     <definition name="error500" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/errors/500.jsp"/>
         <put-attribute name="title" value="Ошибка" />
-        <put-attribute name="body-class" value="error-background" />
+        <put-attribute name="body-class" value="error-background landing-mode" />
     </definition>
 
     <definition name="index" extends="baseLayoutLite">
@@ -81,6 +82,21 @@
         <put-attribute name="content" value="/WEB-INF/jsp/config/welcome.jsp"/>
         <put-attribute name="title" value="Приветствия" />
     </definition>
+
+    <definition name="ranking.admin" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/ranking/admin.jsp"/>
+        <put-attribute name="title" value="Рейтинг участников" />
+    </definition>
+
+    <definition name="ranking.user" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/ranking/user.jsp"/>
+        <put-attribute name="title" value="Рейтинг участников" />
+        <put-attribute name="sidebarVisible" value="false" />
+        <put-attribute name="breadcrumbVisible" value="false" />
+        <put-attribute name="noContentPadding" value="true" />
+    </definition>
+
+    <definition name="ranking.list" template="/WEB-INF/jsp/ranking/list.jsp" />
 
     <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
 

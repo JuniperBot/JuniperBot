@@ -34,4 +34,7 @@ public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> 
     boolean existsByGuildId(long guildId);
 
     String findPrefixByGuildId(long guildId);
+
+    @Query("SELECT e.name FROM GuildConfig e WHERE e.guildId = :guildId")
+    String findNameByGuildId(@Param("guildId") long guildId);
 }

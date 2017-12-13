@@ -29,6 +29,7 @@ public class MenuBuilder {
     public List<MenuItem> build() {
         List<MenuItem> items = new ArrayList<>();
         items.add(new MenuItem(DASHBOARD));
+        items.add(new MenuItem(RANKING));
         MenuItem config = new MenuItem(CONFIG);
         config.addChild(new MenuItem(CONFIG_COMMON));
         config.addChild(new MenuItem(WELCOME_MESSAGES));
@@ -37,5 +38,4 @@ public class MenuBuilder {
         items.add(config);
         return items;
     }
-
 }

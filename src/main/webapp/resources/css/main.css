@@ -83,9 +83,9 @@
     background: url(../img/oops_background.jpg) no-repeat top center;
 }
 
-/* NO-SIDEBAR STYLES */
+/* NO-SIDEBAR/LANDING STYLES */
 
-body.no-sidebar {
+body.landing-mode {
     -moz-box-shadow:inset 0 0 250px #000000;
     -webkit-box-shadow:inset 0 0 250px #000000;
     box-shadow:inset 0 0 250px #000000;
@@ -94,40 +94,32 @@ body.no-sidebar {
 body.no-sidebar .content-wrapper,
 body.no-sidebar .main-footer {
     margin-left: 0 !important;
+}
+
+body.landing-mode .content-wrapper,
+body.landing-mode > div.wrapper,
+body.landing-mode .main-footer,
+body.landing-mode .main-header > .navbar,
+body.landing-mode .main-header > a.logo,
+body.landing-mode .main-header > a.logo:hover {
     background: none !important;
 }
 
-body.no-sidebar > div.wrapper,
-body.no-sidebar .main-footer {
-    background: none !important;
-}
-
-body.no-sidebar .main-header > .navbar {
-    /*background-color: rgba(243,156,18,0.6) !important;*/
-    background: none;
-}
-
-body.no-sidebar .main-header > a.logo,
-body.no-sidebar .main-header > a.logo:hover {
-    /*background-color: rgba(243,156,18,0.6) !important;*/
-    background: none;
-}
-
-body.no-sidebar .main-footer {
+body.landing-mode .main-footer {
     color: white;
     border: 0;
 }
 
-body.no-sidebar a {
+body.landing-mode a {
     color: #ffd187;
 }
 
-body.no-sidebar a:hover {
+body.landing-mode a:hover {
     color: white;
 }
 
-body.no-sidebar h3,
-body.no-sidebar h4 {
+body.landing-mode h3,
+body.landing-mode h4 {
     -moz-text-shadow: 0 0 20px #000000;
     -webkit-text-shadow: 0 0 20px #000000;
     text-shadow: 0 0 20px #000000;
@@ -337,4 +329,77 @@ div.discord-header-icon {
 
 table.command-table td {
     padding: 0 16px 8px 10px !important;
+}
+
+.widget-user-2.widget-user-2-sm .widget-user-header {
+    padding: 10px !important;
+}
+
+.level-circle {
+    text-align: center;
+    margin: 10px;
+    border-radius: 50%;
+    width: 65px;
+    height: 65px;
+}
+
+.level-value {
+    font-size: 32pt;
+}
+.level-desc {
+    margin-top: -18px;
+}
+
+.progress-level {
+    margin-top: 20px;
+}
+
+.widget-server .widget-server-header {
+    padding: 10px 20px 20px 20px;
+    height: 120px;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+.widget-server .widget-server-title {
+    font-weight: 300;
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.widget-server .widget-server-name {
+    font-weight: 300;
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 40px;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+}
+.widget-server .widget-server-image {
+    position: absolute;
+    top: 55px;
+    left: 50%;
+    margin-left: -55px;
+}
+.widget-server .widget-server-image>img {
+    width: 110px;
+    height: auto;
+    border: 3px solid #fff;
+}
+.widget-server .box-footer {
+    padding-top: 30px;
+}
+
+.no-content-padding {
+    padding: 0 0 15px 0;
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+    .widget-server .widget-server-image {
+        top: 70px;
+        margin-left: -45px;
+    }
+    .widget-server .widget-server-image>img {
+        width: 90px;
+    }
 }
