@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.model.exception.NotFoundException;
 import ru.caramel.juniperbot.ranking.model.RankingInfo;
@@ -41,10 +42,11 @@ public class RankingController extends AbstractController {
 
     @RequestMapping("/ranking/{serverId}")
     @Navigation(PageElement.RANKING)
-    public ModelAndView view(@PathVariable long serverId) {
+    public ModelAndView view(@PathVariable long serverId,
+                             @RequestParam(value = "forceUser", required = false, defaultValue = "false") boolean forceUser) {
         ModelAndView mv;
         List<RankingInfo> members = rankingService.getRankingInfos(serverId);
-        if (SecurityUtils.isAuthenticated() && isGuildAuthorized(serverId)) {
+        if (!forceUser && SecurityUtils.isAuthenticated() && isGuildAuthorized(serverId)) {
             mv = createModel("ranking.admin", serverId);
         } else {
             mv = createModel("ranking.user", serverId, false);

@@ -331,16 +331,14 @@ table.command-table td {
     padding: 0 16px 8px 10px !important;
 }
 
-.widget-user-2.widget-user-2-sm .widget-user-header {
-    padding: 10px !important;
-}
-
 .level-circle {
-    text-align: center;
-    margin: 10px;
-    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 15px;
     width: 65px;
     height: 65px;
+    text-align: center;
+    border-radius: 50%;
 }
 
 .level-value {
@@ -351,6 +349,7 @@ table.command-table td {
 }
 
 .progress-level {
+    margin-right: 85px;
     margin-top: 20px;
 }
 
@@ -402,4 +401,45 @@ table.command-table td {
     .widget-server .widget-server-image>img {
         width: 90px;
     }
+
+    .progress-level .progress {
+        height: 10px !important;
+    }
+
+    .level-circle {
+        top: 0 !important;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .level-value {
+        font-size: 21pt;
+    }
+    .level-desc {
+        display: none;
+    }
+
+    .progress-level {
+        margin-right: 55px;
+    }
+
+}
+
+.widget-user-2.widget-member {
+    margin-left: 45px;
+}
+
+.widget-user-2.widget-member .widget-user-header {
+    padding: 10px !important;
+}
+
+.widget-user-2.widget-member .widget-user-username {
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.widget-rank {
+    top: 10px;
+    position: absolute;
 }
