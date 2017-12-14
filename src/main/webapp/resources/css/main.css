@@ -340,6 +340,9 @@ table.command-table td {
     text-align: center;
     border-radius: 50%;
 }
+.editable-rank .level-circle {
+    right: 40px;
+}
 
 .level-value {
     font-size: 32pt;
@@ -351,6 +354,10 @@ table.command-table td {
 .progress-level {
     margin-right: 85px;
     margin-top: 20px;
+}
+
+.editable-rank .progress-level {
+    margin-right: 110px;
 }
 
 .widget-server .widget-server-header {
@@ -413,6 +420,10 @@ table.command-table td {
         height: 40px;
     }
 
+    .editable-rank .level-circle {
+        right: 40px;
+    }
+
     .level-value {
         font-size: 21pt;
     }
@@ -424,6 +435,15 @@ table.command-table td {
         margin-right: 55px;
     }
 
+    .editable-rank .progress-level {
+        margin-right: 80px;
+    }
+
+    .editable-rank-actions {
+        bottom: auto;
+        top: 0;
+        font-size: 22px !important;
+    }
 }
 
 .widget-user-2.widget-member {
@@ -442,4 +462,33 @@ table.command-table td {
 .widget-rank {
     top: 10px;
     position: absolute;
+}
+
+.editable-rank-actions {
+    font-size: 26px;
+    bottom: 15px;
+    position: absolute;
+    right: 10px;
+}
+
+.editable-rank-actions .dropdown-toggle {
+    box-shadow: none !important;
+}
+
+.editable-rank-actions .toggle-icon {
+    padding: 10px;
+    color: #999;
+}
+
+#ranking-container {
+    min-height: 50px;
+}
+
+.widget-server-container {
+    margin-top: 20px;
+}
+
+.widget-server-container .overlay>.fa {
+    text-shadow: 0 0 5px black;
+    color: white;
 }
