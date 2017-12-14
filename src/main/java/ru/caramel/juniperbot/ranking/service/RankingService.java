@@ -103,6 +103,11 @@ public class RankingService {
     }
 
     @Transactional(readOnly = true)
+    public boolean checkExists(long serverId) {
+        return memberRepository.countByGuildId(String.valueOf(serverId)) > 0;
+    }
+
+    @Transactional(readOnly = true)
     public List<RankingInfo> getRankingInfos(long serverId) {
         List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(String.valueOf(serverId));
         List<RankingInfo> result = new ArrayList<>(members.size());
@@ -113,19 +118,6 @@ public class RankingService {
             result.add(info);
         }
         return result;
-    }
-
-    private RankingInfo calculate(LocalMember member) {
-        RankingInfo info = new RankingInfo(member);
-        info.setTotalExp(member.getExp());
-        info.setLevel(getLevelFromExp(member.getExp()));
-        long remaining = info.getTotalExp();
-        for (int i = 0; i < info.getLevel(); i++) {
-            remaining -= getLevelExp(i);
-        }
-        info.setRemainingExp(remaining);
-        info.setLevelExp(getLevelExp(info.getLevel()));
-        return info;
     }
 
     @Transactional
@@ -167,10 +159,6 @@ public class RankingService {
         return localMember;
     }
 
-    private boolean isApplicable(Member member) {
-        return member != null && !member.getGuild().getSelfMember().equals(member) && !member.getUser().isBot();
-    }
-
     @Transactional
     public void onMessage(GuildMessageReceivedEvent event) {
         if (!isApplicable(event.getMember())) {
@@ -194,7 +182,9 @@ public class RankingService {
         coolDowns.put(memberKey, DUMMY);
 
         int newLevel = getLevelFromExp(member.getExp());
-
+        if (newLevel == 1000) {
+            return; // max level
+        }
         if (level != newLevel) {
             if (config.isAnnouncementEnabled()) {
                 MessageChannel channel = event.getChannel();
@@ -210,6 +200,25 @@ public class RankingService {
                 messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
             }
             updateRewards(config, event.getMember(), member);
+        }
+    }
+
+    @Transactional
+    public void setLevel(long serverId, long userId, int level) {
+        if (level > 1000) {
+            level = 999;
+        } else if (level < 0) {
+            level = 0;
+        }
+        LocalMember localMember = memberRepository.findOneByGuildIdAndUserId(String.valueOf(serverId),
+                String.valueOf(userId));
+        if (localMember != null) {
+            long exp = 0;
+            for (int i = 0; i < level; i++) {
+                exp += getLevelExp(i);
+            }
+            localMember.setExp(exp);
+            memberRepository.save(localMember);
         }
     }
 
@@ -232,6 +241,23 @@ public class RankingService {
         if (!rolesToGive.isEmpty()) {
             member.getGuild().getController().addRolesToMember(member, rolesToGive).submit();
         }
+    }
+
+    private boolean isApplicable(Member member) {
+        return member != null && !member.getGuild().getSelfMember().equals(member) && !member.getUser().isBot();
+    }
+
+    private RankingInfo calculate(LocalMember member) {
+        RankingInfo info = new RankingInfo(member);
+        info.setTotalExp(member.getExp());
+        info.setLevel(getLevelFromExp(member.getExp()));
+        long remaining = info.getTotalExp();
+        for (int i = 0; i < info.getLevel(); i++) {
+            remaining -= getLevelExp(i);
+        }
+        info.setRemainingExp(remaining);
+        info.setLevelExp(getLevelExp(info.getLevel()));
+        return info;
     }
 
     private String getAnnounce(RankingConfig config, String mention, int level) {

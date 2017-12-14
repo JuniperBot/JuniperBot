@@ -19,11 +19,10 @@ package ru.caramel.juniperbot.web.ranking.controller;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.model.exception.NotFoundException;
+import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.ranking.service.RankingService;
 import ru.caramel.juniperbot.security.utils.SecurityUtils;
@@ -45,15 +44,48 @@ public class RankingController extends AbstractController {
     public ModelAndView view(@PathVariable long serverId,
                              @RequestParam(value = "forceUser", required = false, defaultValue = "false") boolean forceUser) {
         ModelAndView mv;
-        List<RankingInfo> members = rankingService.getRankingInfos(serverId);
-        if (!forceUser && SecurityUtils.isAuthenticated() && isGuildAuthorized(serverId)) {
+        if (!forceUser && isAuthorized(serverId)) {
             mv = createModel("ranking.admin", serverId);
         } else {
-            mv = createModel("ranking.user", serverId, false);
-            if (CollectionUtils.isEmpty(members)) {
+            if (!rankingService.checkExists(serverId)) {
                 throw new NotFoundException();
             }
+            mv = createModel("ranking.user", serverId, false);
         }
-        return mv.addObject("members", members);
+        return mv;
+    }
+
+    @RequestMapping("/ranking/list/{serverId}")
+    public ModelAndView list(@PathVariable long serverId) {
+        ModelAndView mv = new ModelAndView("ranking.list");
+        List<RankingInfo> members = rankingService.getRankingInfos(serverId);
+        return mv
+                .addObject("editable", isAuthorized(serverId))
+                .addObject("members", members);
+    }
+
+    @RequestMapping(value = "/ranking/reset/{serverId}", method = RequestMethod.POST)
+    @ResponseBody
+    public String reset(
+            @PathVariable("serverId") long serverId,
+            @RequestParam("userId") long userId) {
+        validateGuildId(serverId);
+        rankingService.setLevel(serverId, userId, 0);
+        return "ok";
+    }
+
+    @RequestMapping(value = "/ranking/update/{serverId}", method = RequestMethod.POST)
+    @ResponseBody
+    public String update(
+            @PathVariable("serverId") long serverId,
+            @RequestParam("userId") long userId,
+            @RequestParam("level") int level) {
+        validateGuildId(serverId);
+        rankingService.setLevel(serverId, userId, level);
+        return "ok";
+    }
+
+    private boolean isAuthorized(long serverId) {
+        return SecurityUtils.isAuthenticated() && isGuildAuthorized(serverId);
     }
 }

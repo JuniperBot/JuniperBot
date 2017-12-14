@@ -17,20 +17,14 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
-<tilesx:useAttribute id="members" name="members" classname="java.util.List" />
-<tilesx:useAttribute id="editable" name="editable" classname="java.lang.Boolean" />
-
-<c:forEach items="${item.childs}" var="child">
-    <tiles:insertDefinition name="menu.item">
-        <tiles:putAttribute name="item" value="${child}" />
-    </tiles:insertDefinition>
-</c:forEach>
-
 <c:if test="${not empty members}">
     <div class="list-group">
         <c:forEach items="${members}" var="member">
-            <div class="list-group-item">
-                <div class="row">
+            <div class="list-group-item"
+                 data-id="${member.member.userId}"
+                 data-name="${member.member.effectiveName ? member.member.effectiveName : member.member.name}"
+                 data-level="${member.level}">
+                <div class="row ${editable ? 'editable-rank' : ''}">
                     <div class="col-lg-4 col-md-5 col-sm-6">
                         <div class="widget-rank">
                             <h3><strong>#${member.rank}</strong></h3>
@@ -57,6 +51,19 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             <div class="level-value">${member.level}</div>
                             <div class="level-desc">ур.</div>
                         </div>
+                        <c:if test="${editable}">
+                            <div class="editable-rank-actions">
+                                <div class="btn-group">
+                                    <a href="#" class="dropdown-toggle"
+                                       data-toggle="dropdown"
+                                       aria-expanded="false"><i class="fa fa-ellipsis-v toggle-icon"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="#" class="update-level-item"><i class="fa fa-pencil"></i> Изменить уровень</a></li>
+                                        <li><a href="#" class="reset-level-item text-red"><i class="fa fa-close"></i> Сбросить</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>

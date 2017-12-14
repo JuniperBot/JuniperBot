@@ -26,4 +26,6 @@ import java.util.List;
 public interface LocalMemberRepository extends MemberRepository<LocalMember> {
 
     List<LocalMember> findByGuildIdOrderByExpDesc(String guildId);
+
+    long countByGuildId(String guildId);
 }
