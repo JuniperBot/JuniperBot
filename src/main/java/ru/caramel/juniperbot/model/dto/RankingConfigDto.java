@@ -18,8 +18,12 @@ package ru.caramel.juniperbot.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import ru.caramel.juniperbot.ranking.model.Reward;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,8 +36,12 @@ public class RankingConfigDto implements Serializable {
 
     private boolean whisper;
 
+    private boolean resetOnLeave;
+
+    @Size(max = 1800)
     private String announcement;
 
     private String[] bannedRoles;
 
+    private List<Reward> rewards;
 }

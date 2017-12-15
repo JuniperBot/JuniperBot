@@ -22,3 +22,4 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@ taglib prefix="tilesx" uri="http://tiles.apache.org/tags-tiles-extras" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="jb" uri="http://juniperbot.ru/tags" %>

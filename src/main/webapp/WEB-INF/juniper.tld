@@ -23,7 +23,7 @@
 
     <tlib-version>4.2</tlib-version>
     <short-name>juniper</short-name>
-    <uri>http://goldrenard.com/juniper/tags</uri>
+    <uri>http://juniperbot.ru/tags</uri>
 
     <tag>
         <name>avatar</name>
@@ -51,4 +51,16 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
     </tag>
+
+    <function>
+        <name>getHTMLAwtColor</name>
+        <function-class>ru.caramel.juniperbot.utils.CommonUtils</function-class>
+        <function-signature>java.lang.String getHTMLAwtColor(java.awt.Color)</function-signature>
+    </function>
+
+    <function>
+        <name>getLevelForRole</name>
+        <function-class>ru.caramel.juniperbot.ranking.service.RankingUtils</function-class>
+        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.model.dto.RankingConfigDto,java.lang.Long)</function-signature>
+    </function>
 </taglib>

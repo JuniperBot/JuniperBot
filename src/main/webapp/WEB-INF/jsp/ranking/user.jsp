@@ -19,9 +19,52 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <div class="box box-widget widget-server">
     <div class="widget-server-header bg-yellow">
-        <h5 class="widget-server-title">Рейтинг участников</h5>
-        <h3 class="widget-server-name">${serverName}</h3>
+        <div class="row">
+            <div class="col-md-7">
+                <h5 class="widget-server-title">Рейтинг участников</h5>
+                <h3 class="widget-server-name">${serverName}</h3>
+            </div>
+            <div class="col-md-5">
+                <div class="callout pull-right">
+                    <h4 class="pull-left">Как это работает?</h4>
+                    <c:if test="${not empty rewards}">
+                        <div class="dropdown pull-right">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-container="body"
+                               aria-expanded="true">
+                                <h4>
+                                    <span>Список наград</span>
+                                    <span class="caret"></span>
+                                </h4>
+                            </a>
+                            <div class="dropdown-menu rewards-menu">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Роль</th>
+                                        <th>Уровень</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <c:forEach items="${rewards}" var="reward">
+                                        <tr>
+                                            <td><span style="font-weight: bold; color:${jb:getHTMLAwtColor(reward.role.color)}">${reward.role.name}</span></td>
+                                            <td>${reward.level}</td>
+                                        </tr>
+                                    </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </c:if>
+                    <div class="clearfix"></div>
+                    <p>Каждый раз, когда ты пишешь что-нибудь в чат, ты получаешь от 15 до 25 единиц опыта <span class="text-bold">не более раза в минуту</span>. На самом сервере введи команду <span class="label label-warning">${prefix}<spring:message code="discord.command.rank.key" /></span> для ознакомления со своим прогрессом.</p>
+                </div>
+            </div>
+        </div>
+
+
     </div>
+
     <div class="widget-server-image">
         <img class="img-circle" src="${serverIcon}" alt="Аватар сервера">
     </div>

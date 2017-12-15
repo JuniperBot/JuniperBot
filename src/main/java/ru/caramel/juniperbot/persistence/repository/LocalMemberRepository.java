@@ -16,6 +16,9 @@
  */
 package ru.caramel.juniperbot.persistence.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.persistence.repository.base.MemberRepository;
@@ -28,4 +31,8 @@ public interface LocalMemberRepository extends MemberRepository<LocalMember> {
     List<LocalMember> findByGuildIdOrderByExpDesc(String guildId);
 
     long countByGuildId(String guildId);
+
+    @Modifying
+    @Query("UPDATE LocalMember m SET m.exp = 0 WHERE m.guildId = :guildId")
+    int resetAll(@Param("guildId") String guildId);
 }

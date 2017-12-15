@@ -128,4 +128,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2.9-13122017-9" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="reset_on_leave" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

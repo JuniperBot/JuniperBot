@@ -28,14 +28,12 @@ public class MenuBuilder {
 
     public List<MenuItem> build() {
         List<MenuItem> items = new ArrayList<>();
-        items.add(new MenuItem(DASHBOARD));
+        //items.add(new MenuItem(DASHBOARD));
+        items.add(new MenuItem(CONFIG_COMMON));
         items.add(new MenuItem(RANKING));
-        MenuItem config = new MenuItem(CONFIG);
-        config.addChild(new MenuItem(CONFIG_COMMON));
-        config.addChild(new MenuItem(WELCOME_MESSAGES));
-        config.addChild(new MenuItem(CONFIG_COMMANDS));
-        config.addChild(new MenuItem(CONFIG_CUSTOM_COMMANDS));
-        items.add(config);
+        items.add(new MenuItem(WELCOME_MESSAGES));
+        items.add(new MenuItem(CONFIG_COMMANDS));
+        items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
         return items;
     }
 }

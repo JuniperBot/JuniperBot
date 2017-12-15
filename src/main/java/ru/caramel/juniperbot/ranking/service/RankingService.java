@@ -18,7 +18,9 @@ package ru.caramel.juniperbot.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
@@ -33,11 +35,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
+import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.model.dto.RankingConfigDto;
 import ru.caramel.juniperbot.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.persistence.repository.RankingConfigRepository;
 import ru.caramel.juniperbot.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.ranking.model.Reward;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.utils.MapPlaceholderResolver;
 
@@ -61,6 +66,9 @@ public class RankingService {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private DiscordClient discordClient;
+
     private static Object DUMMY = new Object();
 
     private Cache<String, Object> coolDowns = CacheBuilder.newBuilder()
@@ -68,43 +76,47 @@ public class RankingService {
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
-    private long getLevelExp(int level) {
-        return 5 * (level * level) + (50 * level) + 100;
-    }
-
-    private int getLevelFromExp(long exp) {
-        int level = 0;
-        while (exp >= getLevelExp(level)) {
-            exp -= getLevelExp(level);
-            level++;
-        }
-        return level;
-    }
-
-    public boolean isBanned(RankingConfig config, Member member) {
-        if (config.getBannedRoles() == null) {
-            return false;
-        }
-        List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
-        return member.getRoles().stream()
-                .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
-    }
-
-    public RankingInfo getRankingInfo(Member member) {
-        if (!isApplicable(member)) {
-            return null;
-        }
-        LocalMember localMember = getOrCreateMember(member);
-        RankingInfo info = calculate(localMember);
-        List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(member.getGuild().getId());
-        info.setRank(members.indexOf(localMember) + 1);
-        info.setTotalMembers(members.size());
-        return info;
-    }
-
     @Transactional(readOnly = true)
     public boolean checkExists(long serverId) {
         return memberRepository.countByGuildId(String.valueOf(serverId)) > 0;
+    }
+
+    @Transactional(readOnly = true)
+    public RankingConfig getConfig(Guild guild) {
+        return getConfig(guild.getIdLong());
+    }
+
+    @Transactional
+    public void saveConfig(RankingConfigDto configDto, long serverId) {
+        RankingConfig config = getConfig(serverId);
+        config.setAnnouncementEnabled(configDto.isAnnouncementEnabled());
+        config.setEnabled(configDto.isEnabled());
+        config.setWhisper(configDto.isWhisper());
+        config.setAnnouncement(configDto.getAnnouncement());
+        config.setResetOnLeave(configDto.isResetOnLeave());
+        if (discordClient.isConnected()) {
+            config.setBannedRoles(configDto.getBannedRoles());
+            if (configDto.getRewards() != null) {
+                config.setRewards(configDto.getRewards().stream()
+                        .filter(e -> e.getLevel() != null && e.getLevel() > 0 && e.getLevel() < RankingUtils.MAX_LEVEL)
+                        .collect(Collectors.toList()));
+            } else {
+                config.setRewards(null);
+            }
+
+        }
+        rankingConfigRepository.save(config);
+        if (discordClient.isConnected()) {
+            Guild guild = discordClient.getJda().getGuildById(serverId);
+            if (guild != null) {
+                sync(guild);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public RankingConfig getConfig(long serverId) {
+        return rankingConfigRepository.findByGuildId(serverId);
     }
 
     @Transactional(readOnly = true)
@@ -112,7 +124,7 @@ public class RankingService {
         List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(String.valueOf(serverId));
         List<RankingInfo> result = new ArrayList<>(members.size());
         for (int i = 0; i < members.size(); i++) {
-            RankingInfo info = calculate(members.get(i));
+            RankingInfo info = RankingUtils.calculateInfo(members.get(i));
             info.setRank(i + 1);
             info.setTotalMembers(members.size());
             result.add(info);
@@ -122,35 +134,45 @@ public class RankingService {
 
     @Transactional
     public LocalMember getOrCreateMember(Member member) {
+        if (!isApplicable(member)) {
+            return null;
+        }
         LocalMember localMember = memberRepository.findOneByGuildIdAndUserId(member.getGuild().getId(),
                 member.getUser().getId());
-
-        boolean shouldSave = false;
         if (localMember == null) {
             localMember = new LocalMember();
             localMember.setGuildId(member.getGuild().getId());
             localMember.setUserId(member.getUser().getId());
+        }
+        return updateIfRequired(member, localMember);
+    }
+
+    private LocalMember updateIfRequired(Member member, LocalMember localMember) {
+        boolean shouldSave = false;
+        if (localMember.getId() == null) {
             shouldSave = true;
         }
 
-        if (!Objects.equals(member.getUser().getName(), localMember.getName())) {
-            localMember.setName(member.getUser().getName());
-            shouldSave = true;
-        }
+        if (member != null) {
+            if (!Objects.equals(member.getUser().getName(), localMember.getName())) {
+                localMember.setName(member.getUser().getName());
+                shouldSave = true;
+            }
 
-        if (!Objects.equals(member.getUser().getDiscriminator(), localMember.getDiscriminator())) {
-            localMember.setDiscriminator(member.getUser().getDiscriminator());
-            shouldSave = true;
-        }
+            if (!Objects.equals(member.getUser().getDiscriminator(), localMember.getDiscriminator())) {
+                localMember.setDiscriminator(member.getUser().getDiscriminator());
+                shouldSave = true;
+            }
 
-        if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
-            localMember.setEffectiveName(member.getEffectiveName());
-            shouldSave = true;
-        }
+            if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
+                localMember.setEffectiveName(member.getEffectiveName());
+                shouldSave = true;
+            }
 
-        if (!Objects.equals(member.getUser().getAvatarUrl(), localMember.getAvatarUrl())) {
-            localMember.setAvatarUrl(member.getUser().getAvatarUrl());
-            shouldSave = true;
+            if (!Objects.equals(member.getUser().getAvatarUrl(), localMember.getAvatarUrl())) {
+                localMember.setAvatarUrl(member.getUser().getAvatarUrl());
+                shouldSave = true;
+            }
         }
 
         if (shouldSave) {
@@ -161,10 +183,6 @@ public class RankingService {
 
     @Transactional
     public void onMessage(GuildMessageReceivedEvent event) {
-        if (!isApplicable(event.getMember())) {
-            return;
-        }
-
         String memberKey = String.format("%s_%s", event.getGuild().getId(), event.getAuthor().getId());
 
         RankingConfig config = rankingConfigRepository.findByGuildId(event.getGuild().getIdLong());
@@ -174,14 +192,17 @@ public class RankingService {
         }
 
         LocalMember member = getOrCreateMember(event.getMember());
+        if (member == null) {
+            return;
+        }
 
-        int level = getLevelFromExp(member.getExp());
+        int level = RankingUtils.getLevelFromExp(member.getExp());
 
         member.setExp(member.getExp() + RandomUtils.nextLong(15, 25));
         memberRepository.save(member);
         coolDowns.put(memberKey, DUMMY);
 
-        int newLevel = getLevelFromExp(member.getExp());
+        int newLevel = RankingUtils.getLevelFromExp(member.getExp());
         if (newLevel == 1000) {
             return; // max level
         }
@@ -206,36 +227,71 @@ public class RankingService {
     @Transactional
     public void setLevel(long serverId, long userId, int level) {
         if (level > 1000) {
-            level = 999;
+            level = RankingUtils.MAX_LEVEL;
         } else if (level < 0) {
             level = 0;
         }
         LocalMember localMember = memberRepository.findOneByGuildIdAndUserId(String.valueOf(serverId),
                 String.valueOf(userId));
         if (localMember != null) {
-            long exp = 0;
-            for (int i = 0; i < level; i++) {
-                exp += getLevelExp(i);
-            }
-            localMember.setExp(exp);
+            localMember.setExp(RankingUtils.getLevelTotalExp(level));
             memberRepository.save(localMember);
         }
     }
 
-    private void updateRewards(RankingConfig config, Member member, LocalMember localMember) {
+    @Transactional
+    public void sync(Guild guild) {
+        List<LocalMember> members = memberRepository.findByGuildId(guild.getId());
+
+        Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(LocalMember::getUserId, e -> e));
+        for (Member member : guild.getMembers()) {
+            if (isApplicable(member)) {
+                LocalMember localMember = membersMap.get(member.getUser().getId());
+                if (localMember == null) {
+                    localMember = new LocalMember();
+                    localMember.setGuildId(member.getGuild().getId());
+                    localMember.setUserId(member.getUser().getId());
+                    members.add(localMember);
+                }
+            }
+        }
+        RankingConfig rankingConfig = rankingConfigRepository.findByGuildId(guild.getIdLong());
+        members.forEach(e -> {
+            Member member = guild.getMemberById(e.getUserId());
+            if (member != null) {
+                if (isApplicable(member)) {
+                    updateIfRequired(member, e);
+                    if (rankingConfig != null) {
+                        updateRewards(rankingConfig, member, e);
+                    }
+                }
+            } else if (rankingConfig != null && rankingConfig.isResetOnLeave()) {
+                e.setExp(0);
+            }
+        });
+        memberRepository.save(members);
+    }
+
+    @Transactional
+    public void resetAll(long serverId) {
+        memberRepository.resetAll(String.valueOf(serverId));
+    }
+
+    private static void updateRewards(RankingConfig config, Member member, LocalMember localMember) {
         Member self = member.getGuild().getSelfMember();
-        if (CollectionUtils.isEmpty(config.getRewards())
+        if (!JDA.Status.CONNECTED.equals(member.getJDA().getStatus())
+                || CollectionUtils.isEmpty(config.getRewards())
                 || !PermissionUtil.checkPermission(self, Permission.MANAGE_ROLES)) {
             return;
         }
 
-        int newLevel = getLevelFromExp(localMember.getExp());
-        Set<Role> rolesToGive = config.getRewards().entrySet().stream()
-                .filter(e -> e.getKey() != null && e.getValue() <= newLevel)  // filter by level
-                .map(Map.Entry::getKey)                                       // map by id
+        int newLevel = RankingUtils.getLevelFromExp(localMember.getExp());
+        Set<Role> rolesToGive = config.getRewards().stream()
+                .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)  // filter by level
+                .map(Reward::getRoleId)                                          // map by id
                 .filter(roleId -> member.getRoles().stream().noneMatch(role -> roleId.equals(role.getId()))) // filter by non-existent
-                .map(roleId -> member.getGuild().getRoleById(roleId))         // find actual role object
-                .filter(role -> role != null && self.canInteract(role))       // check that we can assign that role
+                .map(roleId -> member.getGuild().getRoleById(roleId))            // find actual role object
+                .filter(role -> role != null && self.canInteract(role))          // check that we can assign that role
                 .collect(Collectors.toSet());
 
         if (!rolesToGive.isEmpty()) {
@@ -243,21 +299,25 @@ public class RankingService {
         }
     }
 
-    private boolean isApplicable(Member member) {
-        return member != null && !member.getGuild().getSelfMember().equals(member) && !member.getUser().isBot();
+    public boolean isBanned(RankingConfig config, Member member) {
+        if (config.getBannedRoles() == null) {
+            return false;
+        }
+        List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
+        return member.getRoles().stream()
+                .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
     }
 
-    private RankingInfo calculate(LocalMember member) {
-        RankingInfo info = new RankingInfo(member);
-        info.setTotalExp(member.getExp());
-        info.setLevel(getLevelFromExp(member.getExp()));
-        long remaining = info.getTotalExp();
-        for (int i = 0; i < info.getLevel(); i++) {
-            remaining -= getLevelExp(i);
+    public RankingInfo getRankingInfo(Member member) {
+        LocalMember localMember = getOrCreateMember(member);
+        if (localMember != null) {
+            RankingInfo info = RankingUtils.calculateInfo(localMember);
+            List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(member.getGuild().getId());
+            info.setRank(members.indexOf(localMember) + 1);
+            info.setTotalMembers(members.size());
+            return info;
         }
-        info.setRemainingExp(remaining);
-        info.setLevelExp(getLevelExp(info.getLevel()));
-        return info;
+        return null;
     }
 
     private String getAnnounce(RankingConfig config, String mention, int level) {
@@ -265,9 +325,13 @@ public class RankingService {
         resolver.put("user", mention);
         resolver.put("level", String.valueOf(level));
         String announce = config.getAnnouncement();
-        if (StringUtils.isEmpty(announce)) {
+        if (StringUtils.isBlank(announce)) {
             announce = messageService.getMessage("discord.command.rank.levelup");
         }
         return placeholderHelper.replacePlaceholders(announce, resolver);
+    }
+
+    private static boolean isApplicable(Member member) {
+        return member != null && !member.getGuild().getSelfMember().equals(member) && !member.getUser().isBot();
     }
 }
