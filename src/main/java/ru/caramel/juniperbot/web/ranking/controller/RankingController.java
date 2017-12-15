@@ -41,6 +41,7 @@ import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -151,6 +152,7 @@ public class RankingController extends AbstractController {
                         details.add(new RewardDetails(role, reward));
                     }
                 }
+                details.sort(Comparator.comparing(RewardDetails::getLevel));
                 return details;
             }
 

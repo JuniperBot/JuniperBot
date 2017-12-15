@@ -37,6 +37,29 @@ function Ranking() {
 
     var $resetButton = $('#ranking-reset-button');
 
+    var rewardsTable = $('#rewards-table').DataTable({
+        'paging'      : false,
+        'searching'   : false,
+        "scrollY"     : "300px",
+        "bInfo" : false,
+        "language": {
+            "zeroRecords": "Роли отсутствуют.",
+            "emptyTable": "Роли отсутствуют.",
+            "aria": {
+                "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                "sortDescending": ": активировать для сортировки столбца по убыванию"
+            }
+        },
+        "order": [[ 1, "desc" ]],
+        "columnDefs": [
+            { "width": "150px", "targets": 1 }
+        ],
+        "columns": [
+            null,
+            { "orderDataType": "dom-text-numeric" }
+        ]
+    });
+
     self.init = function () {
         self.reload();
     };

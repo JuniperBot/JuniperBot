@@ -31,3 +31,9 @@ $(document).ready(function () {
         $('.alert-success.flash-message').slideUp(400, function() { $(this).remove(); });
     }, 5000);
 });
+
+$.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {
+    return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).val() * 1;
+    });
+};

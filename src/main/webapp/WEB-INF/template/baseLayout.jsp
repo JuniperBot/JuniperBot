@@ -42,6 +42,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap-toggle.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/css/dataTables.bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/ionicons.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/AdminLTE.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/skin-yellow-light.min.css"/>">
@@ -59,6 +60,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-dialog.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-toggle.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery.dataTables.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/dataTables.bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
