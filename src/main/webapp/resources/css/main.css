@@ -519,3 +519,7 @@ table.command-table td {
 .rewards-menu .table > tbody > tr > td {
     padding: 8px 10px;
 }
+
+.level-input {
+    min-width: 150px;
+}

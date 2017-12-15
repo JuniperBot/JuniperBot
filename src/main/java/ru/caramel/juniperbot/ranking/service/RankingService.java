@@ -98,7 +98,7 @@ public class RankingService {
             config.setBannedRoles(configDto.getBannedRoles());
             if (configDto.getRewards() != null) {
                 config.setRewards(configDto.getRewards().stream()
-                        .filter(e -> e.getLevel() != null && e.getLevel() > 0 && e.getLevel() < RankingUtils.MAX_LEVEL)
+                        .filter(e -> e.getLevel() != null && e.getLevel() >= 0 && e.getLevel() <= RankingUtils.MAX_LEVEL)
                         .collect(Collectors.toList()));
             } else {
                 config.setRewards(null);

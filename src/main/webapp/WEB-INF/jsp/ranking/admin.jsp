@@ -94,7 +94,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <div class="callout callout-info">
                             <p>После того, как наградная роль была выдана пользователю, снять ее можно только вручную даже если награда за нее уже снята.</p>
                         </div>
-                        <table class="table table-striped table-hover">
+                        <table id="rewards-table" class="table table-striped table-hover" width="100%">
                             <thead>
                             <tr>
                                 <th>Роль</th>
