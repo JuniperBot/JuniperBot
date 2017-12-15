@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.web.common;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,7 @@ import ru.caramel.juniperbot.web.common.flash.Flash;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractController {
 
@@ -120,6 +123,11 @@ public abstract class AbstractController {
         return guild;
     }
 
+    protected boolean hasPermission(long serverId, Permission permission) {
+        Guild guild = getGuild(serverId);
+        return guild != null && guild.getSelfMember().hasPermission(permission);
+    }
+
     protected List<TextChannel> getTextChannels(long guildId) {
         Guild guild = getGuild(guildId);
         return guild != null ? guild.getTextChannels() : Collections.emptyList();
@@ -128,5 +136,12 @@ public abstract class AbstractController {
     protected List<VoiceChannel> getVoiceChannels(long guildId) {
         Guild guild = getGuild(guildId);
         return guild != null ? guild.getVoiceChannels() : Collections.emptyList();
+    }
+
+    protected List<Role> getRoles(long guildId) {
+        Guild guild = getGuild(guildId);
+        return guild != null
+                ? guild.getRoles().stream().filter(e -> !"@everyone".equals(e.getName())).collect(Collectors.toList())
+                : Collections.emptyList();
     }
 }

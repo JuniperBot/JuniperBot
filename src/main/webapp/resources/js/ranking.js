@@ -26,10 +26,16 @@ function Ranking() {
     var $updateTitle = $('#update-level-modal-label');
     var $updateInput = $('#update-level-value');
     var $updateGroup = $updateInput.closest('.form-group');
+
     var $updateButton = $('#update-level-button');
     var $updateText = $('#update-level-text');
     var $updateSpinner = $('#update-level-spinner');
 
+    var $syncButton = $('#ranking-sync-button');
+    var $syncText = $('#ranking-sync-button-text');
+    var $syncSpinner = $('#ranking-sync-button-spinner');
+
+    var $resetButton = $('#ranking-reset-button');
 
     self.init = function () {
         self.reload();
@@ -84,7 +90,7 @@ function Ranking() {
                 action: function(dialogRef){
                     dialogRef.enableButtons(false);
                     dialogRef.setClosable(false);
-                    reset(id, function() {
+                    update(id, 0, function() {
                         dialogRef.close();
                     });
                 }
@@ -111,12 +117,38 @@ function Ranking() {
         }
     });
 
-    function block(block) {
-        $updateButton.prop('disabled', block);
-        $updateInput.prop('disabled', block);
-        (block ? $updateText : $updateSpinner).hide();
-        (block ? $updateSpinner : $updateText).show();
-    }
+    $syncButton.click(function () {
+        blockSync(true);
+        sync(function() {
+            blockSync(false);
+        });
+    });
+
+    $resetButton.click(function () {
+        BootstrapDialog.show({
+            title: 'Сброс прогресса всех пользователей',
+            type: BootstrapDialog.TYPE_WARNING,
+            message: 'Вы уверены что хотите сбросить прогресс всех пользователей? Следует иметь в виду, что это не отнимет у них существующие наградные роли, а только сбросит весь опыт.',
+            spinicon: 'fa fa-circle-o-notch',
+            buttons: [{
+                label: 'Сбросить все',
+                cssClass: 'btn-warning',
+                autospin: true,
+                action: function(dialogRef){
+                    dialogRef.enableButtons(false);
+                    dialogRef.setClosable(false);
+                    resetAll(function() {
+                        dialogRef.close();
+                    });
+                }
+            }, {
+                label: 'Закрыть',
+                action: function(dialogRef){
+                    dialogRef.close();
+                }
+            }]
+        });
+    });
 
     self.setLevel = function(id, name, currentLevel) {
         self.updateId = id;
@@ -126,19 +158,23 @@ function Ranking() {
         $updateModal.modal();
     };
 
-    function reset(userId, callback) {
-        $.post(contextPath + 'ranking/reset/' + serverId, {userId: userId})
-            .done(self.reload)
-            .fail(function () {
-                BootstrapDialog.warning('Упс! Что-то пошло не так!');
-            })
-            .always(callback);
+    function block(block) {
+        $updateButton.prop('disabled', block);
+        $updateInput.prop('disabled', block);
+        (block ? $updateText : $updateSpinner).hide();
+        (block ? $updateSpinner : $updateText).show();
+    }
+
+    function blockSync(block) {
+        $syncButton.prop('disabled', block);
+        (block ? $syncText : $syncSpinner).hide();
+        (block ? $syncSpinner : $syncText).show();
     }
 
     function update(userId, level, callback) {
         $.post(contextPath + 'ranking/update/' + serverId, {userId: userId, level: level})
             .done(function() {
-                $updateModal.modal('toggle');
+                $updateModal.modal('hide');
                 self.reload();
             })
             .fail(function () {
@@ -146,4 +182,39 @@ function Ranking() {
             })
             .always(callback);
     }
+
+    function sync(callback) {
+        $.post(contextPath + 'ranking/sync/' + serverId)
+            .done(function() {
+                self.reload();
+            })
+            .fail(function () {
+                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+            })
+            .always(callback);
+    }
+
+    function resetAll(callback) {
+        $.post(contextPath + 'ranking/resetAll/' + serverId)
+            .done(function() {
+                self.reload();
+            })
+            .fail(function () {
+                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+            })
+            .always(callback);
+    }
+
+    $('.level-input').on('keydown keyup', function(e){
+        if (e.keyCode != 46 && e.keyCode != 8 && $(this).val()) {
+            if ($(this).val() > 999) {
+                e.preventDefault();
+                $(this).val(999);
+            }
+            if ($(this).val() < 0) {
+                e.preventDefault();
+                $(this).val(0);
+            }
+        }
+    });
 }

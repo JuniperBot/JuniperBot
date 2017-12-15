@@ -16,10 +16,13 @@
  */
 package ru.caramel.juniperbot.ranking.service;
 
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.integration.discord.DiscordEventListener;
+import ru.caramel.juniperbot.persistence.entity.RankingConfig;
 
 @Component
 public class RankingListener extends DiscordEventListener {
@@ -30,5 +33,18 @@ public class RankingListener extends DiscordEventListener {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         rankingService.onMessage(event);
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        rankingService.getOrCreateMember(event.getMember());
+    }
+
+    @Override
+    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+        RankingConfig config = rankingService.getConfig(event.getGuild());
+        if (config != null && config.isResetOnLeave()) {
+            rankingService.setLevel(event.getGuild().getIdLong(), event.getMember().getUser().getIdLong(), 0);
+        }
     }
 }

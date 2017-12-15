@@ -21,10 +21,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.ranking.model.Reward;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Map;
+import java.util.List;
 
 @Getter
 @Setter
@@ -46,6 +47,9 @@ public class RankingConfig extends BaseEntity {
     @Column(name = "is_whisper")
     private boolean whisper;
 
+    @Column(name = "reset_on_leave")
+    private boolean resetOnLeave;
+
     @Column
     @Size(max = 1800)
     private String announcement;
@@ -56,6 +60,6 @@ public class RankingConfig extends BaseEntity {
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
-    private Map<String/* role_id */, Integer/* level */> rewards;
+    private List<Reward> rewards;
 
 }

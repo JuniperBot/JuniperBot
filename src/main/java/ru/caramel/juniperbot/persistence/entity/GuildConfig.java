@@ -33,7 +33,8 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "guild_config")
 @NamedEntityGraphs({
-        @NamedEntityGraph(name = GuildConfig.COMMANDS_GRAPH, attributeNodes = @NamedAttributeNode("commands"))
+        @NamedEntityGraph(name = GuildConfig.COMMANDS_GRAPH, attributeNodes = @NamedAttributeNode("commands")),
+        @NamedEntityGraph(name = GuildConfig.RANKING_GRAPH, attributeNodes = @NamedAttributeNode("rankingConfig"))
 })
 @NamedQuery(name = GuildConfig.FIND_BY_GUILD_ID, query = "SELECT g FROM GuildConfig g WHERE g.guildId = :guildId")
 public class GuildConfig extends BaseEntity {
@@ -43,6 +44,8 @@ public class GuildConfig extends BaseEntity {
     public static final String FIND_BY_GUILD_ID = "GuildConfig.findByGuildId";
 
     public static final String COMMANDS_GRAPH = "GuildConfig.commandsGraph";
+
+    public static final String RANKING_GRAPH = "GuildConfig.rankingGraph";
 
     @Column(name = "guild_id")
     private long guildId;

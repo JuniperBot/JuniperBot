@@ -266,6 +266,10 @@ body.landing-mode h4 {
     #vk-confirmation-code {
         margin-bottom: 15px;
     }
+
+    .widget-server .callout {
+        margin-bottom: 55px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -362,9 +366,9 @@ table.command-table td {
 
 .widget-server .widget-server-header {
     padding: 10px 20px 20px 20px;
-    height: 120px;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
+    box-shadow: inset 0 -140px 140px -140px #000000a8;
 }
 .widget-server .widget-server-title {
     font-weight: 300;
@@ -382,7 +386,7 @@ table.command-table td {
 }
 .widget-server .widget-server-image {
     position: absolute;
-    top: 55px;
+    margin-top: -65px;
     left: 50%;
     margin-left: -55px;
 }
@@ -395,6 +399,12 @@ table.command-table td {
     padding-top: 30px;
 }
 
+.widget-server .callout {
+    background-color: #fda61b !important;
+    border-color: #c87f0a;
+    width: 100%;
+}
+
 .no-content-padding {
     padding: 0 0 15px 0;
 }
@@ -402,7 +412,7 @@ table.command-table td {
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
     .widget-server .widget-server-image {
-        top: 70px;
+        margin-top: -50px;
         margin-left: -45px;
     }
     .widget-server .widget-server-image>img {
@@ -491,4 +501,21 @@ table.command-table td {
 .widget-server-container .overlay>.fa {
     text-shadow: 0 0 5px black;
     color: white;
+}
+
+.rewards-menu {
+    color: black;
+    min-width: 260px;
+}
+
+.rewards-menu .table {
+    margin: 0;
+}
+
+.rewards-menu .table > thead > tr > th {
+    padding: 5px 10px;
+}
+
+.rewards-menu .table > tbody > tr > td {
+    padding: 8px 10px;
 }
