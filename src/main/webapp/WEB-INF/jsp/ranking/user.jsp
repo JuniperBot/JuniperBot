@@ -17,12 +17,17 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
-<div class="box box-widget widget-server">
+<div class="box box-widget widget-server <c:if test="${not empty serverIcon}">bg-image</c:if>">
     <div class="widget-server-header bg-yellow">
-        <div class="row">
+        <div class="widget-server-background" style="background-image: url('/blur?source=<c:url value="${serverIcon}"/>');">
+            <div class="widget-bottom-panel"></div>
+        </div>
+        <div class="row widget-server-header-row">
             <div class="col-md-7">
-                <h5 class="widget-server-title">Рейтинг участников</h5>
-                <h3 class="widget-server-name">${serverName}</h3>
+                <div class="pull-left widget-header-name">
+                    <h5 class="widget-server-title">Рейтинг участников</h5>
+                    <h3 class="widget-server-name">${serverName}</h3>
+                </div>
             </div>
             <div class="col-md-5">
                 <div class="callout pull-right">
@@ -61,8 +66,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </div>
-
-
     </div>
 
     <div class="widget-server-image">

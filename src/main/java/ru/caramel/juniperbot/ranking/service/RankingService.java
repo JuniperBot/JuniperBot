@@ -186,7 +186,7 @@ public class RankingService {
         String memberKey = String.format("%s_%s", event.getGuild().getId(), event.getAuthor().getId());
 
         RankingConfig config = rankingConfigRepository.findByGuildId(event.getGuild().getIdLong());
-        if (config == null || !config.isEnabled() || isBanned(config, event.getMember())
+        if (event.getMember() == null || config == null || !config.isEnabled() || isBanned(config, event.getMember())
                 || coolDowns.getIfPresent(memberKey) != null) {
             return;
         }
@@ -304,7 +304,7 @@ public class RankingService {
             return false;
         }
         List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
-        return member.getRoles().stream()
+        return !CollectionUtils.isEmpty(member.getRoles()) && member.getRoles().stream()
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
     }
 
