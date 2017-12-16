@@ -259,7 +259,9 @@ body.landing-mode h4 {
         margin-top: 5px !important;
         padding: 15px 0;
     }
-
+    .widget-server.bg-image .widget-header-name {
+        width: 115% !important;
+    }
 }
 
 @media (max-width: 992px) {
@@ -365,10 +367,10 @@ table.command-table td {
 }
 
 .widget-server .widget-server-header {
-    padding: 10px 20px 20px 20px;
+    padding: 0;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
-    box-shadow: inset 0 -140px 140px -140px #000000a8;
+    box-shadow: inset 0 -140px 140px -140px rgba(0,0,0,0.67);
 }
 .widget-server .widget-server-title {
     font-weight: 300;
@@ -454,6 +456,20 @@ table.command-table td {
         top: 0;
         font-size: 22px !important;
     }
+
+    body.jumbo-headed .widget-server-header-row {
+        padding-top: 110px !important;
+    }
+
+    body.jumbo-headed .widget-server {
+        margin-top: -100px !important;
+    }
+
+    .widget-server.bg-image .widget-header-name {
+        text-align: center;
+        width: 110%;
+        padding: 5px 0 !important;
+    }
 }
 
 .widget-user-2.widget-member {
@@ -522,4 +538,64 @@ table.command-table td {
 
 .level-input {
     min-width: 150px;
+}
+
+body.jumbo-headed section.content {
+    display: table;
+    width: 100%;
+}
+
+body.jumbo-headed .widget-server {
+    margin-top: -50px;
+}
+
+body.jumbo-headed .widget-server-header-row {
+    padding: 60px 20px 20px 20px;
+}
+
+body.jumbo-headed .main-header {
+    box-shadow: inset 0 100px 100px -100px #000;
+}
+
+body.jumbo-headed .main-header .logo,
+body.jumbo-headed .main-header .logo:hover,
+body.jumbo-headed .main-header .navbar {
+    background-color: transparent;
+}
+
+.widget-header-name {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.widget-server-background {
+    position:absolute;
+    width: 100%;
+    background-size: cover;
+    background-position-y: 50%;
+    -webkit-filter: blur(25px);
+    -moz-filter: blur(25px);
+    -o-filter: blur(25px);
+    -ms-filter: blur(25px);
+    filter: blur(25px);
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    -o-transform: scale(1.1);
+}
+
+.widget-server.bg-image .callout {
+    background-color: rgba(0,0,0,0.22) !important;
+    border-color: rgba(0,0,0,0.16);
+}
+
+.widget-server.bg-image .widget-server-header {
+    background-color: white !important;
+}
+
+.widget-server.bg-image .widget-header-name{
+    margin-bottom: 10px;
+    padding: 5px 20px 5px 40px;
+    margin-left: -20px;
+    background-color: rgba(0,0,0,0.22) !important;
 }

@@ -240,4 +240,11 @@ function Ranking() {
             }
         }
     });
+
+    function updateBackgroundImage() {
+        var $bg = $('.widget-server-background');
+        $bg.height($bg.parent().height());
+    }
+    $(window).resize(updateBackgroundImage);
+    updateBackgroundImage();
 }
