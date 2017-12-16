@@ -19,9 +19,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <div class="box box-widget widget-server <c:if test="${not empty serverIcon}">bg-image</c:if>">
     <div class="widget-server-header bg-yellow">
-        <c:if test="${not empty serverIcon}">
-            <div class="widget-server-background" style="background-image: url('${serverIcon}');"></div>
-        </c:if>
+        <div class="widget-server-background" style="background-image: url('/blur?source=<c:url value="${serverIcon}"/>');">
+            <div class="widget-bottom-panel"></div>
+        </div>
         <div class="row widget-server-header-row">
             <div class="col-md-7">
                 <div class="pull-left widget-header-name">
@@ -66,8 +66,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </div>
-
-
     </div>
 
     <div class="widget-server-image">
