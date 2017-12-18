@@ -21,12 +21,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.service.OpenCVService;
 import ru.caramel.juniperbot.utils.BoxBlurFilter;
 
 import javax.annotation.PostConstruct;
@@ -52,6 +54,15 @@ public class BlurImageController {
     };
 
     private BoxBlurFilter blurFilter;
+
+    @Autowired
+    private OpenCVService openCVService;
+
+    @Value("${blur.image.opencv:true}")
+    private boolean useOpenCV;
+
+    @Value("${blur.image.opencv.radius:201}")
+    private int blurRadius;
 
     @Value("${blur.image.cache:}")
     private String cacheFolder;
@@ -143,7 +154,17 @@ public class BlurImageController {
         try (InputStream input = con.getInputStream()) {
             BufferedImage image = ImageIO.read(input);
             image = scaleImage(image, BufferedImage.TYPE_INT_RGB,1920, 1920);
-            BufferedImage blurredImage = blurFilter.filter(image, null);
+            BufferedImage blurredImage = null;
+            if (useOpenCV && openCVService.isInitialized()) {
+                try {
+                    blurredImage = openCVService.blur(image, blurRadius);
+                } catch (IOException e) {
+                    // fall down and apply legacy box blur
+                }
+            }
+            if (blurredImage == null) {
+                blurredImage = blurFilter.filter(image, null);
+            }
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(blurredImage, "jpg", out);
 
