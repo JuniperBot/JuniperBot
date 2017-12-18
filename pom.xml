@@ -53,6 +53,7 @@
         <vk.sdk.version>0.5.8</vk.sdk.version>
         <jwbf.version>4.0.0-SNAPSHOT</jwbf.version>
         <wikitext.version>3.1.6</wikitext.version>
+        <opencv.version>3.2.0</opencv.version>
     </properties>
 
     <repositories>
@@ -68,6 +69,11 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>data-local</id>
+            <name>data</name>
+            <url>file://${project.basedir}/local</url>
         </repository>
     </repositories>
 
@@ -193,6 +199,18 @@
             <groupId>org.sweble.wikitext</groupId>
             <artifactId>swc-engine</artifactId>
             <version>${wikitext.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}-0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}</version>
         </dependency>
 
         <!-- WEB DEPENDENCIES -->

@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Mon Dec 18 12:38:23 SAMT 2017
+opencv-3.2.0.pom>=
+opencv-3.2.0.jar>data-local=
+opencv-3.2.0.jar>=

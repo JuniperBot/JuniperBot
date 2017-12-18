@@ -479,7 +479,8 @@ table.command-table td {
     padding: 10px !important;
 }
 
-.widget-user-2.widget-member .widget-user-username {
+.widget-user-2.widget-member .widget-user-username,
+.widget-user-2.widget-member .widget-user-desc {
     word-wrap: break-word;
     word-break: break-word;
 }
@@ -516,6 +517,7 @@ table.command-table td {
 .widget-server-container .overlay>.fa {
     text-shadow: 0 0 5px black;
     color: white;
+    top: auto !important;
 }
 
 .rewards-menu {
