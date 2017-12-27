@@ -39,6 +39,7 @@ import ru.caramel.juniperbot.service.WebHookService;
 
 import javax.persistence.EntityManager;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -122,13 +123,14 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional
-    public GuildConfig getOrCreate(long serverId, String graph) {
-        return createIfMissing(entityManager
+    public GuildConfig getById(long serverId, String graph) {
+        List<GuildConfig> config = entityManager
                 .createNamedQuery(GuildConfig.FIND_BY_GUILD_ID, GuildConfig.class)
                 .setParameter("guildId", serverId)
                 .setHint(org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD.getKey(),
                         entityManager.getEntityGraph(graph))
-                .getSingleResult(), serverId);
+                .getResultList();
+        return config.isEmpty() ? null : config.get(0);
     }
 
     @Override

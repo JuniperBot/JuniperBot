@@ -120,7 +120,6 @@ public class AudioMessageManager {
         if (controller != null) {
             try {
                 controller.remove(false);
-                request.setMessageController(null);
             } catch (PermissionException e) {
                 LOGGER.warn("No permission to delete", e);
             } catch (ErrorResponseException e) {

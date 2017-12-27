@@ -35,11 +35,11 @@ public interface ConfigService {
 
     GuildConfig getById(long serverId);
 
+    GuildConfig getById(long serverId, String graph);
+
     GuildConfig getOrCreate(long serverId);
 
     GuildConfig getOrCreate(Guild guild);
-
-    GuildConfig getOrCreate(long serverId, String graph);
 
     MusicConfig getMusicConfig(long serverId);
 
