@@ -86,6 +86,11 @@ public class RankingService {
         return getConfig(guild.getIdLong());
     }
 
+    @Transactional(readOnly = true)
+    public boolean isEnabled(long serverId) {
+        return rankingConfigRepository.isEnabled(serverId);
+    }
+
     @Transactional
     public void saveConfig(RankingConfigDto configDto, long serverId) {
         RankingConfig config = getConfig(serverId);

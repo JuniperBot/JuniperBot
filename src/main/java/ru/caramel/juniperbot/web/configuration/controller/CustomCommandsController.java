@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.model.enums.CommandType;
 import ru.caramel.juniperbot.model.CommandsContainer;
+import ru.caramel.juniperbot.model.exception.NotFoundException;
 import ru.caramel.juniperbot.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.service.CommandsService;
 import ru.caramel.juniperbot.service.MapperService;
@@ -54,7 +55,10 @@ public class CustomCommandsController extends AbstractController {
     @RequestMapping("/custom-commands/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
-        GuildConfig config = configService.getOrCreate(serverId, GuildConfig.COMMANDS_GRAPH);
+        GuildConfig config = configService.getById(serverId, GuildConfig.COMMANDS_GRAPH);
+        if (config == null) {
+            throw new NotFoundException();
+        }
         CommandsContainer container = new CommandsContainer(mapperService.getCommandsDto(config.getCommands()));
         return createModel("custom-commands", serverId, config.getPrefix())
                 .addObject("commandsContainer", container);

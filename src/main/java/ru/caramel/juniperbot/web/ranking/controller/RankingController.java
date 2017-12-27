@@ -57,18 +57,22 @@ public class RankingController extends AbstractController {
     @RequestMapping("/ranking/{serverId}")
     public ModelAndView view(@PathVariable long serverId,
                              @RequestParam(value = "forceUser", required = false, defaultValue = "false") boolean forceUser) {
+        boolean authorized = isAuthorized(serverId);
+        if (!authorized && !rankingService.isEnabled(serverId)) {
+            throw new NotFoundException();
+        }
         ModelAndView mv;
-        GuildConfig config = configService.getOrCreate(serverId, GuildConfig.RANKING_GRAPH);
-        if (!forceUser && isAuthorized(serverId)) {
+        GuildConfig config = configService.getById(serverId, GuildConfig.RANKING_GRAPH);
+        if (config == null) {
+            throw new NotFoundException();
+        }
+        if (!forceUser && authorized) {
             RankingConfigDto configDto = mapperService.getRankingDto(config.getRankingConfig());
             mv = createModel("ranking.admin", serverId)
                     .addObject("config", configDto)
                     .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
                     .addObject("roles", getRoles(serverId));
         } else {
-            if (!rankingService.checkExists(serverId)) {
-                throw new NotFoundException();
-            }
             mv = createModel("ranking.user", serverId, false)
                     .addObject("rewards", getRewards(serverId, config.getRankingConfig()));
         }
@@ -82,7 +86,10 @@ public class RankingController extends AbstractController {
             BindingResult result) {
         validateGuildId(serverId);
         if (result.hasErrors()) {
-            GuildConfig guildConfig = configService.getOrCreate(serverId, GuildConfig.RANKING_GRAPH);
+            GuildConfig guildConfig = configService.getById(serverId, GuildConfig.RANKING_GRAPH);
+            if (config == null) {
+                throw new NotFoundException();
+            }
             return createModel("ranking.admin", serverId)
                     .addObject("prefix", guildConfig.getPrefix())
                     .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
@@ -95,10 +102,14 @@ public class RankingController extends AbstractController {
 
     @RequestMapping("/ranking/list/{serverId}")
     public ModelAndView list(@PathVariable long serverId) {
+        boolean authorized = isAuthorized(serverId);
+        if (!authorized && !rankingService.isEnabled(serverId)) {
+            throw new NotFoundException();
+        }
         ModelAndView mv = new ModelAndView("ranking.list");
         List<RankingInfo> members = rankingService.getRankingInfos(serverId);
         return mv
-                .addObject("editable", isAuthorized(serverId))
+                .addObject("editable", authorized)
                 .addObject("members", members);
     }
 

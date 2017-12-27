@@ -262,9 +262,12 @@ public class PlayerService extends AudioEventAdapter {
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        PlaybackInstance instance = player.getPlayingTrack().getUserData(PlaybackInstance.class);
-        if (instance.isActive()) {
-            messageManager.onTrackResume(instance.getCurrent());
+        AudioTrack track = player.getPlayingTrack();
+        if (track != null) {
+            PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+            if (instance.isActive()) {
+                messageManager.onTrackResume(instance.getCurrent());
+            }
         }
     }
 

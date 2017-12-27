@@ -27,4 +27,7 @@ public interface RankingConfigRepository extends JpaRepository<RankingConfig, Lo
 
     @Query("SELECT r FROM RankingConfig r WHERE r.guildConfig.guildId = :guildId")
     RankingConfig findByGuildId(@Param("guildId") long guildId);
+
+    @Query("select count(r) > 0 FROM RankingConfig r WHERE r.guildConfig.guildId = :guildId AND r.enabled = true")
+    boolean isEnabled(@Param("guildId") long guildId);
 }
