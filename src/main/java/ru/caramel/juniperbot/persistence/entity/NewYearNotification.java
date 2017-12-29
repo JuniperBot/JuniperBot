@@ -14,18 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.persistence.repository.base;
+package ru.caramel.juniperbot.persistence.entity;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.persistence.entity.base.GuildEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.caramel.juniperbot.persistence.entity.base.TextChannelEntity;
 
-import java.util.List;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
 
-@NoRepositoryBean
-public interface GuildRepository<T extends GuildEntity> extends JpaRepository<T, Long> {
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@Table(name = "new_year_notification")
+public class NewYearNotification extends TextChannelEntity {
 
-    List<T> findByGuildId(String guildId);
+    @Column
+    private boolean enabled;
 
-    T findOneByGuildId(String guildId);
+    @Size(max = 1800)
+    @Column
+    private String message;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
 }
