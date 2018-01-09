@@ -17,23 +17,14 @@
 -->
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
-   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-   http://www.liquibase.org/xml/ns/dbchangelog
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog-19082017-1.xml" />
-    <include file="db/changelog-20082017-1.xml" />
-    <include file="db/changelog-23082017-1.xml" />
-    <include file="db/changelog-25082017-1.xml" />
-    <include file="db/changelog-29082017-1.xml" />
-    <include file="db/changelog-30082017-1.xml" />
-    <include file="db/changelog-1.9-01092017.xml" />
-    <include file="db/changelog-2.0-06092017.xml" />
-    <include file="db/changelog-2.9-12122017.xml" />
-    <include file="db/changelog-3.1-29122017.xml" />
-    <include file="db/changelog-3.2-09012018.xml" />
+    <changeSet id="3.2-09012018-1" author="caramel">
+        <addUniqueConstraint columnNames="guild_id, user_id"
+                             constraintName="uq_member_constraint"
+                             tableName="member"/>
+    </changeSet>
 
 </databaseChangeLog>

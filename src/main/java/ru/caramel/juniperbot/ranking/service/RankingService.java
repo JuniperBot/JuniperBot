@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.integration.discord.DiscordClient;
+import ru.caramel.juniperbot.integration.mee6.Mee6Provider;
 import ru.caramel.juniperbot.model.dto.RankingConfigDto;
 import ru.caramel.juniperbot.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.persistence.entity.RankingConfig;
@@ -46,6 +47,7 @@ import ru.caramel.juniperbot.ranking.model.Reward;
 import ru.caramel.juniperbot.service.MessageService;
 import ru.caramel.juniperbot.utils.MapPlaceholderResolver;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -68,6 +70,9 @@ public class RankingService {
 
     @Autowired
     private DiscordClient discordClient;
+
+    @Autowired
+    private Mee6Provider mee6Provider;
 
     private static Object DUMMY = new Object();
 
@@ -247,7 +252,11 @@ public class RankingService {
     @Transactional
     public void sync(Guild guild) {
         List<LocalMember> members = memberRepository.findByGuildId(guild.getId());
+        syncMembers(guild, members);
+        memberRepository.save(members);
+    }
 
+    private void syncMembers(Guild guild, List<LocalMember> members) {
         Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(LocalMember::getUserId, e -> e));
         for (Member member : guild.getMembers()) {
             if (isApplicable(member)) {
@@ -274,7 +283,32 @@ public class RankingService {
                 e.setExp(0);
             }
         });
-        memberRepository.save(members);
+    }
+
+    @Transactional
+    public void syncMee6(Guild guild) throws IOException {
+        List<RankingInfo> mee6Infos = mee6Provider.export(guild.getIdLong());
+        if (!CollectionUtils.isEmpty(mee6Infos)) {
+            List<LocalMember> members = memberRepository.findByGuildId(guild.getId());
+            syncMembers(guild, members);
+            Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(LocalMember::getUserId, e -> e));
+            List<LocalMember> toUpdate = new ArrayList<>();
+            for (RankingInfo info : mee6Infos) {
+                LocalMember member = membersMap.get(info.getId());
+                if (member == null) {
+                    member = new LocalMember();
+                    member.setGuildId(guild.getId());
+                    member.setUserId(info.getId());
+                    member.setAvatarUrl(info.getAvatarUrl());
+                    member.setName(info.getName());
+                    member.setEffectiveName(info.getNick());
+                    member.setDiscriminator(info.getDiscriminator());
+                }
+                member.setExp(info.getTotalExp());
+                toUpdate.add(member);
+            }
+            memberRepository.save(toUpdate);
+        }
     }
 
     @Transactional

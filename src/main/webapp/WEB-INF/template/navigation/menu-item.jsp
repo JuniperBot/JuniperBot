@@ -20,7 +20,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <tilesx:useAttribute id="item" name="item" classname="ru.caramel.juniperbot.web.common.navigation.MenuItem" />
 
 <li class="${empty item.childs ? '' : 'treeview'} ${item.active ? 'active' : ''}">
-    <a href="<c:url value="${item.url}"/>">
+    <a href="<c:url value="${item.url}"/>" ${item.blank ? 'target="_blank"' : ''}>
         <i class="${item.icon}"></i> <span>${item.name}</span>
         <c:if test="${not empty item.childs}">
             <span class="pull-right-container">

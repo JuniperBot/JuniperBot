@@ -18,10 +18,11 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@include file="/WEB-INF/template/include.jsp" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<tilesx:useAttribute id="sidebarVisible"    name="sidebarVisible"    classname="java.lang.String" ignore="true" scope="request" />
-<tilesx:useAttribute id="breadcrumbVisible" name="breadcrumbVisible" classname="java.lang.String" ignore="true" scope="request" />
-<tilesx:useAttribute id="noContentPadding"  name="noContentPadding"  classname="java.lang.String" ignore="true" scope="request" />
-<tilesx:useAttribute id="userDetails"       name="userDetails"       classname="ru.caramel.juniperbot.security.model.DiscordUserDetails" ignore="true" scope="request" />
+<tilesx:useAttribute id="sidebarVisible"         name="sidebarVisible"         classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="breadcrumbVisible"      name="breadcrumbVisible"      classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="breadcrumbTitleVisible" name="breadcrumbTitleVisible" classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="noContentPadding"       name="noContentPadding"       classname="java.lang.String" ignore="true" scope="request" />
+<tilesx:useAttribute id="userDetails"            name="userDetails"            classname="ru.caramel.juniperbot.security.model.DiscordUserDetails" ignore="true" scope="request" />
 <spring:eval expression="@environment.getProperty('build.timestamp')" var="buildTimestamp" scope="request" />
 
 <html>

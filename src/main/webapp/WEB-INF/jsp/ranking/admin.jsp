@@ -145,10 +145,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 <div class="box-header">
                     <h3 class="box-title">Список пользователей</h3>
                     <div class="box-tools pull-right">
-                        <button id="ranking-reset-button" type="button" class="btn btn-danger">
-                            <span id="ranking-reset-button-text">Сбросить все</span>
-                            <span id="ranking-reset-button-spinner" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style="font-size:18px;"></i></span>
-                        </button>
+                        <button id="ranking-import-button" type="button" class="btn btn-info">Импорт из Mee6</button>
+                        <button id="ranking-reset-button" type="button" class="btn btn-danger">Сбросить все</button>
                         <button id="ranking-sync-button" type="button" class="btn btn-warning" <c:if test="${not serverAdded}">disabled</c:if>>
                             <span id="ranking-sync-button-text">Обновить</span>
                             <span id="ranking-sync-button-spinner" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style="font-size:18px;"></i></span>
@@ -198,5 +196,15 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="import-content" class="hidden">
+    <p>Вы уверены что хотите импортировать прогресс участников сервера из Mee6? Это перезапишет весь текущий прогресс в JuniperBot.</p>
+    <p>Прежде чем импортировать, убедитесь что <a href="https://mee6.xyz/levels/${serverId}" target="_blank">рейтинг Mee6</a> доступен.
+        Иначе временно <a href="https://mee6.xyz/dashboard/${serverId}/levels" target="_blank">активируйте</a> плагин Levels для возможности импорта.</p>
+    <div class="callout callout-warning no-margin">
+        <p>Участники, у которых не указана аватарка в Discord, <span class="text-bold">не могут быть импортированы</span>.
+            В случае необходимости, можно указать им уровень вручную.</p>
     </div>
 </div>

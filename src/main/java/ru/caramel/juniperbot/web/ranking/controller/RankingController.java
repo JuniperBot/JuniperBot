@@ -40,6 +40,7 @@ import ru.caramel.juniperbot.web.common.AbstractController;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -122,6 +123,21 @@ public class RankingController extends AbstractController {
             Guild guild = discordClient.getJda().getGuildById(serverId);
             if (guild != null) {
                 rankingService.sync(guild);
+                return "ok";
+            }
+        }
+        return "fail";
+    }
+
+    @RequestMapping(value = "/ranking/syncMee6/{serverId}", method = RequestMethod.POST)
+    @ResponseBody
+    public String syncMee6(
+            @PathVariable("serverId") long serverId) throws IOException {
+        validateGuildId(serverId);
+        if (discordClient.isConnected()) {
+            Guild guild = discordClient.getJda().getGuildById(serverId);
+            if (guild != null) {
+                rankingService.syncMee6(guild);
                 return "ok";
             }
         }

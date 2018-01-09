@@ -42,7 +42,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 @RestController
-public class BlurImageController {
+public class BlurImageController extends BaseRestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlurImageController.class);
 

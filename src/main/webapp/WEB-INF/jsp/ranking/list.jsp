@@ -21,8 +21,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <div class="list-group">
         <c:forEach items="${members}" var="member">
             <div class="list-group-item"
-                 data-id="${member.member.userId}"
-                 data-name="${member.member.effectiveName ? member.member.effectiveName : member.member.name}"
+                 data-id="${member.id}"
+                 data-name="${member.nick ? member.nick : member.name}"
                  data-level="${member.level}">
                 <div class="row ${editable ? 'editable-rank' : ''}">
                     <div class="col-lg-4 col-md-5 col-sm-6">
@@ -32,10 +32,10 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <div class="widget-user-2 widget-member">
                             <div class="widget-user-header">
                                 <div class="widget-user-image">
-                                    <img class="img-circle" src="${member.member.avatarUrl}" onerror="this.src='/resources/img/noavatar.png'" alt="Аватар">
+                                    <img class="img-circle" src="${member.avatarUrl}" onerror="this.src='/resources/img/noavatar.png'" alt="Аватар">
                                 </div>
-                                <h3 class="widget-user-username"><c:out value="${member.member.effectiveName}" /></h3>
-                                <h5 class="widget-user-desc"><c:out value="${member.member.name}" />#<c:out value="${member.member.discriminator}" /></h5>
+                                <h3 class="widget-user-username"><c:out value="${member.nick}" /></h3>
+                                <h5 class="widget-user-desc"><c:out value="${member.name}" />#<c:out value="${member.discriminator}" /></h5>
                             </div>
                         </div>
                     </div>

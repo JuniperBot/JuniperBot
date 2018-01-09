@@ -18,7 +18,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@include file="/WEB-INF/template/include.jsp" %>
 
 <section class="content-header">
-    <h1><tiles:insertAttribute name="title" ignore="true"/>&nbsp;</h1>
+    <c:if test="${breadcrumbTitleVisible}">
+        <h1><tiles:insertAttribute name="title" ignore="true"/>&nbsp;</h1>
+    </c:if>
     <ol class="breadcrumb">
         <c:forEach var="entry" items="${breadCrumb}">
             <c:choose>

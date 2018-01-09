@@ -21,7 +21,7 @@
 
     <groupId>ru.caramel</groupId>
     <artifactId>juniperbot</artifactId>
-    <version>3.0.x-SNAPSHOT</version>
+    <version>3.2.x-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>JuniperBot</name>
@@ -54,6 +54,7 @@
         <jwbf.version>4.0.0-SNAPSHOT</jwbf.version>
         <wikitext.version>3.1.6</wikitext.version>
         <opencv.version>3.2.0</opencv.version>
+        <jsoup.version>1.11.2</jsoup.version>
     </properties>
 
     <repositories>
@@ -211,6 +212,12 @@
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
             <version>${opencv.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
         </dependency>
 
         <!-- WEB DEPENDENCIES -->

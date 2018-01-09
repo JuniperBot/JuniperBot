@@ -21,6 +21,7 @@
     <definition name="baseLayout" template="/WEB-INF/template/baseLayout.jsp" preparer="userInfoPreparer">
         <put-attribute name="sidebarVisible" value="true" />
         <put-attribute name="breadcrumbVisible" value="true" />
+        <put-attribute name="breadcrumbTitleVisible" value="true" />
     </definition>
 
     <definition name="baseLayoutLite" extends="baseLayout">
@@ -61,6 +62,13 @@
     <definition name="dashboard" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/dashboard/dashboard.jsp"/>
         <put-attribute name="title" value="Мониторинг" />
+    </definition>
+
+    <definition name="apidocs" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/apidocs/apidocs.jsp"/>
+        <put-attribute name="title" value="Документация" />
+        <put-attribute name="sidebarVisible" value="false" />
+        <put-attribute name="breadcrumbTitleVisible" value="false" />
     </definition>
 
     <definition name="config" extends="baseLayout">
