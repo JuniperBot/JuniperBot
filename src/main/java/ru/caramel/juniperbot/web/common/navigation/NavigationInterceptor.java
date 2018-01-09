@@ -69,7 +69,9 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
                         item.setActive(true);
                         item = item.getParent();
                     }
-                    breadCrumb.add(new MenuItem(PageElement.SERVERS));
+                    if (modelAndView.getModel().containsKey("serverName")) {
+                        breadCrumb.add(new MenuItem(PageElement.SERVERS));
+                    }
                     breadCrumb.add(new MenuItem(PageElement.HOME));
                     Collections.reverse(breadCrumb);
                     toParse.addAll(breadCrumb);

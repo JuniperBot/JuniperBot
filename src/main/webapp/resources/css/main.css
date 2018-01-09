@@ -586,3 +586,48 @@ body.jumbo-headed .main-header .navbar {
     height: 50px;
     box-shadow: inset 0 -110px 60px -80px rgba(255,255,255,1);
 }
+
+.rest-resource-url {
+    margin: 0 0 20px 0;
+}
+
+.rest-resource-method {
+    margin: 0 5px;
+    font-family: "Courier New", Courier, monospace;
+}
+
+
+h1.hyperlink,
+h2.hyperlink,
+h3.hyperlink,
+h4.hyperlink,
+h5.hyperlink,
+h6.hyperlink {
+    display: flex !important;
+}
+
+
+h1.hyperlink > a,
+h2.hyperlink > a,
+h3.hyperlink > a,
+h4.hyperlink > a,
+h5.hyperlink > a,
+h6.hyperlink > a {
+    -ms-flex-item-align: center;
+    align-self: center;
+    background: url(../img/hyperlink.svg);
+    font-size: 22px;
+    height: 14px;
+    margin-left: 10px;
+    visibility: hidden;
+    width: 14px
+}
+
+h1.hyperlink:hover > a,
+h2.hyperlink:hover > a,
+h3.hyperlink:hover > a,
+h4.hyperlink:hover > a,
+h5.hyperlink:hover > a,
+h6.hyperlink:hover > a {
+    visibility: visible
+}

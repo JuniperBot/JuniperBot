@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.ranking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.persistence.entity.LocalMember;
@@ -24,7 +25,15 @@ import ru.caramel.juniperbot.persistence.entity.LocalMember;
 @Setter
 public class RankingInfo {
 
-    private final LocalMember member;
+    private String id;
+
+    private String name;
+
+    private String discriminator;
+
+    private String nick;
+
+    private String avatarUrl;
 
     private int level;
 
@@ -36,10 +45,15 @@ public class RankingInfo {
 
     private int rank;
 
+    @JsonIgnore
     private int totalMembers;
 
     public RankingInfo(LocalMember member) {
-        this.member = member;
+        this.id = member.getUserId();
+        this.name = member.getName();
+        this.discriminator = member.getDiscriminator();
+        this.nick = member.getEffectiveName();
+        this.avatarUrl = member.getAvatarUrl();
     }
 
     public int getPct() {

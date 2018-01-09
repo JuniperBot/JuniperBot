@@ -19,7 +19,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <div class="box box-widget widget-server <c:if test="${not empty serverIcon}">bg-image</c:if>">
     <div class="widget-server-header bg-yellow">
-        <div class="widget-server-background" style="background-image: url('/blur?source=<c:url value="${serverIcon}"/>');">
+        <div class="widget-server-background" style="background-image: url('/api/blur?source=<c:url value="${serverIcon}"/>');">
             <div class="widget-bottom-panel"></div>
         </div>
         <div class="row widget-server-header-row">

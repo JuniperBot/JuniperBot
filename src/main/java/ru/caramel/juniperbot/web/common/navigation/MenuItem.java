@@ -55,26 +55,26 @@ public class MenuItem implements Serializable {
 
     @Getter
     @Setter
+    private boolean blank;
+
+    @Getter
+    @Setter
     private boolean current;
 
     public MenuItem(PageElement element) {
         this(element, false);
     }
 
-    public MenuItem(PageElement element, boolean active) {
-        this(element.getUrl(), element.toString(), element.getIcon(), active);
+    public MenuItem(PageElement element, boolean blank) {
+        this(element.getUrl(), element.toString(), element.getIcon(), blank);
         this.element = element;
     }
 
-    public MenuItem(String url, String name, String icon) {
-        this(url, name, icon, false);
-    }
-
-    public MenuItem(String url, String name, String icon, boolean active) {
+    public MenuItem(String url, String name, String icon, boolean blank) {
         this.url = url;
         this.name = name;
         this.icon = icon;
-        this.active = active;
+        this.blank = blank;
     }
 
     public boolean addChild(MenuItem child) {
