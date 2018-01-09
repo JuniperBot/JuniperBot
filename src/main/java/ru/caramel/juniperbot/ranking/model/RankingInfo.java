@@ -18,11 +18,13 @@ package ru.caramel.juniperbot.ranking.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.caramel.juniperbot.persistence.entity.LocalMember;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class RankingInfo {
 
     private String id;

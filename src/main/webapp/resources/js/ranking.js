@@ -35,6 +35,7 @@ function Ranking() {
     var $syncText = $('#ranking-sync-button-text');
     var $syncSpinner = $('#ranking-sync-button-spinner');
 
+    var $importButton = $('#ranking-import-button');
     var $resetButton = $('#ranking-reset-button');
 
     var rewardsTable = $('#rewards-table').DataTable({
@@ -147,6 +148,32 @@ function Ranking() {
         });
     });
 
+    $importButton.click(function () {
+        BootstrapDialog.show({
+            title: 'Импорт прогресса участников из Mee6',
+            type: BootstrapDialog.TYPE_WARNING,
+            message: $("#import-content").clone().removeClass('hidden'),
+            spinicon: 'fa fa-circle-o-notch',
+            buttons: [{
+                label: 'Импортировать',
+                cssClass: 'btn-info',
+                autospin: true,
+                action: function(dialogRef){
+                    dialogRef.enableButtons(false);
+                    dialogRef.setClosable(false);
+                    syncMee6(function() {
+                        dialogRef.close();
+                    });
+                }
+            }, {
+                label: 'Закрыть',
+                action: function(dialogRef){
+                    dialogRef.close();
+                }
+            }]
+        });
+    });
+
     $resetButton.click(function () {
         BootstrapDialog.show({
             title: 'Сброс прогресса всех пользователей',
@@ -208,6 +235,17 @@ function Ranking() {
 
     function sync(callback) {
         $.post(contextPath + 'ranking/sync/' + serverId)
+            .done(function() {
+                self.reload();
+            })
+            .fail(function () {
+                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+            })
+            .always(callback);
+    }
+
+    function syncMee6(callback) {
+        $.post(contextPath + 'ranking/syncMee6/' + serverId)
             .done(function() {
                 self.reload();
             })
