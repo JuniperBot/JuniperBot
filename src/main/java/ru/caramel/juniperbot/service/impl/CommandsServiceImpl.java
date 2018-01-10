@@ -122,7 +122,8 @@ public class CommandsServiceImpl implements CommandsService {
         } catch (ValidationException e) {
             messageService.onError(event.getChannel(), e.getMessage(), e.getArgs());
         } catch (DiscordException e) {
-            messageService.onError(event.getChannel(), "discord.global.error");
+            messageService.onError(event.getChannel(),
+                    messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
             LOGGER.error("Command {} execution error", args[0], e);
         }
     }

@@ -120,16 +120,14 @@ public class PlayerService extends AudioEventAdapter {
     }
 
     public void connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
-        if (!instance.isConnected()) {
-            VoiceChannel channel = getDesiredChannel(member);
-            if (channel == null) {
-                return;
-            }
-            if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-                throw new DiscordException("discord.global.voice.noAccess");
-            }
-            instance.openAudioConnection(channel);
+        VoiceChannel channel = getDesiredChannel(member);
+        if (channel == null) {
+            return;
         }
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+            throw new DiscordException("discord.global.voice.noAccess");
+        }
+        instance.openAudioConnection(channel);
     }
 
     public void reconnectAll() {

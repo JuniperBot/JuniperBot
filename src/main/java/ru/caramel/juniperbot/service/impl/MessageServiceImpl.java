@@ -97,6 +97,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public boolean hasMessage(String code) {
+        return StringUtils.isNotEmpty(code) &&
+                context.getMessage(code, null, null, Locale.US) != null;
+    }
+
+    @Override
     public <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed) {
         try {
             action.apply(embed).queue();
