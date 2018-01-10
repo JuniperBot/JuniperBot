@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
         description = "discord.command.play.desc",
         source = CommandSource.GUILD,
         group = CommandGroup.MUSIC,
-        priority = 104)
+        priority = 100)
 public class PlayCommand extends AudioCommand {
 
     protected static final String ATTR_SEARCH_MESSAGE = "search-message";

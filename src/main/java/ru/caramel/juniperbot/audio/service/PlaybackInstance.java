@@ -133,7 +133,9 @@ public class PlaybackInstance {
 
     public synchronized void openAudioConnection(VoiceChannel channel) {
         audioManager = channel.getGuild().getAudioManager();
-        audioManager.setSendingHandler(new GuildAudioSendHandler(player));
+        if (audioManager.getConnectedChannel() == null) {
+            audioManager.setSendingHandler(new GuildAudioSendHandler(player));
+        }
         audioManager.openAudioConnection(channel);
     }
 

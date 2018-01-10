@@ -21,7 +21,7 @@
 
     <groupId>ru.caramel</groupId>
     <artifactId>juniperbot</artifactId>
-    <version>3.2.x-SNAPSHOT</version>
+    <version>3.3.x-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>JuniperBot</name>
@@ -55,6 +55,7 @@
         <wikitext.version>3.1.6</wikitext.version>
         <opencv.version>3.2.0</opencv.version>
         <jsoup.version>1.11.2</jsoup.version>
+        <quartz.version>2.2.3</quartz.version>
     </properties>
 
     <repositories>
@@ -99,6 +100,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -139,6 +145,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+
         <!-- INTEGRATION DEPENDENCIES -->
 
         <dependency>
@@ -165,7 +183,37 @@
             <version>${google-api-services-youtube.version}</version>
         </dependency>
 
-        <!-- INTEGRATION DEPENDENCIES -->
+        <dependency>
+            <groupId>com.vk.api</groupId>
+            <artifactId>sdk</artifactId>
+            <version>${vk.sdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sweble.wikitext</groupId>
+            <artifactId>swc-engine</artifactId>
+            <version>${wikitext.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}-0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}</version>
+        </dependency>
+
+        <!-- DATABASE DEPENDENCIES -->
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -185,39 +233,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vk.api</groupId>
-            <artifactId>sdk</artifactId>
-            <version>${vk.sdk.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>net.sourceforge</groupId>
             <artifactId>jwbf</artifactId>
             <version>${jwbf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.sweble.wikitext</groupId>
-            <artifactId>swc-engine</artifactId>
-            <version>${wikitext.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openpnp</groupId>
-            <artifactId>opencv</artifactId>
-            <version>${opencv.version}-0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opencv</groupId>
-            <artifactId>opencv</artifactId>
-            <version>${opencv.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>${jsoup.version}</version>
         </dependency>
 
         <!-- WEB DEPENDENCIES -->

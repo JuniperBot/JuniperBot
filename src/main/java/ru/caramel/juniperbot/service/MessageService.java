@@ -39,6 +39,8 @@ public interface MessageService {
 
     String getMessage(String code, Object... args);
 
+    boolean hasMessage(String code);
+
     <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title);
 
     String getEnumTitle(Enum<?> clazz);
