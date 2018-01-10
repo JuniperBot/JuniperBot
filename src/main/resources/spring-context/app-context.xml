@@ -53,4 +53,24 @@
           p:validationMessageSource-ref="messageSource"/>
     <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"
           p:validator-ref="validator" />
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource" p:overwriteExistingJobs="true">
+        <property name="jobFactory">
+            <bean class="ru.caramel.juniperbot.scheduler.SpringBeanJobFactory" />
+        </property>
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.scheduler.instanceName">juniperbot-spring-boot-quartz</prop>
+                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+                <prop key="org.quartz.threadPool.threadCount">15</prop>
+                <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreTX</prop>
+                <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
+                <prop key="org.quartz.jobStore.useProperties">true</prop>
+                <prop key="org.quartz.jobStore.misfireThreshold">60000</prop>
+                <prop key="org.quartz.jobStore.tablePrefix">qrtz_</prop>
+                <prop key="org.quartz.jobStore.isClustered">false</prop>
+                <prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop>
+            </props>
+        </property>
+    </bean>
 </beans>

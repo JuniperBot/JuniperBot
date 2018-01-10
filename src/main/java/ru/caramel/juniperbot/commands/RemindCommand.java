@@ -17,21 +17,26 @@
 package ru.caramel.juniperbot.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import ru.caramel.juniperbot.model.Command;
 import ru.caramel.juniperbot.model.DiscordCommand;
 import ru.caramel.juniperbot.model.BotContext;
 import ru.caramel.juniperbot.integration.discord.model.DiscordException;
+import ru.caramel.juniperbot.scheduler.jobs.ReminderJob;
 import ru.caramel.juniperbot.service.MessageService;
-import ru.caramel.juniperbot.service.ReminderService;
 import ru.caramel.juniperbot.utils.TimeSequenceParser;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +52,7 @@ public class RemindCommand implements Command {
     private static final TimeSequenceParser SEQUENCE_PARSER = new TimeSequenceParser();
 
     @Autowired
-    private ReminderService reminderService;
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     @Autowired
     private MessageService messageService;
@@ -78,17 +83,13 @@ public class RemindCommand implements Command {
             }
 
             if (date != null && reminder != null) {
+                createReminder(message.getChannel(), message.getMember(), reminder, date.toDate());
                 messageService.onMessage(message.getChannel(), "discord.command.remind.success");
-                reminderService.createReminder(message.getChannel(), message.getMember(), reminder, date.toDate());
                 return true;
             }
         } catch (IllegalArgumentException e) {
             // fall down
         }
-        return printHelp(message, context);
-    }
-
-    private boolean printHelp(MessageReceivedEvent message, BotContext context) {
         DateTime current = DateTime.now();
         current = current.plusMinutes(1);
         EmbedBuilder builder = messageService.getBaseEmbed();
@@ -101,5 +102,19 @@ public class RemindCommand implements Command {
                 messageService.getMessage("discord.command.remind.help.field2.value", context.getPrefix()), false);
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return false;
+    }
+
+    public void createReminder(MessageChannel channel, Member member, String message, Date date) {
+        JobDetail job = ReminderJob.createDetails(channel, member, message);
+        Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .startAt(date)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                .build();
+        try {
+            schedulerFactoryBean.getScheduler().scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
