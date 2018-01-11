@@ -34,7 +34,7 @@ public class CustomCommand extends BaseEntity {
 
     private static final long serialVersionUID = -8582315203089732918L;
 
-    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "guild_config_id")
     private GuildConfig config;
 

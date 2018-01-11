@@ -122,7 +122,7 @@ public class MessageController {
                 break;
             case STOP:
                 messageManager.onMessage(message.getChannel(), instance.stop()
-                        ? "discord.command.audio.stop" :"discord.command.audio.notStarted");
+                        ? "discord.command.audio.stop" : "discord.command.audio.notStarted");
                 break;
             case VOLUME_UP:
                 if (instance.seekVolume(10, true)) {

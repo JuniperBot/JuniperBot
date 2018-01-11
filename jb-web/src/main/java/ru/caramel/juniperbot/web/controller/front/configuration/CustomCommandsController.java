@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.configuration.controller;
+package ru.caramel.juniperbot.web.controller.front.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,10 +29,10 @@ import ru.caramel.juniperbot.core.modules.customcommand.model.CommandType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.MapperService;
-import ru.caramel.juniperbot.web.common.AbstractController;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
+import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 @Controller
 @Navigation(PageElement.CONFIG_CUSTOM_COMMANDS)

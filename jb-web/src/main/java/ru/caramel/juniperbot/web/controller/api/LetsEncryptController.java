@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web;
+package ru.caramel.juniperbot.web.controller.api;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +37,8 @@ public class LetsEncryptController {
     private String content;
 
     @RequestMapping("/.well-known/acme-challenge/set/{content}")
-    public @ResponseBody String set(@PathVariable("content") String content, @RequestParam("secret") String secret) {
+    @ResponseBody
+    public String set(@PathVariable("content") String content, @RequestParam("secret") String secret) {
         if (StringUtils.isEmpty(this.secret) || !Objects.equals(this.secret, secret)) {
             return "FAIL!";
         }
@@ -47,7 +48,7 @@ public class LetsEncryptController {
 
     @RequestMapping(value = "/.well-known/acme-challenge/{token}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public String message(HttpServletResponse response, @PathVariable("token") String token) {//REST Endpoint.
+    public String message(HttpServletResponse response, @PathVariable("token") String token) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         return content;

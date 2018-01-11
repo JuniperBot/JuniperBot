@@ -54,7 +54,7 @@ public class YouTubeService {
         }
     }
 
-    public List<SearchResult> search(String queryTerm, long maxResults)  {
+    public List<SearchResult> search(String queryTerm, long maxResults) {
         try {
             YouTube.Search.List search = youTube.search().list("id,snippet");
             search.setKey(apiKey);
@@ -69,7 +69,7 @@ public class YouTubeService {
         return Collections.emptyList();
     }
 
-    public List<Video> searchDetailed(String queryTerm, long maxResults)  {
+    public List<Video> searchDetailed(String queryTerm, long maxResults) {
         try {
             List<SearchResult> results = search(queryTerm, maxResults);
             YouTube.Videos.List list = youTube.videos().list("id,snippet,contentDetails");

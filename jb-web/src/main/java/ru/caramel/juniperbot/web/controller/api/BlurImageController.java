@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.api.controller;
+package ru.caramel.juniperbot.web.controller.api;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.service.OpenCVService;
+import ru.caramel.juniperbot.web.common.service.OpenCVService;
 import ru.caramel.juniperbot.core.utils.BoxBlurFilter;
 
 import javax.annotation.PostConstruct;
@@ -48,7 +48,7 @@ public class BlurImageController extends BaseRestController {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
-    private static final String[] ALLOWED_PREFIX = new String[] {
+    private static final String[] ALLOWED_PREFIX = new String[]{
             "https://cdn.discordapp.com/icons/",
             "https://juniperbot.ru/resources/img/"
     };
@@ -153,7 +153,7 @@ public class BlurImageController extends BaseRestController {
 
         try (InputStream input = con.getInputStream()) {
             BufferedImage image = ImageIO.read(input);
-            image = scaleImage(image, BufferedImage.TYPE_INT_RGB,1920, 1920);
+            image = scaleImage(image, BufferedImage.TYPE_INT_RGB, 1920, 1920);
             BufferedImage blurredImage = null;
             if (useOpenCV && openCVService.isInitialized()) {
                 try {
@@ -176,12 +176,10 @@ public class BlurImageController extends BaseRestController {
     }
 
     /**
-     *
-     * @param image The image to be scaled
+     * @param image     The image to be scaled
      * @param imageType Target image type, e.g. TYPE_INT_RGB
-     * @param newWidth The required width
+     * @param newWidth  The required width
      * @param newHeight The required width
-     *
      * @return The scaled image
      */
     private static BufferedImage scaleImage(BufferedImage image, int imageType, int newWidth, int newHeight) {

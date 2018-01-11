@@ -14,57 +14,50 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.configuration.controller;
+package ru.caramel.juniperbot.web.controller.front.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.modules.welcome.model.WelcomeMessageDto;
-import ru.caramel.juniperbot.web.common.AbstractController;
+import ru.caramel.juniperbot.core.model.dto.ConfigDto;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
-import ru.caramel.juniperbot.web.common.validation.WelcomeValidator;
+import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 @Controller
-@Navigation(PageElement.WELCOME_MESSAGES)
-public class WelcomeController extends AbstractController {
+@Navigation(PageElement.CONFIG_COMMON)
+public class ConfigurationController extends AbstractController {
 
-    @Autowired
-    private WelcomeValidator validator;
-
-    @InitBinder
-    public void init(WebDataBinder binder) {
-        binder.setValidator(validator);
-    }
-
-    @RequestMapping("/welcome/{serverId}")
+    @RequestMapping("/config/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
-        return createModel("welcome", serverId)
-                .addObject("welcomeMessage", configService.getWelcomeMessageDto(serverId));
+        return createModel("config", serverId)
+                .addObject("config", configService.getConfig(serverId));
     }
 
-    @RequestMapping(value = "/welcome/{serverId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/config/{serverId}", method = RequestMethod.POST)
     public ModelAndView save(
             @PathVariable long serverId,
-            @Validated @ModelAttribute("welcomeMessage") WelcomeMessageDto welcomeMessage,
+            @Validated @ModelAttribute("config") ConfigDto config,
             BindingResult result) {
         validateGuildId(serverId);
         if (result.hasErrors()) {
-            return createModel("welcome", serverId);
+            return createModel("config", serverId);
         }
-        configService.saveWelcomeMessage(welcomeMessage, serverId);
-        flash.success("flash.welcome.save.success.message");
+        configService.saveConfig(config, serverId);
+        flash.success("flash.config.save.success.message");
         return view(serverId);
     }
 
     @Override
     protected ModelAndView createModel(String name, long serverId) {
         return super.createModel(name, serverId)
+                .addObject("voiceChannels", getVoiceChannels(serverId))
                 .addObject("textChannels", getTextChannels(serverId));
     }
 }

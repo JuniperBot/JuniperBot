@@ -35,7 +35,7 @@
         <dependency>
             <groupId>ru.caramel</groupId>
             <artifactId>juniperbot-core</artifactId>
-			<version>${project.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -48,6 +48,18 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}-0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}</version>
         </dependency>
 
         <!-- WEB DEPENDENCIES -->

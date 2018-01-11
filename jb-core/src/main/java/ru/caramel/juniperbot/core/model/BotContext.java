@@ -56,6 +56,7 @@ public class BotContext {
         return attributes.get(key);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T removeAttribute(Class<T> type, String key) {
         Object value = removeAttribute(key);
         return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;

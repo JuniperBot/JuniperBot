@@ -23,7 +23,9 @@
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
             http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
-    <jpa:repositories base-package="ru.caramel.juniperbot.core.persistence.repository, ru.caramel.juniperbot.core.modules.*.persistence.repository"/>
+    <jpa:repositories base-package="
+        ru.caramel.juniperbot.core.persistence.repository,
+        ru.caramel.juniperbot.core.modules.*.persistence.repository"/>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${dataSource.driverClassName}"/>
@@ -60,7 +62,7 @@
         <property name="jpaDialect" ref="jpaDialect"/>
     </bean>
 
-    <tx:annotation-driven transaction-manager="transactionManager" />
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean class="liquibase.integration.spring.SpringLiquibase"
           p:changeLog="classpath:db/master.xml"

@@ -55,7 +55,7 @@ public class FlashImpl implements Flash {
     }
 
     private void addMessage(FlashType type, String key, Serializable... arguments) {
-        MessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(new String[] { key }, arguments);
+        MessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(new String[]{key}, arguments);
         FlashMessage message = new FlashMessage(type, key, resolvable);
         messages.add(message);
     }

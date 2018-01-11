@@ -28,7 +28,7 @@ import java.util.function.Function;
 @Component
 public class ReactionsListener extends DiscordEventListener {
 
-    public static final String[] CHOICES = new String[] { "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "\uD83D\uDD1F" };
+    public static final String[] CHOICES = new String[]{"1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "\uD83D\uDD1F"};
 
     private Map<String, Function<MessageReactionAddEvent, Boolean>> listeners = new ConcurrentHashMap<>();
 

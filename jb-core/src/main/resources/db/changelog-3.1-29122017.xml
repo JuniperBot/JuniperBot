@@ -27,13 +27,13 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_new_year_notification"/>
             </column>
             <column name="version" type="BIGINT"/>
-            <column name="guild_id" type="VARCHAR(255)" />
-            <column name="channel_id" type="VARCHAR(255)" />
+            <column name="guild_id" type="VARCHAR(255)"/>
+            <column name="channel_id" type="VARCHAR(255)"/>
             <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="message" type="VARCHAR(1800)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="image_url" type="VARCHAR(255)"/>
         </createTable>

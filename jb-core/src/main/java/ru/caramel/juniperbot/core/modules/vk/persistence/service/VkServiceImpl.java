@@ -75,8 +75,8 @@ public class VkServiceImpl implements VkService {
 
     private final static Map<Integer, String> DOC_TYPE_NAMES;
 
-
     private final static Map<WallpostAttachmentType, Integer> ATTACHMENT_PRIORITY;
+
     // /[^0-9a-zA-Z_\.]/g
     static {
         Map<Integer, String> types = new HashMap<>();
@@ -258,7 +258,7 @@ public class VkServiceImpl implements VkService {
     }
 
     private void processAttachment(List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
-        EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;;
+        EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
 
         boolean hasImage = hasImage(message, builders);
         switch (attachment.getType()) {

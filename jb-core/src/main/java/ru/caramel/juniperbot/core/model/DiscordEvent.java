@@ -26,7 +26,7 @@ public class DiscordEvent extends ApplicationEvent {
     }
 
     @Override
-    public Event getSource()  {
+    public Event getSource() {
         return (Event) super.getSource();
     }
 

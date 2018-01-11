@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.ranking.controller;
+package ru.caramel.juniperbot.web.controller.front.configuration;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -36,9 +36,9 @@ import ru.caramel.juniperbot.core.modules.ranking.service.RankingService;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
 import ru.caramel.juniperbot.core.service.MapperService;
-import ru.caramel.juniperbot.web.common.AbstractController;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
+import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 import java.io.IOException;
 import java.util.ArrayList;

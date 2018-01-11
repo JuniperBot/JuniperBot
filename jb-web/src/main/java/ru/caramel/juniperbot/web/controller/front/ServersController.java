@@ -14,30 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web;
+package ru.caramel.juniperbot.web.controller.front;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.web.common.AbstractController;
+import ru.caramel.juniperbot.core.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 
 @Controller
-public class IndexController extends AbstractController {
+public class ServersController {
 
-    @Value("${discord.oauth.clientId}")
-    private String clientId;
+    @Autowired
+    private DiscordTokenServices discordTokenServices;
 
-    @Value("${discord.oauth.permissions:0}")
-    private String permissions;
-
-    @RequestMapping("/")
-    @Navigation(PageElement.HOME)
-    public ModelAndView home() {
-        return new ModelAndView("index")
-                .addObject("clientId", clientId)
-                .addObject("permissions", permissions);
+    @RequestMapping("/servers")
+    @Navigation(PageElement.SERVERS)
+    public ModelAndView servers() {
+        ModelAndView mv = new ModelAndView("servers");
+        mv.addObject("servers", discordTokenServices.getCurrentGuilds(true));
+        return mv;
     }
 }

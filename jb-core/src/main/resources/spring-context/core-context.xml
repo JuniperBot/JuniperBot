@@ -26,17 +26,23 @@
     <import resource="classpath:spring-context/persistence-context.xml"/>
 
     <context:annotation-config/>
-    <context:property-placeholder ignore-resource-not-found="true"  location="${juniperbot-config-location:classpath:}application.properties"/>
+    <context:property-placeholder ignore-resource-not-found="true"
+                                  location="${juniperbot-config-location:classpath:}application.properties"/>
     <context:component-scan base-package="ru.caramel.juniperbot.core"/>
 
     <task:executor id="executor" pool-size="25" queue-capacity="100"/>
-    <task:executor id="commandsExecutor" pool-size="10-25" queue-capacity="100" />
+    <task:executor id="commandsExecutor" pool-size="10-25" queue-capacity="100"/>
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
     <task:scheduler id="scheduler" pool-size="10"/>
 
-    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource" p:overwriteExistingJobs="true">
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
+          p:defaultEncoding="UTF-8"
+          p:basenames="/core-messages"/>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource"
+          p:overwriteExistingJobs="true">
         <property name="jobFactory">
-            <bean class="ru.caramel.juniperbot.core.scheduler.SpringBeanJobFactory" />
+            <bean class="ru.caramel.juniperbot.core.scheduler.SpringBeanJobFactory"/>
         </property>
         <property name="quartzProperties">
             <props>

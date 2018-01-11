@@ -24,13 +24,13 @@
     <changeSet id="23082017-1-1" author="caramel">
         <addColumn tableName="guild_config">
             <column name="music_streams_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
 
     <changeSet id="23082017-1-2" author="caramel">
-        <dropTable tableName="auto_post" />
+        <dropTable tableName="auto_post"/>
     </changeSet>
 
 </databaseChangeLog>

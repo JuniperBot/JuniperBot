@@ -151,8 +151,8 @@ public final class CommonUtils {
         String blue = Integer.toHexString(color.getBlue());
 
         return "#" +
-                (red.length() == 1? "0" + red : red) +
-                (green.length() == 1? "0" + green : green) +
-                (blue.length() == 1? "0" + blue : blue);
+                (red.length() == 1 ? "0" + red : red) +
+                (green.length() == 1 ? "0" + green : green) +
+                (blue.length() == 1 ? "0" + blue : blue);
     }
 }

@@ -245,7 +245,7 @@ public class TextConverter
         if (n.getTarget() != null) {
             WtPageName target = n.getTarget();
             if (!target.isEmpty() && target.get(0) instanceof WtText) {
-                String content = ((WtText)target.get(0)).getContent();
+                String content = ((WtText) target.get(0)).getContent();
                 if (StringUtils.isNotEmpty(content)) {
                     content = getNamespaceValue(6, content);
                     if (StringUtils.isNotEmpty(content)) {

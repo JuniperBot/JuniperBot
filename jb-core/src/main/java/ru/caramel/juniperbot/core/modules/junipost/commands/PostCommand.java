@@ -68,7 +68,7 @@ public class PostCommand implements Command {
         }
 
         if (count > medias.size()) {
-            messageService.onMessage(message.getChannel(),"discord.command.post.exceed", medias.size());
+            messageService.onMessage(message.getChannel(), "discord.command.post.exceed", medias.size());
             count = medias.size();
         }
         medias = medias.subList(0, count);

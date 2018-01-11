@@ -41,7 +41,7 @@
     transform: scale(1);
     -webkit-transition: .3s ease-in-out;
     transition: .3s ease-in-out;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .server-item-wrapper:hover img.server-item {
@@ -86,9 +86,9 @@
 /* NO-SIDEBAR/LANDING STYLES */
 
 body.landing-mode {
-    -moz-box-shadow:inset 0 0 250px #000000;
-    -webkit-box-shadow:inset 0 0 250px #000000;
-    box-shadow:inset 0 0 250px #000000;
+    -moz-box-shadow: inset 0 0 250px #000000;
+    -webkit-box-shadow: inset 0 0 250px #000000;
+    box-shadow: inset 0 0 250px #000000;
 }
 
 body.no-sidebar .content-wrapper,
@@ -133,7 +133,7 @@ body.landing-mode h4 {
     color: white;
 }
 
-.error-page>.error-content {
+.error-page > .error-content {
     padding-top: 10px !important;
 }
 
@@ -183,10 +183,10 @@ body.landing-mode h4 {
     border: 0;
     text-shadow: none;
     background: transparent;
-    color: rgba(255,255,255,.8);
-    -webkit-box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
-    -moz-box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
-    box-shadow: inset 0px 0px 0px 3px rgba(255,255,255,.5);
+    color: rgba(255, 255, 255, .8);
+    -webkit-box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .5);
+    -moz-box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .5);
+    box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .5);
     -moz-text-shadow: 0 0 15px #000000;
     -webkit-text-shadow: 0 0 15px #000000;
     text-shadow: 0 0 15px #000000;
@@ -194,18 +194,19 @@ body.landing-mode h4 {
 
 .jumbotron .btn-default:hover,
 .jumbotron .btn-default:focus {
-    color:rgba(255,255,255,1);
-    -webkit-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
-    -moz-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
-    box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,.8);
+    color: rgba(255, 255, 255, 1);
+    -webkit-box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .8);
+    -moz-box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .8);
+    box-shadow: inset 0px 0px 0px 3px rgba(255, 255, 255, .8);
     background: transparent;
 }
+
 .jumbotron .btn-default:active,
 .jumbotron .btn-default.active {
-    color:#fff;
-    -webkit-box-shadow:inset 0px 0px 0px 3px #fff;
-    -moz-box-shadow:inset 0px 0px 0px 3px #fff;
-    box-shadow:inset 0px 0px 0px 3px #fff;
+    color: #fff;
+    -webkit-box-shadow: inset 0px 0px 0px 3px #fff;
+    -moz-box-shadow: inset 0px 0px 0px 3px #fff;
+    box-shadow: inset 0px 0px 0px 3px #fff;
     background: transparent;
 }
 
@@ -219,23 +220,26 @@ body.landing-mode h4 {
 }
 
 /* Medium Devices, Desktops */
-@media only screen and (max-width : 992px) {
+@media only screen and (max-width: 992px) {
     .jumbotron .jumbo-header {
         float: none !important;
     }
+
     .jumbotron .lead {
         float: none !important;
     }
 }
 
 /* Small Devices, Tablets */
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
     .jumbotron .jumbo-header {
         font-size: 34px !important;
     }
+
     .jumbotron .lead {
         font-size: 14px !important;
     }
+
     .jumbotron .btn-add {
         margin-top: 15px !important;
         padding: 15px 0;
@@ -248,17 +252,20 @@ body.landing-mode h4 {
 }
 
 /* Extra Small Devices, Phones */
-@media only screen and (max-width : 480px) {
+@media only screen and (max-width: 480px) {
     .jumbotron .jumbo-header {
         font-size: 26px !important;
     }
+
     .jumbotron .lead {
         font-size: 12px !important;
     }
+
     .jumbotron .btn-add {
         margin-top: 5px !important;
         padding: 15px 0;
     }
+
     .widget-header-name {
         width: 115% !important;
     }
@@ -278,9 +285,11 @@ body.landing-mode h4 {
     .form-horizontal .combo-control {
         padding-top: 55px;
     }
+
     .play-checkbox {
         margin-top: 15px !important;
     }
+
     .play-checkbox input[type=checkbox] {
         margin-top: 4px !important;
     }
@@ -346,6 +355,7 @@ table.command-table td {
     text-align: center;
     border-radius: 50%;
 }
+
 .editable-rank .level-circle {
     right: 40px;
 }
@@ -353,6 +363,7 @@ table.command-table td {
 .level-value {
     font-size: 32pt;
 }
+
 .level-desc {
     margin-top: -18px;
 }
@@ -371,6 +382,7 @@ table.command-table td {
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
 }
+
 .widget-server .widget-server-title {
     font-weight: 300;
     font-size: 16px;
@@ -383,26 +395,29 @@ table.command-table td {
     margin-top: 0;
     margin-bottom: 5px;
     font-size: 40px;
-    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
+
 .widget-server .widget-server-image {
     position: absolute;
     margin-top: -110px;
     left: 50%;
     margin-left: -55px;
 }
-.widget-server .widget-server-image>img {
+
+.widget-server .widget-server-image > img {
     width: 110px;
     height: auto;
     border: 3px solid #fff;
 }
+
 .widget-server .box-footer {
     padding-top: 30px;
 }
 
 .widget-server .callout {
-    background-color: rgba(0,0,0,0.22) !important;
-    border-color: rgba(0,0,0,0.16);
+    background-color: rgba(0, 0, 0, 0.22) !important;
+    border-color: rgba(0, 0, 0, 0.16);
     width: 100%;
 }
 
@@ -411,12 +426,13 @@ table.command-table td {
 }
 
 /* Small Devices, Tablets */
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
     .widget-server .widget-server-image {
         margin-top: -95px;
         margin-left: -45px;
     }
-    .widget-server .widget-server-image>img {
+
+    .widget-server .widget-server-image > img {
         width: 90px;
     }
 
@@ -438,6 +454,7 @@ table.command-table td {
     .level-value {
         font-size: 21pt;
     }
+
     .level-desc {
         display: none;
     }
@@ -514,7 +531,7 @@ table.command-table td {
     margin-top: 20px;
 }
 
-.widget-server-container .overlay>.fa {
+.widget-server-container .overlay > .fa {
     text-shadow: 0 0 5px black;
     color: white;
     top: auto !important;
@@ -552,7 +569,7 @@ body.jumbo-headed .widget-server {
 
 body.jumbo-headed .widget-server-header-row {
     padding: 60px 20px 80px 20px;
-    box-shadow: inset 0 -140px 140px -140px rgba(0,0,0,0.67);
+    box-shadow: inset 0 -140px 140px -140px rgba(0, 0, 0, 0.67);
 }
 
 body.jumbo-headed .main-header {
@@ -569,11 +586,11 @@ body.jumbo-headed .main-header .navbar {
     margin-bottom: 10px;
     padding: 5px 20px 5px 40px;
     margin-left: -20px;
-    background-color: rgba(0,0,0,0.22) !important;
+    background-color: rgba(0, 0, 0, 0.22) !important;
 }
 
 .widget-server-background {
-    position:absolute;
+    position: absolute;
     width: 100%;
     background-size: cover;
     background-position-y: 50%;
@@ -584,7 +601,7 @@ body.jumbo-headed .main-header .navbar {
     width: 100%;
     position: absolute;
     height: 50px;
-    box-shadow: inset 0 -110px 60px -80px rgba(255,255,255,1);
+    box-shadow: inset 0 -110px 60px -80px rgba(255, 255, 255, 1);
 }
 
 .rest-resource-url {
@@ -596,7 +613,6 @@ body.jumbo-headed .main-header .navbar {
     font-family: "Courier New", Courier, monospace;
 }
 
-
 h1.hyperlink,
 h2.hyperlink,
 h3.hyperlink,
@@ -605,7 +621,6 @@ h5.hyperlink,
 h6.hyperlink {
     display: flex !important;
 }
-
 
 h1.hyperlink > a,
 h2.hyperlink > a,

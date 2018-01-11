@@ -57,7 +57,7 @@ public class SecurityUtils {
     public static OAuth2Authentication getTokenAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth instanceof OAuth2Authentication) {
-            return  (OAuth2Authentication) auth;
+            return (OAuth2Authentication) auth;
         }
         return null;
     }

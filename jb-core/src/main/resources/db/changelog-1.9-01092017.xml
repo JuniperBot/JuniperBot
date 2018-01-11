@@ -30,10 +30,10 @@
             <column name="channel_id" type="BIGINT"/>
             <column name="playlist_enabled" type="BOOLEAN"/>
             <column name="streams_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="user_join_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="queue_limit" type="BIGINT"/>
             <column name="duration_limit" type="BIGINT"/>
@@ -44,7 +44,8 @@
     <changeSet id="1.9-01092017-2" author="caramel">
         <addColumn tableName="guild_config">
             <column name="music_config_id" type="BIGINT">
-                <constraints nullable="true" foreignKeyName="fk_guild_config_music_config" references="music_config(id)" />
+                <constraints nullable="true" foreignKeyName="fk_guild_config_music_config"
+                             references="music_config(id)"/>
             </column>
         </addColumn>
     </changeSet>
@@ -77,7 +78,7 @@
     </changeSet>
 
     <changeSet id="1.9-01092017-4" author="caramel">
-        <addNotNullConstraint tableName="guild_config" columnName="music_config_id" />
+        <addNotNullConstraint tableName="guild_config" columnName="music_config_id"/>
     </changeSet>
 
     <changeSet id="1.9-01092017-5" author="caramel">
@@ -93,7 +94,7 @@
     <changeSet id="1.9-01092017-6" author="caramel">
         <addColumn tableName="guild_config">
             <column name="disabled_commands" type="text[]">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
         </addColumn>
     </changeSet>

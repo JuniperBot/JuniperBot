@@ -26,12 +26,12 @@ public class CommonUtilsTests {
 
     @Test
     public void testParseMillis() {
-        Assert.assertEquals(2000, (long)parseMillis("02"));
-        Assert.assertEquals(2000, (long)parseMillis("2"));
-        Assert.assertEquals(62000, (long)parseMillis("1:02"));
-        Assert.assertEquals(62000, (long)parseMillis("01:02"));
-        Assert.assertEquals(3662000 , (long)parseMillis("01:01:02"));
-        Assert.assertEquals(3662000 , (long)parseMillis("1:01:02"));
+        Assert.assertEquals(2000L, (Object) parseMillis("02"));
+        Assert.assertEquals(2000L, (Object) parseMillis("2"));
+        Assert.assertEquals(62000L, (Object) parseMillis("1:02"));
+        Assert.assertEquals(62000L, (Object) parseMillis("01:02"));
+        Assert.assertEquals(3662000L, (Object) parseMillis("01:01:02"));
+        Assert.assertEquals(3662000L, (Object) parseMillis("1:01:02"));
         Assert.assertNull(parseMillis("sdfgdfg"));
         Assert.assertNull(parseMillis(""));
         Assert.assertNull(parseMillis(null));

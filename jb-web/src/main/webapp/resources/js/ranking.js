@@ -39,10 +39,10 @@ function Ranking() {
     var $resetButton = $('#ranking-reset-button');
 
     var rewardsTable = $('#rewards-table').DataTable({
-        'paging'      : false,
-        'searching'   : false,
-        "scrollY"     : "300px",
-        "bInfo" : false,
+        'paging': false,
+        'searching': false,
+        "scrollY": "300px",
+        "bInfo": false,
         "language": {
             "zeroRecords": "Роли отсутствуют.",
             "emptyTable": "Роли отсутствуют.",
@@ -51,13 +51,13 @@ function Ranking() {
                 "sortDescending": ": активировать для сортировки столбца по убыванию"
             }
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[1, "desc"]],
         "columnDefs": [
-            { "width": "150px", "targets": 1 }
+            {"width": "150px", "targets": 1}
         ],
         "columns": [
             null,
-            { "orderDataType": "dom-text-numeric" }
+            {"orderDataType": "dom-text-numeric"}
         ]
     });
 
@@ -65,7 +65,7 @@ function Ranking() {
         self.reload();
     };
 
-    self.reload = function() {
+    self.reload = function () {
         if (self.reloading) {
             return;
         }
@@ -101,7 +101,7 @@ function Ranking() {
         });
     }
 
-    self.resetRank = function(id, name) {
+    self.resetRank = function (id, name) {
         BootstrapDialog.show({
             title: 'Сброс прогресса пользователя "' + name + '"',
             type: BootstrapDialog.TYPE_WARNING,
@@ -111,16 +111,16 @@ function Ranking() {
                 label: 'Сбросить',
                 cssClass: 'btn-warning',
                 autospin: true,
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.enableButtons(false);
                     dialogRef.setClosable(false);
-                    update(id, 0, function() {
+                    update(id, 0, function () {
                         dialogRef.close();
                     });
                 }
             }, {
                 label: 'Закрыть',
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.close();
                 }
             }]
@@ -135,7 +135,7 @@ function Ranking() {
             valid = false;
         } else {
             block(true);
-            update(self.updateId, level, function() {
+            update(self.updateId, level, function () {
                 block(false);
             });
         }
@@ -143,7 +143,7 @@ function Ranking() {
 
     $syncButton.click(function () {
         blockSync(true);
-        sync(function() {
+        sync(function () {
             blockSync(false);
         });
     });
@@ -158,16 +158,16 @@ function Ranking() {
                 label: 'Импортировать',
                 cssClass: 'btn-info',
                 autospin: true,
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.enableButtons(false);
                     dialogRef.setClosable(false);
-                    syncMee6(function() {
+                    syncMee6(function () {
                         dialogRef.close();
                     });
                 }
             }, {
                 label: 'Закрыть',
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.close();
                 }
             }]
@@ -184,23 +184,23 @@ function Ranking() {
                 label: 'Сбросить все',
                 cssClass: 'btn-warning',
                 autospin: true,
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.enableButtons(false);
                     dialogRef.setClosable(false);
-                    resetAll(function() {
+                    resetAll(function () {
                         dialogRef.close();
                     });
                 }
             }, {
                 label: 'Закрыть',
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.close();
                 }
             }]
         });
     });
 
-    self.setLevel = function(id, name, currentLevel) {
+    self.setLevel = function (id, name, currentLevel) {
         self.updateId = id;
         $updateTitle.text('Обновление уровня пользователя "' + name + '"');
         $updateInput.val(currentLevel);
@@ -223,7 +223,7 @@ function Ranking() {
 
     function update(userId, level, callback) {
         $.post(contextPath + 'ranking/update/' + serverId, {userId: userId, level: level})
-            .done(function() {
+            .done(function () {
                 $updateModal.modal('hide');
                 self.reload();
             })
@@ -235,7 +235,7 @@ function Ranking() {
 
     function sync(callback) {
         $.post(contextPath + 'ranking/sync/' + serverId)
-            .done(function() {
+            .done(function () {
                 self.reload();
             })
             .fail(function () {
@@ -246,7 +246,7 @@ function Ranking() {
 
     function syncMee6(callback) {
         $.post(contextPath + 'ranking/syncMee6/' + serverId)
-            .done(function() {
+            .done(function () {
                 self.reload();
             })
             .fail(function () {
@@ -257,7 +257,7 @@ function Ranking() {
 
     function resetAll(callback) {
         $.post(contextPath + 'ranking/resetAll/' + serverId)
-            .done(function() {
+            .done(function () {
                 self.reload();
             })
             .fail(function () {
@@ -266,7 +266,7 @@ function Ranking() {
             .always(callback);
     }
 
-    $('.level-input').on('keydown keyup', function(e){
+    $('.level-input').on('keydown keyup', function (e) {
         if (e.keyCode != 46 && e.keyCode != 8 && $(this).val()) {
             if ($(this).val() > 999) {
                 e.preventDefault();
@@ -283,6 +283,7 @@ function Ranking() {
         var $bg = $('.widget-server-background');
         $bg.height($bg.parent().height());
     }
+
     $(window).resize(updateBackgroundImage);
     updateBackgroundImage();
 }

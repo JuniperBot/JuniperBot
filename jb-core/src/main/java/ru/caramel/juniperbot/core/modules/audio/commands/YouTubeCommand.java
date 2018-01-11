@@ -95,7 +95,7 @@ public class YouTubeCommand extends PlayCommand {
             context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
             reactionsListener.onReaction(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
-                    String emote = event.getReaction().getEmote().getName();
+                    String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                     if (index >= 0 && playerService.isInChannel(event.getMember())) {
                         String query = getChoiceUrl(context, index);

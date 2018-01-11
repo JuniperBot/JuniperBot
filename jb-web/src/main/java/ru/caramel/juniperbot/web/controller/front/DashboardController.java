@@ -14,27 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.servers.controller;
+package ru.caramel.juniperbot.web.controller.front;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
+import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 @Controller
-public class ServersController {
+@Navigation(PageElement.DASHBOARD)
+public class DashboardController extends AbstractController {
 
-    @Autowired
-    private DiscordTokenServices discordTokenServices;
-
-    @RequestMapping("/servers")
-    @Navigation(PageElement.SERVERS)
-    public ModelAndView servers() {
-        ModelAndView mv = new ModelAndView("servers");
-        mv.addObject("servers", discordTokenServices.getCurrentGuilds(true));
-        return mv;
+    @RequestMapping("/dashboard/{serverId}")
+    public ModelAndView dashboard(@PathVariable long serverId) {
+        validateGuildId(serverId);
+        return createModel("dashboard", serverId);
     }
 }

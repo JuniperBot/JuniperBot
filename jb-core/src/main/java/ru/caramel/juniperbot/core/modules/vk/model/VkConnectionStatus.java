@@ -16,6 +16,6 @@
  */
 package ru.caramel.juniperbot.core.modules.vk.model;
 
-public enum  VkConnectionStatus {
+public enum VkConnectionStatus {
     CONNECTED, CONFIRMATION
 }

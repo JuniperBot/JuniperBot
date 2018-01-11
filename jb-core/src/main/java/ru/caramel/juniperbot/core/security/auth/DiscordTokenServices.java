@@ -145,7 +145,7 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
         return getCurrentGuilds(false).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings("unchecked")
     private <T> T executeRequest(Class<T> clazz, String path, String accessToken) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Getting user info from: " + path);

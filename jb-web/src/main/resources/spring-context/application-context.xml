@@ -26,10 +26,11 @@
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
           p:defaultEncoding="UTF-8"
-          p:basename="/messages"/>
-    <bean id ="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+          p:basenames="/core-messages, /web-messages"/>
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
           p:validationMessageSource-ref="messageSource"/>
     <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"
-          p:validator-ref="validator" />
+          p:validator-ref="validator"/>
 
 </beans>

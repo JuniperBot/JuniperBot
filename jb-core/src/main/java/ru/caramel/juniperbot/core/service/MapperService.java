@@ -68,7 +68,11 @@ public interface MapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
-            @Mapping(target = "commands", ignore = true)
+            @Mapping(target = "commands", ignore = true),
+            @Mapping(target = "name", ignore = true),
+            @Mapping(target = "iconUrl", ignore = true),
+            @Mapping(target = "disabledCommands", ignore = true),
+            @Mapping(target = "rankingConfig", ignore = true)
     })
     void updateConfig(ConfigDto source, @MappingTarget GuildConfig target);
 
@@ -95,7 +99,8 @@ public interface MapperService {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true)
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true)
     })
     void updateRankingConfig(RankingConfigDto source, @MappingTarget RankingConfig target);
 
@@ -122,5 +127,7 @@ public interface MapperService {
     })
     void updateWelcomeMessage(WelcomeMessageDto source, @MappingTarget WelcomeMessage target);
 
-    default String trimmed(String s) { return s != null ? s.trim() : null; }
+    default String trimmed(String s) {
+        return s != null ? s.trim() : null;
+    }
 }

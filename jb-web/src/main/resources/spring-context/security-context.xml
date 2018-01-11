@@ -27,7 +27,8 @@
         http://www.springframework.org/schema/security/oauth2
         http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
 
-    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    <bean id="oauthAuthenticationEntryPoint"
+          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
         <constructor-arg value="/login"/>
     </bean>
 
@@ -38,15 +39,15 @@
                    disable-url-rewriting="true"
                    use-expressions="true"
                    xmlns="http://www.springframework.org/schema/security">
-        <security:intercept-url pattern="/resources/**" access="permitAll" />
-        <security:intercept-url pattern="/" access="permitAll" />
-        <security:intercept-url pattern="/vk/callback/**" access="permitAll" />
-        <security:intercept-url pattern="/favicon.ico" access="permitAll" />
-        <security:intercept-url pattern="/.well-known/**" access="permitAll" />
-        <security:intercept-url pattern="/ranking/**" access="permitAll" />
-        <security:intercept-url pattern="/apidocs" access="permitAll" />
-        <security:intercept-url pattern="/api/blur" access="permitAll" />
-        <security:intercept-url pattern="/api/ranking/list/**" access="permitAll" />
+        <security:intercept-url pattern="/resources/**" access="permitAll"/>
+        <security:intercept-url pattern="/" access="permitAll"/>
+        <security:intercept-url pattern="/vk/callback/**" access="permitAll"/>
+        <security:intercept-url pattern="/favicon.ico" access="permitAll"/>
+        <security:intercept-url pattern="/.well-known/**" access="permitAll"/>
+        <security:intercept-url pattern="/ranking/**" access="permitAll"/>
+        <security:intercept-url pattern="/apidocs" access="permitAll"/>
+        <security:intercept-url pattern="/api/blur" access="permitAll"/>
+        <security:intercept-url pattern="/api/ranking/list/**" access="permitAll"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
@@ -56,12 +57,14 @@
         <security:csrf disabled="true"/>
     </security:http>
 
-    <bean id="anonymousAuthFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
-        <constructor-arg value="anon" />
+    <bean id="anonymousAuthFilter"
+          class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+        <constructor-arg value="anon"/>
     </bean>
 
-    <bean id="anonymousAuthenticationProvider" class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
-        <constructor-arg value="anon" />
+    <bean id="anonymousAuthenticationProvider"
+          class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+        <constructor-arg value="anon"/>
     </bean>
 
     <oauth2:resource id="oauthResource"
@@ -71,11 +74,12 @@
                      access-token-uri="${discord.oauth.token}"
                      type="authorization_code"
                      client-authentication-scheme="query"
-                     scope="${discord.oauth.scope}" />
+                     scope="${discord.oauth.scope}"/>
 
-    <bean id="requestFactory" class="ru.caramel.juniperbot.core.security.auth.DiscordHttpRequestFactory" />
-    <bean id="tokenProvider" class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
-        <property name="requestFactory" ref="requestFactory" />
+    <bean id="requestFactory" class="ru.caramel.juniperbot.core.security.auth.DiscordHttpRequestFactory"/>
+    <bean id="tokenProvider"
+          class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
+        <property name="requestFactory" ref="requestFactory"/>
     </bean>
 
     <bean id="discordTokenServices" class="ru.caramel.juniperbot.core.security.auth.DiscordTokenServices">
@@ -83,23 +87,23 @@
         <constructor-arg value="${discord.oauth.guildsInfoUri}"/>
         <constructor-arg value="${discord.oauth.clientId}"/>
         <constructor-arg ref="oauthResource"/>
-        <property name="requestFactory" ref="requestFactory" />
+        <property name="requestFactory" ref="requestFactory"/>
     </bean>
 
-    <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider" />
+    <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider"/>
 
     <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
     <bean id="oauth2AuthenticationFilter"
           class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter">
         <constructor-arg name="defaultFilterProcessesUrl" value="/login"/>
-        <property name="restTemplate" ref="restTemplate" />
-        <property name="tokenServices" ref="discordTokenServices" />
+        <property name="restTemplate" ref="restTemplate"/>
+        <property name="tokenServices" ref="discordTokenServices"/>
         <property name="authenticationSuccessHandler">
             <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
-                <property name="defaultTargetUrl" value="/servers" />
+                <property name="defaultTargetUrl" value="/servers"/>
             </bean>
         </property>
     </bean>
 
-    <security:authentication-manager id="authenticationManager" />
+    <security:authentication-manager id="authenticationManager"/>
 </beans>

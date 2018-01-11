@@ -87,7 +87,7 @@ public class WebHookServiceImpl implements WebHookService {
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MANAGE_WEBHOOKS)) {
-                        webhook = guild.getController().createWebhook(channel, name).complete();
+                        webhook = channel.createWebhook(name).complete();
                     }
                 }
                 if (webhook != null) {
@@ -128,7 +128,7 @@ public class WebHookServiceImpl implements WebHookService {
         }
     }
 
-    private Webhook getWebHook(Guild guild, WebHook webHook)  {
+    private Webhook getWebHook(Guild guild, WebHook webHook) {
         if (webHook.getHookId() != null && webHook.getToken() != null) {
             try {
                 return webHooks.get(guild).stream()

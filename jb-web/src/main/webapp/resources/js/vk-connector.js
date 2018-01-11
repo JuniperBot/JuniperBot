@@ -60,7 +60,7 @@ function VkConnector() {
         }
     };
 
-    self.onRemove = function(id, name) {
+    self.onRemove = function (id, name) {
         BootstrapDialog.show({
             title: 'Удаление соединения',
             type: BootstrapDialog.TYPE_WARNING,
@@ -70,25 +70,25 @@ function VkConnector() {
                 label: 'Удалить',
                 cssClass: 'btn-warning',
                 autospin: true,
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.enableButtons(false);
                     dialogRef.setClosable(false);
-                    deleteConnection(id, function() {
+                    deleteConnection(id, function () {
                         dialogRef.close();
                     });
                 }
             }, {
                 label: 'Закрыть',
-                action: function(dialogRef){
+                action: function (dialogRef) {
                     dialogRef.close();
                 }
             }]
         });
     };
 
-    self.init = function() {
+    self.init = function () {
         if (!$connect.attr('disabled')) {
-            $connect.click(function() {
+            $connect.click(function () {
                 $codeInput.val('');
                 $nameInput.val('');
                 $codeGroup.removeClass('has-error');
@@ -141,11 +141,12 @@ function VkConnector() {
         $modalFooter[first ? 'show' : 'hide']();
     }
 
-    $('#vk-address-copy').click(function() {
+    $('#vk-address-copy').click(function () {
         try {
             $addressInput.focus().select();
             document.execCommand('copy');
-        } catch (err) { }
+        } catch (err) {
+        }
     });
 
     function createNewConnection(id, name) {
@@ -163,9 +164,9 @@ function VkConnector() {
             '  </div>' +
             '</div>');
     }
-    
+
     function rebindRemove() {
-        $('.vk-remove-btn').unbind('click').bind('click', function() {
+        $('.vk-remove-btn').unbind('click').bind('click', function () {
             var $e = $(this);
             self.onRemove($e.data('vk-id'), $e.data('vk-name'));
         })

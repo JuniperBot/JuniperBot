@@ -12,7 +12,7 @@ public final class RankingUtils {
 
     public static final int MAX_LEVEL = 999;
 
-    private RankingUtils(){
+    private RankingUtils() {
         // private constructor
     }
 

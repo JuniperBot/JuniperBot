@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.api.controller;
+package ru.caramel.juniperbot.web.controller.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -32,7 +32,7 @@ import ru.caramel.juniperbot.core.modules.vk.persistence.service.VkService;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.MapperService;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
-import ru.caramel.juniperbot.web.common.AbstractController;
+import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;

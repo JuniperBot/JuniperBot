@@ -61,6 +61,6 @@
     <function>
         <name>getLevelForRole</name>
         <function-class>ru.caramel.juniperbot.core.modules.ranking.utils.RankingUtils</function-class>
-        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.model.dto.RankingConfigDto,java.lang.Long)</function-signature>
+        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.core.modules.ranking.model.RankingConfigDto,java.lang.Long)</function-signature>
     </function>
 </taglib>

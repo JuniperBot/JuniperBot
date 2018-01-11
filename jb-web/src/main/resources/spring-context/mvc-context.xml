@@ -28,22 +28,22 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 
-    <context:annotation-config />
+    <context:annotation-config/>
     <context:component-scan base-package="ru.caramel.juniperbot.web"/>
 
-    <mvc:annotation-driven validator="validator" />
-    <mvc:resources mapping="/resources/**" location="/resources/" />
-    <mvc:resources mapping="/favicon.ico" location="/resources/img/favicon.ico" />
+    <mvc:annotation-driven validator="validator"/>
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
+    <mvc:resources mapping="/favicon.ico" location="/resources/img/favicon.ico"/>
 
     <bean class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory"
-          p:port="${portal.port:8080}" />
+          p:port="${portal.port:8080}"/>
 
-    <bean id="contextListener" class="org.springframework.web.context.request.RequestContextListener" />
+    <bean id="contextListener" class="org.springframework.web.context.request.RequestContextListener"/>
     <bean id="dispatcherServlet" class="org.springframework.web.servlet.DispatcherServlet"
-          p:throwExceptionIfNoHandlerFound="true" />
+          p:throwExceptionIfNoHandlerFound="true"/>
 
     <bean id="contentNegotiatingResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="order" value="#{T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE}" />
+        <property name="order" value="#{T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE}"/>
         <property name="contentNegotiationManager">
             <bean class="org.springframework.web.accept.ContentNegotiationManager">
                 <constructor-arg>
@@ -66,7 +66,7 @@
 
     <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"
           p:viewClass="org.springframework.web.servlet.view.tiles3.TilesView"
-          p:order="#{contentNegotiatingResolver.order+1}" />
+          p:order="#{contentNegotiatingResolver.order+1}"/>
 
     <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
         <property name="definitions">
@@ -74,19 +74,20 @@
                 <value>/WEB-INF/tiles.xml</value>
             </list>
         </property>
-        <property name="preparerFactoryClass" value="org.springframework.web.servlet.view.tiles3.SpringBeanPreparerFactory" />
+        <property name="preparerFactoryClass"
+                  value="org.springframework.web.servlet.view.tiles3.SpringBeanPreparerFactory"/>
     </bean>
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"  />
-            <mvc:exclude-mapping path="/resources/**" />
-            <bean class="ru.caramel.juniperbot.web.common.navigation.NavigationInterceptor" />
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/resources/**"/>
+            <bean class="ru.caramel.juniperbot.web.common.navigation.NavigationInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**" />
-            <mvc:exclude-mapping path="/resources/**" />
-            <bean class="ru.caramel.juniperbot.web.common.flash.FlashInterceptor" />
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/resources/**"/>
+            <bean class="ru.caramel.juniperbot.web.common.flash.FlashInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

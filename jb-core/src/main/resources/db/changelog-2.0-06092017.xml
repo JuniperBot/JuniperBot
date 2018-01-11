@@ -28,24 +28,25 @@
             </column>
             <column name="version" type="BIGINT"/>
             <column name="guild_config_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk_welcome_message_guild_config" references="guild_config(id)" />
+                <constraints nullable="false" foreignKeyName="fk_welcome_message_guild_config"
+                             references="guild_config(id)"/>
             </column>
             <column name="join_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="join_rich_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
-            <column name="join_message" type="VARCHAR(1800)" />
+            <column name="join_message" type="VARCHAR(1800)"/>
             <column name="join_channel_id" type="BIGINT"/>
             <column name="join_to_dm" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="leave_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="leave_rich_enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="leave_message" type="VARCHAR(1800)"/>
             <column name="leave_channel_id" type="BIGINT"/>

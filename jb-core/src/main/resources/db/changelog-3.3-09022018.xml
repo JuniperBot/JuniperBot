@@ -196,7 +196,7 @@ create index idx_qrtz_ft_tg on qrtz_fired_triggers(sched_name,trigger_group);
     </changeSet>
 
     <changeSet id="3.3-09022018-2" author="caramel">
-        <dropTable tableName="reminder" />
+        <dropTable tableName="reminder"/>
     </changeSet>
 
 </databaseChangeLog>

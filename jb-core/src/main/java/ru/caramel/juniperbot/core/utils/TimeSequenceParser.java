@@ -64,13 +64,14 @@ public class TimeSequenceParser {
             return null;
         }
     }
+
     private final static Pattern PART_PATTERN = Pattern.compile("(\\d+)\\s+([a-zA-Zа-яА-Я]+)");
 
     public Long parse(String string) {
         Matcher m = PART_PATTERN.matcher(string);
 
         Map<FieldType, Integer> values = new HashMap<>();
-        while(m.find()) {
+        while (m.find()) {
             int units = Integer.parseInt(m.group(1));
             FieldType type = FieldType.find(m.group(2));
             if (units == 0 || type == null) {

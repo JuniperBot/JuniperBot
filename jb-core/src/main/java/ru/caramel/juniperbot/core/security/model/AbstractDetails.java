@@ -31,7 +31,7 @@ public abstract class AbstractDetails implements Serializable {
     protected String id;
 
     @SuppressWarnings("unchecked")
-    protected static  <T> void setValue(Class<T> type, Map<Object, Object> map, String name, Consumer<T> setter) {
+    protected static <T> void setValue(Class<T> type, Map<Object, Object> map, String name, Consumer<T> setter) {
         Object value = map.get(name);
         if (value == null) {
             return;

@@ -76,7 +76,7 @@ public class ReminderJob implements Job {
         String userId;
         String guildId = null;
         if (channel instanceof PrivateChannel) {
-            userId = ((PrivateChannel)channel).getUser().getId();
+            userId = ((PrivateChannel) channel).getUser().getId();
         } else {
             guildId = member.getGuild().getId();
             userId = member.getUser().getId();

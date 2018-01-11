@@ -28,23 +28,23 @@
             </column>
             <column name="version" type="BIGINT"/>
             <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="announcement_enabled" type="BOOLEAN" defaultValueBoolean="true">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="is_whisper" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="cooldown" type="INTEGER" defaultValueNumeric="0">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
-            <column name="announcement" type="VARCHAR(1800)" />
+            <column name="announcement" type="VARCHAR(1800)"/>
             <column name="banned_roles" type="text[]">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
             <column name="rewards" type="jsonb">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
@@ -52,7 +52,8 @@
     <changeSet id="2.9-12122017-2" author="caramel">
         <addColumn tableName="guild_config">
             <column name="ranking_config_id" type="BIGINT">
-                <constraints nullable="true" foreignKeyName="fk_guild_config_ranking_config" references="ranking_config(id)" />
+                <constraints nullable="true" foreignKeyName="fk_guild_config_ranking_config"
+                             references="ranking_config(id)"/>
             </column>
         </addColumn>
     </changeSet>
@@ -85,9 +86,9 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="discriminator" type="VARCHAR(4)" />
-            <column name="effective_name" type="VARCHAR(255)" />
-            <column name="avatar_url" type="VARCHAR(255)" />
+            <column name="discriminator" type="VARCHAR(4)"/>
+            <column name="effective_name" type="VARCHAR(255)"/>
+            <column name="avatar_url" type="VARCHAR(255)"/>
             <column name="exp" type="BIGINT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
@@ -95,7 +96,7 @@
     </changeSet>
 
     <changeSet id="2.9-12122017-5" author="caramel">
-        <addNotNullConstraint tableName="guild_config" columnName="ranking_config_id" />
+        <addNotNullConstraint tableName="guild_config" columnName="ranking_config_id"/>
         <createIndex indexName="idx_member_guild_id" tableName="member">
             <column name="guild_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -109,7 +110,7 @@
     </changeSet>
 
     <changeSet id="2.9-12122017-6" author="caramel">
-        <dropColumn tableName="ranking_config" columnName="cooldown" />
+        <dropColumn tableName="ranking_config" columnName="cooldown"/>
     </changeSet>
 
     <changeSet id="2.9-12122017-7" author="caramel">
@@ -131,7 +132,7 @@
     <changeSet id="2.9-13122017-9" author="caramel">
         <addColumn tableName="ranking_config">
             <column name="reset_on_leave" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>

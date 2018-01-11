@@ -151,18 +151,6 @@
             <version>${jsoup.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.openpnp</groupId>
-            <artifactId>opencv</artifactId>
-            <version>${opencv.version}-0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opencv</groupId>
-            <artifactId>opencv</artifactId>
-            <version>${opencv.version}</version>
-        </dependency>
-
         <!-- DATABASE DEPENDENCIES -->
 
         <dependency>
