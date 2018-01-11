@@ -1,1 +1,0 @@
-package ru.caramel.juniperbot.modules.translit;
