@@ -26,16 +26,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.model.dto.RankingConfigDto;
-import ru.caramel.juniperbot.model.exception.NotFoundException;
-import ru.caramel.juniperbot.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.ranking.model.Reward;
-import ru.caramel.juniperbot.ranking.model.RewardDetails;
-import ru.caramel.juniperbot.ranking.service.RankingService;
-import ru.caramel.juniperbot.security.utils.SecurityUtils;
-import ru.caramel.juniperbot.service.MapperService;
+import ru.caramel.juniperbot.modules.ranking.model.RankingConfigDto;
+import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.modules.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.modules.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.modules.ranking.model.Reward;
+import ru.caramel.juniperbot.modules.ranking.model.RewardDetails;
+import ru.caramel.juniperbot.modules.ranking.service.RankingService;
+import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
+import ru.caramel.juniperbot.core.service.MapperService;
 import ru.caramel.juniperbot.web.common.AbstractController;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
@@ -119,8 +119,8 @@ public class RankingController extends AbstractController {
     public String sync(
             @PathVariable("serverId") long serverId) {
         validateGuildId(serverId);
-        if (discordClient.isConnected()) {
-            Guild guild = discordClient.getJda().getGuildById(serverId);
+        if (discordService.isConnected()) {
+            Guild guild = discordService.getJda().getGuildById(serverId);
             if (guild != null) {
                 rankingService.sync(guild);
                 return "ok";
@@ -134,8 +134,8 @@ public class RankingController extends AbstractController {
     public String syncMee6(
             @PathVariable("serverId") long serverId) throws IOException {
         validateGuildId(serverId);
-        if (discordClient.isConnected()) {
-            Guild guild = discordClient.getJda().getGuildById(serverId);
+        if (discordService.isConnected()) {
+            Guild guild = discordService.getJda().getGuildById(serverId);
             if (guild != null) {
                 rankingService.syncMee6(guild);
                 return "ok";
@@ -169,8 +169,8 @@ public class RankingController extends AbstractController {
     }
 
     private List<RewardDetails> getRewards(long serverId, RankingConfig config) {
-        if (discordClient.isConnected() && CollectionUtils.isNotEmpty(config.getRewards())) {
-            Guild guild = discordClient.getJda().getGuildById(serverId);
+        if (discordService.isConnected() && CollectionUtils.isNotEmpty(config.getRewards())) {
+            Guild guild = discordService.getJda().getGuildById(serverId);
             if (guild != null) {
                 List<RewardDetails> details = new ArrayList<>();
                 for (Reward reward : config.getRewards()) {

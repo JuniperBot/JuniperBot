@@ -73,12 +73,12 @@
                      client-authentication-scheme="query"
                      scope="${discord.oauth.scope}" />
 
-    <bean id="requestFactory" class="ru.caramel.juniperbot.security.auth.DiscordHttpRequestFactory" />
+    <bean id="requestFactory" class="ru.caramel.juniperbot.core.security.auth.DiscordHttpRequestFactory" />
     <bean id="tokenProvider" class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
         <property name="requestFactory" ref="requestFactory" />
     </bean>
 
-    <bean id="discordTokenServices" class="ru.caramel.juniperbot.security.auth.DiscordTokenServices">
+    <bean id="discordTokenServices" class="ru.caramel.juniperbot.core.security.auth.DiscordTokenServices">
         <constructor-arg value="${discord.oauth.userInfoUri}"/>
         <constructor-arg value="${discord.oauth.guildsInfoUri}"/>
         <constructor-arg value="${discord.oauth.clientId}"/>

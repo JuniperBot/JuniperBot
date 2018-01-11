@@ -19,9 +19,9 @@ package ru.caramel.juniperbot.web.common.tags;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
-import ru.caramel.juniperbot.integration.discord.model.AvatarType;
-import ru.caramel.juniperbot.security.model.DiscordUserDetails;
-import ru.caramel.juniperbot.security.utils.SecurityUtils;
+import ru.caramel.juniperbot.core.model.enums.AvatarType;
+import ru.caramel.juniperbot.core.security.model.DiscordUserDetails;
+import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;

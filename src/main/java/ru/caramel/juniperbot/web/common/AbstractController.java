@@ -24,15 +24,15 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.integration.discord.DiscordClient;
-import ru.caramel.juniperbot.model.exception.AccessDeniedException;
-import ru.caramel.juniperbot.model.exception.NotFoundException;
-import ru.caramel.juniperbot.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.security.auth.DiscordTokenServices;
-import ru.caramel.juniperbot.security.model.DiscordGuildDetails;
-import ru.caramel.juniperbot.security.utils.SecurityUtils;
-import ru.caramel.juniperbot.service.ConfigService;
-import ru.caramel.juniperbot.service.MessageService;
+import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.security.auth.DiscordTokenServices;
+import ru.caramel.juniperbot.core.security.model.DiscordGuildDetails;
+import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
+import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.web.common.flash.Flash;
 
 import java.util.Collections;
@@ -45,7 +45,7 @@ public abstract class AbstractController {
     protected Flash flash;
 
     @Autowired
-    protected DiscordClient discordClient;
+    protected DiscordService discordService;
 
     @Autowired
     protected DiscordTokenServices tokenServices;
@@ -64,8 +64,8 @@ public abstract class AbstractController {
         ModelAndView mv = new ModelAndView(modelName);
         fillServerInfo(mv, serverId);
         if (checkConnection) {
-            if (discordClient.isConnected()) {
-                boolean serverExists = discordClient.getJda().getGuildById(serverId) != null;
+            if (discordService.isConnected()) {
+                boolean serverExists = discordService.getJda().getGuildById(serverId) != null;
                 mv.addObject("serverAdded", serverExists);
                 if (!serverExists) {
                     flash.warn("flash.warning.unknown-server.message");
@@ -117,8 +117,8 @@ public abstract class AbstractController {
 
     protected Guild getGuild(long id) {
         Guild guild = null;
-        if (discordClient.isConnected()) {
-            guild = discordClient.getJda().getGuildById(id);
+        if (discordService.isConnected()) {
+            guild = discordService.getJda().getGuildById(id);
         }
         return guild;
     }

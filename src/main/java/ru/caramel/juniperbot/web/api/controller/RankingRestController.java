@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.ranking.service.RankingService;
+import ru.caramel.juniperbot.modules.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.modules.ranking.service.RankingService;
 
 import java.util.Collections;
 import java.util.List;

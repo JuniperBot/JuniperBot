@@ -23,7 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.model.dto.WelcomeMessageDto;
+import ru.caramel.juniperbot.modules.welcome.model.WelcomeMessageDto;
 import ru.caramel.juniperbot.web.common.AbstractController;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;

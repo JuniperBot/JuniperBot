@@ -54,13 +54,13 @@
 
     <function>
         <name>getHTMLAwtColor</name>
-        <function-class>ru.caramel.juniperbot.utils.CommonUtils</function-class>
+        <function-class>ru.caramel.juniperbot.core.utils.CommonUtils</function-class>
         <function-signature>java.lang.String getHTMLAwtColor(java.awt.Color)</function-signature>
     </function>
 
     <function>
         <name>getLevelForRole</name>
-        <function-class>ru.caramel.juniperbot.ranking.service.RankingUtils</function-class>
+        <function-class>ru.caramel.juniperbot.modules.ranking.utils.RankingUtils</function-class>
         <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.model.dto.RankingConfigDto,java.lang.Long)</function-signature>
     </function>
 </taglib>

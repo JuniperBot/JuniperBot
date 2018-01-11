@@ -23,9 +23,11 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @SpringBootConfiguration
+@PropertySource(value = "${juniperbot-config-location:classpath:}application.properties", encoding="UTF-8")
 @ImportResource("classpath:spring-context/app-context.xml")
 public class JuniperBotApplication extends SpringBootServletInitializer {
 

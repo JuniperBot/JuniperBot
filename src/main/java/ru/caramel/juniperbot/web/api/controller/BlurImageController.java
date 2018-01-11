@@ -28,8 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.service.OpenCVService;
-import ru.caramel.juniperbot.utils.BoxBlurFilter;
+import ru.caramel.juniperbot.core.service.OpenCVService;
+import ru.caramel.juniperbot.core.utils.BoxBlurFilter;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
