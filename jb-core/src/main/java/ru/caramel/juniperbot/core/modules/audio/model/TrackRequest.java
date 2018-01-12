@@ -19,11 +19,9 @@ package ru.caramel.juniperbot.core.modules.audio.model;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import ru.caramel.juniperbot.core.modules.audio.service.MessageController;
-
-import java.util.concurrent.ScheduledFuture;
 
 @Getter
 @Setter
@@ -34,10 +32,6 @@ public class TrackRequest {
     private final Member member;
 
     private final TextChannel channel;
-
-    private ScheduledFuture<?> updaterTask;
-
-    private MessageController messageController;
 
     private boolean resetMessage;
 
@@ -55,5 +49,15 @@ public class TrackRequest {
             track = track.makeClone();
             track.setUserData(data);
         }
+    }
+
+    public Guild getGuild() {
+        if (channel != null) {
+            return channel.getGuild();
+        }
+        if (member != null) {
+            return member.getGuild();
+        }
+        return null;
     }
 }

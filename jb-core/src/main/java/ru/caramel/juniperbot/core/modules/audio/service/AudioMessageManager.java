@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
@@ -42,7 +43,9 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
@@ -62,6 +65,10 @@ public class AudioMessageManager {
     @Autowired
     private ApplicationContext context;
 
+    private Map<Guild, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
+
+    private Map<Guild, MessageController> controllers = new ConcurrentHashMap<>();
+
     public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
             messageService.sendMessageSilent(request.getChannel()::sendMessage, getBasicMessage(request).build());
@@ -69,81 +76,84 @@ public class AudioMessageManager {
     }
 
     public void onTrackStart(TrackRequest request) {
-        try {
-            request.setResetMessage(false);
-            request.getChannel()
-                    .sendMessage(getPlayMessage(request).build())
-                    .queue(e -> {
-                        request.setMessageController(new MessageController(context, e));
-                        runUpdater(request);
-                    });
-        } catch (PermissionException e) {
-            LOGGER.warn("No permission to message", e);
+        synchronized (request.getGuild()) {
+            try {
+                request.setResetMessage(false);
+                request.getChannel()
+                        .sendMessage(getPlayMessage(request).build())
+                        .queue(e -> {
+                            MessageController oldController = controllers.put(request.getGuild(), new MessageController(context, e));
+                            if (oldController != null) {
+                                markAsPassed(request, oldController, true);
+                            }
+                            runUpdater(request);
+                        });
+            } catch (PermissionException e) {
+                LOGGER.warn("No permission to message", e);
+            }
         }
     }
 
     public void onTrackEnd(TrackRequest request) {
-        ScheduledFuture<?> task = request.getUpdaterTask();
-        if (task != null) {
-            task.cancel(false);
+        synchronized (request.getGuild()) {
+            cancelUpdate(request);
+            controllers.computeIfPresent(request.getGuild(), (g, c) -> {
+                markAsPassed(request, c, true);
+                return null;
+            });
         }
-        completeMessage(request);
     }
 
-    private void completeMessage(TrackRequest request) {
-        ScheduledFuture<?> task = request.getUpdaterTask();
-        if (task != null) {
-            task.cancel(false);
-        }
-        MessageController controller = request.getMessageController();
-        if (controller != null) {
-            try {
-                controller.remove(true);
-                request.setMessageController(null);
+    private void markAsPassed(TrackRequest request, MessageController controller, boolean soft) {
+        try {
+            controller.remove(soft);
+            if (soft) {
                 try {
                     controller.getMessage().editMessage(getPlayMessage(request, true).build()).complete();
                 } catch (Exception e) {
                     // fall down and skip
                 }
-            } catch (PermissionException e) {
-                LOGGER.warn("No permission to delete", e);
-            } catch (ErrorResponseException e) {
-                if (e.getErrorCode() != 10008 /* Unknown message */) {
-                    throw e;
-                }
+            }
+        } catch (PermissionException e) {
+            LOGGER.warn("No permission to delete", e);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorCode() != 10008 /* Unknown message */) {
+                throw e;
             }
         }
     }
 
     private void deleteMessage(TrackRequest request) {
-        MessageController controller = request.getMessageController();
-        if (controller != null) {
-            try {
-                controller.remove(false);
-            } catch (PermissionException e) {
-                LOGGER.warn("No permission to delete", e);
-            } catch (ErrorResponseException e) {
-                if (e.getErrorCode() != 10008 /* Unknown message */) {
-                    throw e;
-                }
-            }
+        synchronized (request.getGuild()) {
+            controllers.computeIfPresent(request.getGuild(), (g, c) -> {
+                markAsPassed(request, c, false);
+                return null;
+            });
         }
     }
 
+    private void cancelUpdate(TrackRequest request) {
+        updaterTasks.computeIfPresent(request.getGuild(), (g, e) -> {
+            e.cancel(false);
+            return null;
+        });
+    }
+
     public void onTrackPause(TrackRequest request) {
-        updateMessage(request);
-        ScheduledFuture<?> task = request.getUpdaterTask();
-        if (task != null) {
-            task.cancel(false);
+        synchronized (request.getGuild()) {
+            updateMessage(request);
+            cancelUpdate(request);
         }
     }
 
     public void onTrackResume(TrackRequest request) {
-        if (request.isResetOnResume()) {
-            deleteMessage(request);
-            onTrackStart(request);
-        } else {
-            runUpdater(request);
+        synchronized (request.getGuild()) {
+            if (request.isResetOnResume()) {
+                deleteMessage(request);
+                onTrackStart(request);
+            } else {
+                runUpdater(request);
+            }
         }
     }
 
@@ -224,31 +234,48 @@ public class AudioMessageManager {
     }
 
     private void runUpdater(TrackRequest request) {
-        if (playRefreshInterval != null) {
-            ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> updateMessage(request),
-                    playRefreshInterval);
-            request.setUpdaterTask(task);
+        synchronized (request.getGuild()) {
+            if (playRefreshInterval != null) {
+                ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> updateMessage(request),
+                        playRefreshInterval);
+                ScheduledFuture<?> oldTask = updaterTasks.put(request.getGuild(), task);
+                if (oldTask != null) {
+                    oldTask.cancel(true);
+                }
+            }
         }
     }
 
     public void updateMessage(TrackRequest request) {
-        Message message;
-        if (request.isResetMessage()) {
-            MessageController controller = request.getMessageController();
-            controller.remove(false);
-            message = request.getChannel()
-                    .sendMessage(getPlayMessage(request).build())
-                    .complete();
-            request.setMessageController(new MessageController(context, message));
-            request.setResetMessage(false);
-            return;
-        }
-        message = request.getMessageController().getMessage();
-        if (message != null) {
-            try {
-                message.editMessage(getPlayMessage(request).build()).complete();
-            } catch (Exception e) {
-                // fall down and skip
+        try {
+            Message message;
+            if (request.isResetMessage()) {
+                message = request.getChannel()
+                        .sendMessage(getPlayMessage(request).build())
+                        .complete();
+                MessageController oldController = controllers.put(request.getGuild(),
+                        new MessageController(context, message));
+                if (oldController != null) {
+                    oldController.remove(false);
+                }
+                request.setResetMessage(false);
+                return;
+            }
+            MessageController controller = controllers.get(request.getGuild());
+            if (controller != null) {
+                message = controller.getMessage();
+                if (message != null) {
+                    message.editMessage(getPlayMessage(request).build()).complete();
+                }
+            }
+        } catch (PermissionException e) {
+            LOGGER.warn("No permission to update", e);
+            cancelUpdate(request);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorCode() == 10008 /* Unknown message */) {
+                cancelUpdate(request);
+            } else {
+                LOGGER.error("Update message error", e);
             }
         }
     }
