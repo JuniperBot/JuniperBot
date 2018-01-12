@@ -43,8 +43,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.modules.webhook.model.WebHookMessage;
-import ru.caramel.juniperbot.core.modules.webhook.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.model.WebHookMessage;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
@@ -74,7 +74,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private MessageService messageService;
 
-    @Autowired
+    @Autowired(required = false)
     private IAudioSendFactory audioSendFactory;
 
     @Getter
@@ -84,11 +84,13 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
         try {
-            jda = new JDABuilder(accountType)
+            JDABuilder builder = new JDABuilder(accountType)
                     .setToken(token)
-                    .addEventListener(this)
-                    .setAudioSendFactory(audioSendFactory)
-                    .buildAsync();
+                    .addEventListener(this);
+            if (audioSendFactory != null) {
+                builder.setAudioSendFactory(audioSendFactory);
+            }
+            jda = builder.buildAsync();
         } catch (LoginException e) {
             LOGGER.error("Could not login user with specified token", e);
         } catch (RateLimitedException e) {

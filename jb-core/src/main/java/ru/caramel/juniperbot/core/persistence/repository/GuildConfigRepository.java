@@ -20,16 +20,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.modules.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 @Repository
 public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> {
 
     GuildConfig findByGuildId(@Param("guildId") long guildId);
-
-    @Query("SELECT e.musicConfig FROM GuildConfig e WHERE e.guildId = :guildId")
-    MusicConfig findMusicConfig(@Param("guildId") long guildId);
 
     boolean existsByGuildId(long guildId);
 

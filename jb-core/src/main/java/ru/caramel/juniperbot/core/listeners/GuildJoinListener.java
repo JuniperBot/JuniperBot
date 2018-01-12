@@ -16,18 +16,12 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.modules.ranking.service.RankingService;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
-import ru.caramel.juniperbot.core.service.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.service.MemberService;
 
 @Component
 public class GuildJoinListener extends DiscordEventListener {
@@ -36,22 +30,15 @@ public class GuildJoinListener extends DiscordEventListener {
     private ConfigService configService;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    private RankingService rankingService;
+    private MemberService memberService;
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        Guild guild = event.getGuild();
-        boolean exists = configService.exists(guild.getIdLong());
-        GuildConfig config = configService.getOrCreate(guild); // initialize
-        rankingService.sync(guild);
-        for (TextChannel channel : guild.getTextChannels()) {
-            if (PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MESSAGE_WRITE)) {
-                messageService.onMessage(channel, exists ? "discord.welcome.again" : "discord.welcome");
-                break;
-            }
-        }
+        configService.getOrCreate(event.getGuild());
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        memberService.getOrCreate(event.getMember());
     }
 }

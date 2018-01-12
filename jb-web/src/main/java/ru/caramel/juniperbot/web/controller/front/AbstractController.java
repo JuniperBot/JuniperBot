@@ -27,13 +27,14 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.security.auth.DiscordTokenServices;
-import ru.caramel.juniperbot.core.security.model.DiscordGuildDetails;
-import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.web.common.flash.Flash;
+import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
+import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
+import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
+import ru.caramel.juniperbot.web.service.MapperService;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +56,9 @@ public abstract class AbstractController {
 
     @Autowired
     protected MessageService messageService;
+
+    @Autowired
+    protected MapperService mapperService;
 
     protected ModelAndView createModel(String modelName, long serverId) {
         return createModel(modelName, serverId, true);

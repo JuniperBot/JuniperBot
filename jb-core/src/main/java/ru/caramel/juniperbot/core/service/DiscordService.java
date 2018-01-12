@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import ru.caramel.juniperbot.core.modules.webhook.model.WebHookMessage;
-import ru.caramel.juniperbot.core.modules.webhook.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.model.WebHookMessage;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 
 import java.util.function.Consumer;
 

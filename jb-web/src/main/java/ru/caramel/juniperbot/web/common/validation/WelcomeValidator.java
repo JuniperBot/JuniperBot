@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import ru.caramel.juniperbot.core.modules.welcome.model.WelcomeMessageDto;
+import ru.caramel.juniperbot.web.dto.WelcomeMessageDto;
 
 @Component
 public class WelcomeValidator implements Validator {

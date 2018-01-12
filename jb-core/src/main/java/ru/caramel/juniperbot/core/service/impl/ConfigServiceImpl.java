@@ -18,36 +18,19 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import ru.caramel.juniperbot.core.model.dto.ConfigDto;
-import ru.caramel.juniperbot.core.modules.audio.model.MusicConfigDto;
-import ru.caramel.juniperbot.core.modules.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.core.modules.ranking.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.core.modules.vk.model.VkConnectionStatus;
-import ru.caramel.juniperbot.core.modules.vk.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.core.modules.webhook.model.WebHookDto;
-import ru.caramel.juniperbot.core.modules.webhook.model.WebHookType;
-import ru.caramel.juniperbot.core.modules.webhook.persistence.entity.WebHook;
-import ru.caramel.juniperbot.core.modules.webhook.service.WebHookService;
-import ru.caramel.juniperbot.core.modules.welcome.model.WelcomeMessageDto;
-import ru.caramel.juniperbot.core.modules.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.core.modules.welcome.persistence.repository.WelcomeMessageRepository;
+import ru.caramel.juniperbot.core.model.WebHookType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MapperService;
 
 import javax.persistence.EntityManager;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -61,33 +44,7 @@ public class ConfigServiceImpl implements ConfigService {
     private GuildConfigRepository repository;
 
     @Autowired
-    private WelcomeMessageRepository welcomeMessageRepository;
-
-    @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    private MapperService mapper;
-
-    @Autowired
-    private DiscordService discordService;
-
-    @Autowired
-    private WebHookService webHookService;
-
-    @Override
-    @Transactional
-    public ConfigDto getConfig(long serverId) {
-        return getConfigDto(getOrCreate(serverId));
-    }
-
-    @Override
-    @Transactional
-    public void saveConfig(ConfigDto dto, long serverId) {
-        GuildConfig config = getOrCreate(serverId);
-        updateConfig(dto, config);
-        repository.save(config);
-    }
 
     @Override
     @Transactional
@@ -106,7 +63,6 @@ public class ConfigServiceImpl implements ConfigService {
     public GuildConfig getOrCreate(Guild guild) {
         Assert.notNull(guild, "Guild cannot be null");
         GuildConfig config = getOrCreate(guild.getIdLong());
-
 
         boolean shouldSave = false;
         if (!Objects.equals(config.getName(), guild.getName())) {
@@ -142,11 +98,6 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public MusicConfig getMusicConfig(long serverId) {
-        return repository.findMusicConfig(serverId);
-    }
-
-    @Override
     public String getPrefix(long serverId) {
         String prefix = repository.findPrefixByGuildId(serverId);
         return prefix != null ? prefix : getOrCreate(serverId).getPrefix();
@@ -158,96 +109,10 @@ public class ConfigServiceImpl implements ConfigService {
         return repository.existsByGuildId(serverId);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public WelcomeMessageDto getWelcomeMessageDto(long serverId) {
-        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
-        return welcomeMessage != null ? mapper.getMessageDto(welcomeMessage) : new WelcomeMessageDto();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public WelcomeMessage getWelcomeMessage(long serverId) {
-        return welcomeMessageRepository.findByGuildId(serverId);
-    }
-
-    @Transactional
-    @Override
-    public void saveWelcomeMessage(WelcomeMessageDto dto, long serverId) {
-        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
-        if (welcomeMessage == null) {
-            welcomeMessage = new WelcomeMessage();
-            welcomeMessage.setConfig(getOrCreate(serverId));
-        }
-        mapper.updateWelcomeMessage(dto, welcomeMessage);
-        welcomeMessageRepository.save(welcomeMessage);
-    }
-
-    private ConfigDto getConfigDto(GuildConfig config) {
-        ConfigDto dto = mapper.getConfigDto(config);
-        WebHook webHook = config.getWebHook();
-        WebHookDto hookDto = webHookService.getDtoForView(config.getGuildId(), webHook);
-        dto.setWebHook(hookDto);
-        if (CollectionUtils.isNotEmpty(config.getVkConnections())) {
-            for (VkConnection connection : config.getVkConnections()) {
-                WebHookDto vkHookDto = webHookService.getDtoForView(config.getGuildId(), connection.getWebHook());
-                dto.getVkConnections().stream()
-                        .filter(e -> e.getId().equals(connection.getId()))
-                        .findFirst()
-                        .ifPresent(e -> e.setWebHook(vkHookDto));
-            }
-        }
-
-        MusicConfigDto musicConfigDto = new MusicConfigDto();
-        if (discordService.isConnected() && (musicConfigDto.getChannelId() == null ||
-                discordService.getJda().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
-            VoiceChannel channel = discordService.getDefaultMusicChannel(config.getGuildId());
-            if (channel != null) {
-                musicConfigDto.setChannelId(channel.getIdLong());
-            }
-        }
-        return dto;
-    }
-
-    private void updateConfig(ConfigDto dto, GuildConfig config) {
-        WebHook webHook = config.getWebHook();
-        if (webHook == null) {
-            webHook = new WebHook();
-            webHook.setType(WebHookType.INSTAGRAM);
-            config.setWebHook(webHook);
-        }
-        mapper.updateConfig(dto, config);
-        WebHookDto hookDto = dto.getWebHook();
-
-        if (hookDto != null) {
-            webHookService.updateWebHook(config.getGuildId(), hookDto.getChannelId(), webHook, "JuniperBot");
-        }
-
-        if (dto.getVkConnections() != null) {
-            Map<VkConnection, Long> updateMap = new HashMap<>();
-            dto.getVkConnections().forEach(e -> {
-                VkConnection connection = config.getVkConnections().stream()
-                        .filter(e1 -> e.getId().equals(e1.getId()))
-                        .findFirst().orElse(null);
-                if (connection != null
-                        && e.getWebHook() != null
-                        && e.getWebHook().getChannelId() != null
-                        && VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
-                    mapper.updateWebHook(e.getWebHook(), connection.getWebHook());
-                    updateMap.put(connection, e.getWebHook().getChannelId());
-                }
-            });
-            updateMap.forEach((k, v) -> webHookService.updateWebHook(config.getGuildId(), v, k.getWebHook(), k.getName()));
-        }
-        webHookService.invalidateCache(config.getGuildId());
-    }
-
     private GuildConfig createIfMissing(GuildConfig config, long serverId) {
         if (config == null) {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
-            config.setMusicConfig(new MusicConfig());
-            config.setRankingConfig(new RankingConfig());
             WebHook webHook = new WebHook();
             webHook.setType(WebHookType.INSTAGRAM);
             config.setWebHook(webHook);

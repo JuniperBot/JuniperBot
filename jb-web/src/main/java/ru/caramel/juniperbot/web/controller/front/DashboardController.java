@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
-import ru.caramel.juniperbot.web.controller.front.AbstractController;
 
 @Controller
 @Navigation(PageElement.DASHBOARD)

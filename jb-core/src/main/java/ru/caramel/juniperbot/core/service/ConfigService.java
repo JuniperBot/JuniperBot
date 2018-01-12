@@ -17,10 +17,6 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.model.dto.ConfigDto;
-import ru.caramel.juniperbot.core.modules.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.core.modules.welcome.model.WelcomeMessageDto;
-import ru.caramel.juniperbot.core.modules.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 public interface ConfigService {
@@ -28,10 +24,6 @@ public interface ConfigService {
     String getDefaultPrefix();
 
     boolean exists(long serverId);
-
-    ConfigDto getConfig(long serverId);
-
-    void saveConfig(ConfigDto dto, long serverId);
 
     void save(GuildConfig config);
 
@@ -42,14 +34,6 @@ public interface ConfigService {
     GuildConfig getOrCreate(long serverId);
 
     GuildConfig getOrCreate(Guild guild);
-
-    MusicConfig getMusicConfig(long serverId);
-
-    WelcomeMessage getWelcomeMessage(long serverId);
-
-    WelcomeMessageDto getWelcomeMessageDto(long serverId);
-
-    void saveWelcomeMessage(WelcomeMessageDto dto, long serverId);
 
     String getPrefix(long serverId);
 }

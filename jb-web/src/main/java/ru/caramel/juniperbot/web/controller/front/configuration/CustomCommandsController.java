@@ -23,29 +23,25 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.model.CommandsContainer;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
-import ru.caramel.juniperbot.core.modules.customcommand.model.CommandType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.MapperService;
+import ru.caramel.juniperbot.module.custom.model.CommandType;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.dao.CustomCommandsDao;
+import ru.caramel.juniperbot.web.dto.CommandsContainer;
 
 @Controller
 @Navigation(PageElement.CONFIG_CUSTOM_COMMANDS)
 public class CustomCommandsController extends AbstractController {
 
     @Autowired
-    private CommandsService commandsService;
+    private CustomCommandsDao commandsDao;
 
     @Autowired
     private CommandsContainerValidator validator;
-
-    @Autowired
-    private MapperService mapperService;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -55,11 +51,11 @@ public class CustomCommandsController extends AbstractController {
     @RequestMapping("/custom-commands/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
-        GuildConfig config = configService.getById(serverId, GuildConfig.COMMANDS_GRAPH);
+        GuildConfig config = configService.getById(serverId);
         if (config == null) {
             throw new NotFoundException();
         }
-        CommandsContainer container = new CommandsContainer(mapperService.getCommandsDto(config.getCommands()));
+        CommandsContainer container = new CommandsContainer(commandsDao.getCommands(serverId));
         return createModel("custom-commands", serverId, config.getPrefix())
                 .addObject("commandsContainer", container);
     }
@@ -73,7 +69,7 @@ public class CustomCommandsController extends AbstractController {
         if (result.hasErrors()) {
             return createModel("custom-commands", serverId);
         }
-        commandsService.saveCommands(container.getCommands(), serverId);
+        commandsDao.saveCommands(container.getCommands(), serverId);
         flash.success("flash.custom-commands.save.success.message");
         return view(serverId);
     }

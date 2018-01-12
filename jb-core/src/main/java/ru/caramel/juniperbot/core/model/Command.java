@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
@@ -29,18 +28,18 @@ public interface Command {
 
     boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
+    boolean isAvailable(GuildConfig config);
+
     default boolean isApplicable(MessageChannel channel, GuildConfig config) {
         if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
             return false;
         }
         DiscordCommand command = getClass().getAnnotation(DiscordCommand.class);
-        if (config != null) {
-            if (ArrayUtils.contains(config.getDisabledCommands(), command.key())) {
-                return false;
-            }
-            if (CommandGroup.RANKING.equals(command.group()) && !config.getRankingConfig().isEnabled()) {
-                return false;
-            }
+        if (config != null && ArrayUtils.contains(config.getDisabledCommands(), command.key())) {
+            return false;
+        }
+        if (!isAvailable(config)) {
+            return false;
         }
         if (command.source().length == 0) {
             return true;

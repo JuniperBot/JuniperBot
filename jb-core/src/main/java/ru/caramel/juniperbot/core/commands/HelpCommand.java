@@ -24,12 +24,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.model.Command;
+import ru.caramel.juniperbot.core.model.CommandExtension;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandGroup;
-import ru.caramel.juniperbot.core.modules.customcommand.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
+import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
-public class HelpCommand implements Command {
+public class HelpCommand extends AbstractCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HelpCommand.class);
 
@@ -48,6 +49,12 @@ public class HelpCommand implements Command {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired(required = false)
+    private List<CommandExtension> extensions;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
@@ -77,43 +84,34 @@ public class HelpCommand implements Command {
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
         messages.add(embedBuilder);
 
+        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
+
         groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
-                context.getPrefix() + messageService.getMessage(e.key()),
+                prefix + messageService.getMessage(e.key()),
                 messageService.getMessage(e.description()), false));
         if (CommandGroup.COMMON.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
                 if (direct) {
                     EmbedBuilder groupBuilder = getBaseEmbed(group, message);
                     commands.forEach(e -> groupBuilder.addField(
-                            context.getPrefix() + messageService.getMessage(e.key()),
+                            prefix + messageService.getMessage(e.key()),
                             messageService.getMessage(e.description()), false));
                     messages.add(groupBuilder);
                 } else {
                     String groupTitle = messageService.getEnumTitle(group);
                     embedBuilder.addField(String.format("%s (%s%s %s):",
                             groupTitle,
-                            context.getPrefix(),
+                            prefix,
                             messageService.getMessage("discord.command.help.key"),
                             groupTitle.toLowerCase()),
-                            commands.stream().map(e -> '`' + context.getPrefix() + messageService.getMessage(e.key()) + '`')
+                            commands.stream().map(e -> '`' + prefix + messageService.getMessage(e.key()) + '`')
                                     .collect(Collectors.joining(", ")), false);
                 }
             });
 
-            // Пользовательские команды
-            if (message.getChannelType().isGuild() && context.getConfig() != null) {
-                List<CustomCommand> commands = context.getConfig().getCommands();
-                if (CollectionUtils.isNotEmpty(commands)) {
-                    StringBuilder list = new StringBuilder();
-                    commands.forEach(e -> {
-                        if (list.length() > 0) {
-                            list.append(", ");
-                        }
-                        list.append('`').append(context.getPrefix()).append(e.getKey()).append('`');
-                    });
-                    if (list.length() > 0) {
-                        embedBuilder.addField(messageService.getEnumTitle(CommandGroup.CUSTOM) + ":", list.toString(), false);
-                    }
+            if (CollectionUtils.isNotEmpty(extensions)) {
+                for (CommandExtension extension : extensions) {
+                    extension.extendHelp(message, context, embedBuilder);
                 }
             }
         }

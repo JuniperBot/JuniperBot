@@ -31,8 +31,6 @@ public class BotContext {
 
     private Guild guild;
 
-    private String prefix;
-
     private GuildConfig config;
 
     @Getter(AccessLevel.PRIVATE)

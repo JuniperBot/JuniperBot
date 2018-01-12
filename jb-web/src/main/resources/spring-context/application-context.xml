@@ -17,16 +17,32 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath:spring-context/core-context.xml"/>
+    <import resource="classpath:spring-context/module-full-context.xml"/>
     <import resource="classpath:spring-context/mvc-context.xml"/>
     <import resource="classpath:spring-context/security-context.xml"/>
 
+    <context:component-scan base-package="ru.caramel.juniperbot.web.dao, ru.caramel.juniperbot.web.service"/>
+
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
           p:defaultEncoding="UTF-8"
-          p:basenames="/core-messages, /web-messages"/>
+          p:basenames="
+            /core-messages,
+            /web-messages,
+            /audio-messages,
+            /custom-messages,
+            /junipost-messages,
+            /reminder-messages,
+            /translit-messages,
+            /vk-messages,
+            /welcome-messages,
+            /wikifur-messages,
+            /ranking-messages"/>
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
           p:validationMessageSource-ref="messageSource"/>

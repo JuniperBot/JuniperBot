@@ -60,7 +60,7 @@
 
     <function>
         <name>getLevelForRole</name>
-        <function-class>ru.caramel.juniperbot.core.modules.ranking.utils.RankingUtils</function-class>
-        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.core.modules.ranking.model.RankingConfigDto,java.lang.Long)</function-signature>
+        <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
+        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.web.dto.RankingConfigDto,java.lang.Long)</function-signature>
     </function>
 </taglib>

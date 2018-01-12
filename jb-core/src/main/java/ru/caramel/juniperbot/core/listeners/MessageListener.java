@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.listeners.DiscordEventListener;
 
 @Component
 public class MessageListener extends DiscordEventListener {

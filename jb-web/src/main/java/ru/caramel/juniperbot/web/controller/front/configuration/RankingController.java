@@ -27,18 +27,20 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
-import ru.caramel.juniperbot.core.modules.ranking.model.RankingConfigDto;
-import ru.caramel.juniperbot.core.modules.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.core.modules.ranking.model.Reward;
-import ru.caramel.juniperbot.core.modules.ranking.model.RewardDetails;
-import ru.caramel.juniperbot.core.modules.ranking.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.core.modules.ranking.service.RankingService;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.security.utils.SecurityUtils;
-import ru.caramel.juniperbot.core.service.MapperService;
+import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.module.ranking.model.Reward;
+import ru.caramel.juniperbot.module.ranking.model.RewardDetails;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfigRepository;
+import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.dao.RankingDao;
+import ru.caramel.juniperbot.web.dto.RankingConfigDto;
+import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
+import ru.caramel.juniperbot.web.service.MapperService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +52,16 @@ import java.util.List;
 public class RankingController extends AbstractController {
 
     @Autowired
+    private RankingConfigRepository rankingConfigRepository;
+
+    @Autowired
     private RankingService rankingService;
+
+    @Autowired
+    private RankingDao rankingDao;
+
+    @Autowired
+    private ConfigService configService;
 
     @Autowired
     private MapperService mapperService;
@@ -62,22 +73,21 @@ public class RankingController extends AbstractController {
         if (!authorized && !rankingService.isEnabled(serverId)) {
             throw new NotFoundException();
         }
-        ModelAndView mv;
-        GuildConfig config = configService.getById(serverId, GuildConfig.RANKING_GRAPH);
-        if (config == null) {
+        RankingConfig rankingConfig = rankingConfigRepository.findByGuildId(serverId);
+        if (rankingConfig == null) {
             throw new NotFoundException();
         }
+        ModelAndView mv;
         if (!forceUser && authorized) {
-            RankingConfigDto configDto = mapperService.getRankingDto(config.getRankingConfig());
             mv = createModel("ranking.admin", serverId)
-                    .addObject("config", configDto)
+                    .addObject("config", mapperService.getRankingDto(rankingConfig))
                     .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
                     .addObject("roles", getRoles(serverId));
         } else {
             mv = createModel("ranking.user", serverId, false)
-                    .addObject("rewards", getRewards(serverId, config.getRankingConfig()));
+                    .addObject("rewards", getRewards(serverId, rankingConfig));
         }
-        return mv.addObject("prefix", config.getPrefix());
+        return mv.addObject("prefix", configService.getPrefix(serverId));
     }
 
     @RequestMapping(value = "/ranking/{serverId}", method = RequestMethod.POST)
@@ -87,16 +97,12 @@ public class RankingController extends AbstractController {
             BindingResult result) {
         validateGuildId(serverId);
         if (result.hasErrors()) {
-            GuildConfig guildConfig = configService.getById(serverId, GuildConfig.RANKING_GRAPH);
-            if (config == null) {
-                throw new NotFoundException();
-            }
             return createModel("ranking.admin", serverId)
-                    .addObject("prefix", guildConfig.getPrefix())
+                    .addObject("prefix", configService.getPrefix(serverId))
                     .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
                     .addObject("roles", getRoles(serverId));
         }
-        rankingService.saveConfig(config, serverId);
+        rankingDao.saveConfig(config, serverId);
         flash.success("flash.rating.save.success.message");
         return view(serverId, false);
     }

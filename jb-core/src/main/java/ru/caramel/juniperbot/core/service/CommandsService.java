@@ -17,13 +17,10 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.core.modules.customcommand.model.CustomCommandDto;
 
-import java.util.List;
-
-public interface CommandsService {
+public interface CommandsService extends MessageSender {
 
     void onMessageReceived(MessageReceivedEvent event);
 
-    void saveCommands(List<CustomCommandDto> commands, long serverId);
+    void sendMessage(MessageReceivedEvent event, MessageSender sender);
 }

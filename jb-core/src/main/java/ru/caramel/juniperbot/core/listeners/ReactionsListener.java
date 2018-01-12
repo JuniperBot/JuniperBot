@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.core.listeners;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.service.listeners.DiscordEventListener;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

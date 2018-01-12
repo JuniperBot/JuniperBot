@@ -23,11 +23,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.modules.welcome.model.WelcomeMessageDto;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.WelcomeValidator;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.dao.WelcomeDao;
+import ru.caramel.juniperbot.web.dto.WelcomeMessageDto;
 
 @Controller
 @Navigation(PageElement.WELCOME_MESSAGES)
@@ -35,6 +36,9 @@ public class WelcomeController extends AbstractController {
 
     @Autowired
     private WelcomeValidator validator;
+
+    @Autowired
+    private WelcomeDao welcomeDao;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -45,7 +49,7 @@ public class WelcomeController extends AbstractController {
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
         return createModel("welcome", serverId)
-                .addObject("welcomeMessage", configService.getWelcomeMessageDto(serverId));
+                .addObject("welcomeMessage", welcomeDao.getWelcomeMessageDto(serverId));
     }
 
     @RequestMapping(value = "/welcome/{serverId}", method = RequestMethod.POST)
@@ -57,7 +61,7 @@ public class WelcomeController extends AbstractController {
         if (result.hasErrors()) {
             return createModel("welcome", serverId);
         }
-        configService.saveWelcomeMessage(welcomeMessage, serverId);
+        welcomeDao.saveWelcomeMessage(welcomeMessage, serverId);
         flash.success("flash.welcome.save.success.message");
         return view(serverId);
     }

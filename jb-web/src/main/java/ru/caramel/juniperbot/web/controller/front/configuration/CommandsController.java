@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.model.dto.CommandTypeDto;
-import ru.caramel.juniperbot.core.model.dto.CommandsDto;
 import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
@@ -33,6 +31,8 @@ import ru.caramel.juniperbot.core.utils.ArrayUtil;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.dto.CommandTypeDto;
+import ru.caramel.juniperbot.web.dto.CommandsDto;
 
 import java.util.LinkedHashMap;
 import java.util.List;

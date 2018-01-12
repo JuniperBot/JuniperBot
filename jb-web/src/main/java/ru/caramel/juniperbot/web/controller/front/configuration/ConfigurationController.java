@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.controller.front.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -24,20 +25,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.model.dto.ConfigDto;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.dao.ConfigDao;
+import ru.caramel.juniperbot.web.dto.ConfigDto;
 
 @Controller
 @Navigation(PageElement.CONFIG_COMMON)
 public class ConfigurationController extends AbstractController {
 
+    @Autowired
+    private ConfigDao configDao;
+
     @RequestMapping("/config/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
         return createModel("config", serverId)
-                .addObject("config", configService.getConfig(serverId));
+                .addObject("config", configDao.getConfig(serverId));
     }
 
     @RequestMapping(value = "/config/{serverId}", method = RequestMethod.POST)
@@ -49,7 +54,7 @@ public class ConfigurationController extends AbstractController {
         if (result.hasErrors()) {
             return createModel("config", serverId);
         }
-        configService.saveConfig(config, serverId);
+        configDao.saveConfig(config, serverId);
         flash.success("flash.config.save.success.message");
         return view(serverId);
     }
@@ -60,4 +65,7 @@ public class ConfigurationController extends AbstractController {
                 .addObject("voiceChannels", getVoiceChannels(serverId))
                 .addObject("textChannels", getTextChannels(serverId));
     }
+
+
+
 }

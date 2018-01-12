@@ -26,20 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.core.modules.customcommand.model.CustomCommandDto;
-import ru.caramel.juniperbot.core.modules.customcommand.persistence.entity.CustomCommand;
-import ru.caramel.juniperbot.core.modules.customcommand.persistence.repository.CustomCommandRepository;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CommandsServiceImpl implements CommandsService {
@@ -53,15 +48,7 @@ public class CommandsServiceImpl implements CommandsService {
     private MessageService messageService;
 
     @Autowired
-    private CustomCommandRepository commandRepository;
-
-    @Autowired
-    private MapperService mapperService;
-
-    @Autowired
     private CommandsHolderService commandsHolderService;
-
-    private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
 
@@ -69,6 +56,11 @@ public class CommandsServiceImpl implements CommandsService {
     @Transactional
     @Async("commandsExecutor")
     public void onMessageReceived(MessageReceivedEvent event) {
+        sendMessage(event, this);
+    }
+
+    @Override
+    public void sendMessage(MessageReceivedEvent event, MessageSender sender) {
         JDA jda = event.getJDA();
         if (event.getAuthor().isBot()) {
             return;
@@ -79,38 +71,33 @@ public class CommandsServiceImpl implements CommandsService {
         }
 
         String content = event.getMessage().getRawContent().trim();
-        String inlinePrefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
-        String rawPrefix = inlinePrefix;
+        String prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
         if (event.getMessage().isMentioned(jda.getSelfUser())) {
             String customMention = String.format("<@!%s>", jda.getSelfUser().getId());
-            rawPrefix = content.startsWith(customMention) ? customMention : jda.getSelfUser().getAsMention();
+            prefix = content.startsWith(customMention) ? customMention : jda.getSelfUser().getAsMention();
         }
-        if (StringUtils.isNotEmpty(content) && content.startsWith(rawPrefix) && content.length() <= 255) {
-            String input = content.substring(rawPrefix.length()).trim();
-            sendCommand(event, input, inlinePrefix, guildConfig, false);
+        if (StringUtils.isNotEmpty(content) && content.startsWith(prefix) && content.length() <= 255) {
+            String input = content.substring(prefix.length()).trim();
+            String[] args = input.split("\\s+");
+            if (args.length == 0) {
+                return;
+            }
+            input = input.substring(args[0].length(), input.length()).trim();
+            sender.sendCommand(event, input, args[0], guildConfig);
         }
     }
 
-    private void sendCommand(MessageReceivedEvent event, String content, String prefix, GuildConfig guildConfig, boolean alias) {
-        String[] args = content.split("\\s+");
-        if (args.length == 0) {
-            return;
-        }
-        content = content.substring(args[0].length(), content.length()).trim();
-
-        Command command = commandsHolderService.getByLocale(args[0]);
+    @Override
+    public void sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
+        Command command = commandsHolderService.getByLocale(key);
         if (command != null && !command.isApplicable(event.getChannel(), guildConfig)) {
             return;
         }
         if (command == null) {
-            if (!alias && guildConfig != null) {
-                sendCustomCommand(event, content, args[0], prefix, guildConfig);
-            }
             return;
         }
 
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
-        context.setPrefix(prefix);
         context.setConfig(guildConfig);
         context.setGuild(event.getGuild());
         try {
@@ -120,60 +107,7 @@ public class CommandsServiceImpl implements CommandsService {
         } catch (DiscordException e) {
             messageService.onError(event.getChannel(),
                     messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
-            LOGGER.error("Command {} execution error", args[0], e);
+            LOGGER.error("Command {} execution error", key, e);
         }
-    }
-
-    private void sendCustomCommand(MessageReceivedEvent event, String content, String key, String prefix, GuildConfig config) {
-        CustomCommand command = commandRepository.findByKeyAndConfig(key, config);
-        if (command == null) {
-            return;
-        }
-        String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
-        switch (command.getType()) {
-            case ALIAS:
-                sendCommand(event, commandContent, prefix, config, true);
-                break;
-            case MESSAGE:
-                messageService.sendMessageSilent(event.getChannel()::sendMessage, commandContent);
-                break;
-        }
-    }
-
-    private MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {
-        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put(messageService.getMessage("custom.commands.placeholder.author"), event.getAuthor().getAsMention());
-        resolver.put(messageService.getMessage("custom.commands.placeholder.guild"), event.getGuild().getName());
-        resolver.put(messageService.getMessage("custom.commands.placeholder.content"), content);
-        return resolver;
-    }
-
-    @Transactional
-    public void saveCommands(List<CustomCommandDto> commands, long serverId) {
-        GuildConfig config = configService.getOrCreate(serverId);
-        List<CustomCommand> customCommands = config.getCommands() != null ? config.getCommands() : new ArrayList<>();
-        if (commands == null) {
-            commands = Collections.emptyList();
-        }
-
-        List<CustomCommand> result = new ArrayList<>();
-        // adding new commands
-        result.addAll(mapperService.getCommands(commands.stream().filter(e -> e.getId() == null).collect(Collectors.toList())));
-        result.forEach(e -> e.setConfig(config));
-
-        // update existing
-        commands.stream().filter(e -> e.getId() != null).forEach(e -> {
-            CustomCommand command = customCommands.stream().filter(e1 -> Objects.equals(e1.getId(), e.getId())).findFirst().orElse(null);
-            if (command != null) {
-                mapperService.updateCommand(e, command);
-                result.add(command);
-            }
-        });
-
-        config.setCommands(result);
-        commandRepository.save(result);
-
-        // delete old
-        commandRepository.delete(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
     }
 }
