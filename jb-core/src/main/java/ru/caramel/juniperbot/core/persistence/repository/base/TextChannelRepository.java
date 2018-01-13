@@ -14,22 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.repository;
+package ru.caramel.juniperbot.core.persistence.repository.base;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
-import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
+import ru.caramel.juniperbot.core.persistence.entity.base.TextChannelEntity;
 
 import java.util.List;
 
-@Repository
-public interface LocalMemberRepository extends GuildRepository<LocalMember> {
+@NoRepositoryBean
+public interface TextChannelRepository<T extends TextChannelEntity> extends GuildRepository<T> {
 
-    @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId")
-    LocalMember findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    List<T> findByGuildIdAndChannelId(String guildId, String channelId);
+
+    @Query("SELECT count(e) > 0 FROM #{#entityName} e WHERE e.channelId = :channelId AND e.guildId = :guildId")
+    boolean exists(@Param("guildId") String guildId, @Param("channelId") String channelId);
+
+    Long deleteByGuildIdAndChannelId(String guildId, String channelId);
+
+    Long deleteByGuildId(String guildId);
 
 }

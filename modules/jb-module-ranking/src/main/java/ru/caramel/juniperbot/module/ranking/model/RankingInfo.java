@@ -51,11 +51,11 @@ public class RankingInfo {
     private int totalMembers;
 
     public RankingInfo(LocalMember member) {
-        this.id = member.getUserId();
-        this.name = member.getName();
-        this.discriminator = member.getDiscriminator();
+        this.id = member.getUser().getUserId();
+        this.name = member.getUser().getName();
+        this.discriminator = member.getUser().getDiscriminator();
         this.nick = member.getEffectiveName();
-        this.avatarUrl = member.getAvatarUrl();
+        this.avatarUrl = member.getUser().getAvatarUrl();
     }
 
     public int getPct() {

@@ -14,22 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.repository;
+package ru.caramel.juniperbot.module.ranking.persistence.entity;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
-import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-import java.util.List;
+import javax.persistence.*;
 
-@Repository
-public interface LocalMemberRepository extends GuildRepository<LocalMember> {
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@Table(name = "ranking")
+public class Ranking extends BaseEntity {
 
-    @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId")
-    LocalMember findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name = "member_id")
+    private LocalMember member;
+
+    @Column
+    private long exp;
 
 }

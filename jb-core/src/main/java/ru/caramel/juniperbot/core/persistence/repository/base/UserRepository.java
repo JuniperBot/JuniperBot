@@ -14,13 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.holiday.persistence.repository;
+package ru.caramel.juniperbot.core.persistence.repository.base;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.TextChannelRepository;
-import ru.caramel.juniperbot.module.holiday.persistence.entity.NewYearNotification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
 
-@Repository
-public interface NewYearNotificationRepository extends TextChannelRepository<NewYearNotification> {
+import java.util.List;
 
+@NoRepositoryBean
+public interface UserRepository<T extends UserEntity> extends JpaRepository<T, Long> {
+
+    T findByUserId(String userId);
 }

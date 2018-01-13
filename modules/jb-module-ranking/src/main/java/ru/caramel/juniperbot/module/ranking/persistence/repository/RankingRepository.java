@@ -14,22 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.repository;
+package ru.caramel.juniperbot.module.ranking.persistence.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
-import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 
 import java.util.List;
 
 @Repository
-public interface LocalMemberRepository extends GuildRepository<LocalMember> {
+public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
-    @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId")
-    LocalMember findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    List<Ranking> findByMemberGuildIdOrderByExpDesc(String guildId);
 
+    @Query("SELECT r FROM Ranking r WHERE r.member = (SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId)")
+    Ranking findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+
+    Ranking findByMember(LocalMember member);
+
+    @Modifying
+    @Query("UPDATE Ranking r SET r.exp = 0 WHERE r.member = :member")
+    int resetMember(@Param("member") LocalMember member);
+
+    @Modifying
+    @Query("UPDATE Ranking r SET r.exp = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
+    int resetAll(@Param("guildId") String guildId);
 }

@@ -18,22 +18,27 @@ package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.MemberEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "member")
-public class LocalMember extends GuildEntity {
-    private static final long serialVersionUID = -1439894653981742656L;
+@Table(name = "user", schema = "public")
+public class LocalUser extends UserEntity {
+    private static final long serialVersionUID = -1439894653981742651L;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private LocalUser user;
+    @Column
+    private String name;
 
-    @Column(name = "effective_name")
-    private String effectiveName;
+    @Column
+    private String discriminator;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

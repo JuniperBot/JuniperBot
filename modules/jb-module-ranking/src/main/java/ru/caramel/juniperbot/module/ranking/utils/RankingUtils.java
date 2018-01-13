@@ -2,6 +2,7 @@ package ru.caramel.juniperbot.module.ranking.utils;
 
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 
 public final class RankingUtils {
 
@@ -32,10 +33,10 @@ public final class RankingUtils {
         return level;
     }
 
-    public static RankingInfo calculateInfo(LocalMember member) {
-        RankingInfo info = new RankingInfo(member);
-        info.setTotalExp(member.getExp());
-        info.setLevel(getLevelFromExp(member.getExp()));
+    public static RankingInfo calculateInfo(Ranking ranking) {
+        RankingInfo info = new RankingInfo(ranking.getMember());
+        info.setTotalExp(ranking.getExp());
+        info.setLevel(getLevelFromExp(ranking.getExp()));
         long remaining = info.getTotalExp();
         for (int i = 0; i < info.getLevel(); i++) {
             remaining -= getLevelExp(i);

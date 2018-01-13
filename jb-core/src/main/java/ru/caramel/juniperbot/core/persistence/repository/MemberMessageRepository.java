@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.persistence.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import ru.caramel.juniperbot.core.persistence.entity.base.MemberMessageEntity;
+import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
 
 import java.util.List;
 

@@ -61,4 +61,90 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="3.4-012012018-7" author="caramel">
+        <dropUniqueConstraint tableName="member" constraintName="uq_member_constraint"/>
+        <dropIndex tableName="member" indexName="idx_member_user_id"/>
+        <renameColumn tableName="member" oldColumnName="user_id" newColumnName="user_id_old"/>
+        <createTable tableName="user">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discriminator" type="VARCHAR(4)"/>
+            <column name="avatar_url" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-8" author="caramel">
+        <addColumn tableName="member">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="fk_member_user"
+                             references="user(id)"/>
+            </column>
+        </addColumn>
+        <sql>
+            <![CDATA[
+                INSERT INTO public.user (version, user_id, name, discriminator, avatar_url)
+                SELECT DISTINCT ON (user_id_old) 0, user_id_old, name, discriminator, avatar_url
+                FROM member GROUP BY user_id_old, name, discriminator, avatar_url;
+                UPDATE member AS m SET user_id = u.id FROM public.user AS u WHERE u.user_id = m.user_id_old;
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-9" author="caramel">
+        <dropColumn tableName="member" columnName="user_id_old"/>
+        <addNotNullConstraint tableName="member" columnName="user_id"/>
+        <addUniqueConstraint columnNames="guild_id, user_id"
+                             constraintName="uq_member_constraint"
+                             tableName="member"/>
+        <createIndex indexName="idx_user"
+                     tableName="user" unique="true">
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-10" author="caramel">
+        <dropColumn tableName="member" columnName="name"/>
+        <dropColumn tableName="member" columnName="discriminator"/>
+        <dropColumn tableName="member" columnName="avatar_url"/>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-11" author="caramel">
+        <createTable tableName="ranking">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ranking"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_ranking_member"
+                             references="member(id)"/>
+            </column>
+            <column name="exp" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-12" author="caramel">
+        <sql>INSERT INTO ranking (version, member_id, exp) SELECT 0, id, exp FROM member;</sql>
+        <dropColumn tableName="member">
+            <column name="exp"/>
+        </dropColumn>
+        <createIndex tableName="ranking" unique="true" indexName="idx_ranking_member_id">
+            <column name="member_id"/>
+        </createIndex>
+        <createIndex tableName="member" indexName="idx_member_user_id">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

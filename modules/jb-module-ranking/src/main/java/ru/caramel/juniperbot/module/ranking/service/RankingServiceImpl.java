@@ -36,16 +36,17 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MemberService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
+import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfigRepository;
+import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingRepository;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
 import java.io.IOException;
@@ -62,6 +63,12 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private LocalMemberRepository memberRepository;
+
+    @Autowired
+    private LocalUserRepository userRepository;
+
+    @Autowired
+    private RankingRepository rankingRepository;
 
     @Autowired
     private RankingConfigRepository rankingConfigRepository;
@@ -87,11 +94,6 @@ public class RankingServiceImpl implements RankingService {
             .concurrencyLevel(4)
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
-
-    @Transactional(readOnly = true)
-    public boolean checkExists(long serverId) {
-        return memberRepository.countByGuildId(String.valueOf(serverId)) > 0;
-    }
 
     @Transactional
     @Override
@@ -127,12 +129,12 @@ public class RankingServiceImpl implements RankingService {
     @Transactional(readOnly = true)
     @Override
     public List<RankingInfo> getRankingInfos(long serverId) {
-        List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(String.valueOf(serverId));
-        List<RankingInfo> result = new ArrayList<>(members.size());
-        for (int i = 0; i < members.size(); i++) {
-            RankingInfo info = RankingUtils.calculateInfo(members.get(i));
+        List<Ranking> rankings = rankingRepository.findByMemberGuildIdOrderByExpDesc(String.valueOf(serverId));
+        List<RankingInfo> result = new ArrayList<>(rankings.size());
+        for (int i = 0; i < rankings.size(); i++) {
+            RankingInfo info = RankingUtils.calculateInfo(rankings.get(i));
             info.setRank(i + 1);
-            info.setTotalMembers(members.size());
+            info.setTotalMembers(rankings.size());
             result.add(info);
         }
         return result;
@@ -149,15 +151,15 @@ public class RankingServiceImpl implements RankingService {
             return;
         }
 
-        LocalMember member = memberService.getOrCreate(event.getMember());
+        Ranking ranking = getRanking(event.getMember());
 
-        int level = RankingUtils.getLevelFromExp(member.getExp());
+        int level = RankingUtils.getLevelFromExp(ranking.getExp());
 
-        member.setExp(member.getExp() + RandomUtils.nextLong(15, 25));
-        memberRepository.save(member);
+        ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
+        rankingRepository.save(ranking);
         coolDowns.put(memberKey, DUMMY);
 
-        int newLevel = RankingUtils.getLevelFromExp(member.getExp());
+        int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
         if (newLevel == 1000) {
             return; // max level
         }
@@ -175,7 +177,7 @@ public class RankingServiceImpl implements RankingService {
                 }
                 messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
             }
-            updateRewards(config, event.getMember(), member);
+            updateRewards(config, event.getMember(), ranking);
         }
     }
 
@@ -187,18 +189,21 @@ public class RankingServiceImpl implements RankingService {
         } else if (level < 0) {
             level = 0;
         }
-        LocalMember localMember = memberRepository.findOneByGuildIdAndUserId(String.valueOf(serverId),
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId),
                 String.valueOf(userId));
-        if (localMember != null) {
-            localMember.setExp(RankingUtils.getLevelTotalExp(level));
-            memberRepository.save(localMember);
+
+        Ranking ranking = getRanking(localMember);
+
+        if (ranking != null) {
+            ranking.setExp(RankingUtils.getLevelTotalExp(level));
+            rankingRepository.save(ranking);
             RankingConfig config = getConfig(serverId);
             if (discordService.isConnected()) {
                 Guild guild = discordService.getJda().getGuildById(serverId);
                 if (guild != null) {
                     Member member = guild.getMemberById(userId);
                     if (member != null) {
-                        updateRewards(config, member, localMember);
+                        updateRewards(config, member, ranking);
                     }
                 }
             }
@@ -211,14 +216,14 @@ public class RankingServiceImpl implements RankingService {
         List<LocalMember> members = memberService.syncMembers(guild);
         RankingConfig rankingConfig = getConfig(guild);
         members.forEach(e -> {
-            Member member = guild.getMemberById(e.getUserId());
+            Member member = guild.getMemberById(e.getUser().getUserId());
             if (member != null) {
                 if (memberService.isApplicable(member)) {
                     memberService.updateIfRequired(member, e);
-                    updateRewards(rankingConfig, member, e);
+                    updateRewards(rankingConfig, member, getRanking(e));
                 }
             } else if (rankingConfig.isResetOnLeave()) {
-                e.setExp(0);
+                rankingRepository.resetMember(e);
             }
         });
         memberRepository.save(members);
@@ -230,23 +235,33 @@ public class RankingServiceImpl implements RankingService {
         List<RankingInfo> mee6Infos = mee6Provider.export(guild.getIdLong());
         if (!CollectionUtils.isEmpty(mee6Infos)) {
             List<LocalMember> members = memberService.syncMembers(guild);
-            Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(LocalMember::getUserId, e -> e));
-            List<LocalMember> toUpdate = new ArrayList<>();
+            Map<String, LocalMember> membersMap = members.stream()
+                    .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
             for (RankingInfo info : mee6Infos) {
                 LocalMember member = membersMap.get(info.getId());
                 if (member == null) {
                     member = new LocalMember();
                     member.setGuildId(guild.getId());
-                    member.setUserId(info.getId());
-                    member.setAvatarUrl(info.getAvatarUrl());
-                    member.setName(info.getName());
                     member.setEffectiveName(info.getNick());
-                    member.setDiscriminator(info.getDiscriminator());
+
+                    LocalUser user = userRepository.findByUserId(info.getId());
+                    if (user == null) {
+                        user = new LocalUser();
+                        user.setUserId(info.getId());
+                    }
+                    if (StringUtils.isNotEmpty(info.getAvatarUrl())) {
+                        user.setAvatarUrl(info.getAvatarUrl());
+                    }
+                    user.setName(info.getName());
+                    user.setDiscriminator(info.getDiscriminator());
+                    member.setUser(user);
+                    userRepository.save(user);
+                    memberRepository.save(member);
                 }
-                member.setExp(info.getTotalExp());
-                toUpdate.add(member);
+                Ranking ranking = getRanking(member);
+                ranking.setExp(info.getTotalExp());
+                rankingRepository.save(ranking);
             }
-            memberRepository.save(toUpdate);
             sync(guild);
         }
     }
@@ -254,10 +269,10 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public void resetAll(long serverId) {
-        memberRepository.resetAll(String.valueOf(serverId));
+        rankingRepository.resetAll(String.valueOf(serverId));
     }
 
-    private void updateRewards(RankingConfig config, Member member, LocalMember localMember) {
+    private void updateRewards(RankingConfig config, Member member, Ranking ranking) {
         Member self = member.getGuild().getSelfMember();
         if (!discordService.isConnected()
                 || CollectionUtils.isEmpty(config.getRewards())
@@ -265,7 +280,7 @@ public class RankingServiceImpl implements RankingService {
             return;
         }
 
-        int newLevel = RankingUtils.getLevelFromExp(localMember.getExp());
+        int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
         Set<Role> rolesToGive = config.getRewards().stream()
                 .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)  // filter by level
                 .map(Reward::getRoleId)                                          // map by id
@@ -291,12 +306,12 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     public RankingInfo getRankingInfo(Member member) {
-        LocalMember localMember = memberService.getOrCreate(member);
-        if (localMember != null) {
-            RankingInfo info = RankingUtils.calculateInfo(localMember);
-            List<LocalMember> members = memberRepository.findByGuildIdOrderByExpDesc(member.getGuild().getId());
-            info.setRank(members.indexOf(localMember) + 1);
-            info.setTotalMembers(members.size());
+        Ranking ranking = getRanking(member);
+        if (ranking != null) {
+            RankingInfo info = RankingUtils.calculateInfo(ranking);
+            List<Ranking> rankings = rankingRepository.findByMemberGuildIdOrderByExpDesc(member.getGuild().getId());
+            info.setRank(rankings.indexOf(ranking) + 1);
+            info.setTotalMembers(rankings.size());
             return info;
         }
         return null;
@@ -311,5 +326,42 @@ public class RankingServiceImpl implements RankingService {
             announce = messageService.getMessage("discord.command.rank.levelup");
         }
         return placeholderHelper.replacePlaceholders(announce, resolver);
+    }
+
+    @Transactional
+    public Ranking getRanking(LocalMember member) {
+        Ranking ranking = rankingRepository.findByMember(member);
+        if (ranking == null && member != null) {
+            ranking = new Ranking();
+            ranking.setMember(member);
+            rankingRepository.save(ranking);
+        }
+        return ranking;
+    }
+
+    @Transactional
+    public Ranking getRanking(Member member) {
+        Ranking ranking = rankingRepository.findByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+        if (ranking == null) {
+            LocalMember localMember = memberService.getOrCreate(member);
+            ranking = new Ranking();
+            ranking.setMember(localMember);
+            rankingRepository.save(ranking);
+        }
+        return ranking;
+    }
+
+    @Transactional
+    public Ranking getRanking(String guildId, String userId) {
+        Ranking ranking = rankingRepository.findByGuildIdAndUserId(guildId, userId);
+        if (ranking == null) {
+            LocalMember localMember = memberRepository.findByGuildIdAndUserId(guildId, userId);
+            if (localMember != null) {
+                ranking = new Ranking();
+                ranking.setMember(localMember);
+                rankingRepository.save(ranking);
+            }
+        }
+        return ranking;
     }
 }

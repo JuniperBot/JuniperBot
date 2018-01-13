@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.MemberService;
+import ru.caramel.juniperbot.core.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,17 +37,20 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private LocalMemberRepository memberRepository;
 
+    @Autowired
+    private UserService userService;
+
     @Transactional
     public LocalMember getOrCreate(Member member) {
         if (!isApplicable(member)) {
             return null;
         }
-        LocalMember localMember = memberRepository.findOneByGuildIdAndUserId(member.getGuild().getId(),
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(member.getGuild().getId(),
                 member.getUser().getId());
         if (localMember == null) {
             localMember = new LocalMember();
             localMember.setGuildId(member.getGuild().getId());
-            localMember.setUserId(member.getUser().getId());
+            localMember.setUser(userService.getOrCreate(member.getUser()));
         }
         return updateIfRequired(member, localMember);
     }
@@ -59,25 +63,11 @@ public class MemberServiceImpl implements MemberService {
         }
 
         if (member != null) {
-            if (!Objects.equals(member.getUser().getName(), localMember.getName())) {
-                localMember.setName(member.getUser().getName());
-                shouldSave = true;
-            }
-
-            if (!Objects.equals(member.getUser().getDiscriminator(), localMember.getDiscriminator())) {
-                localMember.setDiscriminator(member.getUser().getDiscriminator());
-                shouldSave = true;
-            }
-
             if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
                 localMember.setEffectiveName(member.getEffectiveName());
                 shouldSave = true;
             }
-
-            if (!Objects.equals(member.getUser().getAvatarUrl(), localMember.getAvatarUrl())) {
-                localMember.setAvatarUrl(member.getUser().getAvatarUrl());
-                shouldSave = true;
-            }
+            userService.updateIfRequired(member.getUser(), localMember.getUser());
         }
 
         if (shouldSave) {
@@ -89,20 +79,20 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public List<LocalMember> syncMembers(Guild guild) {
         List<LocalMember> members = memberRepository.findByGuildId(guild.getId());
-        Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(LocalMember::getUserId, e -> e));
+        Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
         for (Member member : guild.getMembers()) {
             if (isApplicable(member)) {
                 LocalMember localMember = membersMap.get(member.getUser().getId());
                 if (localMember == null) {
                     localMember = new LocalMember();
                     localMember.setGuildId(member.getGuild().getId());
-                    localMember.setUserId(member.getUser().getId());
+                    localMember.setUser(userService.getOrCreate(member.getUser()));
                     members.add(localMember);
                 }
             }
         }
         members.forEach(e -> {
-            Member member = guild.getMemberById(e.getUserId());
+            Member member = guild.getMemberById(e.getUser().getUserId());
             if (member != null) {
                 if (isApplicable(member)) {
                     updateIfRequired(member, e);
@@ -114,6 +104,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean isApplicable(Member member) {
-        return member != null && !member.getGuild().getSelfMember().equals(member) && !member.getUser().isBot();
+        return member != null && !member.getGuild().getSelfMember().equals(member)
+                && userService.isApplicable(member.getUser());
     }
 }
