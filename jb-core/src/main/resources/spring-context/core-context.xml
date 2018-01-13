@@ -42,7 +42,7 @@
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource"
           p:overwriteExistingJobs="true">
         <property name="jobFactory">
-            <bean class="ru.caramel.juniperbot.core.scheduler.SpringBeanJobFactory"/>
+            <bean class="ru.caramel.juniperbot.core.support.SpringBeanJobFactory"/>
         </property>
         <property name="quartzProperties">
             <props>
@@ -59,4 +59,7 @@
             </props>
         </property>
     </bean>
+
+    <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="/core-jbmessages"/>
+
 </beans>

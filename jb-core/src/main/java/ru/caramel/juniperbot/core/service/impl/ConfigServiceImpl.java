@@ -84,18 +84,6 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    @Transactional
-    public GuildConfig getById(long serverId, String graph) {
-        List<GuildConfig> config = entityManager
-                .createNamedQuery(GuildConfig.FIND_BY_GUILD_ID, GuildConfig.class)
-                .setParameter("guildId", serverId)
-                .setHint(org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD.getKey(),
-                        entityManager.getEntityGraph(graph))
-                .getResultList();
-        return config.isEmpty() ? null : config.get(0);
-    }
-
-    @Override
     public String getPrefix(long serverId) {
         String prefix = repository.findPrefixByGuildId(serverId);
         return prefix != null ? prefix : getOrCreate(serverId).getPrefix();

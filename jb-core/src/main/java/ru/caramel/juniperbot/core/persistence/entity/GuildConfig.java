@@ -31,12 +31,9 @@ import javax.validation.constraints.Size;
 @Entity
 @NoArgsConstructor
 @Table(name = "guild_config")
-@NamedQuery(name = GuildConfig.FIND_BY_GUILD_ID, query = "SELECT g FROM GuildConfig g WHERE g.guildId = :guildId")
 public class GuildConfig extends BaseEntity {
 
     private static final long serialVersionUID = 1599157155969887890L;
-
-    public static final String FIND_BY_GUILD_ID = "GuildConfig.findByGuildId";
 
     @Column(name = "guild_id")
     private long guildId;

@@ -29,20 +29,8 @@
 
     <context:component-scan base-package="ru.caramel.juniperbot.web.dao, ru.caramel.juniperbot.web.service"/>
 
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
-          p:defaultEncoding="UTF-8"
-          p:basenames="
-            /core-messages,
-            /web-messages,
-            /audio-messages,
-            /custom-messages,
-            /junipost-messages,
-            /reminder-messages,
-            /translit-messages,
-            /vk-messages,
-            /welcome-messages,
-            /wikifur-messages,
-            /ranking-messages"/>
+    <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="/web-jbmessages"/>
+    <bean id="messageSource" class="ru.caramel.juniperbot.core.support.JbMessageSource" />
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
           p:validationMessageSource-ref="messageSource"/>

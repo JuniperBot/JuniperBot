@@ -14,24 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.support;
 
-import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import java.text.MessageFormat;
+import java.util.Locale;
 
-public interface ConfigService {
+public interface ModuleMessageSource {
 
-    String getDefaultPrefix();
+    String resolveCodeWithoutArguments(String code, Locale locale);
 
-    boolean exists(long serverId);
-
-    void save(GuildConfig config);
-
-    GuildConfig getById(long serverId);
-
-    GuildConfig getOrCreate(long serverId);
-
-    GuildConfig getOrCreate(Guild guild);
-
-    String getPrefix(long serverId);
+    MessageFormat resolveCode(String code, Locale locale);
 }
