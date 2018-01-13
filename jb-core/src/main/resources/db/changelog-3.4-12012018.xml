@@ -185,4 +185,21 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="3.4-012012018-15" author="caramel">
+        <sql>
+            UPDATE custom_command SET content = replace(content, '{автор}', '{author}');
+            UPDATE custom_command SET content = replace(content, '{сервер}', '{guild}');
+            UPDATE custom_command SET content = replace(content, '{текст}', '{content}');
+        </sql>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-16" author="caramel">
+        <sql>
+            UPDATE welcome_message SET join_message = replace(join_message, '{пользователь}', '{user}');
+            UPDATE welcome_message SET join_message = replace(join_message, '{сервер}', '{guild}');
+            UPDATE welcome_message SET leave_message = replace(leave_message, '{пользователь}', '{user}');
+            UPDATE welcome_message SET leave_message = replace(leave_message, '{сервер}', '{guild}');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

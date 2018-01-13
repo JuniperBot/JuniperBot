@@ -17,15 +17,14 @@
 package ru.caramel.juniperbot.module.audio.commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 
 @DiscordCommand(
         key = "discord.command.here.key",
@@ -35,16 +34,8 @@ import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepo
         priority = 104)
 public class HereCommand extends AudioCommand {
 
-    @Autowired
-    private MusicConfigRepository repository;
-
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        MusicConfig musicConfig = playerService.getConfig(message.getGuild());
-        if (musicConfig == null || !musicConfig.isUserJoinEnabled()) {
-            messageService.onError(message.getTextChannel(), "discord.command.here.denied");
-            return false;
-        }
         if (!message.getMember().getVoiceState().inVoiceChannel()) {
             messageService.onError(message.getTextChannel(), "discord.command.here.notInChannel");
             return false;
@@ -56,6 +47,12 @@ public class HereCommand extends AudioCommand {
         }
         playerService.connectToChannel(instance, message.getMember());
         return true;
+    }
+
+    @Override
+    public boolean isAvailable(GuildConfig config) {
+        MusicConfig musicConfig = playerService.getConfig(config.getGuildId());
+        return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 
     @Override

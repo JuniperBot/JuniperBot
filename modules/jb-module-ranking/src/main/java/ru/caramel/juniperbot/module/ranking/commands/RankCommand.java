@@ -59,7 +59,8 @@ public class RankCommand extends RankingCommand {
             builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),
                     String.valueOf(info.getLevel()), true);
             builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
-                    String.format("%d/%d (всего %d)", info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()),
+                    messageService.getMessage("discord.command.rank.info.exp.format",
+                            info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()),
                     true);
             builder.setAuthor(member.getEffectiveName(), null, member.getUser().getAvatarUrl());
             if (StringUtils.isNotEmpty(messageService.getCopyContent())) {

@@ -89,9 +89,9 @@ public class WelcomeUserListener extends DiscordEventListener {
 
         // process message
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put(messageService.getMessage("welcome.message.placeholder.user"), event instanceof GuildMemberLeaveEvent
+        resolver.put("user", event instanceof GuildMemberLeaveEvent
                 ? event.getUser().getName() : event.getUser().getAsMention());
-        resolver.put(messageService.getMessage("welcome.message.placeholder.guild"), event.getGuild().getName());
+        resolver.put("guild", event.getGuild().getName());
         message = placeholderHelper.replacePlaceholders(message, resolver);
         if (message.contains("#")) {
             for (TextChannel textChannel : event.getGuild().getTextChannels()) {

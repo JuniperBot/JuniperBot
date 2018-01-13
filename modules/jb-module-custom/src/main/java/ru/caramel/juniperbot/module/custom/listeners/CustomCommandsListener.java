@@ -69,9 +69,9 @@ public class CustomCommandsListener extends DiscordEventListener {
 
     private MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put(messageService.getMessage("custom.commands.placeholder.author"), event.getAuthor().getAsMention());
-        resolver.put(messageService.getMessage("custom.commands.placeholder.guild"), event.getGuild().getName());
-        resolver.put(messageService.getMessage("custom.commands.placeholder.content"), content);
+        resolver.put("author", event.getAuthor().getAsMention());
+        resolver.put("guild", event.getGuild().getName());
+        resolver.put("content", content);
         return resolver;
     }
 }

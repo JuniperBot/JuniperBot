@@ -24,7 +24,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="col-md-12">
             <div class="callout callout-warning">
                 <h4>Совет!</h4>
-                <p>Используйте ключевое слово <code>{пользователь}</code> для вставки обращения к зашедшему/вышедшему пользователю, а <code>{сервер}</code> для наименования Вашего сервера.</p>
+                <p>Используйте ключевое слово <code>{user}</code> для вставки обращения к зашедшему/вышедшему пользователю, а <code>{guild}</code> для наименования Вашего сервера.</p>
                 <p>В теле сообщений действует стандартное <a href="https://support.discordapp.com/hc/ru/articles/210298617" target="_blank">форматирование текста</a>.
                     Включение <b>Rich-контента</b> позволит отображать сообщения в виде блоков с заголовком и использовать расширенное форматирование,
                     в том числе именованные ссылки вида <code class="text-nowrap">[Мой сайт](http://example.com)</code>.</p>
@@ -45,7 +45,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <div class="col-md-12">
                                 <form:textarea path="joinMessage" cssClass="form-control" rows="5"
-                                               placeholder="Привет, {пользователь}! Добро пожаловать на **{сервер}**!" />
+                                               placeholder="Привет, {user}! Добро пожаловать на **{guild}**!" />
                                 <form:errors path="joinMessage" class="help-block" />
                             </div>
                         </div>
@@ -96,7 +96,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <div class="col-md-12">
                                 <form:textarea path="leaveMessage" cssClass="form-control" rows="5"
-                                               placeholder="**{пользователь}** покинул **{сервер}** :C Пожелаем ему удачи!" />
+                                               placeholder="**{user}** покинул **{guild}** :C Пожелаем ему удачи!" />
                                 <form:errors path="leaveMessage" class="help-block" />
                             </div>
                         </div>
