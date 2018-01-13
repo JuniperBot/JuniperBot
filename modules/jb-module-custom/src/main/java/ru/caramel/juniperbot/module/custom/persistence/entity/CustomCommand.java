@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.module.custom.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.module.custom.model.CommandType;
 
 import javax.persistence.*;

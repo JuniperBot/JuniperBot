@@ -14,13 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.repository;
+package ru.caramel.juniperbot.module.junipost.persistence.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+
+import java.util.List;
 
 @Repository
-public interface WebHookRepository extends JpaRepository<WebHook, Long> {
+public interface JuniPostRepository extends GuildOwnedRepository<JuniPost> {
 
+    @Query("SELECT j FROM JuniPost j WHERE j.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<JuniPost> findActive();
 }

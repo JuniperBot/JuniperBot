@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
 
 import java.util.List;
@@ -30,6 +31,8 @@ public interface GuildOwnedRepository<T extends GuildOwnedEntity> extends JpaRep
 
     @Query("SELECT e FROM #{#entityName} e WHERE e.guildConfig.guildId = :guildId")
     T findByGuildId(@Param("guildId") long guildId);
+
+    T findByGuildConfig(GuildConfig config);
 
     @Query("SELECT e FROM #{#entityName} e WHERE e.guildConfig.guildId = :guildId")
     List<T> findAllByGuildId(@Param("guildId") long guildId);

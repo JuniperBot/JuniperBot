@@ -21,7 +21,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.model.WebHookType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
@@ -30,6 +29,8 @@ import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
@@ -55,6 +56,9 @@ public class ConfigDao extends AbstractDao {
     private VkConnectionRepository vkConnectionRepository;
 
     @Autowired
+    private JuniPostRepository juniPostRepository;
+
+    @Autowired
     private WebHookService webHookService;
 
     @Autowired
@@ -69,10 +73,10 @@ public class ConfigDao extends AbstractDao {
     @Transactional
     public ConfigDto getConfig(long serverId) {
         GuildConfig config = configService.getOrCreate(serverId);
-
         ConfigDto dto = mapper.getConfigDto(config);
-        WebHook webHook = config.getWebHook();
-        WebHookDto hookDto = webHookDao.getDtoForView(config.getGuildId(), webHook);
+
+        JuniPost juniPost = getJuniPost(config);
+        WebHookDto hookDto = webHookDao.getDtoForView(config.getGuildId(), juniPost.getWebHook());
         dto.setWebHook(hookDto);
 
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(serverId);
@@ -101,15 +105,20 @@ public class ConfigDao extends AbstractDao {
         return dto;
     }
 
+    private JuniPost getJuniPost(GuildConfig config) {
+        JuniPost juniPost = juniPostRepository.findByGuildConfig(config);
+        if (juniPost == null) {
+            juniPost = new JuniPost();
+            juniPost.setGuildConfig(config);
+            juniPost.setWebHook(new WebHook());
+            juniPostRepository.save(juniPost);
+        }
+        return juniPost;
+    }
+
     @Transactional
     public void saveConfig(ConfigDto dto, long serverId) {
         GuildConfig config = configService.getOrCreate(serverId);
-        WebHook webHook = config.getWebHook();
-        if (webHook == null) {
-            webHook = new WebHook();
-            webHook.setType(WebHookType.INSTAGRAM);
-            config.setWebHook(webHook);
-        }
         mapper.updateConfig(dto, config);
 
         // update music config
@@ -119,8 +128,11 @@ public class ConfigDao extends AbstractDao {
         musicConfigRepository.save(musicConfig);
 
         // update webhook config
+        JuniPost juniPost = getJuniPost(config);
+        WebHook webHook = juniPost.getWebHook();
         WebHookDto hookDto = dto.getWebHook();
         if (hookDto != null) {
+            mapper.updateWebHook(hookDto, webHook);
             webHookService.updateWebHook(config.getGuildId(), hookDto.getChannelId(), webHook, "JuniperBot");
         }
 

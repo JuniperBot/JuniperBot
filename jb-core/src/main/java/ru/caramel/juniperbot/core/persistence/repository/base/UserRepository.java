@@ -18,10 +18,7 @@ package ru.caramel.juniperbot.core.persistence.repository.base;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
-
-import java.util.List;
 
 @NoRepositoryBean
 public interface UserRepository<T extends UserEntity> extends JpaRepository<T, Long> {

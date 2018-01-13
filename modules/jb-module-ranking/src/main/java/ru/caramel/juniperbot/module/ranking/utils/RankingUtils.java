@@ -1,6 +1,5 @@
 package ru.caramel.juniperbot.module.ranking.utils;
 
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 

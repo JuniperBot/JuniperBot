@@ -25,11 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.WebHookMessage;
-import ru.caramel.juniperbot.core.model.WebHookType;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +43,9 @@ public class PostService {
 
     @Value("${instagram.post.userName:JuniperBot}")
     private String userName;
+
+    @Autowired
+    private JuniPostRepository juniPostRepository;
 
     @Autowired
     private WebHookRepository webHookRepository;
@@ -86,8 +89,8 @@ public class PostService {
                         .embeds(embeds)
                         .build();
 
-                List<WebHook> webHooks = webHookRepository.findActive(WebHookType.INSTAGRAM);
-                webHooks.forEach(e -> discordService.executeWebHook(e, message, e2 -> {
+                List<JuniPost> juniPosts = juniPostRepository.findActive();
+                juniPosts.forEach(e -> discordService.executeWebHook(e.getWebHook(), message, e2 -> {
                     e2.setEnabled(false);
                     webHookRepository.save(e2);
                 }));

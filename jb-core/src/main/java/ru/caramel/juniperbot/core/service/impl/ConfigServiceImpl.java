@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import ru.caramel.juniperbot.core.model.WebHookType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 
@@ -113,9 +111,6 @@ public class ConfigServiceImpl implements ConfigService {
         if (config == null) {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
-            WebHook webHook = new WebHook();
-            webHook.setType(WebHookType.INSTAGRAM);
-            config.setWebHook(webHook);
             repository.save(config);
         }
         return config;

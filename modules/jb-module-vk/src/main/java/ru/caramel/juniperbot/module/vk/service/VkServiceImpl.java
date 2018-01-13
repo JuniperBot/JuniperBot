@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
 import ru.caramel.juniperbot.core.model.WebHookMessage;
-import ru.caramel.juniperbot.core.model.WebHookType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
@@ -130,7 +129,6 @@ public class VkServiceImpl implements VkService {
         connection.setConfirmCode(code);
 
         WebHook hook = new WebHook();
-        hook.setType(WebHookType.VK);
         hook.setEnabled(true);
         connection.setWebHook(hook);
         return repository.save(connection);

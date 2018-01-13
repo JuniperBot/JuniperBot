@@ -60,10 +60,6 @@ public class GuildConfig extends BaseEntity {
     @Column(name = "is_help_private")
     private Boolean privateHelp;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "web_hook_id")
-    private WebHook webHook;
-
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }

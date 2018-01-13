@@ -14,8 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.model;
+package ru.caramel.juniperbot.module.junipost.persistence.entity;
 
-public enum WebHookType {
-    INSTAGRAM, VK
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "junipost")
+@ToString
+@Getter
+@Setter
+public class JuniPost extends GuildOwnedEntity {
+    private static final long serialVersionUID = -3872054410668142201L;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "web_hook_id")
+    private WebHook webHook;
+
 }

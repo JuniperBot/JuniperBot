@@ -18,9 +18,9 @@ package ru.caramel.juniperbot.module.vk.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 
 import javax.persistence.*;

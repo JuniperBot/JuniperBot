@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.service.MessageService;
 
 @Service
 public class WelcomeGuildListener extends DiscordEventListener {

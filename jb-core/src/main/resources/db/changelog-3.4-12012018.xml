@@ -147,4 +147,42 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="3.4-012012018-13" author="caramel">
+        <createTable tableName="junipost">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_junipost"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_junipost_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="web_hook_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_junipost_web_hook" references="web_hook(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3.4-012012018-14" author="caramel">
+        <sql>INSERT INTO junipost (version, guild_config_id, web_hook_id) SELECT 0, id, web_hook_id FROM guild_config WHERE web_hook_id IS NOT NULL;</sql>
+        <dropColumn tableName="guild_config">
+            <column name="web_hook_id"/>
+        </dropColumn>
+        <createIndex tableName="junipost" unique="true" indexName="idx_junipost_web_hook_id">
+            <column name="web_hook_id"/>
+        </createIndex>
+        <createIndex tableName="junipost" unique="true" indexName="idx_junipost_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <createIndex tableName="ranking_config" unique="true" indexName="idx_ranking_config_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <createIndex tableName="music_config" unique="true" indexName="idx_music_config_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <dropColumn tableName="web_hook">
+            <column name="type"/>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>

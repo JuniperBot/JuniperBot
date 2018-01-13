@@ -18,8 +18,6 @@ package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
-import ru.caramel.juniperbot.core.persistence.entity.base.MemberEntity;
 import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
 
 import javax.persistence.Column;

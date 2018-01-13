@@ -108,8 +108,7 @@ public interface MapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "hookId", ignore = true),
-            @Mapping(target = "token", ignore = true),
-            @Mapping(target = "type", ignore = true)
+            @Mapping(target = "token", ignore = true)
     })
     void updateWebHook(WebHookDto source, @MappingTarget WebHook target);
 
