@@ -24,24 +24,25 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Справка по пользовательским командам</h4>
+                <h4 class="modal-title"><spring:message code="page.custom.modal.help.title"/></h4>
             </div>
             <div class="modal-body">
-                <p>Здесь вы можете добавить свои собственные команды с какой-нибудь информацией или еще чем-нибудь. Поддерживается два типа команд:</p>
+                <p><spring:message code="page.custom.modal.help.content"/></p>
                 <ol>
-                    <li>Сообщение — распечатает указанное сообщение в ответ на команду;</li>
-                    <li>Перенаправление — является псевдонимом другой команды. Например, для сокращения можно создать команду <code>рик</code>
-                        с телом <code>плей Rick Roll</code>, которая запустит воспроизведение указанной композиции.</li>
+                    <li><spring:message code="page.custom.modal.help.content.option1"/></li>
+                    <li><spring:message code="page.custom.modal.help.content.option2"/></li>
                 </ol>
-                <p>В теле команды поддерживаются ключевые слова:</p>
+                <p><spring:message code="page.custom.modal.help.keywords"/></p>
                 <ul>
-                    <li><code>{author}</code> — заменяется на упоминание пользователя, запросившего команду;</li>
-                    <li><code>{guild}</code> — заменяется на название вашего сервера;</li>
-                    <li><code>{content}</code> — заменяется на текст, следуемый за командой (аргументы).</li>
+                    <li><code>{author}</code> — <spring:message code="page.custom.modal.help.keywords.author"/></li>
+                    <li><code>{guild}</code> — <spring:message code="page.custom.modal.help.keywords.guild"/></li>
+                    <li><code>{content}</code> — <spring:message code="page.custom.modal.help.keywords.content"/></li>
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <spring:message code="global.button.close"/>
+                </button>
             </div>
         </div>
     </div>
@@ -52,15 +53,17 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="col-md-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Пользовательские команды
+                    <h3 class="box-title"><spring:message code="page.custom.title"/>
                         <i class="fa fa-question-circle" style="cursor: pointer" data-toggle="modal" data-target="#help-dialog"></i></h3>
                 </div>
                 <div class="box-body no-padding">
                     <table id="commandsContainer" class="table table-striped">
                         <tbody>
                         <tr class="noCommandsItem" style="display: none;">
-                            <td>Нет пользовательских команд</td>
+                            <td><spring:message code="page.custom.no-commands"/></td>
                         </tr>
+                        <spring:message code="page.custom.command.name" var="commandNameText"/>
+                        <spring:message code="page.custom.command.content" var="commandContentText"/>
                         <c:forEach items="${commandsContainer.commands}" var="command" varStatus="i" begin="0">
                             <tr class="commandRow">
                                 <td>
@@ -68,11 +71,15 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                     <div class="col-md-3 form-horizontal">
                                         <spring:bind path="commands[${i.index}].key">
                                             <div class="form-group ${status.error ? 'has-error' : ''}">
-                                                <label class="col-sm-4 control-label">Команда</label>
+                                                <label class="col-sm-4 control-label">
+                                                    <spring:message code="page.custom.command"/>
+                                                </label>
                                                 <div class="col-sm-8">
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
-                                                        <form:input id="key${i.index}" path="commands[${i.index}].key" cssClass="form-control" placeholder="Название" />
+                                                        <form:input id="key${i.index}" path="commands[${i.index}].key"
+                                                                    cssClass="form-control"
+                                                                    placeholder="${commandNameText}" />
                                                     </div>
                                                     <form:errors path="commands[${i.index}].key" class="help-block error-message" />
                                                 </div>
@@ -80,7 +87,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                         </spring:bind>
                                         <spring:bind path="commands[${i.index}].type">
                                             <div class="form-group no-b-margin ${status.error ? 'has-error' : ''}">
-                                                <label class="col-sm-4 control-label">Тип</label>
+                                                <label class="col-sm-4 control-label">
+                                                    <spring:message code="page.custom.command.type"/>
+                                                </label>
                                                 <div class="col-sm-8">
                                                     <form:select path="commands[${i.index}].type" cssClass="form-control" cssStyle="width: 100%;">
                                                         <c:forEach items="${commandTypes}" var="type">
@@ -99,7 +108,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group no-b-margin ${status.error ? 'has-error' : ''}">
                                                 <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
                                                 <form:textarea path="commands[${i.index}].content" cssClass="form-control" cssStyle="min-height: 83px;"
-                                                               rows="3" placeholder="Введите тело команды" />
+                                                               rows="3" placeholder="${commandContentText}" />
                                                 <form:errors path="commands[${i.index}].content" class="help-block error-message" />
                                             </div>
                                         </spring:bind>
@@ -112,16 +121,21 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                 <td>
                                     <div class="col-md-3 form-horizontal">
                                         <div class="form-group">
-                                            <label class="col-sm-4 control-label">Команда</label>
+                                            <label class="col-sm-4 control-label">
+                                                <spring:message code="page.custom.command"/>
+                                            </label>
                                             <div class="col-sm-8">
                                                 <div class="input-group">
                                                     <span class="input-group-addon"><c:out value="${commandPrefix}"/></span>
-                                                    <input class="form-control" type="text" name="commands[].key" value="" placeholder="Название" />
+                                                    <input class="form-control" type="text" name="commands[].key"
+                                                           value="" placeholder="${commandNameText}" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group no-b-margin">
-                                            <label class="col-sm-4 control-label">Тип</label>
+                                            <label class="col-sm-4 control-label">
+                                                <spring:message code="page.custom.command.type"/>
+                                            </label>
                                             <div class="col-sm-8">
                                                 <select name="commands[].type" class="form-control" style="width: 100%;">
                                                     <c:forEach items="${commandTypes}" var="type">
@@ -134,7 +148,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                     <div class="col-md-9">
                                         <div class="form-group no-b-margin">
                                             <span class="badge badge-delete bg-red removeCommand"><i class="fa fa-remove"></i></span>
-                                            <textarea name="commands[].content" class="form-control" placeholder="Введите тело команды" rows="3" style="min-height: 83px;"></textarea>
+                                            <textarea name="commands[].content" class="form-control" placeholder="${commandContentText}" rows="3" style="min-height: 83px;"></textarea>
                                         </div>
                                     </div>
                                 </td>
@@ -148,9 +162,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     </div>
     <div class="row">
         <div class="col-md-12 submit-group">
-            <button type="submit" class="btn bg-orange pull-left">Сохранить изменения</button>
-            <a id="addCommand" class="btn btn-success pull-left">Добавить команду</a>
-            <a href="?reload" class="btn btn-danger pull-left">Сброс</a>
+            <button type="submit" class="btn bg-orange pull-left"><spring:message code="global.button.save"/></button>
+            <a id="addCommand" class="btn btn-success pull-left"><spring:message code="page.custom.button.add"/></a>
+            <a href="?reload" class="btn btn-danger pull-left"><spring:message code="global.button.reset"/></a>
         </div>
     </div>
 </form:form>

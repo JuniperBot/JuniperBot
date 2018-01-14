@@ -24,35 +24,36 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="vk-connect-modal-label">Подключение сообщества ВКонтакте</h4>
+                <h4 class="modal-title" id="vk-connect-modal-label"><spring:message code="page.config.vk.modal.title"/></h4>
             </div>
             <div class="modal-body">
                 <div id="vk-first-step">
-                    <p>Для подключения своего сообщества к боту необходимо сделать следующее:</p>
+                    <p><spring:message code="page.config.vk.modal.step1.workflow.intro"/></p>
                     <ol>
-                        <li>Зайти в управление сообществом на его странице ВКонтакте;</li>
-                        <li>Открыть раздел <b>Работа с API</b>;</li>
-                        <li>Перейти во вкладку <b>Callback API</b>;</li>
-                        <li>Добавить новый сервер с помощью кнопки <b>Добавить сервер</b> или воспользоваться имеющимся, если он не используется;</li>
-                        <li>Во вкладке <b>Типы событий</b> найти раздел <b>Записи на стене</b> и поставить галочку напротив <b>Добавление</b>;</li>
-                        <li>Во вкладке <b>Настройки сервера</b> скопировать выделенный жирным код подтверждения сервера (строка, которую должен вернуть сервер) в поле ниже, ввести название и нажать оранжевую кнопочку <b>Подключить</b>.</li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.1"/></li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.2"/></li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.3"/></li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.4"/></li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.5"/></li>
+                        <li><spring:message code="page.config.vk.modal.step1.workflow.list.6"/></li>
                     </ol>
                     <div class="callout">
-                        <p>Не закрывайте страницу ВКонтакте откуда вы скопировали этот код! Она вам еще понадобится.</p>
+                        <p><spring:message code="page.config.vk.modal.step1.workflow.callout"/></p>
                     </div>
                 </div>
                 <div id="vk-second-step">
-                    <p>Отлично! Мы готовы принимать запросы от ВКонтакте! Но нужно сделать кое-что еще:</p>
+                    <p><spring:message code="page.config.vk.modal.step2.workflow.intro"/></p>
                     <ol>
-                        <li>Вернитесь на страницу, откуда вы брали код подтверждения;</li>
-                        <li>Введите там в поле <b>Адрес</b>, указанный ниже и нажмите там же кнопку <b>Подтвердить</b>;</li>
-                        <li>Готово! Через некоторое время мы установим соединение с ВКонтакте и вы сможете выбрать канал, в который будут публиковаться ваши фыр-фырные посты.</li>
+                        <li><spring:message code="page.config.vk.modal.step2.workflow.list.1"/></li>
+                        <li><spring:message code="page.config.vk.modal.step2.workflow.list.2"/></li>
+                        <li><spring:message code="page.config.vk.modal.step2.workflow.list.3"/></li>
                     </ol>
                     <div class="form-group">
                         <div class="input-group">
                             <input id="vk-address-input" type="text" class="form-control" readonly>
                             <span class="input-group-btn">
-                                <button id="vk-address-copy" type="button" class="btn" title="Скопировать в буфер обмена"
+                                <button id="vk-address-copy" type="button" class="btn"
+                                        title="<spring:message code="global.button.clipboard"/>"
                                         data-toggle="tooltip" data-placement="bottom"><i class="fa fa-copy"></i></button>
                             </span>
                         </div>
@@ -63,16 +64,18 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 <div class="col-md-9">
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <input id="vk-connection-name" class="form-control" maxlength="255" placeholder="Название сообщества" />
+                            <input id="vk-connection-name" class="form-control" maxlength="255"
+                                   placeholder="<spring:message code="page.config.vk.modal.step2.connection-name.placeholder"/>" />
                         </div>
                         <div class="form-group col-md-6">
-                            <input id="vk-confirmation-code" class="form-control" maxlength="50" placeholder="Код подтверждения" />
+                            <input id="vk-confirmation-code" class="form-control" maxlength="50"
+                                   placeholder="<spring:message code="page.config.vk.modal.step2.confirmation-code.placeholder"/>" />
                         </div>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <button id="vk-create-button" type="button" class="btn btn-warning" style="width: 110px;">
-                        <span id="vk-connect-text">Подключить</span>
+                        <span id="vk-connect-text"><spring:message code="page.config.vk.modal.buttons.connect"/></span>
                         <span id="vk-connect-spinner" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style="font-size:18px;"></i></span>
                     </button>
                 </div>
@@ -86,14 +89,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="col-md-6">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Основные настройки</h3>
+                    <h3 class="box-title"><spring:message code="page.config.common.title"/></h3>
                 </div>
                 <div class="box-body">
                     <spring:bind path="prefix">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="input-prefix" class="col-sm-4 control-label">Префикс</label>
+                            <spring:message code="page.config.common.prefix" var="prefixLocale"/>
+                            <label for="input-prefix" class="col-sm-4 control-label">${prefixLocale}</label>
                             <div class="col-sm-8">
-                                <form:input id="input-prefix" path="prefix" type="text" class="form-control" placeholder="Префикс" />
+                                <form:input id="input-prefix" path="prefix" type="text" class="form-control"
+                                            placeholder="${prefixLocale}" />
                                 <form:errors path="prefix" class="help-block" />
                             </div>
                         </div>
@@ -102,7 +107,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     <hr />
                     <spring:bind path="musicConfig.channelId">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="music-channel" class="col-sm-4 control-label">Музыкальный канал по-умолчанию</label>
+                            <label for="music-channel" class="col-sm-4 control-label">
+                                <spring:message code="page.config.music.channel"/>
+                            </label>
                             <div class="col-sm-8">
                                 <form:select id="music-channel" path="musicConfig.channelId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;"
                                              items="${voiceChannels}" itemValue="idLong" itemLabel="name" />
@@ -111,7 +118,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                     <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
                                         <label>
                                             <form:checkbox path="musicConfig.userJoinEnabled" cssStyle="margin-top: 4px;" />
-                                            Разрешить присоединяться в канал пользователя
+                                            <spring:message code="page.config.music.userJoin"/>
                                         </label>
                                         <form:errors path="musicConfig.userJoinEnabled" class="help-block" />
                                     </div>
@@ -121,22 +128,33 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     </spring:bind>
 
                     <div class="form-group">
-                        <label class="col-sm-4 control-label combo-control">Ограничения воспроизведения</label>
+                        <label class="col-sm-4 control-label combo-control">
+                            <spring:message code="page.config.music.limits"/>
+                        </label>
                         <div class="col-sm-8">
+                            <spring:message code="page.config.music.limits.unlimited" var="unlimitedPlaceholder" />
                             <div class="row">
                                 <spring:bind path="musicConfig.queueLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
-                                        <label for="queue-limit" class="control-label">Треков на участника</label>
-                                        <form:input id="queue-limit" type="number" min="1" path="musicConfig.queueLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <label for="queue-limit" class="control-label">
+                                            <spring:message code="page.config.music.limits.queue-limit"/>
+                                        </label>
+                                        <form:input id="queue-limit" type="number" min="1" path="musicConfig.queueLimit" cssClass="form-control"
+                                                    placeholder="${unlimitedPlaceholder}" />
                                         <form:errors path="musicConfig.queueLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="musicConfig.durationLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
-                                        <label for="duration-limit" class="control-label">Длительность трека</label>
+                                        <label for="duration-limit" class="control-label">
+                                            <spring:message code="page.config.music.limits.duration-limit"/>
+                                        </label>
                                         <div class="input-group">
-                                            <form:input id="duration-limit" type="number" min="1" path="musicConfig.durationLimit" cssClass="form-control" placeholder="не ограничено" />
-                                            <span class="input-group-addon">мин</span>
+                                            <form:input id="duration-limit" type="number" min="1" path="musicConfig.durationLimit" cssClass="form-control"
+                                                        placeholder="${unlimitedPlaceholder}" />
+                                            <span class="input-group-addon">
+                                                <spring:message code="global.time.minute"/>
+                                            </span>
                                         </div>
                                         <form:errors path="musicConfig.durationLimit" class="help-block" />
                                     </div>
@@ -145,8 +163,11 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             <div class="row">
                                 <spring:bind path="musicConfig.duplicateLimit">
                                     <div class="col-sm-6 ${status.error ? 'has-error' : ''}">
-                                        <label for="duplicate-limit" class="control-label">Одинаковых треков</label>
-                                        <form:input id="duplicate-limit" type="number" min="1" path="musicConfig.duplicateLimit" cssClass="form-control" placeholder="не ограничено" />
+                                        <label for="duplicate-limit" class="control-label">
+                                            <spring:message code="page.config.music.limits.duplicate-limit"/>
+                                        </label>
+                                        <form:input id="duplicate-limit" type="number" min="1" path="musicConfig.duplicateLimit" cssClass="form-control"
+                                                    placeholder="${unlimitedPlaceholder}" />
                                         <form:errors path="musicConfig.duplicateLimit" class="help-block" />
                                     </div>
                                 </spring:bind>
@@ -155,7 +176,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                         <div class="checkbox play-checkbox ${status.error ? 'has-error' : ''}">
                                             <label>
                                                 <form:checkbox path="musicConfig.playlistEnabled" cssStyle="margin-top: 4px;" />
-                                                Разрешить плейлисты
+                                                <spring:message code="page.config.music.limits.playlistsEnabled"/>
                                             </label>
                                             <form:errors path="musicConfig.playlistEnabled" class="help-block" />
                                         </div>
@@ -164,7 +185,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                         <div class="checkbox ${status.error ? 'has-error' : ''}" style="padding-top: 0px;">
                                             <label>
                                                 <form:checkbox path="musicConfig.streamsEnabled" cssStyle="margin-top: 4px;" />
-                                                Разрешить потоковое аудио
+                                                <spring:message code="page.config.music.limits.streamsEnabled"/>
                                             </label>
                                             <form:errors path="musicConfig.streamsEnabled" class="help-block" />
                                         </div>
@@ -179,17 +200,19 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="col-md-6">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Настройки публикаций</h3>
+                    <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>
                 </div>
 
                 <div class="box-body">
                     <form:hidden path="webHook.available" />
                     <spring:bind path="privateHelp">
                         <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
-                            <label for="input-help" class="col-sm-4 control-label">Отправлять команду <small class="label bg-yellow">хелп</small> в личку</label>
+                            <label for="input-help" class="col-sm-4 control-label">
+                                <spring:message code="page.config.publish.privateHelp"/>
+                            </label>
                             <div class="col-sm-8">
                                 <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
-                                <p class="help-block">(это также отключит группировку и отправит полный список команд)</p>
+                                <p class="help-block"><spring:message code="page.config.publish.privateHelp.note"/></p>
                                 <form:errors path="privateHelp" class="help-block" />
                             </div>
                         </div>
@@ -197,7 +220,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
                     <spring:bind path="webHook.channelId">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="publish-channel" class="col-sm-4 control-label">Публикация фыров от Джупи</label>
+                            <label for="publish-channel" class="col-sm-4 control-label">
+                                <spring:message code="page.config.publish.juni"/>
+                            </label>
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -231,7 +256,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                             <form:errors path="vkConnections[${status.index}].webHook.channelId" class="help-block" />
                                         </c:if>
                                         <c:if test="${config.vkConnections[status.index].status == 'CONFIRMATION'}">
-                                            <input id="vk-connection-${status.index}" type="text" value="Ожидается подтверждение..." class="form-control" disabled>
+                                            <input id="vk-connection-${status.index}" type="text" class="form-control" disabled
+                                                   value="<spring:message code="page.config.vk.awaiting"/>">
                                         </c:if>
                                         <span class="input-group-btn">
                                         <button type="button" class="btn btn-danger btn-flat vk-remove-btn"
@@ -247,12 +273,12 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     </div>
 
                     <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
-                        <i class="fa fa-vk" style="margin-top: -2px;"></i> Подключить сообщество ВКонтакте
+                        <i class="fa fa-vk" style="margin-top: -2px;"></i> <spring:message code="page.config.vk.connectButton"/>
                     </a>
 
                     <c:if test="${not config.webHook.available}">
                         <div class="callout callout-warning">
-                            <p>Изменение настроек публикации недоступно, поскольку бот не добавлен на сервер и/или нет прав на управление WebHook'ами</p>
+                            <p><spring:message code="page.config.webHook.unavailable"/></p>
                         </div>
                     </c:if>
                 </div>
@@ -261,7 +287,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     </div>
     <div class="row">
         <div class="col-md-6">
-            <button type="submit" class="btn bg-orange">Сохранить изменения</button>
+            <button type="submit" class="btn bg-orange"><spring:message code="global.button.save"/></button>
         </div>
     </div>
 </form:form>
@@ -269,7 +295,14 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <script type="text/javascript" src="<c:url value="/resources/js/vk-connector.js?v=${buildTimestamp}"/>"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        var connector = new VkConnector();
+        var connector = new VkConnector({
+            modalDeleteTitle:   '<spring:message code="page.config.vk.modal.delete.title"/>',
+            modalDeleteContent: '<spring:message code="page.config.vk.modal.delete.content"/>',
+            awaitingConnection: '<spring:message code="page.config.vk.awaiting"/>',
+            modalDeleteButton:  '<spring:message code="global.button.delete"/>',
+            modalCloseButton:   '<spring:message code="global.button.close"/>',
+            somethingIsWrong:   '<spring:message code="global.somethingIsWrong"/>'
+        });
         connector.init();
     });
 </script>

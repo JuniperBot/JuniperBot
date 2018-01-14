@@ -37,6 +37,7 @@ public class CurrentCommand extends AudioCommand {
 
         TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
         if (current == null) {
+            fail(message);
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;
         }

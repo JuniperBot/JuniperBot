@@ -32,7 +32,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <div class="widget-user-2 widget-member">
                             <div class="widget-user-header">
                                 <div class="widget-user-image">
-                                    <img class="img-circle" src="${member.avatarUrl}" onerror="this.src='/resources/img/noavatar.png'" alt="Аватар">
+                                    <img class="img-circle" src="${member.avatarUrl}" onerror="this.src='/resources/img/noavatar.png'"
+                                         alt="<spring:message code="global.header.avatar"/>">
                                 </div>
                                 <h3 class="widget-user-username"><c:out value="${member.nick}" /></h3>
                                 <h5 class="widget-user-desc"><c:out value="${member.name}" />#<c:out value="${member.discriminator}" /></h5>
@@ -41,7 +42,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="col-lg-8 col-md-7 col-sm-6">
                         <div class="progress-group progress-level">
-                            <span class="progress-text">Опыт (всего ${member.totalExp})</span>
+                            <span class="progress-text"><spring:message code="page.ranking.list.exp" arguments="${member.totalExp}"/></span>
                             <span class="progress-number"><b>${member.remainingExp}</b>/${member.levelExp}</span>
                             <div class="progress">
                                 <div class="progress-bar progress-bar-yellow progress-bar-striped" style="width: ${member.pct}%"></div>
@@ -49,7 +50,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="level-circle bg-yellow">
                             <div class="level-value">${member.level}</div>
-                            <div class="level-desc">ур.</div>
+                            <div class="level-desc"><spring:message code="page.ranking.list.lvl"/></div>
                         </div>
                         <c:if test="${editable}">
                             <div class="editable-rank-actions">
@@ -58,8 +59,10 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                        data-toggle="dropdown"
                                        aria-expanded="false"><i class="fa fa-ellipsis-v toggle-icon"></i></a>
                                     <ul class="dropdown-menu dropdown-menu-right">
-                                        <li><a href="#" class="update-level-item"><i class="fa fa-pencil"></i> Изменить уровень</a></li>
-                                        <li><a href="#" class="reset-level-item text-red"><i class="fa fa-close"></i> Сбросить</a></li>
+                                        <li><a href="#" class="update-level-item"><i class="fa fa-pencil"></i>
+                                            <spring:message code="page.ranking.list.button.update"/></a></li>
+                                        <li><a href="#" class="reset-level-item text-red"><i class="fa fa-close"></i>
+                                            <spring:message code="global.button.reset"/></a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -72,5 +75,5 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 </c:if>
 
 <c:if test="${empty members}">
-    <div>Рейтинги отсутствуют</div>
+    <div><spring:message code="page.ranking.list.empty"/></div>
 </c:if>

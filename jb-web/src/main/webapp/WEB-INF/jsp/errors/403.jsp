@@ -17,13 +17,12 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
+<c:url value="/" var="rootUrl"/>
+
 <div class="error-page text-white">
     <h2 class="headline">403</h2>
     <div class="error-content">
-        <h3><i class="fa fa-search"></i> Урф... Доступ запрещен.</h3>
-        <p>
-            Доступ к запрашиваемой странице запрещен.
-            Вы можете <a href="<c:url value="/"/>">вернуться на главную</a> и попробовать что-нибудь еще.
-        </p>
+        <h3><i class="fa fa-search"></i> <spring:message code="page.errors.403.title"/></h3>
+        <p><spring:message code="page.errors.403.description" arguments="${rootUrl}"/></p>
     </div>
 </div>

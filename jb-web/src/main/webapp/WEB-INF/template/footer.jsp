@@ -19,7 +19,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-        <b>Версия</b> <spring:eval expression="@environment.getProperty('app.version')" />
+        <b><spring:message code="global.footer.version"/></b> <spring:eval expression="@environment.getProperty('app.version')" />
     </div>
-    <strong>&copy; 2017-2018 <a href="https://vk.com/goldrenard" target="_blank">Карамелька</a></strong> Все права зафырканы | Inspired by <strong><a href="https://www.juniperfoxx.com/" target="_blank">JuniperFoxx</a></strong>
+    <strong>&copy; 2017-2018 <a href="https://vk.com/goldrenard" target="_blank">Карамелька</a></strong> <spring:message code="global.footer.joke"/> | Inspired by <strong><a href="https://www.juniperfoxx.com/" target="_blank">JuniperFoxx</a></strong>
 </footer>

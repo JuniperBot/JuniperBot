@@ -73,10 +73,7 @@ public class RankingController extends AbstractController {
         if (!authorized && !rankingService.isEnabled(serverId)) {
             throw new NotFoundException();
         }
-        RankingConfig rankingConfig = rankingConfigRepository.findByGuildId(serverId);
-        if (rankingConfig == null) {
-            throw new NotFoundException();
-        }
+        RankingConfig rankingConfig = rankingService.getConfig(serverId);
         ModelAndView mv;
         if (!forceUser && authorized) {
             mv = createModel("ranking.admin", serverId)

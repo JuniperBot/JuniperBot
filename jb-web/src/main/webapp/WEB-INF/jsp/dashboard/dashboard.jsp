@@ -17,17 +17,20 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@include file="/WEB-INF/template/include.jsp" %>
 
+<c:url value="/config/${serverId}" var="configUrl"/>
+
 <div class="box">
     <div class="box-header with-border">
-        <h3 class="box-title">Список участников и что-нибудь еще</h3>
+        <h3 class="box-title"><spring:message code="page.dashboard.title"/></h3>
 
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                    title="Collapse">
+                    title="<spring:message code="global.title.collapse"/>">
                 <i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+            <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip"
+                    title="<spring:message code="global.title.remove"/>">
                 <i class="fa fa-times"></i></button>
         </div>
     </div>
-    <div class="box-body">Раздел пока что в разработке, но вы уже можете приступить к <a href="<c:url value="/config/${serverId}"/>">конфигурированию</a> бота на сервере.</div>
+    <div class="box-body"><spring:message code="page.dashboard.content" arguments="${configUrl}"/></div>
 </div>

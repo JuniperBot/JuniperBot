@@ -18,6 +18,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@include file="/WEB-INF/template/include.jsp" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<tilesx:useAttribute id="pageTitle"              name="title"                  classname="java.lang.String" ignore="true" scope="request"/>
 <tilesx:useAttribute id="sidebarVisible"         name="sidebarVisible"         classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="breadcrumbVisible"      name="breadcrumbVisible"      classname="java.lang.String" ignore="true" scope="request" />
 <tilesx:useAttribute id="breadcrumbTitleVisible" name="breadcrumbTitleVisible" classname="java.lang.String" ignore="true" scope="request" />
@@ -31,7 +32,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>
         <c:if test="${not empty serverName}"><c:out value="${serverName}"/> — </c:if>
-        <tiles:insertAttribute name="title" ignore="true"/>
+        <spring:message code="${pageTitle}"/>
     </title>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">

@@ -19,8 +19,10 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <spring:url value="/commands/${serverId}" var="actionUrl"/>
 
-<form:form modelAttribute="commandsContainer" method="post" action="${actionUrl}">
+<spring:message code="global.switch.on" var="switchOn"/>
+<spring:message code="global.switch.off" var="switchOff"/>
 
+<form:form modelAttribute="commandsContainer" method="post" action="${actionUrl}">
     <c:forEach items="${commandTypes}" var="commandType">
         <div class="row">
             <div class="col-md-12">
@@ -28,8 +30,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     <div class="box-header with-border">
                         <h3 class="box-title"><spring:message code="${commandType.key.toString()}" /></h3>
                         <div class="box-tools pull-right button-xs-group">
-                            <a class="btn btn-warning btn-xs check-all">Включить все</a>
-                            <a class="btn btn-default btn-xs uncheck-all">Отключить все</a>
+                            <a class="btn btn-warning btn-xs check-all"><spring:message code="global.switchGroup.enableAll"/></a>
+                            <a class="btn btn-default btn-xs uncheck-all"><spring:message code="global.switchGroup.disableAll"/></a>
                         </div>
                     </div>
                     <div class="box-body no-padding">
@@ -39,18 +41,25 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                 <tr>
                                     <td>
                                         <div class="pull-left">
-                                            <h4><span class="label label-warning"><c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/></span></h4>
+                                            <h4>
+                                                <span class="label label-warning">
+                                                    <c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/>
+                                                </span>
+                                            </h4>
                                             <div><spring:message code="${descriptor.description}"/></div>
                                         </div>
                                         <div class="pull-right command-checkbox">
-                                            <form:checkbox path="commands" value="${descriptor.key}" data-toggle="toggle" data-onstyle="warning" data-on="Вкл" data-off="Выкл" />
+                                            <form:checkbox path="commands" value="${descriptor.key}"
+                                                           data-toggle="toggle"
+                                                           data-onstyle="warning"
+                                                           data-on="${switchOn}"
+                                                           data-off="${switchOff}" />
                                         </div>
                                     </td>
                                 </tr>
                             </c:forEach>
                             </tbody>
                         </table>
-
                     </div>
                 </div>
             </div>
@@ -59,7 +68,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
     <div class="row">
         <div class="col-md-12 submit-group">
-            <button type="submit" class="btn bg-orange pull-left">Сохранить изменения</button>
+            <button type="submit" class="btn bg-orange pull-left"><spring:message code="global.button.save"/></button>
         </div>
     </div>
 </form:form>

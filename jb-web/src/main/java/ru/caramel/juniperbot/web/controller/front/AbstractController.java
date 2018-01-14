@@ -29,7 +29,6 @@ import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.web.common.flash.Flash;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
@@ -53,9 +52,6 @@ public abstract class AbstractController {
 
     @Autowired
     protected ConfigService configService;
-
-    @Autowired
-    protected MessageService messageService;
 
     @Autowired
     protected MapperService mapperService;

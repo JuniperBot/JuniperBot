@@ -38,15 +38,15 @@ public class HereCommand extends AudioCommand {
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!message.getMember().getVoiceState().inVoiceChannel()) {
             messageService.onError(message.getTextChannel(), "discord.command.here.notInChannel");
-            return false;
+            return fail(message);
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (!instance.isActive()) {
             messageService.onError(message.getTextChannel(), "discord.command.audio.notStarted");
-            return false;
+            return fail(message);
         }
         playerService.connectToChannel(instance, message.getMember());
-        return true;
+        return ok(message);
     }
 
     @Override

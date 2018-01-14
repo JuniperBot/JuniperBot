@@ -646,3 +646,23 @@ h5.hyperlink:hover > a,
 h6.hyperlink:hover > a {
     visibility: visible
 }
+
+.countryFlag {
+    margin: 3px 0 0 5px;
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+}
+
+.countryFlag.us { background: url(../img/flag_us.png); }
+.countryFlag.uk { background: url(../img/flag_uk.png); }
+.countryFlag.ru { background: url(../img/flag_ru.png); }
+
+.language-menu {
+    width: 200px !important;
+}
+
+.language-menu .language-title {
+    color: #737373;
+    padding-top: 3px;
+}

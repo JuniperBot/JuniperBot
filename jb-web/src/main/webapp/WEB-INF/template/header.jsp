@@ -26,32 +26,60 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <nav class="navbar navbar-static-top">
         <c:if test="${sidebarVisible}">
             <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                <span class="sr-only">Переключить видимость меню</span>
+                <span class="sr-only"><spring:message code="global.header.toggle-menu"/></span>
             </a>
         </c:if>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-                <li>
+                <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
                     <a href="https://discord.gg/EdWspu3" target="_blank">
                         <div class="discord-header-icon-wrapper">
                             <div class="discord-header-icon"></div>
                         </div>
                     </a>
                 </li>
-                <li><a href="https://github.com/GoldRenard/JuniperBotJ" target="_blank"><i class="fa fa-github"></i></a></li>
+                <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
+                    <a href="https://github.com/GoldRenard/JuniperBotJ" target="_blank"><i class="fa fa-github"></i></a>
+                </li>
+                <li class="dropdown tasks-menu" title="<spring:message code="global.header.language"/>" data-toggle="tooltip" data-container="body" data-placement="left">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-language"></i>
+                    </a>
+                    <ul class="dropdown-menu language-menu">
+                        <li>
+                            <ul class="menu">
+                                <li>
+                                    <a href="<%=request.getContextPath()%>?locale=ru">
+                                        <div class="pull-left language-title">Русский</div>
+                                        <div class="pull-right countryFlag ru"></div>
+                                        <div class="clearfix"></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<%=request.getContextPath()%>?locale=en">
+                                        <div class="pull-left language-title">English</div>
+                                        <div class="pull-right countryFlag uk"></div>
+                                        <div class="pull-right countryFlag us"></div>
+                                        <div class="clearfix"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
                 <sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
-                    <li><a href="<c:url value="/login"/>"><i class="fa fa-sign-in"></i> Войти</a></li>
+                    <li><a href="<c:url value="/login"/>"><i class="fa fa-sign-in"></i> <spring:message code="global.header.login"/></a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated()">
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="${userDetails.avatarUrl}" class="user-image" alt="Аватарка">
+                            <img src="${userDetails.avatarUrl}" class="user-image" alt="<spring:message code="global.header.avatar"/>">
                             <span class="hidden-xs">${userDetails.userName}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="user-header">
-                                <img src="${userDetails.avatarUrl}" class="img-circle" alt="Аватарка">
+                                <img src="${userDetails.avatarUrl}" class="img-circle" alt="<spring:message code="global.header.avatar"/>">
                                 <p>${userDetails.userName}#${userDetails.discriminator}
                                     <c:if test="${not empty userDetails.email}">
                                         <small>${userDetails.email}</small>
@@ -60,10 +88,10 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </li>
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="<c:url value="/servers"/>" class="btn btn-default btn-flat">Серверы</a>
+                                    <a href="<c:url value="/servers"/>" class="btn btn-default btn-flat"><spring:message code="global.title.servers"/></a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="<c:url value="/logout"/>" class="btn btn-default btn-flat">Выйти</a>
+                                    <a href="<c:url value="/logout"/>" class="btn btn-default btn-flat"><spring:message code="global.header.logout"/></a>
                                 </div>
                             </li>
                         </ul>

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-function VkConnector() {
+function VkConnector(lang) {
     var self = this;
     var $connect = $("#vk-connect-button");
     var $modal = $("#vk-connect-modal");
@@ -24,7 +24,6 @@ function VkConnector() {
     var $nameInput = $("#vk-connection-name");
     var $nameGroup = $nameInput.closest('.form-group');
     var $connectionList = $("#vk-connection-list");
-
 
     var $connectText = $('#vk-connect-text');
     var $connectSpinner = $('#vk-connect-spinner');
@@ -62,12 +61,12 @@ function VkConnector() {
 
     self.onRemove = function (id, name) {
         BootstrapDialog.show({
-            title: 'Удаление соединения',
+            title: lang.modalDeleteTitle,
             type: BootstrapDialog.TYPE_WARNING,
-            message: 'Вы уверены что хотите удалить соединение с сообществом "' + name + '"?',
+            message: lang.modalDeleteContent.replace("{name}", name),
             spinicon: 'fa fa-circle-o-notch',
             buttons: [{
-                label: 'Удалить',
+                label: lang.modalDeleteButton,
                 cssClass: 'btn-warning',
                 autospin: true,
                 action: function (dialogRef) {
@@ -78,7 +77,7 @@ function VkConnector() {
                     });
                 }
             }, {
-                label: 'Закрыть',
+                label: lang.modalCloseButton,
                 action: function (dialogRef) {
                     dialogRef.close();
                 }
@@ -112,7 +111,7 @@ function VkConnector() {
                 rebindRemove();
             })
             .fail(function () {
-                BootstrapDialog.warning('Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             });
     }
 
@@ -122,7 +121,7 @@ function VkConnector() {
                 $('button[data-vk-id="' + id + '"]').closest('.form-group').remove();
             })
             .fail(function () {
-                BootstrapDialog.warning('Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(callback);
     }
@@ -154,7 +153,7 @@ function VkConnector() {
             '  <label class="col-sm-4 control-label"><i class="fa fa-vk"></i> ' + name + '</label>' +
             '  <div class="col-sm-8">' +
             '    <div class="input-group">' +
-            '      <input type="text" value="Ожидается подтверждение..." class="form-control" disabled="">' +
+            '      <input type="text" value="' + lang.awaitingConnection + '" class="form-control" disabled="">' +
             '      <span class="input-group-btn">' +
             '        <button type="button" class="btn btn-danger btn-flat vk-remove-btn" data-vk-id="' + id + '" data-vk-name="' + name + '">' +
             '          <i class="fa fa-remove"></i>' +

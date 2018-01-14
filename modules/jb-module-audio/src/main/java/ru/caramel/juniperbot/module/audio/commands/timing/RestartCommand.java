@@ -35,8 +35,8 @@ public class RestartCommand extends AudioCommand {
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playerService.getInstance(message.getGuild()).seek(0)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.restart.denied");
-            return false;
+            return fail(message);
         }
-        return true;
+        return ok(message);
     }
 }

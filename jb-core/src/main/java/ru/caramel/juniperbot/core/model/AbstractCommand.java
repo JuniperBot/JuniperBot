@@ -16,12 +16,35 @@
  */
 package ru.caramel.juniperbot.core.model;
 
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 public abstract class AbstractCommand implements Command {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
+
     @Override
     public boolean isAvailable(GuildConfig config) {
         return true;
+    }
+
+    protected boolean ok(MessageReceivedEvent message) {
+        sendEmotion(message, "✅");
+        return true;
+    }
+
+    protected boolean fail(MessageReceivedEvent message) {
+        sendEmotion(message, "❌");
+        return false;
+    }
+
+    private void sendEmotion(MessageReceivedEvent message, String code) {
+        try {
+            message.getMessage().addReaction(code).submit();
+        } catch (Exception e) {
+            LOGGER.error("Add emotion error", e);
+        }
     }
 }

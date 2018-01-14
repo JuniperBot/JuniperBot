@@ -18,10 +18,11 @@ package ru.caramel.juniperbot.web.common.navigation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import ru.caramel.juniperbot.core.service.MessageService;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
     private MenuBuilder builder;
 
     @Autowired
-    private MessageService messageService;
+    private ApplicationContext context;
 
     @Override
     public void postHandle(
@@ -79,7 +80,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
-        parseMenu(modelAndView, toParse);
+        parseMenu(request, modelAndView, toParse);
     }
 
     private MenuItem findForElement(PageElement element, List<MenuItem> items) {
@@ -97,7 +98,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
         return null;
     }
 
-    private Collection<MenuItem> parseMenu(ModelAndView modelAndView, Collection<MenuItem> items) {
+    private Collection<MenuItem> parseMenu(HttpServletRequest request, ModelAndView modelAndView, Collection<MenuItem> items) {
         Map<String, Object> sourceMap = modelAndView.getModel();
         final String[] search = new String[sourceMap.size()];
         final String[] replace = new String[sourceMap.size()];
@@ -106,16 +107,17 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
             search[i] = String.format("${%s}", entry.getKey());
             replace[i++] = String.valueOf(entry.getValue());
         }
-        items = parseItem(search, replace, items);
+        items = parseItem(request, search, replace, items);
         return items;
     }
 
-    private Collection<MenuItem> parseItem(String[] search, String[] replace, Collection<MenuItem> items) {
+    private Collection<MenuItem> parseItem(HttpServletRequest request, String[] search, String[] replace, Collection<MenuItem> items) {
         for (MenuItem item : items) {
             item.setUrl(StringUtils.replaceEach(item.getUrl(), search, replace));
-            item.setName(StringUtils.replaceEach(messageService.getMessage(item.getName()), search, replace));
+            String message = context.getMessage(item.getName(), null, RequestContextUtils.getLocale(request));
+            item.setName(StringUtils.replaceEach(message, search, replace));
             if (!item.getChilds().isEmpty()) {
-                parseItem(search, replace, item.getChilds());
+                parseItem(request, search, replace, item.getChilds());
             }
         }
         return items;

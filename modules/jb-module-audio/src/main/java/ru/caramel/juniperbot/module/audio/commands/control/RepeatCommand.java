@@ -50,9 +50,9 @@ public class RepeatCommand extends AudioCommand {
             if (instance.getCurrent() != null) {
                 messageManager.updateMessage(instance.getCurrent());
             }
-        } else {
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+            return ok(message);
         }
-        return true;
+        messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+        return fail(message);
     }
 }

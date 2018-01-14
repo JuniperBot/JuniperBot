@@ -74,7 +74,7 @@ public class PlayCommand extends AudioCommand {
             query = getChoiceUrl(context, index);
             if (query == null) {
                 messageManager.onQueueError(message.getChannel(), "discord.command.audio.play.select", results.size());
-                return false;
+                return fail(message);
             }
         }
         message.getTextChannel().sendTyping().queue();

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-function Ranking() {
+function Ranking(lang) {
     var self = this;
     var overlayContent = '<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>';
 
@@ -44,11 +44,11 @@ function Ranking() {
         "scrollY": "300px",
         "bInfo": false,
         "language": {
-            "zeroRecords": "Роли отсутствуют.",
-            "emptyTable": "Роли отсутствуют.",
+            "zeroRecords": lang.noRoles,
+            "emptyTable": lang.noRoles,
             "aria": {
-                "sortAscending": ": активировать для сортировки столбца по возрастанию",
-                "sortDescending": ": активировать для сортировки столбца по убыванию"
+                "sortAscending": ": " + lang.sortAsc,
+                "sortDescending": ": " + lang.sortDesc
             }
         },
         "order": [[1, "desc"]],
@@ -77,7 +77,7 @@ function Ranking() {
                 bindActions();
             })
             .fail(function () {
-                self.container.html('Упс! Что-то пошло не так!');
+                self.container.html(lang.somethingIsWrong);
             })
             .always(function () {
                 self.reloading = false;
@@ -85,7 +85,6 @@ function Ranking() {
     };
 
     function bindActions() {
-
         $(".update-level-item").unbind("click.action").bind("click.action", function () {
             var item = $(this).closest('.list-group-item');
             if (item.data('id')) {
@@ -103,12 +102,12 @@ function Ranking() {
 
     self.resetRank = function (id, name) {
         BootstrapDialog.show({
-            title: 'Сброс прогресса пользователя "' + name + '"',
+            title: lang.resetModalTitle.replace('{name}', name),
             type: BootstrapDialog.TYPE_WARNING,
-            message: 'Вы уверены что хотите сбросить прогресс пользователю "' + name + '"?',
+            message: lang.resetModalContent.replace('{name}', name),
             spinicon: 'fa fa-circle-o-notch',
             buttons: [{
-                label: 'Сбросить',
+                label: lang.resetButtonText,
                 cssClass: 'btn-warning',
                 autospin: true,
                 action: function (dialogRef) {
@@ -119,7 +118,7 @@ function Ranking() {
                     });
                 }
             }, {
-                label: 'Закрыть',
+                label: lang.closeButtonText,
                 action: function (dialogRef) {
                     dialogRef.close();
                 }
@@ -150,12 +149,12 @@ function Ranking() {
 
     $importButton.click(function () {
         BootstrapDialog.show({
-            title: 'Импорт прогресса участников из Mee6',
+            title: lang.importModalTitle,
             type: BootstrapDialog.TYPE_WARNING,
             message: $("#import-content").clone().removeClass('hidden'),
             spinicon: 'fa fa-circle-o-notch',
             buttons: [{
-                label: 'Импортировать',
+                label: lang.importButtonText,
                 cssClass: 'btn-info',
                 autospin: true,
                 action: function (dialogRef) {
@@ -166,7 +165,7 @@ function Ranking() {
                     });
                 }
             }, {
-                label: 'Закрыть',
+                label: lang.closeButtonText,
                 action: function (dialogRef) {
                     dialogRef.close();
                 }
@@ -176,12 +175,12 @@ function Ranking() {
 
     $resetButton.click(function () {
         BootstrapDialog.show({
-            title: 'Сброс прогресса всех пользователей',
+            title: lang.resetAllModalTitle,
             type: BootstrapDialog.TYPE_WARNING,
-            message: 'Вы уверены что хотите сбросить прогресс всех пользователей? Следует иметь в виду, что это не отнимет у них существующие наградные роли, а только сбросит весь опыт.',
+            message: lang.resetAllModalContent,
             spinicon: 'fa fa-circle-o-notch',
             buttons: [{
-                label: 'Сбросить все',
+                label: lang.resetAllButtonText,
                 cssClass: 'btn-warning',
                 autospin: true,
                 action: function (dialogRef) {
@@ -192,7 +191,7 @@ function Ranking() {
                     });
                 }
             }, {
-                label: 'Закрыть',
+                label: lang.closeButtonText,
                 action: function (dialogRef) {
                     dialogRef.close();
                 }
@@ -202,7 +201,7 @@ function Ranking() {
 
     self.setLevel = function (id, name, currentLevel) {
         self.updateId = id;
-        $updateTitle.text('Обновление уровня пользователя "' + name + '"');
+        $updateTitle.text(lang.updateModalTitle.replace("{name}", name));
         $updateInput.val(currentLevel);
         block(false);
         $updateModal.modal();
@@ -228,7 +227,7 @@ function Ranking() {
                 self.reload();
             })
             .fail(function () {
-                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(callback);
     }
@@ -239,7 +238,7 @@ function Ranking() {
                 self.reload();
             })
             .fail(function () {
-                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(callback);
     }
@@ -250,7 +249,7 @@ function Ranking() {
                 self.reload();
             })
             .fail(function () {
-                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(callback);
     }
@@ -261,7 +260,7 @@ function Ranking() {
                 self.reload();
             })
             .fail(function () {
-                BootstrapDialog.warning('Упс! Что-то пошло не так!');
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(callback);
     }

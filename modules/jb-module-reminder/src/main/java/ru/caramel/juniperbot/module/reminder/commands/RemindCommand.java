@@ -72,7 +72,7 @@ public class RemindCommand extends AbstractCommand {
                 reminder = m.group(3);
                 if (DateTime.now().isAfter(date)) {
                     messageService.onError(message.getChannel(), "discord.command.remind.error.future");
-                    return false;
+                    return fail(message);
                 }
             }
 
@@ -88,8 +88,7 @@ public class RemindCommand extends AbstractCommand {
 
             if (date != null && reminder != null) {
                 createReminder(message.getChannel(), message.getMember(), reminder, date.toDate());
-                messageService.onMessage(message.getChannel(), "discord.command.remind.success");
-                return true;
+                return ok(message);
             }
         } catch (IllegalArgumentException e) {
             // fall down

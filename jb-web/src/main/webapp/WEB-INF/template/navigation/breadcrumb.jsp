@@ -19,7 +19,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <section class="content-header">
     <c:if test="${breadcrumbTitleVisible}">
-        <h1><tiles:insertAttribute name="title" ignore="true"/>&nbsp;</h1>
+        <h1><spring:message code="${pageTitle}"/>&nbsp;</h1>
     </c:if>
     <ol class="breadcrumb">
         <c:forEach var="entry" items="${breadCrumb}">

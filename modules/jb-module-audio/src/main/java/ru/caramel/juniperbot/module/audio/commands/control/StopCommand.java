@@ -34,8 +34,11 @@ public class StopCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        messageManager.onMessage(message.getChannel(), playerService.getInstance(message.getGuild()).stop()
-                ? "discord.command.audio.stop" : "discord.command.audio.notStarted");
+        if (playerService.getInstance(message.getGuild()).stop()) {
+            return ok(message);
+        }
+        fail(message);
+        messageManager.onMessage(message.getChannel(),"discord.command.audio.notStarted");
         return true;
     }
 }
