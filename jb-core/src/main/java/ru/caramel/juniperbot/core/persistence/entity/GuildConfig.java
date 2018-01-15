@@ -23,7 +23,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.NotEmpty;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -56,6 +59,11 @@ public class GuildConfig extends BaseEntity {
 
     @Column(name = "is_help_private")
     private Boolean privateHelp;
+
+    @Basic
+    @NotEmpty
+    @Size(max = 10)
+    private String locale;
 
     public GuildConfig(long guildId) {
         this.guildId = guildId;

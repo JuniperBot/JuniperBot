@@ -202,4 +202,12 @@
         </sql>
     </changeSet>
 
+    <changeSet id="3.4-012012018-17" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="locale" type="VARCHAR(10)" defaultValue="en">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

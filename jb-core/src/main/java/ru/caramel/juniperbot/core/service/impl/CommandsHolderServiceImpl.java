@@ -23,6 +23,7 @@ import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
+import ru.caramel.juniperbot.core.service.LocaleService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.*;
@@ -34,7 +35,10 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Autowired
     private MessageService messageService;
 
-    private Map<String, Command> localizedCommands;
+    @Autowired
+    private LocaleService localeService;
+
+    private Map<Locale, Map<String, Command>> localizedCommands;
 
     @Getter
     private Map<String, Command> commands;
@@ -43,22 +47,39 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
 
     @Override
     public Command getByLocale(String localizedKey) {
-        return localizedCommands.get(localizedKey);
+        Map<String, Command> commandMap = getLocalizedMap();
+        return commandMap != null ? commandMap.get(localizedKey) : null;
+    }
+
+    private Map<String, Command> getLocalizedMap() {
+        return localizedCommands.get(localeService.getLocale());
     }
 
     @Override
     public Command getByLocale(String localizedKey, boolean anyLocale) {
-        return getByLocale(localizedKey); // TODO maybe should be implemented later
+        if (anyLocale) {
+            for (Map<String, Command> commandMap : localizedCommands.values()) {
+                if (commandMap.containsKey(localizedKey)) {
+                    return commandMap.get(localizedKey);
+                }
+            }
+        }
+        return getByLocale(localizedKey);
     }
 
     @Autowired
     private void registerCommands(List<Command> commands) {
         this.localizedCommands = new HashMap<>();
         this.commands = new HashMap<>();
+        Collection<Locale> locales = localeService.getSupportedLocales().values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
-            String localized = messageService.getMessage(e.getClass().getAnnotation(DiscordCommand.class).key());
-            this.localizedCommands.put(localized, e);
-            this.commands.put(e.getClass().getAnnotation(DiscordCommand.class).key(), e);
+            String rawKey = e.getClass().getAnnotation(DiscordCommand.class).key();
+            this.commands.put(rawKey, e);
+            for (Locale locale : locales) {
+                Map<String, Command> localeCommands = localizedCommands.computeIfAbsent(locale, e2 -> new HashMap<>());
+                String localizedKey = messageService.getMessage(rawKey, locale);
+                localeCommands.put(localizedKey, e);
+            }
         });
     }
 

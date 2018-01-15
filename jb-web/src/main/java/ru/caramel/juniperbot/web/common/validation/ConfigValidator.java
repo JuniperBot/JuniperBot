@@ -14,30 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.web.common.validation;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.service.GuildResolverService;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.web.dto.ConfigDto;
 
-public abstract class DiscordEventListener extends ListenerAdapter implements ApplicationListener<DiscordEvent> {
+@Component
+public class ConfigValidator implements Validator {
 
     @Autowired
-    private GuildResolverService resolverService;
+    private SpringValidatorAdapter validatorAdapter;
 
     @Autowired
     private LocaleService localeService;
 
     @Override
-    public void onApplicationEvent(DiscordEvent event) {
-        Guild guild = resolverService.getGuild(event.getSource());
-        if (guild != null) {
-            localeService.initLocale(guild);
+    public boolean supports(Class<?> clazz) {
+        return ConfigDto.class.equals(clazz);
+    }
+
+    @Override
+    public void validate(Object target, Errors errors) {
+        validatorAdapter.validate(target, errors);
+        ConfigDto configDto = (ConfigDto) target;
+        if (!localeService.isSupported(configDto.getLocale())) {
+            errors.rejectValue("locale", "validation.config.locale.message");
         }
-        onEvent(event.getSource());
     }
 }

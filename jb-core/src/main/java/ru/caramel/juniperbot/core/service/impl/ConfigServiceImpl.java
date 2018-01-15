@@ -26,9 +26,8 @@ import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.LocaleService;
 
-import javax.persistence.EntityManager;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -40,9 +39,6 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private GuildConfigRepository repository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -95,10 +91,22 @@ public class ConfigServiceImpl implements ConfigService {
         return repository.existsByGuildId(serverId);
     }
 
+    @Override
+    public String getLocale(Guild guild) {
+        return getLocale(guild.getIdLong());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getLocale(long serverId) {
+        return repository.findLocaleByGuildId(serverId);
+    }
+
     private GuildConfig createIfMissing(GuildConfig config, long serverId) {
         if (config == null) {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
+            config.setLocale(LocaleService.DEFAULT_LOCALE);
             repository.save(config);
         }
         return config;

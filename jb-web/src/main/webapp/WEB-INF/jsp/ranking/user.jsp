@@ -65,7 +65,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </c:if>
                     <div class="clearfix"></div>
-                    <p><spring:message code="page.ranking.user.howto.content" arguments="${prefix}"/></p>
+                    <jb:command code="discord.command.rank.key" var="rankCommand"/>
+                    <p><spring:message code="page.ranking.user.howto.content" arguments="${prefix};${rankCommand}" argumentSeparator=";"/></p>
                 </div>
             </div>
         </div>

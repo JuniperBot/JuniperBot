@@ -49,14 +49,14 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <li>
                             <ul class="menu">
                                 <li>
-                                    <a href="<%=request.getContextPath()%>?locale=ru">
+                                    <a href="<%=request.getContextPath()%>?jb_locale=ru">
                                         <div class="pull-left language-title">Русский</div>
                                         <div class="pull-right countryFlag ru"></div>
                                         <div class="clearfix"></div>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<%=request.getContextPath()%>?locale=en">
+                                    <a href="<%=request.getContextPath()%>?jb_locale=en">
                                         <div class="pull-left language-title">English</div>
                                         <div class="pull-right countryFlag uk"></div>
                                         <div class="pull-right countryFlag us"></div>

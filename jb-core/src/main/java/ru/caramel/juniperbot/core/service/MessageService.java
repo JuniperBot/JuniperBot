@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.awt.*;
+import java.util.Locale;
 import java.util.function.Function;
 
 public interface MessageService {
@@ -45,6 +46,8 @@ public interface MessageService {
     void onError(MessageChannel sourceChannel, String titleCode, String code, Object... args);
 
     String getMessage(String code, Object... args);
+
+    String getMessage(String code, Locale locale, Object... args);
 
     boolean hasMessage(String code);
 

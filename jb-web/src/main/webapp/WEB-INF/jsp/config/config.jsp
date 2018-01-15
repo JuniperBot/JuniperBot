@@ -103,6 +103,22 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                     </spring:bind>
+                    <spring:bind path="locale">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="locale" class="col-sm-4 control-label">
+                                <spring:message code="page.config.common.locale"/>
+                            </label>
+                            <div class="col-sm-8">
+                                <form:select id="locale" path="locale" cssClass="form-control select2" cssStyle="width: 100%;">
+                                    <c:forEach items="${locales}" var="locale">
+                                        <spring:message code="global.bot.locale.${locale}" var="localeName"/>
+                                        <form:option value="${locale}" label="${localeName}" />
+                                    </c:forEach>
+                                </form:select>
+                                <form:errors path="locale" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
 
                     <hr />
                     <spring:bind path="musicConfig.channelId">
@@ -208,7 +224,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     <spring:bind path="privateHelp">
                         <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
                             <label for="input-help" class="col-sm-4 control-label">
-                                <spring:message code="page.config.publish.privateHelp"/>
+                                <jb:command code="discord.command.help.key" var="helpCommand"/>
+                                <spring:message code="page.config.publish.privateHelp" arguments="${helpCommand}"/>
                             </label>
                             <div class="col-sm-8">
                                 <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />

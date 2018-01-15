@@ -32,6 +32,9 @@ public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> 
     @Query("SELECT e.prefix FROM GuildConfig e WHERE e.guildId = :guildId")
     String findPrefixByGuildId(@Param("guildId") long guildId);
 
+    @Query("SELECT e.locale FROM GuildConfig e WHERE e.guildId = :guildId")
+    String findLocaleByGuildId(@Param("guildId") long guildId);
+
     @Query("SELECT e.name FROM GuildConfig e WHERE e.guildId = :guildId")
     String findNameByGuildId(@Param("guildId") long guildId);
 }

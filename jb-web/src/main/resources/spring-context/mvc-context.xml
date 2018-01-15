@@ -86,7 +86,9 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/resources/**"/>
-            <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+            <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+                <property name="paramName" value="jb_locale"/>
+            </bean>
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>

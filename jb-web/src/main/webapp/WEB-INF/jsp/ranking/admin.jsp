@@ -41,9 +41,12 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 <div class="box-body">
                     <spring:bind path="announcement">
                         <div class="callout callout-info">
+                            <jb:command code="discord.command.rank.key" var="rankCommand"/>
+                            <jb:command code="discord.command.leaders.key" var="leadersCommand"/>
                             <p><spring:message code="page.ranking.admin.callout.1"/></p>
                             <p><spring:message code="page.ranking.admin.callout.2" arguments="${actionUrl}"/></p>
-                            <p><spring:message code="page.ranking.admin.callout.3" arguments="${prefix}"/></p>
+                            <p><spring:message code="page.ranking.admin.callout.3" arguments="${prefix};${rankCommand};${leadersCommand}"
+                                               argumentSeparator=";"/></p>
                         </div>
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <div class="col-md-12">

@@ -52,6 +52,26 @@
         </attribute>
     </tag>
 
+    <tag>
+        <name>command</name>
+        <tag-class>ru.caramel.juniperbot.web.common.tags.CommandTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <description>Command Code</description>
+            <name>code</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <description>Output variable</description>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
     <function>
         <name>getHTMLAwtColor</name>
         <function-class>ru.caramel.juniperbot.core.utils.CommonUtils</function-class>

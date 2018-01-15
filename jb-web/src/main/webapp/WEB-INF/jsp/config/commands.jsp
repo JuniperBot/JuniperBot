@@ -43,7 +43,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                         <div class="pull-left">
                                             <h4>
                                                 <span class="label label-warning">
-                                                    <c:out value="${commandPrefix}"/><spring:message code="${descriptor.key}"/>
+                                                    <c:out value="${commandPrefix}"/><jb:command code="${descriptor.key}"/>
                                                 </span>
                                             </h4>
                                             <div><spring:message code="${descriptor.description}"/></div>

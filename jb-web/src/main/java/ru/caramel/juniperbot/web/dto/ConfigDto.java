@@ -36,6 +36,10 @@ public class ConfigDto implements Serializable {
     @NotBlank(message = "{validation.config.prefix.NotBlank.message}")
     private String prefix;
 
+    @Size(max = 10)
+    @NotBlank
+    private String locale;
+
     @NotNull
     private Boolean privateHelp;
 

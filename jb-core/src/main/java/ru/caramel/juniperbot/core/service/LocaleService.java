@@ -17,25 +17,30 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
-public interface ConfigService {
+import java.util.Locale;
+import java.util.Map;
 
-    String getDefaultPrefix();
+public interface LocaleService {
 
-    boolean exists(long serverId);
+    String DEFAULT_LOCALE = "en";
 
-    void save(GuildConfig config);
+    void setLocale(Locale locale);
 
-    GuildConfig getById(long serverId);
+    Locale getLocale();
 
-    GuildConfig getOrCreate(long serverId);
+    Locale getDefaultLocale();
 
-    GuildConfig getOrCreate(Guild guild);
+    Locale getLocale(Guild guild);
 
-    String getPrefix(long serverId);
+    Locale getLocale(long serverId);
 
-    String getLocale(Guild guild);
+    Map<String, Locale> getSupportedLocales();
 
-    String getLocale(long serverId);
+    boolean isSupported(String tag);
+
+    void initLocale(Guild guild);
+
+    void initLocale(long serverId);
+
 }
