@@ -666,3 +666,17 @@ h6.hyperlink:hover > a {
     color: #737373;
     padding-top: 3px;
 }
+
+@media (min-width: 1400px) {
+    .col-lg2-6 {
+        width: 50%;
+        float: left;
+    }
+}
+
+.col-lg2-6 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}

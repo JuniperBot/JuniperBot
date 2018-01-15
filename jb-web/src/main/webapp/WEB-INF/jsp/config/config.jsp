@@ -86,7 +86,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg2-6">
             <div class="box box-warning">
                 <div class="box-header with-border">
                     <h3 class="box-title"><spring:message code="page.config.common.title"/></h3>
@@ -213,7 +213,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg2-6">
             <div class="box box-warning">
                 <div class="box-header with-border">
                     <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>

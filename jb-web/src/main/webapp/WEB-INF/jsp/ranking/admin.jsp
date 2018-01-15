@@ -25,7 +25,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-7 col-md-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
                     <h3 class="box-title"><spring:message code="page.ranking.title"/></h3>
@@ -118,7 +118,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-5 col-md-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
                     <h3 class="box-title"><spring:message code="page.ranking.rewards"/></h3>
