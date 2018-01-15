@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.awt.*;
@@ -62,7 +62,7 @@ public class MessageServiceImpl implements MessageService {
     private ApplicationContext context;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     @Override
     public EmbedBuilder getBaseEmbed() {
@@ -103,7 +103,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessage(String key, Object... args) {
-        return getMessage(key, localeService.getLocale(), args);
+        return getMessage(key, contextService.getLocale(), args);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class MessageServiceImpl implements MessageService {
     public boolean hasMessage(String code) {
         return StringUtils.isNotEmpty(code) &&
                 context.getMessage(code, null, null,
-                        localeService.getLocale()) != null;
+                        contextService.getLocale()) != null;
     }
 
     @Override

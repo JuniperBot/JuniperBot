@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.utils;
 
 import lombok.Getter;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.utils.PermissionUtil;
@@ -94,7 +95,7 @@ public class MessageController {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
                     if (action != null && playerService.isInChannel(event.getMember())) {
-                        handleAction(action);
+                        handleAction(action, event.getMember());
                     }
                     if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
                             Permission.MESSAGE_MANAGE)) {
@@ -106,7 +107,7 @@ public class MessageController {
         }
     }
 
-    private void handleAction(Action action) {
+    private void handleAction(Action action, Member member) {
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (instance == null || !instance.isActive()) {
             return;
@@ -124,8 +125,15 @@ public class MessageController {
                 playerService.skipTrack(message.getGuild());
                 break;
             case STOP:
-                messageManager.onMessage(message.getChannel(), instance.stop()
-                        ? "discord.command.audio.stop" : "discord.command.audio.notStarted");
+                if (instance.stop()) {
+                    if (member != null) {
+                        messageManager.onMessage(message.getChannel(), "discord.command.audio.stop.member", member.getEffectiveName());
+                    } else {
+                        messageManager.onMessage(message.getChannel(), "discord.command.audio.stop");
+                    }
+                } else {
+                    messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+                }
                 break;
             case VOLUME_UP:
                 if (instance.seekVolume(10, true)) {

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.web.dto.ConfigDto;
 
 @Component
@@ -31,7 +31,7 @@ public class ConfigValidator implements Validator {
     private SpringValidatorAdapter validatorAdapter;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -42,7 +42,7 @@ public class ConfigValidator implements Validator {
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
         ConfigDto configDto = (ConfigDto) target;
-        if (!localeService.isSupported(configDto.getLocale())) {
+        if (!contextService.isSupported(configDto.getLocale())) {
             errors.rejectValue("locale", "validation.config.locale.message");
         }
     }

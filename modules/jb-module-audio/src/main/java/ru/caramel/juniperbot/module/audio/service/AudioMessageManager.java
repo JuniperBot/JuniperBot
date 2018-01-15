@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -70,7 +70,7 @@ public class AudioMessageManager {
     private ApplicationContext context;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     private Map<Guild, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
 
@@ -84,14 +84,17 @@ public class AudioMessageManager {
     }
 
     private void initLocale(TrackRequest request) {
-        if (request != null && request.getGuild() != null) {
-            localeService.initLocale(request.getGuild());
+        if (request != null) {
+            contextService.initContext(request.getGuild());
+            if (request.getMember() != null) {
+                contextService.initContext(request.getMember().getUser());
+            }
         }
     }
 
     private void initLocale(MessageChannel channel) {
         if (channel != null && channel instanceof TextChannel) {
-            localeService.initLocale(((TextChannel)channel).getGuild());
+            contextService.initContext(((TextChannel)channel).getGuild());
         }
     }
 

@@ -43,8 +43,8 @@ import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.LocaleService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -120,7 +120,7 @@ public class VkServiceImpl implements VkService {
     private WebHookService webHookService;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     @Override
     @Transactional
@@ -166,10 +166,12 @@ public class VkServiceImpl implements VkService {
         if (!connection.getWebHook().isValid()) {
             return;
         }
+        contextService.initContext(connection.getConfig().getGuildId());
         discordService.executeWebHook(connection.getWebHook(), createMessage(connection.getConfig(), message), e -> {
             e.setEnabled(false);
             hookRepository.save(e);
         });
+        contextService.resetContext();
     }
 
     private WebHookMessage createMessage(GuildConfig config, CallbackMessage<CallbackWallPost> message) {
@@ -177,7 +179,6 @@ public class VkServiceImpl implements VkService {
         if (PostType.SUGGEST.equals(post.getPostType())) {
             return null; // do not post suggestions
         }
-        localeService.initLocale(config.getGuildId());
 
         List<WallpostAttachment> attachments = new ArrayList<>(CollectionUtils.isNotEmpty(post.getAttachments()) ? post.getAttachments() : Collections.emptyList());
         attachments.sort((a, b) -> {

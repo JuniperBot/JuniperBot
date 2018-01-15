@@ -18,11 +18,16 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.Event;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NamedInheritableThreadLocal;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.SourceResolverService;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
@@ -31,16 +36,23 @@ import java.util.Locale;
 import java.util.Map;
 
 @Service
-public class LocaleServiceImpl implements LocaleService {
+public class ContextServiceImpl implements ContextService {
+
+    private static final String MDC_GUILD = "guildId";
+
+    private static final String MDC_USER = "userId";
 
     private final ThreadLocal<Locale> holder =
-            new NamedInheritableThreadLocal<>("LocaleServiceImpl.Locale");
+            new NamedInheritableThreadLocal<>("ContextServiceImpl.Locale");
 
     @Getter
     private Map<String, Locale> supportedLocales;
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private SourceResolverService resolverService;
 
     @PostConstruct
     public void init() {
@@ -86,15 +98,54 @@ public class LocaleServiceImpl implements LocaleService {
     }
 
     @Override
-    public void initLocale(Guild guild) {
+    public void initContext(Event event) {
+        Member member = resolverService.getMember(event);
+        if (member != null) {
+            initContext(member);
+        }
+        User user = resolverService.getUser(event);
+        if (user != null) {
+            initContext(user);
+        }
+        Guild guild = resolverService.getGuild(event);
         if (guild != null) {
-            setLocale(configService.getLocale(guild));
+            initContext(guild);
         }
     }
 
     @Override
-    public void initLocale(long serverId) {
+    public void initContext(Guild guild) {
+        if (guild != null) {
+            initContext(guild.getIdLong());
+        }
+    }
+
+    @Override
+    public void initContext(User user) {
+        if (user != null) {
+            MDC.put(MDC_USER, user.getIdLong());
+        }
+    }
+
+    @Override
+    public void initContext(Member member) {
+        if (member != null) {
+            initContext(member.getGuild());
+            initContext(member.getUser());
+        }
+    }
+
+    @Override
+    public void initContext(long serverId) {
+        MDC.put(MDC_GUILD, serverId);
         setLocale(configService.getLocale(serverId));
+    }
+
+    @Override
+    public void resetContext() {
+        MDC.remove(MDC_GUILD);
+        MDC.remove(MDC_USER);
+        holder.remove();;
     }
 
     private void setLocale(String tag) {

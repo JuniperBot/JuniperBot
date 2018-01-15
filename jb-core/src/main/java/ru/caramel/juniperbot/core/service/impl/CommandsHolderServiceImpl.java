@@ -23,7 +23,7 @@ import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     private MessageService messageService;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     private Map<Locale, Map<String, Command>> localizedCommands;
 
@@ -52,7 +52,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     }
 
     private Map<String, Command> getLocalizedMap() {
-        return localizedCommands.get(localeService.getLocale());
+        return localizedCommands.get(contextService.getLocale());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     private void registerCommands(List<Command> commands) {
         this.localizedCommands = new HashMap<>();
         this.commands = new HashMap<>();
-        Collection<Locale> locales = localeService.getSupportedLocales().values();
+        Collection<Locale> locales = contextService.getSupportedLocales().values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
             String rawKey = e.getClass().getAnnotation(DiscordCommand.class).key();
             this.commands.put(rawKey, e);

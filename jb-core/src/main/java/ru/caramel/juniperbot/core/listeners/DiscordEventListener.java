@@ -16,28 +16,14 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.service.GuildResolverService;
-import ru.caramel.juniperbot.core.service.LocaleService;
 
 public abstract class DiscordEventListener extends ListenerAdapter implements ApplicationListener<DiscordEvent> {
 
-    @Autowired
-    private GuildResolverService resolverService;
-
-    @Autowired
-    private LocaleService localeService;
-
     @Override
     public void onApplicationEvent(DiscordEvent event) {
-        Guild guild = resolverService.getGuild(event.getSource());
-        if (guild != null) {
-            localeService.initLocale(guild);
-        }
         onEvent(event.getSource());
     }
 }

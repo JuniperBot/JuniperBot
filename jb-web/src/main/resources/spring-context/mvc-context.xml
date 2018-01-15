@@ -102,4 +102,6 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
+    <bean id="mdcFilter" class="ru.caramel.juniperbot.web.common.InfoMdcFilter"/>
+
 </beans>

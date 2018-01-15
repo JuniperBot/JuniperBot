@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 
 import java.util.Objects;
 
@@ -106,7 +106,7 @@ public class ConfigServiceImpl implements ConfigService {
         if (config == null) {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
-            config.setLocale(LocaleService.DEFAULT_LOCALE);
+            config.setLocale(ContextService.DEFAULT_LOCALE);
             repository.save(config);
         }
         return config;

@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
@@ -80,6 +81,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Getter
     private JDA jda;
 
+    @Autowired
+    private ContextService contextService;
+
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
@@ -105,7 +109,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onGenericEvent(Event event) {
+        contextService.initContext(event);
         publisher.publishEvent(new DiscordEvent(event));
+        contextService.resetContext();
     }
 
     @Override

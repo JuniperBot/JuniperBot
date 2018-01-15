@@ -23,7 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.ConfigValidator;
@@ -42,7 +42,7 @@ public class ConfigurationController extends AbstractController {
     private ConfigValidator validator;
 
     @Autowired
-    private LocaleService localeService;
+    private ContextService contextService;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -75,7 +75,7 @@ public class ConfigurationController extends AbstractController {
         return super.createModel(name, serverId)
                 .addObject("voiceChannels", getVoiceChannels(serverId))
                 .addObject("textChannels", getTextChannels(serverId))
-                .addObject("locales", localeService.getSupportedLocales().keySet());
+                .addObject("locales", contextService.getSupportedLocales().keySet());
     }
 
 

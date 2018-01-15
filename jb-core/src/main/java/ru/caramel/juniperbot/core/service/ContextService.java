@@ -17,11 +17,14 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.Event;
 
 import java.util.Locale;
 import java.util.Map;
 
-public interface LocaleService {
+public interface ContextService {
 
     String DEFAULT_LOCALE = "en";
 
@@ -39,8 +42,16 @@ public interface LocaleService {
 
     boolean isSupported(String tag);
 
-    void initLocale(Guild guild);
+    void initContext(Event event);
 
-    void initLocale(long serverId);
+    void initContext(Guild guild);
+
+    void initContext(User user);
+
+    void initContext(Member member);
+
+    void initContext(long serverId);
+
+    void resetContext();
 
 }

@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
-import ru.caramel.juniperbot.core.service.LocaleService;
+import ru.caramel.juniperbot.core.service.ContextService;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
@@ -50,8 +50,8 @@ public class CommandTag extends RequestContextAwareTag {
                 Locale locale = (Locale) pageContext.getAttribute(LOCALE_ATTR);
                 ApplicationContext context = getRequestContext().getWebApplicationContext();
                 if (locale == null) {
-                    LocaleService localeService = context.getBean(LocaleService.class);
-                    locale = localeService.getLocale(serverId);
+                    ContextService contextService = context.getBean(ContextService.class);
+                    locale = contextService.getLocale(serverId);
                     pageContext.setAttribute(LOCALE_ATTR, locale);
                 }
                 result = context.getMessage(code, null, locale);

@@ -29,9 +29,12 @@ public class SecurityUtils {
     }
 
     public static DiscordUserDetails getCurrentUser() {
-        Authentication userAuth = getUserAuthentication();
-        if (userAuth != null && userAuth.getDetails() instanceof DiscordUserDetails) {
-            return (DiscordUserDetails) userAuth.getDetails();
+        return getDetails(getUserAuthentication());
+    }
+
+    public static DiscordUserDetails getDetails(Authentication authentication) {
+        if (authentication != null && authentication.getDetails() instanceof DiscordUserDetails) {
+            return (DiscordUserDetails) authentication.getDetails();
         }
         return null;
     }
