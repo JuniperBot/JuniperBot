@@ -78,11 +78,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>data-local</id>
-            <name>data</name>
-            <url>file://${main.basedir}/local</url>
-        </repository>
     </repositories>
 
     <modules>
