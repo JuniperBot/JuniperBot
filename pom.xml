@@ -94,6 +94,7 @@
         <module>modules/jb-module-wikifur</module>
         <module>modules/jb-module-ranking</module>
         <module>modules/jb-module-groovy</module>
+        <module>modules/jb-module-info</module>
         <module>modules/jb-module-full</module>
         <module>jb-web</module>
     </modules>

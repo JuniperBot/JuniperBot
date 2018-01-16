@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.utils;
 
+import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTimeZone;
@@ -167,5 +168,9 @@ public final class CommonUtils {
             return m.group(2);
         }
         return value;
+    }
+
+    public static String formatUser(User user) {
+        return String.format("%s#%s", user.getName(), user.getDiscriminator());
     }
 }
