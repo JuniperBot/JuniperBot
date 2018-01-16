@@ -34,7 +34,10 @@ import ru.caramel.juniperbot.module.junipost.service.PostService;
 
 import java.util.List;
 
-@DiscordCommand(key = "discord.command.post.key", description = "discord.command.post.desc", priority = 3)
+@DiscordCommand(key = "discord.command.post.key",
+        description = "discord.command.post.desc",
+        group = "discord.command.group.utility",
+        priority = 5)
 public class PostCommand extends AbstractCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);

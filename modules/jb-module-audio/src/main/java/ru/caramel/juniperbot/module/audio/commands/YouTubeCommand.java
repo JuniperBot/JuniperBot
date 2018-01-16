@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -39,8 +38,8 @@ import java.util.List;
 @DiscordCommand(
         key = "discord.command.youtube.key",
         description = "discord.command.youtube.desc",
+        group = "discord.command.group.music",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC,
         priority = 103)
 public class YouTubeCommand extends PlayCommand {
 

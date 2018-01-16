@@ -19,15 +19,14 @@ package ru.caramel.juniperbot.module.ranking.commands;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 
 @DiscordCommand(
         key = "discord.command.leaders.key",
         description = "discord.command.leaders.desc",
+        group = "discord.command.group.ranking",
         source = CommandSource.GUILD,
-        group = CommandGroup.RANKING,
         priority = 201)
 public class LeadersCommand extends RankingCommand {
 

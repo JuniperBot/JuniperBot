@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.CommandExtension;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
@@ -16,6 +15,8 @@ import java.util.List;
 
 @Component
 public class CustomCommandsExtension implements CommandExtension {
+
+    public static final String GROUP_KEY = "discord.command.group.custom";
 
     @Autowired
     private CustomCommandRepository commandRepository;
@@ -36,7 +37,8 @@ public class CustomCommandsExtension implements CommandExtension {
                     list.append('`').append(context.getConfig().getPrefix()).append(e.getKey()).append('`');
                 });
                 if (list.length() > 0) {
-                    embedBuilder.addField(messageService.getEnumTitle(CommandGroup.CUSTOM) + ":", list.toString(), false);
+                    embedBuilder.addField(messageService.getMessage(GROUP_KEY) + ":",
+                            list.toString(), false);
                 }
             }
         }

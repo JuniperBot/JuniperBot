@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -43,7 +42,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Getter
     private Map<String, Command> commands;
 
-    private Map<CommandGroup, List<DiscordCommand>> descriptors;
+    private Map<String, List<DiscordCommand>> descriptors;
 
     @Override
     public Command getByLocale(String localizedKey) {
@@ -84,7 +83,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     }
 
     @Override
-    public Map<CommandGroup, List<DiscordCommand>> getDescriptors() {
+    public Map<String, List<DiscordCommand>> getDescriptors() {
         if (descriptors == null) {
             List<DiscordCommand> discordCommands = commands.entrySet().stream()
                     .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))

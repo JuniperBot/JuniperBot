@@ -28,21 +28,19 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.CommandExtension;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
 public class HelpCommand extends AbstractCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HelpCommand.class);
+
+    private static final String COMMON_GROUP = "discord.command.group.common";
 
     @Autowired
     private CommandsHolderService holderService;
@@ -66,14 +64,21 @@ public class HelpCommand extends AbstractCommand {
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());
 
-        discordCommands.sort(Comparator.comparingInt(DiscordCommand::priority));
+        Map<String, List<DiscordCommand>> groupedCommands = discordCommands
+                .stream().collect(Collectors.groupingBy(DiscordCommand::group, TreeMap::new, Collectors.toList()));
+        groupedCommands.forEach((k, v) -> v.sort(Comparator.comparingInt(DiscordCommand::priority)));
 
-        Map<CommandGroup, List<DiscordCommand>> groupedCommands = discordCommands
-                .stream().collect(Collectors.groupingBy(DiscordCommand::group));
+        Map<String, String> localizedGroups = groupedCommands.keySet().stream()
+                .collect(Collectors.toMap(e -> e, messageService::getMessage));
 
-        CommandGroup rootGroup = CommandGroup.COMMON;
+        String rootGroup = COMMON_GROUP;
         if (StringUtils.isNotEmpty(query)) {
-            rootGroup = messageService.getEnumeration(CommandGroup.class, query);
+            for (Map.Entry<String, String> localized : localizedGroups.entrySet()) {
+                if (Objects.equals(localized.getValue().toLowerCase(), query.toLowerCase())) {
+                    rootGroup = localized.getKey();
+                    break;
+                }
+            }
         }
         if (rootGroup == null || !groupedCommands.containsKey(rootGroup)) {
             messageService.onError(message.getChannel(), "discord.command.help.no-such-group");
@@ -89,7 +94,7 @@ public class HelpCommand extends AbstractCommand {
         groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
                 prefix + messageService.getMessage(e.key()),
                 messageService.getMessage(e.description()), false));
-        if (CommandGroup.COMMON.equals(rootGroup)) {
+        if (COMMON_GROUP.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
                 if (direct) {
                     EmbedBuilder groupBuilder = getBaseEmbed(group, message);
@@ -98,7 +103,7 @@ public class HelpCommand extends AbstractCommand {
                             messageService.getMessage(e.description()), false));
                     messages.add(groupBuilder);
                 } else {
-                    String groupTitle = messageService.getEnumTitle(group);
+                    String groupTitle = messageService.getMessage(group);
                     embedBuilder.addField(String.format("%s (%s%s %s):",
                             groupTitle,
                             prefix,
@@ -140,13 +145,13 @@ public class HelpCommand extends AbstractCommand {
         return true;
     }
 
-    private EmbedBuilder getBaseEmbed(CommandGroup group, MessageReceivedEvent message) {
+    private EmbedBuilder getBaseEmbed(String group, MessageReceivedEvent message) {
         EmbedBuilder embedBuilder = messageService.getBaseEmbed(true)
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
-        if (CommandGroup.COMMON.equals(group)) {
+        if (COMMON_GROUP.equals(group)) {
             embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
         } else {
-            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", messageService.getEnumTitle(group)));
+            embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", messageService.getMessage(group)));
         }
         return embedBuilder;
     }

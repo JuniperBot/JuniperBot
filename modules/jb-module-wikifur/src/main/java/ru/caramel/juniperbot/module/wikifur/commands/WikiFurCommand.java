@@ -10,7 +10,6 @@ import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.wikifur.service.WikiFurService;
@@ -20,8 +19,8 @@ import java.util.List;
 @DiscordCommand(
         key = "discord.command.wikifur.key",
         description = "discord.command.wikifur.desc",
-        group = CommandGroup.COMMON,
-        priority = 3)
+        group = "discord.command.group.utility",
+        priority = 10)
 public class WikiFurCommand extends AbstractCommand {
 
     @Autowired

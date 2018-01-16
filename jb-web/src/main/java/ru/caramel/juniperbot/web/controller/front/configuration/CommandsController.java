@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.service.CommandsService;
@@ -75,9 +74,8 @@ public class CommandsController extends AbstractController {
     }
 
     protected ModelAndView createModel(String model, long serverId, String prefix) {
-        Map<CommandGroup, List<CommandTypeDto>> descriptors = new LinkedHashMap<>();
+        Map<String, List<CommandTypeDto>> descriptors = new LinkedHashMap<>();
         holderService.getDescriptors().forEach((group, descriptor) -> {
-            if (CommandGroup.CUSTOM.equals(group)) return;
             descriptors.put(group, descriptor.stream().map(CommandTypeDto::new).collect(Collectors.toList()));
         });
         return super.createModel(model, serverId)

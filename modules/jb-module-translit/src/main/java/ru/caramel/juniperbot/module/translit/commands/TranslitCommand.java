@@ -28,7 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@DiscordCommand(key = "discord.command.translit.key", description = "discord.command.translit.desc", priority = 4)
+@DiscordCommand(key = "discord.command.translit.key",
+        description = "discord.command.translit.desc",
+        group = "discord.command.group.utility",
+        priority = 15)
 public class TranslitCommand extends AbstractCommand {
 
     private final static Map<String, String> TRANSLIT_MAP = makeTranslitMap();

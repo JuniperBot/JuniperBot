@@ -41,7 +41,10 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@DiscordCommand(key = "discord.command.remind.key", description = "discord.command.remind.desc", priority = 2)
+@DiscordCommand(key = "discord.command.remind.key",
+        description = "discord.command.remind.desc",
+        group = "discord.command.group.utility",
+        priority = 1)
 public class RemindCommand extends AbstractCommand {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(DateTimeZone.forID("Europe/Moscow"));

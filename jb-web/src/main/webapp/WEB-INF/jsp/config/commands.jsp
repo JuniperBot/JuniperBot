@@ -28,7 +28,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
             <div class="col-md-12">
                 <div class="box box-warning">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><spring:message code="${commandType.key.toString()}" /></h3>
+                        <h3 class="box-title"><spring:message code="${commandType.key}" /></h3>
                         <div class="box-tools pull-right button-xs-group">
                             <a class="btn btn-warning btn-xs check-all"><spring:message code="global.switchGroup.enableAll"/></a>
                             <a class="btn btn-default btn-xs uncheck-all"><spring:message code="global.switchGroup.disableAll"/></a>

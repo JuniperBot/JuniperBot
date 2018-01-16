@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.core.model;
 
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 
 import java.lang.annotation.*;
@@ -34,7 +33,7 @@ public @interface DiscordCommand {
 
     CommandSource[] source() default {};
 
-    CommandGroup group() default CommandGroup.COMMON;
+    String group() default "discord.command.group.common";
 
     int priority() default 1;
 

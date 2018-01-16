@@ -31,8 +31,9 @@ import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioReposit
 
 @DiscordCommand(key = "discord.command.bio.key",
         description = "discord.command.bio.desc",
+        group = "discord.command.group.info",
         source = CommandSource.GUILD,
-        priority = 4)
+        priority = 15)
 public class BioCommand extends InfoCommand {
 
     @Autowired

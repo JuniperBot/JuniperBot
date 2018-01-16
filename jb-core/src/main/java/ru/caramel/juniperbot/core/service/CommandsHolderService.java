@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.core.service;
 
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public interface CommandsHolderService {
 
     Map<String, Command> getCommands();
 
-    Map<CommandGroup, List<DiscordCommand>> getDescriptors();
+    Map<String, List<DiscordCommand>> getDescriptors();
 
     Command getByLocale(String localizedKey);
 

@@ -40,8 +40,9 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 @DiscordCommand(
         key = "discord.command.server.key",
         description = "discord.command.server.desc",
+        group = "discord.command.group.info",
         source = CommandSource.GUILD,
-        priority = 5)
+        priority = 1)
 public class ServerInfoCommand extends InfoCommand {
 
     @Override

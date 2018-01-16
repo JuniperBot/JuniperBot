@@ -34,7 +34,10 @@ import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 import java.util.Objects;
 
-@DiscordCommand(key = "discord.command.user.key", description = "discord.command.user.desc", priority = 4)
+@DiscordCommand(key = "discord.command.user.key",
+        description = "discord.command.user.desc",
+        group = "discord.command.group.info",
+        priority = 5)
 public class UserInfoCommand extends InfoCommand {
 
     @Autowired

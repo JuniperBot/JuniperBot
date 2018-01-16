@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -45,8 +44,8 @@ import java.util.stream.Collectors;
 @DiscordCommand(
         key = "discord.command.play.key",
         description = "discord.command.play.desc",
+        group = "discord.command.group.music",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC,
         priority = 100)
 public class PlayCommand extends AudioCommand {
 

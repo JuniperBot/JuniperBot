@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.module.audio.commands.queue;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandGroup;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
@@ -28,8 +27,8 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 @DiscordCommand(
         key = "discord.command.current.key",
         description = "discord.command.current.desc",
+        group = "discord.command.group.music",
         source = CommandSource.GUILD,
-        group = CommandGroup.MUSIC,
         priority = 102)
 public class CurrentCommand extends AudioCommand {
     @Override
