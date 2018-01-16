@@ -48,6 +48,9 @@ public class CommandsServiceImpl implements CommandsService {
     private MessageService messageService;
 
     @Autowired
+    private ContextService contextService;
+
+    @Autowired
     private CommandsHolderService commandsHolderService;
 
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
@@ -56,7 +59,9 @@ public class CommandsServiceImpl implements CommandsService {
     @Transactional
     @Async("commandsExecutor")
     public void onMessageReceived(MessageReceivedEvent event) {
+        contextService.initContext(event);
         sendMessage(event, this);
+        contextService.resetContext();
     }
 
     @Override

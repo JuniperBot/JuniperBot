@@ -29,11 +29,9 @@ public interface MessageService {
 
     Color getAccentColor();
 
-    String getCopyImageUrl();
-
-    String getCopyContent();
-
     EmbedBuilder getBaseEmbed();
+
+    EmbedBuilder getBaseEmbed(boolean copyright);
 
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 

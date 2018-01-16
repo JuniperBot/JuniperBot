@@ -42,13 +42,7 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
         description = "discord.command.server.desc",
         source = CommandSource.GUILD,
         priority = 5)
-public class ServerInfoCommand extends AbstractCommand {
-
-    @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    private ContextService contextService;
+public class ServerInfoCommand extends InfoCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
@@ -57,15 +51,14 @@ public class ServerInfoCommand extends AbstractCommand {
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.server.title", guild.getName()));
         builder.setThumbnail(guild.getIconUrl());
-        builder.setFooter(messageService.getMessage("discord.command.server.identifier", guild.getId()),
-                guild.getIconUrl());
+        builder.setFooter(messageService.getMessage("discord.command.info.identifier", guild.getId()), null);
 
-        builder.addField(getCreatedAt(guild));
-        builder.addField(getOwner(guild));
         builder.addField(getMemberListField(guild));
         builder.addField(getChannelListField(guild));
         builder.addField(getVerificationLevel(guild));
         builder.addField(getRegion(guild));
+        builder.addField(getOwner(guild));
+        builder.addField(getCreatedAt(guild));
 
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
@@ -87,11 +80,9 @@ public class ServerInfoCommand extends AbstractCommand {
     }
 
     private MessageEmbed.Field getCreatedAt(Guild guild) {
-        DateTime dateTime = new DateTime(guild.getCreationTime().toEpochSecond() * 1000)
-                .withZone(DateTimeZone.UTC);
         DateTimeFormatter formatter = DateTimeFormat.fullDateTime().withLocale(contextService.getLocale());
-        return new MessageEmbed.Field(messageService.getMessage("discord.command.server.createdAt"),
-                String.format("**%s**", formatter.print(dateTime)), true);
+        return getDateField(guild.getCreationTime().toEpochSecond(), "discord.command.server.createdAt",
+                formatter);
     }
 
     private MessageEmbed.Field getChannelListField(Guild guild) {

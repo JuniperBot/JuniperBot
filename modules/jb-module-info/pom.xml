@@ -38,6 +38,11 @@
             <artifactId>jb-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ru.caramel</groupId>
+            <artifactId>jb-module-ranking</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

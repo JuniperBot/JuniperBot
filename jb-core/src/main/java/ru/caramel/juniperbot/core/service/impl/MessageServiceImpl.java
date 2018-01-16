@@ -50,13 +50,8 @@ public class MessageServiceImpl implements MessageService {
     @Getter
     private Color accentColor;
 
-    @Getter
     @Value("${message.copy.imageUrl}")
     private String copyImageUrl;
-
-    @Getter
-    @Value("${message.copy.content}")
-    private String copyContent;
 
     @Autowired
     private ApplicationContext context;
@@ -66,7 +61,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public EmbedBuilder getBaseEmbed() {
-        return new EmbedBuilder().setColor(accentColor);
+        return getBaseEmbed(false);
+    }
+
+    @Override
+    public EmbedBuilder getBaseEmbed(boolean copyright) {
+        EmbedBuilder builder = new EmbedBuilder().setColor(accentColor);
+        if (copyright) {
+            builder.setFooter(getMessage("about.copy.content"), copyImageUrl);
+        }
+        return builder;
     }
 
     @Override

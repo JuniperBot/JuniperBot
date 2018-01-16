@@ -141,16 +141,12 @@ public class HelpCommand extends AbstractCommand {
     }
 
     private EmbedBuilder getBaseEmbed(CommandGroup group, MessageReceivedEvent message) {
-        EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-                .setColor(messageService.getAccentColor());
+        EmbedBuilder embedBuilder = messageService.getBaseEmbed(true)
+                .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
         if (CommandGroup.COMMON.equals(group)) {
             embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
         } else {
             embedBuilder.setDescription(messageService.getMessage("discord.command.help.group.title", messageService.getEnumTitle(group)));
-        }
-        if (StringUtils.isNotEmpty(messageService.getCopyContent())) {
-            embedBuilder.setFooter(messageService.getCopyContent(), messageService.getCopyImageUrl());
         }
         return embedBuilder;
     }

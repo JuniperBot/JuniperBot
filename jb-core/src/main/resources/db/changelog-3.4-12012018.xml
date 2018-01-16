@@ -210,4 +210,18 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="3.4-012012018-18" author="caramel">
+        <createTable tableName="member_bio">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_member_bio"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_bio_member"
+                             references="member(id)"/>
+            </column>
+            <column name="bio" type="VARCHAR(2048)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

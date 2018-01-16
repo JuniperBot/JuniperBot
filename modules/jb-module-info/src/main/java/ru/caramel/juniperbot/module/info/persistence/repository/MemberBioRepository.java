@@ -14,23 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.module.info.persistence.repository;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 
-import java.util.List;
+@Repository
+public interface MemberBioRepository extends JpaRepository<MemberBio, Long> {
 
-public interface MemberService {
+    @Query("SELECT r FROM MemberBio r WHERE r.member = (SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId)")
+    MemberBio findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
 
-    LocalMember getOrCreate(Member member);
+    MemberBio findByMember(LocalMember member);
 
-    LocalMember save(LocalMember member);
-
-    LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    List<LocalMember> syncMembers(Guild guild);
-
-    boolean isApplicable(Member member);
 }

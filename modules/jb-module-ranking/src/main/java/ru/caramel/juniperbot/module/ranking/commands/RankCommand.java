@@ -53,19 +53,9 @@ public class RankCommand extends RankingCommand {
 
         if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
                 Permission.MESSAGE_EMBED_LINKS)) {
-            EmbedBuilder builder = messageService.getBaseEmbed();
-            builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
-                    String.format("%d/%d", info.getRank(), info.getTotalMembers()), true);
-            builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),
-                    String.valueOf(info.getLevel()), true);
-            builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
-                    messageService.getMessage("discord.command.rank.info.exp.format",
-                            info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()),
-                    true);
+            EmbedBuilder builder = messageService.getBaseEmbed(true);
+            addFields(builder, info);
             builder.setAuthor(member.getEffectiveName(), null, member.getUser().getAvatarUrl());
-            if (StringUtils.isNotEmpty(messageService.getCopyContent())) {
-                builder.setFooter(messageService.getCopyContent(), messageService.getCopyImageUrl());
-            }
             messageService.sendMessageSilent(message.getTextChannel()::sendMessage, builder.build());
         } else {
             String response;
@@ -90,5 +80,16 @@ public class RankCommand extends RankingCommand {
             messageService.sendMessageSilent(message.getTextChannel()::sendMessage, response);
         }
         return true;
+    }
+
+    public void addFields(EmbedBuilder builder, RankingInfo info) {
+        builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
+                String.format("%d/%d", info.getRank(), info.getTotalMembers()), true);
+        builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),
+                String.valueOf(info.getLevel()), true);
+        builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
+                messageService.getMessage("discord.command.rank.info.exp.format",
+                        info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()),
+                true);
     }
 }

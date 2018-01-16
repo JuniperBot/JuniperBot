@@ -55,6 +55,11 @@ public class MemberServiceImpl implements MemberService {
         return updateIfRequired(member, localMember);
     }
 
+    @Transactional
+    public LocalMember save(LocalMember member) {
+        return memberRepository.save(member);
+    }
+
     @Override
     public LocalMember updateIfRequired(Member member, LocalMember localMember) {
         boolean shouldSave = false;

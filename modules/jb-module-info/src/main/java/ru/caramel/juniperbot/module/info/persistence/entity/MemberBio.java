@@ -14,23 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.module.info.persistence.entity;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-import java.util.List;
+import javax.persistence.*;
 
-public interface MemberService {
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@Table(name = "member_bio")
+public class MemberBio extends BaseEntity {
 
-    LocalMember getOrCreate(Member member);
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name = "member_id")
+    private LocalMember member;
 
-    LocalMember save(LocalMember member);
+    @Column
+    private String bio;
 
-    LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    List<LocalMember> syncMembers(Guild guild);
-
-    boolean isApplicable(Member member);
 }
