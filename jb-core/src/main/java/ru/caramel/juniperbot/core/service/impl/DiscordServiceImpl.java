@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
@@ -66,8 +67,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Value("${discord.client.accountType:BOT}")
     private AccountType accountType;
 
-    @Value("${discord.client.playingStatus}")
+    @Value("${discord.client.playingStatus:}")
     private String playingStatus;
+
+    @Value("${discord.client.superUserId:}")
+    private String superUserId;
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -160,6 +164,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public boolean isConnected() {
         return jda != null && JDA.Status.CONNECTED.equals(jda.getStatus());
+    }
+
+    @Override
+    public boolean isSuperUser(User user) {
+        return user != null && Objects.equals(user.getId(), superUserId);
     }
 
     @Override

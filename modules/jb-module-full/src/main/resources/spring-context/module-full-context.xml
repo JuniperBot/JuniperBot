@@ -28,4 +28,5 @@
         <import resource="classpath:spring-context/module-welcome-context.xml" />
         <import resource="classpath:spring-context/module-wikifur-context.xml" />
         <import resource="classpath:spring-context/module-ranking-context.xml" />
+        <import resource="classpath:spring-context/module-groovy-context.xml" />
 </beans>

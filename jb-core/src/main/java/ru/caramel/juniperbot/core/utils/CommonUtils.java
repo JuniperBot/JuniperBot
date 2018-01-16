@@ -43,6 +43,8 @@ public final class CommonUtils {
 
     private final static Pattern VK_HASH_TAG = Pattern.compile("(#[0-9a-zA-Zа-яА-Я_#]+)");
 
+    private static final Pattern CODE_PATTERN = Pattern.compile("\\s*```(groovy\\s+)?((.|\\n)+)```\\s*", Pattern.MULTILINE);
+
     private CommonUtils() {
         // helper class
     }
@@ -154,5 +156,16 @@ public final class CommonUtils {
                 (red.length() == 1 ? "0" + red : red) +
                 (green.length() == 1 ? "0" + green : green) +
                 (blue.length() == 1 ? "0" + blue : blue);
+    }
+
+    public static String unwrapCode(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+        Matcher m = CODE_PATTERN.matcher(value);
+        if (m.find()) {
+            return m.group(2);
+        }
+        return value;
     }
 }

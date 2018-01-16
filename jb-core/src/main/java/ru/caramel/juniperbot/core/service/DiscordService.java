@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
@@ -28,6 +29,8 @@ public interface DiscordService {
     JDA getJda();
 
     boolean isConnected();
+
+    boolean isSuperUser(User user);
 
     VoiceChannel getDefaultMusicChannel(long guildId);
 
