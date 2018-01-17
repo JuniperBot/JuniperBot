@@ -73,8 +73,6 @@ public class UserInfoCommand extends InfoCommand {
             builder.addField(getOnlineStatus(user, member));
             if (member.getGame() != null) {
                 builder.addField(getGame(user, member));
-            } else {
-                builder.addBlankField(true);
             }
             builder.addField(getJoinedAt(user, member, formatter));
         }

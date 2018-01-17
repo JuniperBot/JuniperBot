@@ -19,20 +19,18 @@ package ru.caramel.juniperbot.module.ranking.service;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -46,8 +44,10 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.module.ranking.persistence.repository.CookieRepository;
 import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfigRepository;
 import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingRepository;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
@@ -75,6 +75,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private RankingConfigRepository rankingConfigRepository;
+
+    @Autowired
+    private CookieRepository cookieRepository;
 
     @Autowired
     private MessageService messageService;
@@ -138,6 +141,7 @@ public class RankingServiceImpl implements RankingService {
             RankingInfo info = RankingUtils.calculateInfo(rankings.get(i));
             info.setRank(i + 1);
             info.setTotalMembers(rankings.size());
+            info.setCookies(cookieRepository.countByRecipient(rankings.get(i).getMember()));
             result.add(info);
         }
         return result;
@@ -163,10 +167,7 @@ public class RankingServiceImpl implements RankingService {
         coolDowns.put(memberKey, DUMMY);
 
         int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-        if (newLevel == 1000) {
-            return; // max level
-        }
-        if (level != newLevel) {
+        if (newLevel < 1000 && level != newLevel) {
             if (config.isAnnouncementEnabled()) {
                 MessageChannel channel = event.getChannel();
                 String mention = event.getMember().getAsMention();
@@ -181,6 +182,26 @@ public class RankingServiceImpl implements RankingService {
                 messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
             }
             updateRewards(config, event.getMember(), ranking);
+        }
+        if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
+                && StringUtils.isNotEmpty(event.getMessage().getRawContent())
+                && event.getMessage().getRawContent().contains("\uD83C\uDF6A")) {
+            Date checkDate = DateTime.now().minusMinutes(10).toDate();
+            for (User user : event.getMessage().getMentionedUsers()) {
+                if (!user.isBot()) {
+                    Member recipientMember = event.getGuild().getMember(user);
+                    if (recipientMember != null) {
+                        LocalMember recipient = memberService.getOrCreate(recipientMember);
+                        giveCookie(ranking.getMember(), recipient, checkDate);
+                    }
+                }
+            }
+        }
+    }
+
+    private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
+        if (!cookieRepository.isFull(sender, recipient, checkDate)) {
+            cookieRepository.save(new Cookie(sender, recipient));
         }
     }
 
@@ -236,7 +257,7 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public void syncMee6(Guild guild) throws IOException {
         List<RankingInfo> mee6Infos = mee6Provider.export(guild.getIdLong());
-        if (!CollectionUtils.isEmpty(mee6Infos)) {
+        if (CollectionUtils.isNotEmpty(mee6Infos)) {
             List<LocalMember> members = memberService.syncMembers(guild);
             Map<String, LocalMember> membersMap = members.stream()
                     .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
@@ -303,7 +324,7 @@ public class RankingServiceImpl implements RankingService {
             return false;
         }
         List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
-        return !CollectionUtils.isEmpty(member.getRoles()) && member.getRoles().stream()
+        return CollectionUtils.isNotEmpty(member.getRoles()) && member.getRoles().stream()
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
     }
 
@@ -314,6 +335,7 @@ public class RankingServiceImpl implements RankingService {
             RankingInfo info = RankingUtils.calculateInfo(ranking);
             List<Ranking> rankings = rankingRepository.findByMemberGuildIdOrderByExpDesc(member.getGuild().getId());
             info.setRank(rankings.indexOf(ranking) + 1);
+            info.setCookies(cookieRepository.countByRecipient(ranking.getMember()));
             info.setTotalMembers(rankings.size());
             return info;
         }

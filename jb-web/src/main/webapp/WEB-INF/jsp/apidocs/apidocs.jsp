@@ -137,6 +137,12 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     <td>integer</td>
                     <td><spring:message code="page.apidocs.memberList.response.field.rank" /></td>
                 </tr>
+                </tr>
+                <tr>
+                    <td>cookies</td>
+                    <td>integer</td>
+                    <td><spring:message code="page.apidocs.memberList.response.field.cookies" /></td>
+                </tr>
                 <tr>
                     <td>pct</td>
                     <td>integer</td>
@@ -165,6 +171,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     "levelExp":100,
     "totalExp":76,
     "rank":1,
+    "cookies":11,
     "pct":76
   }
 ]</pre>
