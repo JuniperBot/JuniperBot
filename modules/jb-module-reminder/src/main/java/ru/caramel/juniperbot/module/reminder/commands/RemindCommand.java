@@ -91,7 +91,7 @@ public class RemindCommand extends AbstractCommand {
 
             if (date != null && reminder != null) {
                 createReminder(message.getChannel(), message.getMember(), reminder, date.toDate());
-                return ok(message);
+                return ok(message, "discord.command.remind.done");
             }
         } catch (IllegalArgumentException e) {
             // fall down

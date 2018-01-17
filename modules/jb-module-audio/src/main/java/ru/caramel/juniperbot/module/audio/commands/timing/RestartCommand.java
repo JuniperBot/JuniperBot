@@ -36,6 +36,6 @@ public class RestartCommand extends AudioCommand {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.restart.denied");
             return fail(message);
         }
-        return ok(message);
+        return ok(message, "discord.command.audio.restart.done");
     }
 }

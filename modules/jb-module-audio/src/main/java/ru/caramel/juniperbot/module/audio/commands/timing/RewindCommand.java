@@ -41,6 +41,6 @@ public class RewindCommand extends TimingCommand {
                     messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
         }
-        return true;
+        return ok(message);
     }
 }
