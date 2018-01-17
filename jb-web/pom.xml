@@ -90,6 +90,12 @@
             <version>${opencv.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>${geoip2.version}</version>
+        </dependency>
+
         <!-- WEB DEPENDENCIES -->
 
         <dependency>

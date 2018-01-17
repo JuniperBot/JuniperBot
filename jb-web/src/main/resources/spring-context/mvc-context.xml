@@ -78,8 +78,8 @@
                   value="org.springframework.web.servlet.view.tiles3.SpringBeanPreparerFactory"/>
     </bean>
 
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
-          p:defaultLocale="ru"
+    <bean id="localeResolver" class="ru.caramel.juniperbot.web.service.GeoIPCookieLocaleResolver"
+          p:defaultLocale="en"
           p:cookieName="jb_language" />
 
     <mvc:interceptors>
