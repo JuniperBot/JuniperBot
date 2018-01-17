@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -88,6 +90,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private ContextService contextService;
 
+    @Autowired
+    private CommandsService commandsService;
+
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
@@ -114,6 +119,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public void onGenericEvent(Event event) {
         contextService.initContext(event);
+        if (event instanceof MessageReceivedEvent) {
+            commandsService.onMessageReceived((MessageReceivedEvent) event);
+        }
         publisher.publishEvent(new DiscordEvent(event));
         contextService.resetContext();
     }

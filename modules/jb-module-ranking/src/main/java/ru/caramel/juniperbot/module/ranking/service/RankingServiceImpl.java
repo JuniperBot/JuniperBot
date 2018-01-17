@@ -153,36 +153,37 @@ public class RankingServiceImpl implements RankingService {
         String memberKey = String.format("%s_%s", event.getGuild().getId(), event.getAuthor().getId());
 
         RankingConfig config = getConfig(event.getGuild());
-        if (!memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())
-                || coolDowns.getIfPresent(memberKey) != null) {
+        if (!memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
             return;
         }
 
         Ranking ranking = getRanking(event.getMember());
 
-        int level = RankingUtils.getLevelFromExp(ranking.getExp());
+        if (coolDowns.getIfPresent(memberKey) != null) {
+            int level = RankingUtils.getLevelFromExp(ranking.getExp());
+            ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
+            rankingRepository.save(ranking);
+            coolDowns.put(memberKey, DUMMY);
 
-        ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
-        rankingRepository.save(ranking);
-        coolDowns.put(memberKey, DUMMY);
-
-        int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-        if (newLevel < 1000 && level != newLevel) {
-            if (config.isAnnouncementEnabled()) {
-                MessageChannel channel = event.getChannel();
-                String mention = event.getMember().getAsMention();
-                if (config.isWhisper()) {
-                    try {
-                        channel = event.getAuthor().openPrivateChannel().complete();
-                        mention = event.getAuthor().getAsMention();
-                    } catch (Exception e) {
-                        LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
+            int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
+            if (newLevel < 1000 && level != newLevel) {
+                if (config.isAnnouncementEnabled()) {
+                    MessageChannel channel = event.getChannel();
+                    String mention = event.getMember().getAsMention();
+                    if (config.isWhisper()) {
+                        try {
+                            channel = event.getAuthor().openPrivateChannel().complete();
+                            mention = event.getAuthor().getAsMention();
+                        } catch (Exception e) {
+                            LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
+                        }
                     }
+                    messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
                 }
-                messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
+                updateRewards(config, event.getMember(), ranking);
             }
-            updateRewards(config, event.getMember(), ranking);
         }
+
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getRawContent())
                 && event.getMessage().getRawContent().contains("\uD83C\uDF6A")) {
