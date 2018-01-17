@@ -188,7 +188,7 @@ public class RankingServiceImpl implements RankingService {
                 && event.getMessage().getRawContent().contains("\uD83C\uDF6A")) {
             Date checkDate = DateTime.now().minusMinutes(10).toDate();
             for (User user : event.getMessage().getMentionedUsers()) {
-                if (!user.isBot()) {
+                if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                     Member recipientMember = event.getGuild().getMember(user);
                     if (recipientMember != null) {
                         LocalMember recipient = memberService.getOrCreate(recipientMember);
