@@ -119,8 +119,12 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public void onGenericEvent(Event event) {
         contextService.initContext(event);
-        if (event instanceof MessageReceivedEvent) {
-            commandsService.onMessageReceived((MessageReceivedEvent) event);
+        try {
+            if (event instanceof MessageReceivedEvent) {
+                commandsService.onMessageReceived((MessageReceivedEvent) event);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Could not process command", e);
         }
         publisher.publishEvent(new DiscordEvent(event));
         contextService.resetContext();

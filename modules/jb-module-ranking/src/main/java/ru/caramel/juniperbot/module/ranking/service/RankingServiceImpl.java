@@ -159,7 +159,7 @@ public class RankingServiceImpl implements RankingService {
 
         Ranking ranking = getRanking(event.getMember());
 
-        if (coolDowns.getIfPresent(memberKey) != null) {
+        if (coolDowns.getIfPresent(memberKey) == null) {
             int level = RankingUtils.getLevelFromExp(ranking.getExp());
             ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
             rankingRepository.save(ranking);
