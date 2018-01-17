@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public class CommandsServiceImpl implements CommandsService {
             String customMention = String.format("<@!%s>", jda.getSelfUser().getId());
             prefix = content.startsWith(customMention) ? customMention : jda.getSelfUser().getAsMention();
         }
-        if (StringUtils.isNotEmpty(content) && content.startsWith(prefix) && content.length() <= 255) {
+        if (StringUtils.isNotEmpty(content) && content.startsWith(prefix) && content.length() <= MessageEmbed.TEXT_MAX_LENGTH) {
             String input = content.substring(prefix.length()).trim();
             String[] args = input.split("\\s+");
             if (args.length == 0) {
