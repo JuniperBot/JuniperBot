@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.model;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
@@ -42,7 +44,10 @@ public abstract class AbstractCommand implements Command {
 
     private void sendEmotion(MessageReceivedEvent message, String code) {
         try {
-            message.getMessage().addReaction(code).submit();
+            if (message.getGuild() == null || PermissionUtil.checkPermission(message.getTextChannel(),
+                    message.getMember(), Permission.MESSAGE_ADD_REACTION)) {
+                message.getMessage().addReaction(code).submit();
+            }
         } catch (Exception e) {
             LOGGER.error("Add emotion error", e);
         }

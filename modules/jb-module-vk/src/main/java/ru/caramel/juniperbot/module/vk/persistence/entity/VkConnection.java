@@ -36,7 +36,7 @@ public class VkConnection extends BaseEntity {
     @JoinColumn(name = "web_hook_id")
     private WebHook webHook;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "guild_config_id")
     private GuildConfig config;
 
