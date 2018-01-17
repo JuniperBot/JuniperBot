@@ -45,20 +45,23 @@ public class BioCommand extends InfoCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        if (StringUtils.isEmpty(query)) {
-            EmbedBuilder builder = messageService.getBaseEmbed(true);
-            builder.setDescription(messageService.getMessage("discord.command.bio.info",
-                    context.getConfig().getPrefix()));
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-            return true;
-        }
         LocalMember localMember = memberService.getOrCreate(message.getMember());
         MemberBio bio = bioRepository.findByMember(localMember);
         if (bio == null) {
             bio = new MemberBio();
             bio.setMember(localMember);
         }
-        bio.setBio("-".equals(query) ? null : CommonUtils.trimTo(query.trim(), MessageEmbed.TEXT_MAX_LENGTH));
+        if (StringUtils.isEmpty(query)) {
+            EmbedBuilder builder = messageService.getBaseEmbed(true);
+            if (StringUtils.isNotEmpty(bio.getBio())) {
+                builder.appendDescription(bio.getBio()).appendDescription("\n\n--------\n");
+            }
+            builder.appendDescription(messageService.getMessage("discord.command.bio.info",
+                    context.getConfig().getPrefix()));
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+            return true;
+        }
+        bio.setBio("-".equals(query) ? null : CommonUtils.trimTo(query.trim(), MessageEmbed.TEXT_MAX_LENGTH - 500));
         bioRepository.save(bio);
         return ok(message, "discord.command.bio.updated", context.getConfig().getPrefix());
     }
