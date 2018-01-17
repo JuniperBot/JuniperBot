@@ -87,7 +87,8 @@ public class RankCommand extends RankingCommand {
                 String.valueOf(info.getLevel()), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
                 messageService.getMessage("discord.command.rank.info.exp.format",
-                        info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()),
-                true);
+                        info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()), true);
+        builder.addField(messageService.getMessage("discord.command.rank.info.cookies.title"),
+                String.format("%d \uD83C\uDF6A", info.getCookies()), true);
     }
 }

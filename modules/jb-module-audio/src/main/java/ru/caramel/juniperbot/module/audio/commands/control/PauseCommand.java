@@ -34,7 +34,7 @@ public class PauseCommand extends AudioCommand {
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (playerService.getInstance(message.getGuild()).pauseTrack()) {
-            return ok(message);
+            return ok(message, "discord.command.pause.paused");
         }
         messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
         return false;

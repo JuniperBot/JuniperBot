@@ -49,7 +49,7 @@ public class RepeatCommand extends AudioCommand {
             if (instance.getCurrent() != null) {
                 messageManager.updateMessage(instance.getCurrent());
             }
-            return ok(message);
+            return ok(message, "discord.command.audio.repeat", messageService.getEnumTitle(mode));
         }
         messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
         return fail(message);

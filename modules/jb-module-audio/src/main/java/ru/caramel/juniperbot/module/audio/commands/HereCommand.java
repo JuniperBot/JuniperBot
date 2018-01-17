@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
@@ -44,8 +45,11 @@ public class HereCommand extends AudioCommand {
             messageService.onError(message.getTextChannel(), "discord.command.audio.notStarted");
             return fail(message);
         }
-        playerService.connectToChannel(instance, message.getMember());
-        return ok(message);
+        VoiceChannel channel = playerService.connectToChannel(instance, message.getMember());
+        if (channel != null) {
+            return ok(message, "discord.command.here.connected", channel.getName());
+        }
+        return fail(message, "discord.command.here.error");
     }
 
     @Override

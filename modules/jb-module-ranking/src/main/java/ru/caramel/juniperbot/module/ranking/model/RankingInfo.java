@@ -47,6 +47,8 @@ public class RankingInfo {
 
     private int rank;
 
+    private long cookies;
+
     @JsonIgnore
     private int totalMembers;
 

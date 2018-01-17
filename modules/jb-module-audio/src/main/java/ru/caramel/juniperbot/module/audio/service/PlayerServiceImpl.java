@@ -152,15 +152,16 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     }
 
     @Override
-    public void connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
+    public VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
         VoiceChannel channel = getDesiredChannel(member);
         if (channel == null) {
-            return;
+            return null;
         }
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
             throw new DiscordException("discord.global.voice.noAccess");
         }
         instance.openAudioConnection(channel);
+        return channel;
     }
 
     @Override

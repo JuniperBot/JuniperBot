@@ -19,13 +19,19 @@ package ru.caramel.juniperbot.core.model;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.MessageService;
 
 public abstract class AbstractCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public boolean isAvailable(GuildConfig config) {
@@ -33,20 +39,33 @@ public abstract class AbstractCommand implements Command {
     }
 
     protected boolean ok(MessageReceivedEvent message) {
-        sendEmotion(message, "✅");
+        sendEmotion(message, "✅", null);
         return true;
     }
 
     protected boolean fail(MessageReceivedEvent message) {
-        sendEmotion(message, "❌");
+        sendEmotion(message, "❌", null);
         return false;
     }
 
-    private void sendEmotion(MessageReceivedEvent message, String code) {
+    protected boolean ok(MessageReceivedEvent message, String messageCode, Object... args) {
+        sendEmotion(message, "✅", messageCode, args);
+        return true;
+    }
+
+    protected boolean fail(MessageReceivedEvent message, String messageCode, Object... args) {
+        sendEmotion(message, "❌", messageCode, args);
+        return false;
+    }
+
+    private void sendEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
         try {
             if (message.getGuild() == null || PermissionUtil.checkPermission(message.getTextChannel(),
                     message.getMember(), Permission.MESSAGE_ADD_REACTION)) {
-                message.getMessage().addReaction(code).submit();
+                message.getMessage().addReaction(emoji).submit();
+            } else if (StringUtils.isNotEmpty(messageCode)) {
+                String text = messageService.getMessage(messageCode, args);
+                messageService.sendMessageSilent(message.getChannel()::sendMessage, text);
             }
         } catch (Exception e) {
             LOGGER.error("Add emotion error", e);

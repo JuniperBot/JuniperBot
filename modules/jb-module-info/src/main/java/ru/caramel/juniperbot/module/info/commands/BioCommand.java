@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +51,18 @@ public class BioCommand extends InfoCommand {
             bio = new MemberBio();
             bio.setMember(localMember);
         }
-        bio.setBio(StringUtils.isNotEmpty(query) ? CommonUtils.trimTo(query.trim(), MessageEmbed.TEXT_MAX_LENGTH) : null);
+        if (StringUtils.isEmpty(query)) {
+            EmbedBuilder builder = messageService.getBaseEmbed(true);
+            if (StringUtils.isNotEmpty(bio.getBio())) {
+                builder.appendDescription(bio.getBio()).appendDescription("\n\n--------\n");
+            }
+            builder.appendDescription(messageService.getMessage("discord.command.bio.info",
+                    context.getConfig().getPrefix()));
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+            return true;
+        }
+        bio.setBio("-".equals(query) ? null : CommonUtils.trimTo(query.trim(), MessageEmbed.TEXT_MAX_LENGTH - 500));
         bioRepository.save(bio);
-        return ok(message);
+        return ok(message, "discord.command.bio.updated", context.getConfig().getPrefix());
     }
 }
