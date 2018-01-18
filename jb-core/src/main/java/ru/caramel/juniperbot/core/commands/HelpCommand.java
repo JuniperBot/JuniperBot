@@ -110,7 +110,7 @@ public class HelpCommand extends AbstractCommand {
                             messageService.getMessage("discord.command.help.key"),
                             groupTitle.toLowerCase()),
                             commands.stream().map(e -> '`' + prefix + messageService.getMessage(e.key()) + '`')
-                                    .collect(Collectors.joining(", ")), false);
+                                    .collect(Collectors.joining(" ")), false);
                 }
             });
 

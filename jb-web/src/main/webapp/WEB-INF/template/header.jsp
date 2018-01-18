@@ -32,14 +32,14 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="https://discord.gg/EdWspu3" target="_blank">
+                    <a href="<spring:message code="about.support.server"/>" target="_blank">
                         <div class="discord-header-icon-wrapper">
                             <div class="discord-header-icon"></div>
                         </div>
                     </a>
                 </li>
                 <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="https://github.com/GoldRenard/JuniperBotJ" target="_blank"><i class="fa fa-github"></i></a>
+                    <a href="<spring:message code="about.support.github"/>" target="_blank"><i class="fa fa-github"></i></a>
                 </li>
                 <li class="dropdown tasks-menu" title="<spring:message code="global.header.language"/>" data-toggle="tooltip" data-container="body" data-placement="left">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
