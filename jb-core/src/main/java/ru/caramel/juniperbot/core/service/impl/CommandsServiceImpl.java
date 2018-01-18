@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -49,20 +48,14 @@ public class CommandsServiceImpl implements CommandsService {
     private MessageService messageService;
 
     @Autowired
-    private ContextService contextService;
-
-    @Autowired
     private CommandsHolderService commandsHolderService;
 
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
 
     @Override
     @Transactional
-    @Async("commandsExecutor")
     public void onMessageReceived(MessageReceivedEvent event) {
-        contextService.initContext(event);
         sendMessage(event, this);
-        contextService.resetContext();
     }
 
     @Override

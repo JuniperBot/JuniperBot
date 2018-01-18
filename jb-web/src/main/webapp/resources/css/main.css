@@ -219,6 +219,13 @@ body.landing-mode h4 {
     margin: 0 !important;
 }
 
+.jumbotron .feature {
+    font-size: 16px;
+    font-family: "Open sans", Helvetica, Arial !important;
+    text-shadow: 0 0 15px #000000;
+    font-weight: 200;
+}
+
 /* Medium Devices, Desktops */
 @media only screen and (max-width: 992px) {
     .jumbotron .jumbo-header {

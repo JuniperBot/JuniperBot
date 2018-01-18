@@ -20,6 +20,7 @@ import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -57,18 +58,21 @@ public class ConfigServiceImpl implements ConfigService {
     public GuildConfig getOrCreate(Guild guild) {
         Assert.notNull(guild, "Guild cannot be null");
         GuildConfig config = getOrCreate(guild.getIdLong());
-
-        boolean shouldSave = false;
-        if (!Objects.equals(config.getName(), guild.getName())) {
-            config.setName(guild.getName());
-            shouldSave = true;
-        }
-        if (!Objects.equals(config.getIconUrl(), guild.getIconUrl())) {
-            config.setIconUrl(guild.getIconUrl());
-            shouldSave = true;
-        }
-        if (shouldSave) {
-            repository.save(config);
+        try {
+            boolean shouldSave = false;
+            if (!Objects.equals(config.getName(), guild.getName())) {
+                config.setName(guild.getName());
+                shouldSave = true;
+            }
+            if (!Objects.equals(config.getIconUrl(), guild.getIconUrl())) {
+                config.setIconUrl(guild.getIconUrl());
+                shouldSave = true;
+            }
+            if (shouldSave) {
+                repository.save(config);
+            }
+        } catch (ObjectOptimisticLockingFailureException e) {
+            // it's ok to ignore optlock here, anyway it will be updated later
         }
         return config;
     }

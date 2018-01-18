@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.NamedInheritableThreadLocal;
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -43,7 +43,7 @@ public class ContextServiceImpl implements ContextService {
     private static final String MDC_USER = "userId";
 
     private final ThreadLocal<Locale> holder =
-            new NamedInheritableThreadLocal<>("ContextServiceImpl.Locale");
+            new NamedThreadLocal<>("ContextServiceImpl.Locale");
 
     @Getter
     private Map<String, Locale> supportedLocales;

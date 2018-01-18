@@ -32,5 +32,13 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </a>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="feature">— <spring:message code="page.features.music"/></div>
+                <div class="feature">— <spring:message code="page.features.ranking"/></div>
+                <div class="feature">— <spring:message code="page.features.custom"/></div>
+                <div class="feature">— <spring:message code="page.features.vk"/></div>
+            </div>
+        </div>
     </div>
 </div>
