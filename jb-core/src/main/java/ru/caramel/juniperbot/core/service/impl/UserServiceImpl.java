@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
@@ -46,31 +47,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LocalUser updateIfRequired(User user, LocalUser localUser) {
-        boolean shouldSave = false;
-        if (localUser.getId() == null) {
-            shouldSave = true;
-        }
-
-        if (user != null) {
-
-            if (!Objects.equals(user.getName(), localUser.getName())) {
-                localUser.setName(user.getName());
+        try {
+            boolean shouldSave = false;
+            if (localUser.getId() == null) {
                 shouldSave = true;
             }
 
-            if (!Objects.equals(user.getDiscriminator(), localUser.getDiscriminator())) {
-                localUser.setDiscriminator(user.getDiscriminator());
-                shouldSave = true;
-            }
+            if (user != null) {
+                if (!Objects.equals(user.getName(), localUser.getName())) {
+                    localUser.setName(user.getName());
+                    shouldSave = true;
+                }
 
-            if (!Objects.equals(user.getAvatarUrl(), localUser.getAvatarUrl())) {
-                localUser.setAvatarUrl(user.getAvatarUrl());
-                shouldSave = true;
-            }
-        }
+                if (!Objects.equals(user.getDiscriminator(), localUser.getDiscriminator())) {
+                    localUser.setDiscriminator(user.getDiscriminator());
+                    shouldSave = true;
+                }
 
-        if (shouldSave) {
-            repository.save(localUser);
+                if (!Objects.equals(user.getAvatarUrl(), localUser.getAvatarUrl())) {
+                    localUser.setAvatarUrl(user.getAvatarUrl());
+                    shouldSave = true;
+                }
+            }
+            if (shouldSave) {
+                repository.save(localUser);
+            }
+        } catch (ObjectOptimisticLockingFailureException e) {
+            // it's ok to ignore optlock here, anyway it will be updated later
         }
         return localUser;
     }

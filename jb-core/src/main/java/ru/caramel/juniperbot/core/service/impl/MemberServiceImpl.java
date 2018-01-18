@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.service.impl;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -62,21 +63,25 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public LocalMember updateIfRequired(Member member, LocalMember localMember) {
-        boolean shouldSave = false;
-        if (localMember.getId() == null) {
-            shouldSave = true;
-        }
-
-        if (member != null) {
-            if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
-                localMember.setEffectiveName(member.getEffectiveName());
+        try {
+            boolean shouldSave = false;
+            if (localMember.getId() == null) {
                 shouldSave = true;
             }
-            userService.updateIfRequired(member.getUser(), localMember.getUser());
-        }
 
-        if (shouldSave) {
-            memberRepository.save(localMember);
+            if (member != null) {
+                if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
+                    localMember.setEffectiveName(member.getEffectiveName());
+                    shouldSave = true;
+                }
+                userService.updateIfRequired(member.getUser(), localMember.getUser());
+            }
+
+            if (shouldSave) {
+                memberRepository.save(localMember);
+            }
+        } catch (ObjectOptimisticLockingFailureException e) {
+            // it's ok to ignore optlock here, anyway it will be updated later
         }
         return localMember;
     }
