@@ -38,7 +38,7 @@
         <property name="showSql" value="false"/>
         <property name="generateDdl" value="false"/>
         <property name="database" value="${database.vendor}"/>
-        <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+        <property name="databasePlatform" value="ru.caramel.juniperbot.core.persistence.support.ExPostgreSQLDialect"/>
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
