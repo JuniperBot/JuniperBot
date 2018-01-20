@@ -26,6 +26,8 @@ public interface CommandsHolderService {
 
     Map<String, Command> getCommands();
 
+    Map<String, Command> getPublicCommands();
+
     Map<String, List<DiscordCommand>> getDescriptors();
 
     Command getByLocale(String localizedKey);

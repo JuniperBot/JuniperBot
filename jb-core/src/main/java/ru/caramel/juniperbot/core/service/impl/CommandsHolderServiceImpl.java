@@ -42,6 +42,9 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Getter
     private Map<String, Command> commands;
 
+    @Getter
+    private Map<String, Command> publicCommands;
+
     private Map<String, List<DiscordCommand>> descriptors;
 
     @Override
@@ -70,10 +73,15 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     private void registerCommands(List<Command> commands) {
         this.localizedCommands = new HashMap<>();
         this.commands = new HashMap<>();
+        this.publicCommands = new HashMap<>();
         Collection<Locale> locales = contextService.getSupportedLocales().values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
-            String rawKey = e.getClass().getAnnotation(DiscordCommand.class).key();
+            DiscordCommand annotation = e.getClass().getAnnotation(DiscordCommand.class);
+            String rawKey = annotation.key();
             this.commands.put(rawKey, e);
+            if (!annotation.hidden()) {
+                this.publicCommands.put(rawKey, e);
+            }
             for (Locale locale : locales) {
                 Map<String, Command> localeCommands = localizedCommands.computeIfAbsent(locale, e2 -> new HashMap<>());
                 String localizedKey = messageService.getMessage(rawKey, locale);
