@@ -39,15 +39,14 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <meta name="theme-color" content="#f39c12" />
 
     <link rel="stylesheet" media="screen" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,700">
-    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap-dialog.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap-toggle.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/select2.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/dataTables.bootstrap.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/ionicons.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/AdminLTE.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/css/skin-yellow-light.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/bootstrap3-dialog/1.35.3/dist/css/bootstrap-dialog.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/bootstrap-toggle/2.2.2/css/bootstrap-toggle.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/datatables/1.10.16/css/dataTables.bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/select2/4.0.3/css/select2.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/AdminLTE/2.4.0/dist/css/AdminLTE.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/webjars/AdminLTE/2.4.0/dist/css/skins/skin-yellow-light.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/css/main.css?v=${buildTimestamp}"/>">
 
     <script type="text/javascript">
@@ -56,15 +55,17 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <c:set var="uri" value="${req.requestURI}" />
         var contextPath = '${fn:substring(url, 0, fn:length(url) - fn:length(uri))}${req.contextPath}/';
         var serverId = '${serverId}';
+        var locale = '${pageContext.response.locale}';
     </script>
 
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-dialog.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/bootstrap-toggle.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery.dataTables.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/dataTables.bootstrap.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/select2.full.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/jquery/3.2.1/jquery.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap3-dialog/1.35.3/dist/js/bootstrap-dialog.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/jquery.dataTables.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/dataTables.bootstrap.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/select2.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/i18n/${pageContext.response.locale}.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/dynamic-list.js?v=${buildTimestamp}"/>"></script>
@@ -72,11 +73,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-32x32.png"/>" sizes="32x32" />
     <link rel="icon" type="image/png" href="<c:url value="/resources/img/favicon-16x16.png"/>" sizes="16x16" />
 
+    <script type="text/javascript">
+        $.fn.select2.defaults.set('language', locale);
+    </script>
+
+    <script type="text/javascript" src="<c:url value="/resources/webjars/html5shiv/3.7.3/html5shiv.min.js"/>"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/html5shiv/3.7.3/html5shiv.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/respond/1.4.2/dest/respond.min.js"/>"></script>
     <![endif]-->
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -108,6 +114,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         </div>
         <jsp:include page="footer.jsp" />
     </div>
-    <script type="text/javascript" src="<c:url value="/resources/js/adminlte.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/AdminLTE/2.4.0/dist/js/adminlte.min.js"/>"></script>
 </body>
 </html>

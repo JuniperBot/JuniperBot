@@ -32,6 +32,19 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <properties>
+        <webjars.jquery.version>3.2.1</webjars.jquery.version>
+        <webjars.jquery-datatables.version>1.10.16</webjars.jquery-datatables.version>
+        <webjars.fontawesome.version>4.7.0</webjars.fontawesome.version>
+        <webjars.select2.version>4.0.3-1</webjars.select2.version>
+        <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
+        <webjars.bootstrap3-dialog.version>1.35.3</webjars.bootstrap3-dialog.version>
+        <webjars.bootstrap-toggle.version>2.2.2</webjars.bootstrap-toggle.version>
+        <webjars.adminLTE.version>2.4.0</webjars.adminLTE.version>
+        <webjars.html5shiv.version>3.7.3-1</webjars.html5shiv.version>
+        <webjars.respond.version>1.4.2-1</webjars.respond.version>
+    </properties>
+
     <repositories>
         <repository>
             <id>data-local</id>
@@ -135,6 +148,100 @@
             <groupId>org.apache.tiles</groupId>
             <artifactId>tiles-el</artifactId>
             <version>${tiles.version}</version>
+        </dependency>
+
+        <!-- WEBJARs DEPENDENCIES -->
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>${webjars.jquery.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>datatables</artifactId>
+            <version>${webjars.jquery-datatables.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${webjars.bootstrap.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>bootstrap3-dialog</artifactId>
+            <version>${webjars.bootstrap3-dialog.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>bootstrap</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>bootstrap-toggle</artifactId>
+            <version>${webjars.bootstrap-toggle.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>bootstrap</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>${webjars.fontawesome.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>select2</artifactId>
+            <version>${webjars.select2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>AdminLTE</artifactId>
+            <version>${webjars.adminLTE.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>html5shiv</artifactId>
+            <version>${webjars.html5shiv.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>respond</artifactId>
+            <version>${webjars.respond.version}</version>
         </dependency>
 
         <!-- SECURITY DEPENDENCIES -->
