@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.ranking.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
@@ -52,7 +53,7 @@ public class RankCommand extends RankingCommand {
         if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
                 Permission.MESSAGE_EMBED_LINKS)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);
-            addFields(builder, info);
+            addFields(builder, info, member.getGuild());
             builder.setAuthor(member.getEffectiveName(), null, member.getUser().getAvatarUrl());
             messageService.sendMessageSilent(message.getTextChannel()::sendMessage, builder.build());
         } else {
@@ -80,9 +81,10 @@ public class RankCommand extends RankingCommand {
         return true;
     }
 
-    public void addFields(EmbedBuilder builder, RankingInfo info) {
+    public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
+        long totalMembers = rankingService.countRankings(guild.getId());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
-                String.format("%d/%d", info.getRank(), info.getTotalMembers()), true);
+                String.format("%d/%d", info.getRank(), totalMembers), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),
                 String.valueOf(info.getLevel()), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),

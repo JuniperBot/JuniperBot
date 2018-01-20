@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.ranking.service;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.data.domain.Pageable;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
@@ -39,7 +40,13 @@ public interface RankingService {
 
     RankingInfo getRankingInfo(Member member);
 
+    long countRankings(String serverId);
+
     List<RankingInfo> getRankingInfos(long serverId);
+
+    List<RankingInfo> getRankingInfos(long serverId, String search, Pageable pageable);
+
+    long getRankingInfoCount(long serverId, String search);
 
     void setLevel(long serverId, long userId, int level);
 
@@ -51,4 +58,5 @@ public interface RankingService {
 
     boolean isBanned(RankingConfig config, Member member);
 
+    void calculateQueue();
 }

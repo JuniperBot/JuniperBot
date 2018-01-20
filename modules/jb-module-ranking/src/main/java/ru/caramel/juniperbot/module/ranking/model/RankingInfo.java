@@ -49,9 +49,6 @@ public class RankingInfo {
 
     private long cookies;
 
-    @JsonIgnore
-    private int totalMembers;
-
     public RankingInfo(LocalMember member) {
         this.id = member.getUser().getUserId();
         this.name = member.getUser().getName();

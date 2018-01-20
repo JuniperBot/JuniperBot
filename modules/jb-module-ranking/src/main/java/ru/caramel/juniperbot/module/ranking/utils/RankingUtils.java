@@ -42,6 +42,7 @@ public final class RankingUtils {
         }
         info.setRemainingExp(remaining);
         info.setLevelExp(getLevelExp(info.getLevel()));
+        info.setRank(ranking.getRank());
         return info;
     }
 }

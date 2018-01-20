@@ -195,7 +195,19 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </button>
                     </div>
                 </div>
-                <div id="ranking-container" class="box-body"></div>
+                <div class="box-body">
+                    <div class="clearfix">
+                        <div id="ranking-pagination" class="ranking-pagination"></div>
+                        <div class="input-group ranking-pagination-search">
+                            <input id="ranking-search-input" class="form-control"
+                                   placeholder="<spring:message code="page.ranking.search"/>"/>
+                            <span class="input-group-btn">
+                                <button id="ranking-search-button" type="button" class="btn bg-orange"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="ranking-container"></div>
+                </div>
             </div>
         </div>
     </div>

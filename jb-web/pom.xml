@@ -40,6 +40,7 @@
         <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
         <webjars.bootstrap3-dialog.version>1.35.3</webjars.bootstrap3-dialog.version>
         <webjars.bootstrap-toggle.version>2.2.2</webjars.bootstrap-toggle.version>
+        <webjars-bootpag.version>1.0.7</webjars-bootpag.version>
         <webjars.adminLTE.version>2.4.0</webjars.adminLTE.version>
         <webjars.html5shiv.version>3.7.3-1</webjars.html5shiv.version>
         <webjars.respond.version>1.4.2-1</webjars.respond.version>
@@ -212,6 +213,12 @@
                     <artifactId>bootstrap</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>bootpag</artifactId>
+            <version>${webjars-bootpag.version}</version>
         </dependency>
 
         <dependency>

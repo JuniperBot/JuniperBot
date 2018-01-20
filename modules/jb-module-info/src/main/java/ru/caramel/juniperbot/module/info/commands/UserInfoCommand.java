@@ -81,7 +81,7 @@ public class UserInfoCommand extends InfoCommand {
             if (rankingService.isEnabled(member.getGuild().getIdLong())) {
                 RankingInfo info = rankingService.getRankingInfo(member);
                 if (info != null) {
-                    rankCommand.addFields(builder, info);
+                    rankCommand.addFields(builder, info, member.getGuild());
                 }
             }
             MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getId(), user.getId());

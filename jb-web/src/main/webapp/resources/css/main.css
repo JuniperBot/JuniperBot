@@ -349,6 +349,10 @@ div.discord-header-icon {
     margin-bottom: 0 !important;
 }
 
+.form-group.no-t-margin {
+    margin-top: 0 !important;
+}
+
 table.command-table td {
     padding: 0 16px 8px 10px !important;
 }
@@ -686,4 +690,21 @@ h6.hyperlink:hover > a {
     min-height: 1px;
     padding-right: 15px;
     padding-left: 15px;
+}
+
+.ranking-pagination > .pagination {
+    float: left !important;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+.ranking-pagination-user > .pagination {
+    float: left !important;
+    margin: 0 !important;
+}
+
+.ranking-pagination-search {
+    float: left !important;
+    width: 200px;
+    margin: 0 0 10px 5px;
 }

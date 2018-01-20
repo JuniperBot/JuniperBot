@@ -22,6 +22,10 @@ function Ranking(lang) {
     self.reloading = false;
     self.updateId = null;
 
+    self.pageSize = 100;
+    self.pageNum = 1;
+    self.search = null;
+
     var $updateModal = $("#update-level-modal");
     var $updateTitle = $('#update-level-modal-label');
     var $updateInput = $('#update-level-value');
@@ -37,6 +41,23 @@ function Ranking(lang) {
 
     var $importButton = $('#ranking-import-button');
     var $resetButton = $('#ranking-reset-button');
+
+    var $searchInput = $("#ranking-search-input");
+    var $searchButton = $("#ranking-search-button");
+
+    self.pagination = $('#ranking-pagination').bootpag({
+        total: 0,
+        page: 1,
+        maxVisible: 5,
+        leaps: true
+    }).on("page", function(event, num){
+        self.pageNum = num;
+        self.reload();
+    });
+
+    self.setPagination = function(options) {
+        self.pagination.bootpag(options);
+    };
 
     var rewardsTable = $('#rewards-table').DataTable({
         'paging': false,
@@ -65,19 +86,40 @@ function Ranking(lang) {
         self.reload();
     };
 
+    self.doSearch = function() {
+        self.search = $searchInput.val();
+        self.reload();
+    };
+
     self.reload = function () {
         if (self.reloading) {
             return;
         }
         self.reloading = true;
         self.container.html(overlayContent);
-        $.post(contextPath + 'ranking/list/' + serverId)
+        $.post(contextPath + 'ranking/list/' + serverId + '/count', {search: self.search})
             .done(function (data) {
-                self.container.hide().html(data).fadeIn('fast');
-                bindActions();
+                var totalPages = Math.ceil(data / self.pageSize) || 1;
+                self.pageNum = totalPages > self.pageNum ? self.pageNum : totalPages;
+                self.setPagination({total: totalPages, page: self.pageNum});
+                $.post(contextPath + 'ranking/list/' + serverId, {
+                    page: self.pageNum - 1,
+                    pageSize: self.pageSize,
+                    search: self.search
+                })
+                    .done(function (data) {
+                        self.container.hide().html(data).fadeIn('fast');
+                        bindActions();
+                    })
+                    .fail(function () {
+                        self.container.html(lang.somethingIsWrong);
+                    })
+                    .always(function () {
+                        self.reloading = false;
+                    });
             })
             .fail(function () {
-                self.container.html(lang.somethingIsWrong);
+                BootstrapDialog.warning(lang.somethingIsWrong);
             })
             .always(function () {
                 self.reloading = false;
@@ -285,4 +327,14 @@ function Ranking(lang) {
 
     $(window).resize(updateBackgroundImage);
     updateBackgroundImage();
+
+    $searchInput.on('keypress', function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            self.doSearch();
+            return false;
+        }
+    });
+    $searchButton.on('click', self.doSearch);
 }

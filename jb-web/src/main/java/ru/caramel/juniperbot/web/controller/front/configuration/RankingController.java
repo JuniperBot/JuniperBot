@@ -21,6 +21,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +35,6 @@ import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.model.RewardDetails;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfigRepository;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
@@ -50,9 +52,6 @@ import java.util.List;
 @Controller
 @Navigation(PageElement.RANKING)
 public class RankingController extends AbstractController {
-
-    @Autowired
-    private RankingConfigRepository rankingConfigRepository;
 
     @Autowired
     private RankingService rankingService;
@@ -104,14 +103,32 @@ public class RankingController extends AbstractController {
         return view(serverId, false);
     }
 
-    @RequestMapping("/ranking/list/{serverId}")
-    public ModelAndView list(@PathVariable long serverId) {
+    @RequestMapping(value = "/ranking/list/{serverId}/count", method = RequestMethod.POST)
+    @ResponseBody
+    public long count(@PathVariable long serverId,
+                             @RequestParam(value = "search", required = false) String search) {
         boolean authorized = isAuthorized(serverId);
         if (!authorized && !rankingService.isEnabled(serverId)) {
             throw new NotFoundException();
         }
+        return rankingService.getRankingInfoCount(serverId, search);
+    }
+
+    @RequestMapping("/ranking/list/{serverId}")
+    public ModelAndView list(@PathVariable long serverId,
+                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                             @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+                             @RequestParam(value = "search", required = false) String search) {
+        boolean authorized = isAuthorized(serverId);
+        if (!authorized && !rankingService.isEnabled(serverId)) {
+            throw new NotFoundException();
+        }
+        if (pageSize > 1000) {
+            pageSize = 1000;
+        }
         ModelAndView mv = new ModelAndView("ranking.list");
-        List<RankingInfo> members = rankingService.getRankingInfos(serverId);
+        Pageable pageRequest = new PageRequest(page, pageSize, new Sort("rank"));
+        List<RankingInfo> members = rankingService.getRankingInfos(serverId, search, pageRequest);
         return mv
                 .addObject("editable", authorized)
                 .addObject("members", members);
@@ -185,7 +202,6 @@ public class RankingController extends AbstractController {
                 details.sort(Comparator.comparing(RewardDetails::getLevel));
                 return details;
             }
-
         }
         return null;
     }

@@ -62,6 +62,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap3-dialog/1.35.3/dist/js/bootstrap-dialog.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/bootpag/1.0.7/lib/jquery.bootpag.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/jquery.dataTables.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/dataTables.bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/select2.min.js"/>"></script>
@@ -77,7 +78,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         $.fn.select2.defaults.set('language', locale);
     </script>
 
-    <script type="text/javascript" src="<c:url value="/resources/webjars/html5shiv/3.7.3/html5shiv.min.js"/>"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

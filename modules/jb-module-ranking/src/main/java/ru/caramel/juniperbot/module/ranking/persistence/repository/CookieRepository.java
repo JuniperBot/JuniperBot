@@ -23,7 +23,9 @@ import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface CookieRepository extends JpaRepository<Cookie, Long> {
@@ -33,6 +35,9 @@ public interface CookieRepository extends JpaRepository<Cookie, Long> {
             @Param("sender") LocalMember sender,
             @Param("recipient") LocalMember recipient,
             @Param("date") Date date);
+
+    @Query("SELECT r.id, count(c) from Cookie c, LocalMember r WHERE c.recipient.id = r.id AND r IN :recipients GROUP BY r.id")
+    List<Object[]> countByRecipients(@Param("recipients") Collection<LocalMember> recipients);
 
     long countByRecipient(LocalMember recipient);
 }

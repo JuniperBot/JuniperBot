@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -29,6 +30,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
@@ -54,6 +57,7 @@ import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -101,6 +105,8 @@ public class RankingServiceImpl implements RankingService {
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
+    private final Set<String> calculateQueue = Sets.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+
     @Transactional
     @Override
     public RankingConfig getConfig(Guild guild) {
@@ -132,19 +138,52 @@ public class RankingServiceImpl implements RankingService {
         return config;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
+    @Override
+    public RankingInfo getRankingInfo(Member member) {
+        Ranking ranking = getRanking(member);
+        if (ranking != null) {
+            RankingInfo info = RankingUtils.calculateInfo(ranking);
+            info.setCookies(cookieRepository.countByRecipient(ranking.getMember()));
+            return info;
+        }
+        return null;
+    }
+
+    @Override
+    public long countRankings(String serverId) {
+        return rankingRepository.countByGuildId(serverId);
+    }
+
+    @Transactional
     @Override
     public List<RankingInfo> getRankingInfos(long serverId) {
-        List<Ranking> rankings = rankingRepository.findByMemberGuildIdOrderByExpDesc(String.valueOf(serverId));
-        List<RankingInfo> result = new ArrayList<>(rankings.size());
-        for (int i = 0; i < rankings.size(); i++) {
-            RankingInfo info = RankingUtils.calculateInfo(rankings.get(i));
-            info.setRank(i + 1);
-            info.setTotalMembers(rankings.size());
-            info.setCookies(cookieRepository.countByRecipient(rankings.get(i).getMember()));
-            result.add(info);
+        return getRankingInfos(serverId, null, null);
+    }
+
+    @Transactional
+    @Override
+    public List<RankingInfo> getRankingInfos(long serverId, String search, Pageable pageable) {
+        List<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(serverId), search != null ? search.toLowerCase() : "", pageable);
+        if (CollectionUtils.isNotEmpty(rankings)) {
+            Map<Long, LocalMember> memberMap = rankings.stream().collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
+            List<Object[]> cookies = cookieRepository.countByRecipients(memberMap.values());
+            Map<Long, Long> cookiesMap = new HashMap<>(cookies.size());
+            cookies.forEach(e -> cookiesMap.put((Long)e[0], (Long)e[1]));
+            return rankings.stream().map(e -> {
+                RankingInfo info = RankingUtils.calculateInfo(e);
+                if (cookiesMap.containsKey(e.getMember().getId())) {
+                    info.setCookies(cookiesMap.get(e.getMember().getId()));
+                }
+                return info;
+            }).collect(Collectors.toList());
         }
-        return result;
+        return Collections.emptyList();
+    }
+
+    @Override
+    public long getRankingInfoCount(long serverId, String search) {
+        return rankingRepository.countByGuildId(String.valueOf(serverId), search);
     }
 
     @Transactional
@@ -163,6 +202,7 @@ public class RankingServiceImpl implements RankingService {
             int level = RankingUtils.getLevelFromExp(ranking.getExp());
             ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
             rankingRepository.save(ranking);
+            calculateQueue.add(event.getGuild().getId());
             coolDowns.put(memberKey, DUMMY);
 
             int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
@@ -222,6 +262,7 @@ public class RankingServiceImpl implements RankingService {
         if (ranking != null) {
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
             rankingRepository.save(ranking);
+            rankingRepository.recalculateRank(String.valueOf(serverId));
             RankingConfig config = getConfig(serverId);
             if (discordService.isConnected()) {
                 Guild guild = discordService.getJda().getGuildById(serverId);
@@ -252,6 +293,7 @@ public class RankingServiceImpl implements RankingService {
             }
         });
         memberRepository.save(members);
+        rankingRepository.recalculateRank(guild.getId());
     }
 
     @Transactional
@@ -294,7 +336,9 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public void resetAll(long serverId) {
-        rankingRepository.resetAll(String.valueOf(serverId));
+        String server = String.valueOf(serverId);
+        rankingRepository.resetAll(server);
+        rankingRepository.recalculateRank(server);
     }
 
     private void updateRewards(RankingConfig config, Member member, Ranking ranking) {
@@ -327,20 +371,6 @@ public class RankingServiceImpl implements RankingService {
         List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
         return CollectionUtils.isNotEmpty(member.getRoles()) && member.getRoles().stream()
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
-    }
-
-    @Override
-    public RankingInfo getRankingInfo(Member member) {
-        Ranking ranking = getRanking(member);
-        if (ranking != null) {
-            RankingInfo info = RankingUtils.calculateInfo(ranking);
-            List<Ranking> rankings = rankingRepository.findByMemberGuildIdOrderByExpDesc(member.getGuild().getId());
-            info.setRank(rankings.indexOf(ranking) + 1);
-            info.setCookies(cookieRepository.countByRecipient(ranking.getMember()));
-            info.setTotalMembers(rankings.size());
-            return info;
-        }
-        return null;
     }
 
     private String getAnnounce(RankingConfig config, String mention, int level) {
@@ -389,5 +419,16 @@ public class RankingServiceImpl implements RankingService {
             }
         }
         return ranking;
+    }
+
+    @Scheduled(fixedDelay = 300000)
+    @Override
+    public void calculateQueue() {
+        Set<String> queue;
+        synchronized (calculateQueue) {
+            queue = new HashSet<>(calculateQueue);
+            calculateQueue.clear();
+        }
+        queue.forEach(rankingRepository::recalculateRank);
     }
 }
