@@ -21,6 +21,7 @@ import org.hibernate.dialect.PostgreSQL9Dialect;
 public class ExPostgreSQLDialect extends PostgreSQL9Dialect {
 
     public ExPostgreSQLDialect() {
-        registerFunction("fts", new PostgreSQLFullTextSearchFunction());
+        registerFunction("fts", new PostgreSQLPlainToTSQueryFunction());
+        registerFunction("fts_rank", new PostgreSQLToRankCDFunction());
     }
 }

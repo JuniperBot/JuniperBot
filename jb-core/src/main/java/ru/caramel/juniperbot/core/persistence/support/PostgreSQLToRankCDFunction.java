@@ -20,37 +20,47 @@ import org.hibernate.QueryException;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.type.BooleanType;
+import org.hibernate.type.FloatType;
 import org.hibernate.type.Type;
 
 import java.util.List;
 
-public class PostgreSQLFullTextSearchFunction implements SQLFunction {
+public class PostgreSQLToRankCDFunction implements SQLFunction {
+
     @Override
     public Type getReturnType(Type columnType, Mapping mapping)
             throws QueryException {
-        return new BooleanType();
+        return FloatType.INSTANCE;
     }
 
     @Override
     public String render(Type firstArgumentType, List arguments, SessionFactoryImplementor factory) throws QueryException {
         if (arguments == null || arguments.size() < 2) {
-            throw new IllegalArgumentException("The function must be passed 2 arguments");
+            throw new IllegalArgumentException("The function must be passed at least 2 arguments");
         }
 
         String fragment;
         String ftsConfig;
-        String field;
+        String tsVector;
         String value;
-        if (arguments.size() == 3) {
+        String normalization;
+        if (arguments.size() == 4) {
             ftsConfig = (String) arguments.get(0);
-            field = (String) arguments.get(1);
+            tsVector = (String) arguments.get(1);
             value = (String) arguments.get(2);
-            fragment = field + " @@ plainto_tsquery(" + ftsConfig + ", " + value + ")";
+            normalization = (String) arguments.get(3);
+            fragment = String.format("ts_rank_cd(%s, plainto_tsquery(%s, %s), %s)", tsVector, ftsConfig, value, normalization);
         } else {
-            field = (String) arguments.get(0);
-            value = (String) arguments.get(1);
-            fragment = field + " @@ plainto_tsquery(" + value + ")";
+            if (arguments.size() == 3) {
+                ftsConfig = (String) arguments.get(0);
+                tsVector = (String) arguments.get(1);
+                value = (String) arguments.get(2);
+                fragment = String.format("ts_rank_cd(%s, plainto_tsquery(%s, %s))", tsVector, ftsConfig, value);
+            } else {
+                tsVector = (String) arguments.get(0);
+                value = (String) arguments.get(1);
+                fragment = String.format("ts_rank_cd(%s, plainto_tsquery(%s))", tsVector, value);
+            }
         }
         return fragment;
     }

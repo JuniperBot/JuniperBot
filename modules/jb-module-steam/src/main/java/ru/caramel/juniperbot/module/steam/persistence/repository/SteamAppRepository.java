@@ -37,7 +37,7 @@ public interface SteamAppRepository extends JpaRepository<SteamApp, Long> {
     @Query("DELETE FROM SteamApp app WHERE app.appId in :ids")
     void deleteApps(@Param("ids") Set<Long> ids);
 
-    @Query("SELECT app FROM SteamApp app WHERE fts('pg_catalog.english', app.terms, :query) = true")
+    @Query("SELECT app FROM SteamApp app WHERE fts('pg_catalog.english', app.terms, :query) = true ORDER BY fts_rank('pg_catalog.english', app.terms, :query, 2) DESC")
     List<SteamApp> search(@Param("query") String query, Pageable pageable);
 
     SteamApp findByAppId(Long appId);

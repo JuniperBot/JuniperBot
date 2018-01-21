@@ -56,6 +56,10 @@ public class SteamCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+        if (StringUtils.isEmpty(query)) {
+            messageService.onMessage(message.getChannel(), "discord.command.steam.enter");
+            return true;
+        }
         message.getChannel().sendTyping().submit();
         SteamApp app = null;
         if (StringUtils.isNumeric(query)) {
@@ -67,7 +71,7 @@ public class SteamCommand extends AbstractCommand {
         SteamAppDetails details = steamService.getDetails(app, contextService.getLocale());
         if (details == null) {
             messageService.onMessage(message.getChannel(), "discord.command.steam.noResults");
-            return fail(message);
+            return false;
         }
 
         String storeUrl = APP_PAGE + app.getAppId();
@@ -113,13 +117,13 @@ public class SteamCommand extends AbstractCommand {
     private MessageEmbed.Field getPlatforms(SteamAppPlatforms platforms) {
         StringBuilder builder = new StringBuilder();
         if (platforms.isWindows()) {
-            builder.append("<:windows:404365879242129408>");
+            builder.append("<:windows:404365879242129408> ");
         }
         if (platforms.isLinux()) {
-            builder.append("<:steam_os:404365878621372417>");
+            builder.append("<:steam_os:404365878621372417> ");
         }
         if (platforms.isMac()) {
-            builder.append("<:mac:404365878373908481>");
+            builder.append("<:mac:404365878373908481> ");
         }
         return new MessageEmbed.Field(messageService.getMessage("discord.command.steam.platforms"),
                 builder.toString(), true);
