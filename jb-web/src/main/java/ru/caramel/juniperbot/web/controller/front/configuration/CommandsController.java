@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
-import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.utils.ArrayUtil;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
@@ -43,16 +42,14 @@ import java.util.stream.Collectors;
 public class CommandsController extends AbstractController {
 
     @Autowired
-    private CommandsService commandsService;
-
-    @Autowired
     private CommandsHolderService holderService;
 
     @RequestMapping("/commands/{serverId}")
     public ModelAndView view(@PathVariable long serverId) {
         validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
-        CommandsDto dto = new CommandsDto(ArrayUtil.reverse(String[].class, config.getDisabledCommands(), holderService.getCommands().keySet()));
+        CommandsDto dto = new CommandsDto(ArrayUtil.reverse(String[].class, config.getDisabledCommands(),
+                holderService.getPublicCommands().keySet()));
         return createModel("commands", serverId, config.getPrefix())
                 .addObject("commandsContainer", dto);
     }
@@ -63,7 +60,8 @@ public class CommandsController extends AbstractController {
             @ModelAttribute("commandsContainer") CommandsDto container) {
         validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
-        config.setDisabledCommands(ArrayUtil.reverse(String[].class, container.getCommands(), holderService.getCommands().keySet()));
+        config.setDisabledCommands(ArrayUtil.reverse(String[].class, container.getCommands(),
+                holderService.getPublicCommands().keySet()));
         configService.save(config);
         flash.success("flash.commands.save.success.message");
         return view(serverId);

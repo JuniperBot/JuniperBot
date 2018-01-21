@@ -30,4 +30,5 @@
         <import resource="classpath:spring-context/module-ranking-context.xml" />
         <import resource="classpath:spring-context/module-groovy-context.xml" />
         <import resource="classpath:spring-context/module-info-context.xml" />
+        <import resource="classpath:spring-context/module-steam-context.xml" />
 </beans>

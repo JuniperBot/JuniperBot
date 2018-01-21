@@ -38,4 +38,7 @@ public class Ranking extends BaseEntity {
     @Column
     private long exp;
 
+    @Column
+    private int rank;
+
 }

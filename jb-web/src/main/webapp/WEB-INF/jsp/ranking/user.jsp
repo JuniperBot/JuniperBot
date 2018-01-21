@@ -76,6 +76,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <img class="img-circle" src="${serverIcon}" alt="<spring:message code="global.title.serverAvatar"/>">
     </div>
     <div class="box-footer">
+        <div class="clearfix">
+            <div id="ranking-pagination" class="ranking-pagination"></div>
+            <div class="input-group ranking-pagination-search">
+                <input id="ranking-search-input" class="form-control"
+                       placeholder="<spring:message code="page.ranking.search"/>"/>
+                <span class="input-group-btn">
+                                <button id="ranking-search-button" type="button" class="btn bg-orange"><i class="fa fa-search"></i></button>
+                            </span>
+            </div>
+        </div>
         <div id="ranking-container" class="widget-server-container"></div>
     </div>
 </div>

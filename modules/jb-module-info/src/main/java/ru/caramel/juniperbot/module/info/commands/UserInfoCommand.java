@@ -17,9 +17,14 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,23 +70,28 @@ public class UserInfoCommand extends InfoCommand {
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.user.title",
                 member != null ? member.getEffectiveName() : user.getName()));
-        builder.setImage(user.getEffectiveAvatarUrl());
+        builder.setThumbnail(user.getEffectiveAvatarUrl());
         builder.setFooter(messageService.getMessage("discord.command.info.identifier", user.getId()), null);
 
-        builder.addField(getName(user, member));
+        StringBuilder commonBuilder = new StringBuilder();
+        getName(commonBuilder, user, member);
+
         if (member != null) {
-            builder.addField(getOnlineStatus(user, member));
+            getOnlineStatus(commonBuilder, member);
             if (member.getGame() != null) {
-                builder.addField(getGame(user, member));
+                getGame(commonBuilder, member);
             }
-            builder.addField(getJoinedAt(user, member, formatter));
+            getJoinedAt(commonBuilder, member, formatter);
         }
-        builder.addField(getCreatedAt(user, member, formatter));
+        getCreatedAt(commonBuilder, user, formatter);
+
+        builder.addField(messageService.getMessage("discord.command.user.common"), commonBuilder.toString(), false);
+
         if (member != null && !user.isBot()) {
             if (rankingService.isEnabled(member.getGuild().getIdLong())) {
                 RankingInfo info = rankingService.getRankingInfo(member);
                 if (info != null) {
-                    rankCommand.addFields(builder, info);
+                    rankCommand.addFields(builder, info, member.getGuild());
                 }
             }
             MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getId(), user.getId());
@@ -95,32 +105,53 @@ public class UserInfoCommand extends InfoCommand {
         return true;
     }
 
-    private MessageEmbed.Field getName(User user, Member member) {
+    private StringBuilder getName(StringBuilder commonBuilder, User user, Member member) {
         String userName = CommonUtils.formatUser(user);
         if (member != null && !Objects.equals(user.getName(), member.getEffectiveName())) {
             userName += String.format(" (%s)", member.getEffectiveName());
         }
-        return new MessageEmbed.Field(messageService.getMessage("discord.command.user.username"), userName,
-                true);
+        return appendEntry(commonBuilder, "discord.command.user.username", userName);
     }
 
-    private MessageEmbed.Field getCreatedAt(User user, Member member, DateTimeFormatter formatter) {
-        return getDateField(user.getCreationTime().toEpochSecond(), "discord.command.user.createdAt",
-                formatter);
+    private StringBuilder getCreatedAt(StringBuilder commonBuilder, User user, DateTimeFormatter formatter) {
+        return appendEntry(commonBuilder, "discord.command.user.createdAt", user.getCreationTime().toEpochSecond(), formatter);
     }
 
-    private MessageEmbed.Field getJoinedAt(User user, Member member, DateTimeFormatter formatter) {
-        return getDateField(member.getJoinDate().toEpochSecond(), "discord.command.user.joinedAt",
-                formatter);
+    private StringBuilder getJoinedAt(StringBuilder commonBuilder, Member member, DateTimeFormatter formatter) {
+        return appendEntry(commonBuilder, "discord.command.user.joinedAt", member.getJoinDate().toEpochSecond(), formatter);
     }
 
-    private MessageEmbed.Field getOnlineStatus(User user, Member member) {
-        return new MessageEmbed.Field(messageService.getMessage("discord.command.user.status"),
-                messageService.getEnumTitle(member.getOnlineStatus()), true);
+    private StringBuilder getOnlineStatus(StringBuilder commonBuilder, Member member) {
+        return appendEntry(commonBuilder, "discord.command.user.status",
+                messageService.getEnumTitle(member.getOnlineStatus()));
     }
 
-    private MessageEmbed.Field getGame(User user, Member member) {
+    private StringBuilder getGame(StringBuilder commonBuilder, Member member) {
         Game game = member.getGame();
-        return new MessageEmbed.Field(messageService.getEnumTitle(game.getType()), game.getName(), true);
+        return appendEntry(commonBuilder, game.getType(), game.getName());
+    }
+
+    private StringBuilder appendEntry(StringBuilder commonBuilder, String name, String value) {
+        return commonBuilder
+                .append("**")
+                .append(messageService.getMessage(name))
+                .append(":** ")
+                .append(value)
+                .append("\n");
+    }
+
+    private StringBuilder appendEntry(StringBuilder commonBuilder, Enum<?> enumName, String value) {
+        return commonBuilder
+                .append("**")
+                .append(enumName)
+                .append(":** ")
+                .append(value)
+                .append("\n");
+    }
+
+    private StringBuilder appendEntry(StringBuilder commonBuilder, String nameKey, long epochSecond,
+                                      DateTimeFormatter formatter) {
+        DateTime dateTime = new DateTime(epochSecond * 1000).withZone(DateTimeZone.UTC);
+        return appendEntry(commonBuilder, nameKey, formatter.print(dateTime));
     }
 }

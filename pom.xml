@@ -47,6 +47,7 @@
         <apache.commons.io.version>2.5</apache.commons.io.version>
         <jInstagram.version>1.2.1</jInstagram.version>
         <joda-time.version>2.9.9</joda-time.version>
+        <joda-money.version>0.12</joda-money.version>
         <lavaplayer.version>1.2.45</lavaplayer.version>
         <google-api-services-youtube.version>v3-rev183-1.22.0</google-api-services-youtube.version>
         <tiles.version>3.0.7</tiles.version>
@@ -96,6 +97,7 @@
         <module>modules/jb-module-ranking</module>
         <module>modules/jb-module-groovy</module>
         <module>modules/jb-module-info</module>
+        <module>modules/jb-module-steam</module>
         <module>modules/jb-module-full</module>
         <module>jb-web</module>
     </modules>
