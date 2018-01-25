@@ -7,12 +7,15 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.core.audio.factory.IPacketProvider;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.CheckForNull;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
 import java.net.SocketException;
+import java.util.concurrent.ConcurrentMap;
 
 import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
@@ -27,9 +30,15 @@ public class AudioSendFactory implements IAudioSendFactory {
     private static class AudioSendSystem implements IAudioSendSystem {
         private final IPacketProvider packetProvider;
         private Thread sendThread;
+        private ConcurrentMap<String, String> contextMap;
 
-        private AudioSendSystem(IPacketProvider packetProvider) {
+        public AudioSendSystem(IPacketProvider packetProvider) {
             this.packetProvider = packetProvider;
+        }
+
+        @Override
+        public void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {
+            this.contextMap = contextMap;
         }
 
         @Override
@@ -38,6 +47,8 @@ public class AudioSendFactory implements IAudioSendFactory {
 
             sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
             {
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
                 long lastFrameSent = System.currentTimeMillis();
                 while (!udpSocket.isClosed() && !sendThread.isInterrupted()) {
                     try {

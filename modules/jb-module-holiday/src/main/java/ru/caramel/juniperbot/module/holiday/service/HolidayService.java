@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.holiday.service;
 
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -54,19 +55,15 @@ public class HolidayService {
 
     @Scheduled(cron = "0 0 0 1 1 ?") // NEW YEAR (0 0 0 1 1 ?) | EVERY MIN (0 * * ? * *)
     public void execute() {
-        if (!discordService.isConnected()) {
-            return;
-        }
         NewYearNotification notification = repository.findOneByGuildId(null);
-        JDA jda = discordService.getJda();
+        ShardManager jda = discordService.getShardManager();
         for (Guild guild : jda.getGuilds()) {
-            if (!discordService.isConnected()) {
-                return;
-            }
-            try {
-                notifyNewYear(notification, guild);
-            } catch (Exception e) {
-                LOGGER.error("Cannot send happy new year to guild {} (ID={})", guild.getName(), guild.getId(), e);
+            if (discordService.isConnected(guild.getIdLong())) {
+                try {
+                    notifyNewYear(notification, guild);
+                } catch (Exception e) {
+                    LOGGER.error("Cannot send happy new year to guild {} (ID={})", guild.getName(), guild.getId(), e);
+                }
             }
         }
     }

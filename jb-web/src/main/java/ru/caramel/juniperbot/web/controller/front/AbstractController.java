@@ -64,8 +64,8 @@ public abstract class AbstractController {
         ModelAndView mv = new ModelAndView(modelName);
         fillServerInfo(mv, serverId);
         if (checkConnection) {
-            if (discordService.isConnected()) {
-                boolean serverExists = discordService.getJda().getGuildById(serverId) != null;
+            if (discordService.isConnected(serverId)) {
+                boolean serverExists = discordService.getShardManager().getGuildById(serverId) != null;
                 mv.addObject("serverAdded", serverExists);
                 if (!serverExists) {
                     flash.warn("flash.warning.unknown-server.message");
@@ -117,8 +117,8 @@ public abstract class AbstractController {
 
     protected Guild getGuild(long id) {
         Guild guild = null;
-        if (discordService.isConnected()) {
-            guild = discordService.getJda().getGuildById(id);
+        if (discordService.isConnected(id)) {
+            guild = discordService.getShardManager().getGuildById(id);
         }
         return guild;
     }

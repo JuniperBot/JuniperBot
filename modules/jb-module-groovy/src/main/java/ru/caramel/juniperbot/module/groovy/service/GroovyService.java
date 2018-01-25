@@ -50,7 +50,7 @@ public class GroovyService {
 
         sharedData = new Binding();
         sharedData.setProperty("ctx", context);
-        sharedData.setProperty("jda", discordService.getJda());
+        sharedData.setProperty("sm", discordService.getShardManager());
     }
 
     public GroovyShell createShell() {

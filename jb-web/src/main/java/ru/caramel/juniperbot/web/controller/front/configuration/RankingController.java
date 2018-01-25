@@ -139,8 +139,8 @@ public class RankingController extends AbstractController {
     public String sync(
             @PathVariable("serverId") long serverId) {
         validateGuildId(serverId);
-        if (discordService.isConnected()) {
-            Guild guild = discordService.getJda().getGuildById(serverId);
+        if (discordService.isConnected(serverId)) {
+            Guild guild = discordService.getShardManager().getGuildById(serverId);
             if (guild != null) {
                 rankingService.sync(guild);
                 return "ok";
@@ -154,8 +154,8 @@ public class RankingController extends AbstractController {
     public String syncMee6(
             @PathVariable("serverId") long serverId) throws IOException {
         validateGuildId(serverId);
-        if (discordService.isConnected()) {
-            Guild guild = discordService.getJda().getGuildById(serverId);
+        if (discordService.isConnected(serverId)) {
+            Guild guild = discordService.getShardManager().getGuildById(serverId);
             if (guild != null) {
                 rankingService.syncMee6(guild);
                 return "ok";
@@ -189,8 +189,8 @@ public class RankingController extends AbstractController {
     }
 
     private List<RewardDetails> getRewards(long serverId, RankingConfig config) {
-        if (discordService.isConnected() && CollectionUtils.isNotEmpty(config.getRewards())) {
-            Guild guild = discordService.getJda().getGuildById(serverId);
+        if (discordService.isConnected(serverId) && CollectionUtils.isNotEmpty(config.getRewards())) {
+            Guild guild = discordService.getShardManager().getGuildById(serverId);
             if (guild != null) {
                 List<RewardDetails> details = new ArrayList<>();
                 for (Reward reward : config.getRewards()) {

@@ -19,12 +19,13 @@ package ru.caramel.juniperbot.module.junipost.service;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.webhook.WebhookMessage;
+import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -83,10 +84,10 @@ public class PostService {
                         .map(e -> convertToEmbed(e).build())
                         .collect(Collectors.toList());
 
-                WebHookMessage message = WebHookMessage.builder()
-                        .avatarUrl(discordService.getJda().getSelfUser().getAvatarUrl())
-                        .username(userName)
-                        .embeds(embeds)
+                WebhookMessage message = new WebhookMessageBuilder()
+                        .setAvatarUrl(discordService.getJda().getSelfUser().getAvatarUrl())
+                        .setUsername(userName)
+                        .addEmbeds(embeds)
                         .build();
 
                 List<JuniPost> juniPosts = juniPostRepository.findActive();

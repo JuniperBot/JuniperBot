@@ -31,6 +31,8 @@ import com.vk.api.sdk.objects.video.Video;
 import com.vk.api.sdk.objects.wall.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.webhook.WebhookMessage;
+import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -39,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
-import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
@@ -174,7 +175,7 @@ public class VkServiceImpl implements VkService {
         contextService.resetContext();
     }
 
-    private WebHookMessage createMessage(GuildConfig config, CallbackMessage<CallbackWallPost> message) {
+    private WebhookMessage createMessage(GuildConfig config, CallbackMessage<CallbackWallPost> message) {
         CallbackWallPost post = message.getObject();
         if (PostType.SUGGEST.equals(post.getPostType())) {
             return null; // do not post suggestions
@@ -210,10 +211,11 @@ public class VkServiceImpl implements VkService {
             content = null; // show it on embed instead
         }
 
-        return WebHookMessage.builder()
-                .content(content)
-                .embeds(embeds.isEmpty() ? null : embeds.stream().map(EmbedBuilder::build).collect(Collectors.toList()))
-                .build();
+        WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(content);
+        if (!embeds.isEmpty()) {
+            builder.addEmbeds(embeds.stream().map(EmbedBuilder::build).collect(Collectors.toList()));
+        }
+        return builder.build();
     }
 
     private EmbedBuilder initBuilder(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {

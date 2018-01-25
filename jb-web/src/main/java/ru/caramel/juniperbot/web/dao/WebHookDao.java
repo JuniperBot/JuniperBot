@@ -34,9 +34,8 @@ public class WebHookDao extends AbstractDao {
 
     public WebHookDto getDtoForView(long guildId, WebHook webHook) {
         WebHookDto hookDto = mapper.getWebHookDto(webHook);
-        if (discordService.isConnected()) {
-            JDA jda = discordService.getJda();
-            Guild guild = jda.getGuildById(guildId);
+        if (discordService.isConnected(guildId)) {
+            Guild guild = discordService.getShardManager().getGuildById(guildId);
             if (guild != null && guild.getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
                 hookDto.setAvailable(true);
                 Webhook webhook = webHookService.getWebHook(guild, webHook);

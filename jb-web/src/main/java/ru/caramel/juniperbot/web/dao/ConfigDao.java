@@ -94,8 +94,8 @@ public class ConfigDao extends AbstractDao {
 
         MusicConfig musicConfig = playerService.getConfig(serverId);
         MusicConfigDto musicConfigDto = mapper.getMusicDto(musicConfig);
-        if (discordService.isConnected() && (musicConfigDto.getChannelId() == null ||
-                discordService.getJda().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
+        if (discordService.isConnected(serverId) && (musicConfigDto.getChannelId() == null ||
+                discordService.getShardManager().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
             VoiceChannel channel = discordService.getDefaultMusicChannel(config.getGuildId());
             if (channel != null) {
                 musicConfigDto.setChannelId(channel.getIdLong());
