@@ -42,8 +42,9 @@ public class ContextServiceImpl implements ContextService {
 
     private static final String MDC_USER = "userId";
 
-    private final ThreadLocal<Locale> holder =
-            new NamedThreadLocal<>("ContextServiceImpl.Locale");
+    private final ThreadLocal<Locale> localeHolder = new NamedThreadLocal<>("ContextServiceImpl.Locale");
+
+    private final ThreadLocal<Long> guildHolder = new NamedThreadLocal<>("ContextServiceImpl.GuildIds");
 
     @Getter
     private Map<String, Locale> supportedLocales;
@@ -64,7 +65,14 @@ public class ContextServiceImpl implements ContextService {
 
     @Override
     public Locale getLocale() {
-        Locale locale = holder.get();
+        Locale locale = localeHolder.get();
+        if (locale == null) {
+            Long guildId = guildHolder.get();
+            if (guildId != null) {
+                setLocale(configService.getLocale(guildId));
+                locale = localeHolder.get();
+            }
+        }
         return locale != null ? locale : getDefaultLocale();
     }
 
@@ -86,9 +94,9 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void setLocale(Locale locale) {
         if (locale == null) {
-            holder.remove();
+            localeHolder.remove();
         } else {
-            holder.set(locale);
+            localeHolder.set(locale);
         }
     }
 
@@ -100,16 +108,23 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void initContext(Event event) {
         Member member = resolverService.getMember(event);
+        Guild guild = null;
+        User user = null;
         if (member != null) {
-            initContext(member);
+            guild = member.getGuild();
+            user = member.getUser();
         }
-        User user = resolverService.getUser(event);
-        if (user != null) {
-            initContext(user);
+        if (guild == null) {
+            guild = resolverService.getGuild(event);
         }
-        Guild guild = resolverService.getGuild(event);
+        if (user == null) {
+            user = resolverService.getUser(event);
+        }
         if (guild != null) {
             initContext(guild);
+        }
+        if (user != null) {
+            initContext(user);
         }
     }
 
@@ -128,24 +143,17 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void initContext(Member member) {
-        if (member != null) {
-            initContext(member.getGuild());
-            initContext(member.getUser());
-        }
-    }
-
-    @Override
     public void initContext(long serverId) {
         MDC.put(MDC_GUILD, serverId);
-        setLocale(configService.getLocale(serverId));
+        guildHolder.set(serverId);
     }
 
     @Override
     public void resetContext() {
         MDC.remove(MDC_GUILD);
         MDC.remove(MDC_USER);
-        holder.remove();;
+        guildHolder.remove();
+        localeHolder.remove();
     }
 
     private void setLocale(String tag) {
