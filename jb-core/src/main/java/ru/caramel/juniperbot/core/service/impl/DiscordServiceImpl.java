@@ -26,10 +26,9 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
@@ -40,17 +39,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -83,17 +78,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired(required = false)
     private IAudioSendFactory audioSendFactory;
 
+    @Autowired
+    private IEventManager eventManager;
+
     @Getter
     private ShardManager shardManager;
-
-    @Autowired
-    private ContextService contextService;
-
-    @Autowired
-    private CommandsService commandsService;
-
-    @Autowired
-    private List<DiscordEventListener> eventListeners;
 
     @PostConstruct
     public void init() {
@@ -101,6 +90,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         try {
             DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
+                    .setEventManager(eventManager)
                     .addEventListeners(this)
                     .setCorePoolSize(corePoolSize)
                     .setShardsTotal(shards)
@@ -118,20 +108,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @PreDestroy
     public void destroy() {
         shardManager.shutdown();
-    }
-
-    @Override
-    public void onGenericEvent(Event event) {
-        contextService.initContext(event);
-        try {
-            if (event instanceof MessageReceivedEvent) {
-                commandsService.onMessageReceived((MessageReceivedEvent) event);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not process command", e);
-        }
-        eventListeners.forEach(e -> e.onEvent(event));
-        contextService.resetContext();
     }
 
     @Override
@@ -177,7 +153,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public JDA getShard(long guildId) {
-        return shardManager.getShardById((int)(guildId >> 22) % shards);
+        return shardManager.getShardById((int)((guildId >> 22) % shards));
     }
 
     @Override
