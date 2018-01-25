@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.junipost.service;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.jinstagram.Instagram;
 import org.jinstagram.auth.model.Token;
 import org.jinstagram.entity.users.feed.MediaFeed;
@@ -29,6 +30,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -103,7 +105,9 @@ public class InstagramService {
     private void update() {
         try {
             List<MediaFeedData> medias = getRecent();
-            postService.onInstagramUpdated(medias);
+            if (CollectionUtils.isNotEmpty(medias)) {
+                postService.onInstagramUpdated(medias);
+            }
         } catch (InstagramException e) {
             LOGGER.error("Could not get Instagram data", e);
         }
