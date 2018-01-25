@@ -99,16 +99,9 @@ public class MemberServiceImpl implements MemberService {
                     localMember.setUser(userService.getOrCreate(member.getUser()));
                     members.add(localMember);
                 }
+                updateIfRequired(member, localMember);
             }
         }
-        members.forEach(e -> {
-            Member member = guild.getMemberById(e.getUser().getUserId());
-            if (member != null) {
-                if (isApplicable(member)) {
-                    updateIfRequired(member, e);
-                }
-            }
-        });
         return members;
     }
 
