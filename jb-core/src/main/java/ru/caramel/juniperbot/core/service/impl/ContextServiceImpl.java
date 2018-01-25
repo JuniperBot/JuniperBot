@@ -57,8 +57,8 @@ public class ContextServiceImpl implements ContextService {
     @PostConstruct
     public void init() {
         Map<String, Locale> localeMap = new HashMap<>();
-        localeMap.put("en", Locale.US);
-        localeMap.put("ru", Locale.forLanguageTag("ru-RU"));
+        localeMap.put(DEFAULT_LOCALE, Locale.US);
+        localeMap.put(RU_LOCALE, Locale.forLanguageTag("ru-RU"));
         supportedLocales = Collections.unmodifiableMap(localeMap);
     }
 

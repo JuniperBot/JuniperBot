@@ -20,7 +20,9 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MemberService;
 
 @Component
@@ -32,9 +34,22 @@ public class GuildJoinListener extends DiscordEventListener {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private ContextService contextService;
+
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        configService.getOrCreate(event.getGuild());
+        GuildConfig config = configService.getOrCreate(event.getGuild());
+        switch (event.getGuild().getRegion()) {
+            case RUSSIA:
+                config.setLocale(ContextService.RU_LOCALE);
+                break;
+            default:
+                config.setLocale(ContextService.DEFAULT_LOCALE);
+                break;
+        }
+        configService.save(config);
+        contextService.initContext(event.getGuild()); // reinit context with updated locale
     }
 
     @Override

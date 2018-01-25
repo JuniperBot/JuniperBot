@@ -56,9 +56,8 @@ public class WebHookServiceImpl implements WebHookService {
                     });
 
     public void updateWebHook(long guildId, Long channelId, WebHook webHook, String name) {
-        if (discordService.isConnected()) {
-            JDA jda = discordService.getJda();
-            Guild guild = jda.getGuildById(guildId);
+        if (discordService.isConnected(guildId)) {
+            Guild guild = discordService.getShardManager().getGuildById(guildId);
             if (guild != null && channelId != null && guild.getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook == null) {
@@ -83,9 +82,8 @@ public class WebHookServiceImpl implements WebHookService {
     }
 
     public boolean delete(long guildId, WebHook webHook) {
-        if (discordService.isConnected()) {
-            JDA jda = discordService.getJda();
-            Guild guild = jda.getGuildById(guildId);
+        if (discordService.isConnected(guildId)) {
+            Guild guild = discordService.getShardManager().getGuildById(guildId);
             if (guild != null && guild.getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook != null) {

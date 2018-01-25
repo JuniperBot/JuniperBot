@@ -17,13 +17,7 @@
 package ru.caramel.juniperbot.core.listeners;
 
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.springframework.context.ApplicationListener;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
 
-public abstract class DiscordEventListener extends ListenerAdapter implements ApplicationListener<DiscordEvent> {
+public abstract class DiscordEventListener extends ListenerAdapter {
 
-    @Override
-    public void onApplicationEvent(DiscordEvent event) {
-        onEvent(event.getSource());
-    }
 }

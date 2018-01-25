@@ -45,7 +45,10 @@ public class PlaybackInstance {
 
     private Long activeTime;
 
-    public PlaybackInstance(AudioPlayer player) {
+    private long guildId;
+
+    public PlaybackInstance(long guildId, AudioPlayer player) {
+        this.guildId = guildId;
         this.player = player;
         reset();
     }

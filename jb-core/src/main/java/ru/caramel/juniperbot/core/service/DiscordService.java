@@ -16,10 +16,11 @@
  */
 package ru.caramel.juniperbot.core.service;
 
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import ru.caramel.juniperbot.core.model.WebHookMessage;
+import net.dv8tion.jda.webhook.WebhookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 
 import java.util.function.Consumer;
@@ -28,11 +29,17 @@ public interface DiscordService {
 
     JDA getJda();
 
+    JDA getShard(long guildId);
+
+    ShardManager getShardManager();
+
     boolean isConnected();
+
+    boolean isConnected(long guildId);
 
     boolean isSuperUser(User user);
 
     VoiceChannel getDefaultMusicChannel(long guildId);
 
-    boolean executeWebHook(WebHook webHook, WebHookMessage message, Consumer<WebHook> onAbsent);
+    void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent);
 }

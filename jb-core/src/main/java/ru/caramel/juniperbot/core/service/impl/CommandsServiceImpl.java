@@ -69,7 +69,7 @@ public class CommandsServiceImpl implements CommandsService {
             guildConfig = configService.getOrCreate(event.getGuild());
         }
 
-        String content = event.getMessage().getRawContent().trim();
+        String content = event.getMessage().getContentRaw().trim();
         String prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
         if (event.getMessage().isMentioned(jda.getSelfUser())) {
             String customMention = String.format("<@!%s>", jda.getSelfUser().getId());

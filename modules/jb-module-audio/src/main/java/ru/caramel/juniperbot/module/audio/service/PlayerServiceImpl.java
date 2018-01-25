@@ -121,7 +121,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         return instances.computeIfAbsent(guild.getIdLong(), e -> {
             AudioPlayer player = playerManager.createPlayer();
             player.addListener(this);
-            return new PlaybackInstance(player);
+            return new PlaybackInstance(e, player);
         });
     }
 
@@ -202,7 +202,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 channel = member.getVoiceState().getChannel();
             }
             if (channel == null && musicConfig.getChannelId() != null) {
-                channel = discordService.getJda().getVoiceChannelById(musicConfig.getChannelId());
+                channel = discordService.getShardManager().getVoiceChannelById(musicConfig.getChannelId());
             }
         }
         if (channel == null) {
@@ -238,7 +238,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         instances.forEach((k, v) -> {
             long lastMillis = v.getActiveTime();
             TrackRequest current = v.getCurrent();
-            if (!discordService.isConnected() || countListeners(v) > 0) {
+            if (!discordService.isConnected(v.getGuildId()) || countListeners(v) > 0) {
                 v.setActiveTime(currentTimeMillis);
                 return;
             }

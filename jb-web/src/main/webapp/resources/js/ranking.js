@@ -45,18 +45,22 @@ function Ranking(lang) {
     var $searchInput = $("#ranking-search-input");
     var $searchButton = $("#ranking-search-button");
 
-    self.pagination = $('#ranking-pagination').bootpag({
+    var defaultPagingOptions = {
         total: 0,
         page: 1,
         maxVisible: 5,
         leaps: true
-    }).on("page", function(event, num){
+    };
+
+    self.pagination = $('#ranking-pagination')
+        .bootpag(defaultPagingOptions)
+        .on("page", function(event, num){
         self.pageNum = num;
         self.reload();
     });
 
     self.setPagination = function(options) {
-        self.pagination.bootpag(options);
+        self.pagination.bootpag($.extend(defaultPagingOptions, options));
     };
 
     var rewardsTable = $('#rewards-table').DataTable({

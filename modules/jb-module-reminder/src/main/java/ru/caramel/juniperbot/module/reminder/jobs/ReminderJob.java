@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.reminder.jobs;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.entities.*;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +37,8 @@ public class ReminderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JDA jda = discordService.getJda();
-        if (jda == null || !JDA.Status.CONNECTED.equals(jda.getStatus())) {
+        ShardManager shardManager = discordService.getShardManager();
+        if (shardManager == null || !discordService.isConnected()) {
             throw new RuntimeException("Could not send reminder, not connected!");
         }
 
@@ -50,10 +50,10 @@ public class ReminderJob implements Job {
         String messageRaw = data.getString(ATTR_MESSAGE);
 
         MessageChannel channel = null;
-        User user = jda.getUserById(userId);
+        User user = shardManager.getUserById(userId);
         StringBuilder message = new StringBuilder();
         if (guildId != null) {
-            Guild guild = jda.getGuildById(guildId);
+            Guild guild = shardManager.getGuildById(guildId);
             if (guild != null) {
                 channel = guild.getTextChannelById(channelId);
                 if (user != null && guild.isMember(user)) {
@@ -61,7 +61,7 @@ public class ReminderJob implements Job {
                 }
             }
         } else {
-            channel = jda.getPrivateChannelById(channelId);
+            channel = shardManager.getPrivateChannelById(channelId);
         }
         if (channel == null && user != null) {
             channel = user.openPrivateChannel().complete();

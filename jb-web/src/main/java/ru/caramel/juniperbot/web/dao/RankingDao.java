@@ -46,7 +46,7 @@ public class RankingDao extends AbstractDao {
         config.setWhisper(configDto.isWhisper());
         config.setAnnouncement(configDto.getAnnouncement());
         config.setResetOnLeave(configDto.isResetOnLeave());
-        if (discordService.isConnected()) {
+        if (discordService.isConnected(serverId)) {
             config.setBannedRoles(configDto.getBannedRoles());
             if (configDto.getRewards() != null) {
                 config.setRewards(configDto.getRewards().stream()
@@ -58,8 +58,8 @@ public class RankingDao extends AbstractDao {
 
         }
         rankingService.save(config);
-        if (discordService.isConnected()) {
-            Guild guild = discordService.getJda().getGuildById(serverId);
+        if (discordService.isConnected(serverId)) {
+            Guild guild = discordService.getShardManager().getGuildById(serverId);
             if (guild != null) {
                 rankingService.sync(guild);
             }

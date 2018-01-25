@@ -17,38 +17,29 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
+import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.webhook.WebhookClient;
+import net.dv8tion.jda.webhook.WebhookClientBuilder;
+import net.dv8tion.jda.webhook.WebhookMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.model.WebHookMessage;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
@@ -63,6 +54,12 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
+    @Value("${discord.engine.shards:2}")
+    private Integer shards;
+
+    @Value("${discord.engine.corePoolSize:5}")
+    private Integer corePoolSize;
+
     @Value("${discord.client.token}")
     private String token;
 
@@ -76,64 +73,47 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     private String superUserId;
 
     @Autowired
-    private ApplicationEventPublisher publisher;
-
-    @Autowired
     private MessageService messageService;
 
     @Autowired(required = false)
     private IAudioSendFactory audioSendFactory;
 
+    @Autowired
+    private IEventManager eventManager;
+
     @Getter
-    private JDA jda;
-
-    @Autowired
-    private ContextService contextService;
-
-    @Autowired
-    private CommandsService commandsService;
+    private ShardManager shardManager;
 
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
         try {
-            JDABuilder builder = new JDABuilder(accountType)
+            DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
-                    .addEventListener(this);
+                    .setEventManager(eventManager)
+                    .addEventListeners(this)
+                    .setCorePoolSize(corePoolSize)
+                    .setShardsTotal(shards)
+                    .setShards(0, shards - 1)
+                    .setEnableShutdownHook(false);
             if (audioSendFactory != null) {
                 builder.setAudioSendFactory(audioSendFactory);
             }
-            jda = builder.buildAsync();
+            shardManager = builder.build();
         } catch (LoginException e) {
             LOGGER.error("Could not login user with specified token", e);
-        } catch (RateLimitedException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @PreDestroy
     public void destroy() {
-        jda.shutdownNow();
-    }
-
-    @Override
-    public void onGenericEvent(Event event) {
-        contextService.initContext(event);
-        try {
-            if (event instanceof MessageReceivedEvent) {
-                commandsService.onMessageReceived((MessageReceivedEvent) event);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not process command", e);
-        }
-        publisher.publishEvent(new DiscordEvent(event));
-        contextService.resetContext();
+        shardManager.shutdown();
     }
 
     @Override
     public void onReady(ReadyEvent event) {
         if (StringUtils.isNotEmpty(playingStatus)) {
-            jda.getPresence().setGame(Game.playing(playingStatus));
+            shardManager.setGame(Game.playing(playingStatus));
         }
     }
 
@@ -143,39 +123,37 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     @Override
-    public boolean executeWebHook(WebHook webHook, WebHookMessage message, Consumer<WebHook> onAbsent) {
-        if (message == null || message.isEmpty()) {
-            return false;
-        }
-        JSONObject obj = message.toJSONObject();
-        RestAction<JSONObject> action = new RestAction<JSONObject>(jda, Route.Custom.POST_ROUTE.compile(String.format("webhooks/%s/%s", webHook.getHookId(), webHook.getToken())), obj) {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void handleResponse(Response response, Request request) {
-                if (response.isOk()) {
-                    request.onSuccess(null);
-                } else {
-                    request.onFailure(response);
-                    if (response.code == 404) {
-                        onAbsent.accept(webHook);
-                    }
+    public void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent) {
+        if (message != null) {
+            WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build();
+            client.send(message).exceptionally(e -> {
+                LOGGER.error("Can't execute webhook: ", e);
+                if (e.getMessage().contains("Request returned failure 404")) {
+                    onAbsent.accept(webHook);
                 }
-            }
-        };
-
-        try {
-            action.queue();
-            return false;
-        } catch (ErrorResponseException e) {
-            LOGGER.error("Can't execute webhook: ", e);
+                return null;
+            });
         }
-        return true;
     }
 
     @Override
     public boolean isConnected() {
-        return jda != null && JDA.Status.CONNECTED.equals(jda.getStatus());
+        return getJda() != null && JDA.Status.CONNECTED.equals(getJda().getStatus());
+    }
+
+    @Override
+    public boolean isConnected(long guildId) {
+        return JDA.Status.CONNECTED.equals(getShard(guildId).getStatus());
+    }
+
+    @Override
+    public JDA getJda() {
+        return shardManager.getShards().iterator().next();
+    }
+
+    @Override
+    public JDA getShard(long guildId) {
+        return shardManager.getShardById((int)((guildId >> 22) % shards));
     }
 
     @Override
@@ -185,10 +163,10 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public VoiceChannel getDefaultMusicChannel(long guildId) {
-        if (!isConnected()) {
+        if (!isConnected(guildId)) {
             return null;
         }
-        Guild guild = jda.getGuildById(guildId);
+        Guild guild = shardManager.getGuildById(guildId);
         if (guild == null) {
             return null;
         }

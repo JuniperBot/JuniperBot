@@ -225,8 +225,8 @@ public class RankingServiceImpl implements RankingService {
         }
 
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
-                && StringUtils.isNotEmpty(event.getMessage().getRawContent())
-                && event.getMessage().getRawContent().contains("\uD83C\uDF6A")) {
+                && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
+                && event.getMessage().getContentRaw().contains("\uD83C\uDF6A")) {
             Date checkDate = DateTime.now().minusMinutes(10).toDate();
             for (User user : event.getMessage().getMentionedUsers()) {
                 if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
@@ -264,8 +264,8 @@ public class RankingServiceImpl implements RankingService {
             rankingRepository.save(ranking);
             rankingRepository.recalculateRank(String.valueOf(serverId));
             RankingConfig config = getConfig(serverId);
-            if (discordService.isConnected()) {
-                Guild guild = discordService.getJda().getGuildById(serverId);
+            if (discordService.isConnected(serverId)) {
+                Guild guild = discordService.getShardManager().getGuildById(serverId);
                 if (guild != null) {
                     Member member = guild.getMemberById(userId);
                     if (member != null) {
@@ -343,7 +343,7 @@ public class RankingServiceImpl implements RankingService {
 
     private void updateRewards(RankingConfig config, Member member, Ranking ranking) {
         Member self = member.getGuild().getSelfMember();
-        if (!discordService.isConnected()
+        if (!discordService.isConnected(member.getGuild().getIdLong())
                 || CollectionUtils.isEmpty(config.getRewards())
                 || !PermissionUtil.checkPermission(self, Permission.MANAGE_ROLES)) {
             return;

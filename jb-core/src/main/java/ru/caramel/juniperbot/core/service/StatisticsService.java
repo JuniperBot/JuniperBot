@@ -14,23 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.model;
+package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.events.Event;
-import org.springframework.context.ApplicationEvent;
+import net.dv8tion.jda.core.JDA;
 
-public class DiscordEvent extends ApplicationEvent {
+import java.util.concurrent.atomic.AtomicLong;
 
-    public DiscordEvent(Event event) {
-        super(event);
-    }
+public interface StatisticsService {
 
-    @Override
-    public Event getSource() {
-        return (Event) super.getSource();
-    }
+    AtomicLong getServerCount();
 
-    public boolean isType(Class<?> type) {
-        return type.isAssignableFrom(getSource().getClass());
-    }
+    void notifyProviders(JDA shard);
 }
