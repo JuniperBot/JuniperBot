@@ -28,6 +28,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.DiscordService;
 
 import java.util.Objects;
 
@@ -40,6 +41,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private GuildConfigRepository repository;
+
+    @Autowired
+    private DiscordService discordService;
 
     @Override
     @Transactional
@@ -111,6 +115,20 @@ public class ConfigServiceImpl implements ConfigService {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
             config.setLocale(ContextService.DEFAULT_LOCALE);
+            if (discordService.isConnected(serverId)) {
+                Guild guild = discordService.getShardManager().getGuildById(serverId);
+                if (guild != null) {
+                    switch (guild.getRegion()) {
+                        case RUSSIA:
+                            config.setLocale(ContextService.RU_LOCALE);
+                            break;
+                        default:
+                            config.setLocale(ContextService.DEFAULT_LOCALE);
+                            break;
+
+                    }
+                }
+            }
             repository.save(config);
         }
         return config;

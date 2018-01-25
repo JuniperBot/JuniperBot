@@ -28,6 +28,8 @@ public interface ContextService {
 
     String DEFAULT_LOCALE = "en";
 
+    String RU_LOCALE = "ru";
+
     void setLocale(Locale locale);
 
     Locale getLocale();
