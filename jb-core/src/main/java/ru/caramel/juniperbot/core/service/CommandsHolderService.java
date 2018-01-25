@@ -34,4 +34,5 @@ public interface CommandsHolderService {
 
     Command getByLocale(String localizedKey, boolean anyLocale);
 
+    boolean isAnyCommand(String key);
 }
