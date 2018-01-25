@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -34,6 +35,7 @@ public class ConfigDto implements Serializable {
 
     @Size(max = 20, message = "{validation.config.prefix.Size.message}")
     @NotBlank(message = "{validation.config.prefix.NotBlank.message}")
+    @Pattern(regexp = "[^\\s]+", message = "{validation.config.prefix.Pattern.message}")
     private String prefix;
 
     @Size(max = 10)

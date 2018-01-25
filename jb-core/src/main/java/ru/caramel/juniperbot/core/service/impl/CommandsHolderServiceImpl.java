@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.Command;
@@ -36,6 +37,8 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
 
     @Autowired
     private ContextService contextService;
+
+    private Set<String> reverseCommandKeys;
 
     private Map<Locale, Map<String, Command>> localizedCommands;
 
@@ -69,11 +72,18 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
         return getByLocale(localizedKey);
     }
 
+    @Override
+    public boolean isAnyCommand(String key) {
+        String reverseKey = StringUtils.reverse(key);
+        return reverseCommandKeys.stream().anyMatch(reverseKey::startsWith);
+    }
+
     @Autowired
     private void registerCommands(List<Command> commands) {
         this.localizedCommands = new HashMap<>();
         this.commands = new HashMap<>();
         this.publicCommands = new HashMap<>();
+        this.reverseCommandKeys = new HashSet<>();
         Collection<Locale> locales = contextService.getSupportedLocales().values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
             DiscordCommand annotation = e.getClass().getAnnotation(DiscordCommand.class);
@@ -85,6 +95,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
             for (Locale locale : locales) {
                 Map<String, Command> localeCommands = localizedCommands.computeIfAbsent(locale, e2 -> new HashMap<>());
                 String localizedKey = messageService.getMessage(rawKey, locale);
+                reverseCommandKeys.add(StringUtils.reverse(localizedKey));
                 localeCommands.put(localizedKey, e);
             }
         });

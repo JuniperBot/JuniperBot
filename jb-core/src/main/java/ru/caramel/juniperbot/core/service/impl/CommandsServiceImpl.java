@@ -64,24 +64,45 @@ public class CommandsServiceImpl implements CommandsService {
         if (event.getAuthor().isBot()) {
             return;
         }
+        String content = event.getMessage().getContentRaw().trim();
+        if (StringUtils.isEmpty(content)) {
+            return;
+        }
+
+        String prefix = null;
+        String input = content;
+        boolean usingMention = false;
+
+        if (event.getMessage().isMentioned(jda.getSelfUser())) {
+            String mention = jda.getSelfUser().getAsMention();
+            if (!(usingMention = content.startsWith(mention))) {
+                mention = String.format("<@!%s>", jda.getSelfUser().getId());
+                usingMention = content.startsWith(mention);
+
+            }
+            if (usingMention) {
+                prefix = mention;
+                input = content.substring(prefix.length()).trim();
+            }
+        }
+
+        String firstPart = input.split("\\s+", 2)[0].trim();
+        if (!commandsHolderService.isAnyCommand(firstPart)) {
+            return;
+        }
+
         GuildConfig guildConfig = null;
         if (event.getChannelType().isGuild() && event.getGuild() != null) {
             guildConfig = configService.getOrCreate(event.getGuild());
         }
 
-        String content = event.getMessage().getContentRaw().trim();
-        String prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
-        if (event.getMessage().isMentioned(jda.getSelfUser())) {
-            String customMention = String.format("<@!%s>", jda.getSelfUser().getId());
-            prefix = content.startsWith(customMention) ? customMention : jda.getSelfUser().getAsMention();
+        if (!usingMention) {
+            prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
+            input = content.substring(prefix.length()).trim();
         }
-        if (StringUtils.isNotEmpty(content) && content.startsWith(prefix) && content.length() <= MessageEmbed.TEXT_MAX_LENGTH) {
-            String input = content.substring(prefix.length()).trim();
-            String[] args = input.split("\\s+");
-            if (args.length == 0) {
-                return;
-            }
-            input = input.substring(args[0].length(), input.length()).trim();
+        if (content.startsWith(prefix)) {
+            String[] args = input.split("\\s+", 2);
+            input = args.length > 1 ? args[1] : "";
             sender.sendCommand(event, input, args[0], guildConfig);
         }
     }

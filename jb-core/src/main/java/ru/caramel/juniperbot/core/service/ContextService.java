@@ -50,8 +50,6 @@ public interface ContextService {
 
     void initContext(User user);
 
-    void initContext(Member member);
-
     void initContext(long serverId);
 
     void resetContext();
