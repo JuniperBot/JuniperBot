@@ -36,8 +36,6 @@ function Ranking(lang) {
     var $updateSpinner = $('#update-level-spinner');
 
     var $syncButton = $('#ranking-sync-button');
-    var $syncText = $('#ranking-sync-button-text');
-    var $syncSpinner = $('#ranking-sync-button-spinner');
 
     var $importButton = $('#ranking-import-button');
     var $resetButton = $('#ranking-reset-button');
@@ -186,12 +184,7 @@ function Ranking(lang) {
         }
     });
 
-    $syncButton.click(function () {
-        blockSync(true);
-        sync(function () {
-            blockSync(false);
-        });
-    });
+    $syncButton.click(self.reload);
 
     $importButton.click(function () {
         BootstrapDialog.show({
@@ -260,27 +253,10 @@ function Ranking(lang) {
         (block ? $updateSpinner : $updateText).show();
     }
 
-    function blockSync(block) {
-        $syncButton.prop('disabled', block);
-        (block ? $syncText : $syncSpinner).hide();
-        (block ? $syncSpinner : $syncText).show();
-    }
-
     function update(userId, level, callback) {
         $.post(contextPath + 'ranking/update/' + serverId, {userId: userId, level: level})
             .done(function () {
                 $updateModal.modal('hide');
-                self.reload();
-            })
-            .fail(function () {
-                BootstrapDialog.warning(lang.somethingIsWrong);
-            })
-            .always(callback);
-    }
-
-    function sync(callback) {
-        $.post(contextPath + 'ranking/sync/' + serverId)
-            .done(function () {
                 self.reload();
             })
             .fail(function () {

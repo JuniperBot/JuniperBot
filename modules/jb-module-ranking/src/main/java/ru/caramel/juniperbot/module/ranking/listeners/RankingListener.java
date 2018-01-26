@@ -16,12 +16,9 @@
  */
 package ru.caramel.juniperbot.module.ranking.listeners;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
@@ -32,14 +29,6 @@ public class RankingListener extends DiscordEventListener {
 
     @Autowired
     private RankingService rankingService;
-
-    @Autowired
-    private TaskExecutor executor;
-
-    @Override
-    public void onGuildJoin(GuildJoinEvent event) {
-        executor.execute(() -> rankingService.sync(event.getGuild()));
-    }
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {

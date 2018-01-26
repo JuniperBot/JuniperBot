@@ -134,21 +134,6 @@ public class RankingController extends AbstractController {
                 .addObject("members", members);
     }
 
-    @RequestMapping(value = "/ranking/sync/{serverId}", method = RequestMethod.POST)
-    @ResponseBody
-    public String sync(
-            @PathVariable("serverId") long serverId) {
-        validateGuildId(serverId);
-        if (discordService.isConnected(serverId)) {
-            Guild guild = discordService.getShardManager().getGuildById(serverId);
-            if (guild != null) {
-                rankingService.sync(guild);
-                return "ok";
-            }
-        }
-        return "fail";
-    }
-
     @RequestMapping(value = "/ranking/syncMee6/{serverId}", method = RequestMethod.POST)
     @ResponseBody
     public String syncMee6(

@@ -58,11 +58,5 @@ public class RankingDao extends AbstractDao {
 
         }
         rankingService.save(config);
-        if (discordService.isConnected(serverId)) {
-            Guild guild = discordService.getShardManager().getGuildById(serverId);
-            if (guild != null) {
-                rankingService.sync(guild);
-            }
-        }
     }
 }
