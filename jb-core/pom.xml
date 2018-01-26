@@ -125,6 +125,12 @@
             <version>${quartz.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ryantenney.metrics</groupId>
+            <artifactId>metrics-spring</artifactId>
+            <version>${metrics-spring.version}</version>
+        </dependency>
+
         <!-- INTEGRATION DEPENDENCIES -->
 
         <dependency>

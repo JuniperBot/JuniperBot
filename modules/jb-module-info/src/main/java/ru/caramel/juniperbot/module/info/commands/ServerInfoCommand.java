@@ -24,17 +24,11 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 @DiscordCommand(
@@ -42,8 +36,8 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
         description = "discord.command.server.desc",
         group = "discord.command.group.info",
         source = CommandSource.GUILD,
-        priority = 1)
-public class ServerInfoCommand extends InfoCommand {
+        priority = 2)
+public class ServerInfoCommand extends AbstractInfoCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {

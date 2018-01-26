@@ -16,26 +16,76 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
-import ru.caramel.juniperbot.core.service.ContextService;
+import org.springframework.beans.factory.annotation.Value;
+import ru.caramel.juniperbot.core.model.BotContext;
+import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
-public abstract class InfoCommand extends AbstractCommand {
+@DiscordCommand(key = "discord.command.info.key",
+        description = "discord.command.info.desc",
+        group = "discord.command.group.info",
+        priority = 0)
+public class InfoCommand extends AbstractInfoCommand {
 
     @Autowired
-    protected MessageService messageService;
+    private MessageService messageService;
 
     @Autowired
-    protected ContextService contextService;
+    private ConfigService configService;
 
-    protected MessageEmbed.Field getDateField(long epochSecond, String nameKey, DateTimeFormatter formatter) {
-        DateTime dateTime = new DateTime(epochSecond * 1000).withZone(DateTimeZone.UTC);
-        return new MessageEmbed.Field(messageService.getMessage(nameKey),
-                String.format("**%s**", formatter.print(dateTime)), true);
+    @Value("${jda.version}")
+    private String jdaVersion;
+
+    @Value("${spring.version}")
+    private String springVersion;
+
+    @Value("${app.version}")
+    private String appVersion;
+
+    private DateTime buildTimestamp;
+
+    @Override
+    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
+
+        EmbedBuilder builder = messageService.getBaseEmbed(true);
+        builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
+        builder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
+        builder.setDescription(messageService.getMessage("discord.command.info.description", prefix));
+
+        builder.addField(
+                messageService.getMessage("discord.command.info.author.title"),
+                messageService.getMessage("about.support.owner"), true);
+
+        DateTimeFormatter formatter = DateTimeFormat.shortDateTime().withLocale(contextService.getLocale());
+        builder.addField(
+                messageService.getMessage("discord.command.info.version.title"),
+                String.format("%s (%s)", appVersion, formatter.print(buildTimestamp)), true);
+
+        builder.addField(
+                messageService.getMessage("discord.command.info.links.title"),
+                messageService.getMessage("discord.command.info.links.content"), true);
+
+        builder.addField(
+                messageService.getMessage("discord.command.info.framework.title"),
+                messageService.getMessage("discord.command.info.framework.content", jdaVersion, springVersion),
+                true);
+
+        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+        return true;
+    }
+
+    @Value("${build.timestamp}")
+    public void setBuildTimestamp(Long value) {
+        buildTimestamp = new DateTime(value).withZone(DateTimeZone.UTC);
     }
 }

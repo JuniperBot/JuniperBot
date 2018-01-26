@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -32,18 +31,15 @@ public class StatisticsListener extends DiscordEventListener {
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        statisticsService.getServerCount().incrementAndGet();
         statisticsService.notifyProviders(event.getJDA());
     }
 
     public void onGuildLeave(GuildLeaveEvent event) {
-        statisticsService.getServerCount().decrementAndGet();
         statisticsService.notifyProviders(event.getJDA());
     }
 
     @Override
     public void onReady(ReadyEvent event) {
-        statisticsService.getServerCount().addAndGet(event.getJDA().getGuilds().size());
         statisticsService.notifyProviders(event.getJDA());
     }
 }

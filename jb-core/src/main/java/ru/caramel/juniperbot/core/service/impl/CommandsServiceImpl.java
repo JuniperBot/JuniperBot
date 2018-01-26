@@ -16,9 +16,10 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +52,20 @@ public class CommandsServiceImpl implements CommandsService {
     @Autowired
     private CommandsHolderService commandsHolderService;
 
+    @Autowired
+    private StatisticsService statisticsService;
+
     private Map<MessageChannel, BotContext> contexts = new HashMap<>();
+
+    private Meter executions;
+
+    private Counter counter;
+
+    @PostConstruct
+    public void init() {
+        executions = statisticsService.getMeter(EXECUTIONS_METER);
+        counter = statisticsService.getCounter(EXECUTIONS_COUNTER);
+    }
 
     @Override
     @Transactional
@@ -122,12 +137,15 @@ public class CommandsServiceImpl implements CommandsService {
         context.setGuild(event.getGuild());
         try {
             command.doCommand(event, context, content);
+            counter.inc();
         } catch (ValidationException e) {
             messageService.onError(event.getChannel(), e.getMessage(), e.getArgs());
         } catch (DiscordException e) {
             messageService.onError(event.getChannel(),
                     messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
             LOGGER.error("Command {} execution error", key, e);
+        } finally {
+            executions.mark();
         }
     }
 }

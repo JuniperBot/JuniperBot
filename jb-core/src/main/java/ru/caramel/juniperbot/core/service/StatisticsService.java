@@ -16,13 +16,17 @@
  */
 package ru.caramel.juniperbot.core.service;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
 import net.dv8tion.jda.core.JDA;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public interface StatisticsService {
 
-    AtomicLong getServerCount();
+    Meter getMeter(String name);
+
+    Counter getCounter(String name);
 
     void notifyProviders(JDA shard);
+
+    void persistMetrics();
 }

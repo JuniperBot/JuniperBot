@@ -24,6 +24,7 @@
                 http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <import resource="classpath:spring-context/persistence-context.xml"/>
+    <import resource="classpath:spring-context/metrics-context.xml"/>
 
     <context:annotation-config/>
     <context:property-placeholder ignore-resource-not-found="true"
