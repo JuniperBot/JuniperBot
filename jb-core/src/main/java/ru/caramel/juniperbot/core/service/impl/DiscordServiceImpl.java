@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import com.codahale.metrics.annotation.CachedGauge;
+import com.codahale.metrics.annotation.Gauge;
 import lombok.Getter;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -47,6 +49,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Service
@@ -152,6 +155,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     @Override
+    public User getSelfUser() {
+        return getJda().getSelfUser();
+    }
+
+    @Override
     public JDA getShard(long guildId) {
         return shardManager.getShardById((int)((guildId >> 22) % shards));
     }
@@ -181,5 +189,29 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             }
         }
         return guild.getVoiceChannels().stream().findAny().orElse(null);
+    }
+
+    @Override
+    @CachedGauge(name = GAUGE_GUILDS, absolute = true, timeout = 1, timeoutUnit = TimeUnit.MINUTES)
+    public long getGuildCount() {
+        return shardManager != null ? shardManager.getGuildCache().size() : 0;
+    }
+
+    @Override
+    @CachedGauge(name = GAUGE_USERS, absolute = true, timeout = 5, timeoutUnit = TimeUnit.MINUTES)
+    public long getUserCount() {
+        return shardManager != null ? shardManager.getUserCache().size() : 0;
+    }
+
+    @Override
+    @CachedGauge(name = GAUGE_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
+    public long getChannelCount() {
+        return shardManager != null ? shardManager.getTextChannelCache().size() : 0;
+    }
+
+    @Override
+    @Gauge(name = GAUGE_PING, absolute = true)
+    public double getAveragePing() {
+        return shardManager != null ? shardManager.getAveragePing() : 0;
     }
 }

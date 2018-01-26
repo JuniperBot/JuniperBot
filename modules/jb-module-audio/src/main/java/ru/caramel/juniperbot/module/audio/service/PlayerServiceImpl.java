@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
+import com.codahale.metrics.annotation.Gauge;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -281,7 +282,10 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 break;
         }
         // execute instance reset out of current thread
-        taskExecutor.execute(instance::reset);
+        taskExecutor.execute(() -> {
+            instance.reset();
+            instances.remove(instance.getGuildId());
+        });
     }
 
     @Override
@@ -312,5 +316,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         LOGGER.error("Track error", exception);
+    }
+
+    @Gauge(name = ACTIVE_CONNECTIONS, absolute = true)
+    @Override
+    public long getActiveCount() {
+        return instances.size();
     }
 }

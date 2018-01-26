@@ -13,6 +13,8 @@ import java.util.List;
 
 public interface PlayerService {
 
+    String ACTIVE_CONNECTIONS = "player.activeConnections";
+
     AudioPlayerManager getPlayerManager();
 
     MusicConfig getConfig(long serverId);
@@ -38,4 +40,6 @@ public interface PlayerService {
     VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException;
 
     void monitor();
+
+    long getActiveCount();
 }

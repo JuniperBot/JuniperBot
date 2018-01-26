@@ -27,7 +27,17 @@ import java.util.function.Consumer;
 
 public interface DiscordService {
 
+    String GAUGE_GUILDS = "discord.guilds";
+
+    String GAUGE_USERS = "discord.users";
+
+    String GAUGE_CHANNELS = "discord.channels";
+
+    String GAUGE_PING = "discord.ping";
+
     JDA getJda();
+
+    User getSelfUser();
 
     JDA getShard(long guildId);
 
@@ -42,4 +52,12 @@ public interface DiscordService {
     VoiceChannel getDefaultMusicChannel(long guildId);
 
     void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent);
+
+    long getGuildCount();
+
+    long getUserCount();
+
+    long getChannelCount();
+
+    double getAveragePing();
 }

@@ -16,19 +16,28 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
-import lombok.Getter;
+import com.codahale.metrics.*;
 import net.dv8tion.jda.core.JDA;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.model.ProviderStats;
+import ru.caramel.juniperbot.core.persistence.entity.StoredMetric;
+import ru.caramel.juniperbot.core.persistence.repository.StoredMetricRepository;
 import ru.caramel.juniperbot.core.service.StatisticsService;
 
-import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -41,9 +50,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    @Getter
-    private AtomicLong serverCount = new AtomicLong();
-
     @Value("${discord.oauth.clientId}")
     private String clientId;
 
@@ -52,6 +58,31 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Value("${discord.stats.bots.discord.pw.token:}")
     private String pwToken;
+
+    @Autowired
+    private MetricRegistry metricRegistry;
+
+    @Autowired
+    private StoredMetricRepository metricRepository;
+
+    @Override
+    public Meter getMeter(String name) {
+        return metricRegistry.meter(name);
+    }
+
+    @Override
+    public Counter getCounter(String name) {
+        return metricRegistry.counter(name);
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            loadMetrics();
+        } catch (Exception e) {
+            LOGGER.warn("Could not load metrics from database", e);
+        }
+    }
 
     @Override
     public void notifyProviders(JDA shard) {
@@ -76,5 +107,48 @@ public class StatisticsServiceImpl implements StatisticsService {
         } catch (Exception e) {
             LOGGER.warn("Could not report stats {} to endpoint {}", stats, endPoint, e);
         }
+    }
+
+    private void loadMetrics() {
+        List<StoredMetric> metrics = metricRepository.findAll();
+        for (StoredMetric metric : metrics) {
+            if (Counter.class.isAssignableFrom(metric.getType())) {
+                Counter counter = getCounter(metric.getName());
+                counter.inc(metric.getCount());
+            }
+        }
+    }
+
+    @Transactional
+    @Scheduled(fixedDelay = 300000)
+    public void persistMetrics() {
+        synchronized (this) {
+            Map<String, Metric> metricMap = metricRegistry.getMetrics();
+            if (MapUtils.isNotEmpty(metricMap)) {
+                metricMap = metricMap.entrySet().stream()
+                        .filter(e -> e.getKey().endsWith(".persist") && e.getValue() instanceof Counter)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
+            if (MapUtils.isEmpty(metricMap)) {
+                return;
+            }
+
+            metricMap.forEach((k, v) -> {
+                Counter counter = (Counter) v;
+                StoredMetric storedMetric = getOrNewMetric(k, v);
+                storedMetric.setCount(counter.getCount());
+                metricRepository.save(storedMetric);
+            });
+        }
+    }
+
+    private StoredMetric getOrNewMetric(String name, Metric metric) {
+        StoredMetric storedMetric = metricRepository.findByNameAndType(name, metric.getClass());
+        if (storedMetric == null) {
+            storedMetric = new StoredMetric();
+            storedMetric.setName(name);
+            storedMetric.setType(metric.getClass());
+        }
+        return storedMetric;
     }
 }

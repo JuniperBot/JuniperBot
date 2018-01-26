@@ -14,17 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.entity.StoredMetric;
 
-public interface CommandsService extends MessageSender {
+@Repository
+public interface StoredMetricRepository extends JpaRepository<StoredMetric, Long> {
 
-    String EXECUTIONS_METER = "commands.executions.rate";
-
-    String EXECUTIONS_COUNTER = "commands.executions.persist";
-
-    void onMessageReceived(MessageReceivedEvent event);
-
-    void sendMessage(MessageReceivedEvent event, MessageSender sender);
+    StoredMetric findByNameAndType(String name, Class<?> type);
 }
