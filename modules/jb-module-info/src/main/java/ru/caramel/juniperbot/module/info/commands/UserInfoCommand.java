@@ -43,7 +43,7 @@ import java.util.Objects;
         description = "discord.command.user.desc",
         group = "discord.command.group.info",
         priority = 5)
-public class UserInfoCommand extends InfoCommand {
+public class UserInfoCommand extends AbstractInfoCommand {
 
     @Autowired
     private RankingService rankingService;

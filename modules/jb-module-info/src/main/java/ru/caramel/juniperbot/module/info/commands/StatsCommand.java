@@ -26,7 +26,6 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.Date;
@@ -36,8 +35,8 @@ import java.util.function.Function;
 @DiscordCommand(key = "discord.command.stats.key",
         description = "discord.command.stats.desc",
         group = "discord.command.group.info",
-        priority = 0)
-public class StatsCommand extends InfoCommand {
+        priority = 1)
+public class StatsCommand extends AbstractInfoCommand {
 
     @Autowired
     private MetricRegistry metricRegistry;
@@ -46,16 +45,13 @@ public class StatsCommand extends InfoCommand {
     private MessageService messageService;
 
     @Autowired
-    private DiscordService discordService;
-
-    @Autowired
     private ContextService contextService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setTitle(messageService.getMessage("discord.command.stats.title"));
-        builder.setThumbnail(discordService.getSelfUser().getAvatarUrl());
+        builder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
 
         Map<String, Metric> metricMap = metricRegistry.getMetrics();
         builder.addField(getCommonStats(metricMap));
