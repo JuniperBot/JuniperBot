@@ -187,11 +187,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <button id="ranking-reset-button" type="button" class="btn btn-danger">
                             <spring:message code="global.button.resetAll"/>
                         </button>
-                        <button id="ranking-sync-button" type="button" class="btn btn-warning" <c:if test="${not serverAdded}">disabled</c:if>>
-                            <span id="ranking-sync-button-text">
-                                <spring:message code="global.button.update"/>
-                            </span>
-                            <span id="ranking-sync-button-spinner" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style="font-size:18px;"></i></span>
+                        <button id="ranking-sync-button" type="button" class="btn btn-warning">
+                            <spring:message code="global.button.update"/>
                         </button>
                     </div>
                 </div>
@@ -260,6 +257,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <p><spring:message code="page.ranking.admin.modal.import.content.1"/></p>
     <p><spring:message code="page.ranking.admin.modal.import.content.2" arguments="${serverId}"/></p>
     <div class="callout callout-warning no-margin">
-        <p><spring:message code="page.ranking.admin.modal.import.content.hint"/></p>
+        <p><spring:message code="page.ranking.admin.modal.import.content.hint.1"/></p>
+        <p><spring:message code="page.ranking.admin.modal.import.content.hint.2"/></p>
     </div>
 </div>
