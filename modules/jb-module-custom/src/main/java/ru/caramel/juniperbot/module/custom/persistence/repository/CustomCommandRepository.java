@@ -29,6 +29,8 @@ import java.util.List;
 public interface CustomCommandRepository extends JpaRepository<CustomCommand, Long> {
     CustomCommand findByKeyAndConfig(String key, GuildConfig config);
 
+    boolean existsByKeyAndConfigGuildId(String key, long guildId);
+
     List<CustomCommand> findByConfig(GuildConfig config);
 
     @Query("SELECT e FROM CustomCommand e WHERE e.config.guildId = :guildId")

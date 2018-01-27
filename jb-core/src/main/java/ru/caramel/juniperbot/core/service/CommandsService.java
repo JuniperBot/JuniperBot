@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.util.function.Function;
+
 public interface CommandsService extends MessageSender {
 
     String EXECUTIONS_METER = "commands.executions.rate";
@@ -26,5 +28,5 @@ public interface CommandsService extends MessageSender {
 
     void onMessageReceived(MessageReceivedEvent event);
 
-    void sendMessage(MessageReceivedEvent event, MessageSender sender);
+    void sendMessage(MessageReceivedEvent event, MessageSender sender, Function<String, Boolean> commandCheck);
 }
