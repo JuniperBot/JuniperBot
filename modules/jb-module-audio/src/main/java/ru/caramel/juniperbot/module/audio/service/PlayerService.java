@@ -10,6 +10,7 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PlayerService {
 
@@ -22,6 +23,8 @@ public interface PlayerService {
     MusicConfig getConfig(Guild guild);
 
     PlaybackInstance getInstance(Guild guild);
+
+    Map<Long, PlaybackInstance> getInstances();
 
     void play(List<TrackRequest> requests) throws DiscordException;
 

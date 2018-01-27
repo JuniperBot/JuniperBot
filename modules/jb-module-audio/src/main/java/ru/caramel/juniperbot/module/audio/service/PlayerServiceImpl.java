@@ -51,10 +51,7 @@ import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepo
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -124,6 +121,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             player.addListener(this);
             return new PlaybackInstance(e, player);
         });
+    }
+
+    @Override
+    public Map<Long, PlaybackInstance> getInstances() {
+        return Collections.unmodifiableMap(instances);
     }
 
     @Override
@@ -243,8 +245,10 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 v.setActiveTime(currentTimeMillis);
                 return;
             }
-            if (current != null && currentTimeMillis - lastMillis > TIMEOUT) {
-                messageManager.onIdle(current.getChannel());
+            if (currentTimeMillis - lastMillis > TIMEOUT) {
+                if (current != null) {
+                    messageManager.onIdle(current.getChannel());
+                }
                 v.stop();
                 inactiveIds.add(k);
             }
