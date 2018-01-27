@@ -37,6 +37,7 @@ import ru.caramel.juniperbot.core.service.*;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class CommandsServiceImpl implements CommandsService {
@@ -70,11 +71,11 @@ public class CommandsServiceImpl implements CommandsService {
     @Override
     @Transactional
     public void onMessageReceived(MessageReceivedEvent event) {
-        sendMessage(event, this);
+        sendMessage(event, this, commandsHolderService::isAnyCommand);
     }
 
     @Override
-    public void sendMessage(MessageReceivedEvent event, MessageSender sender) {
+    public void sendMessage(MessageReceivedEvent event, MessageSender sender, Function<String, Boolean> commandCheck) {
         JDA jda = event.getJDA();
         if (event.getAuthor().isBot()) {
             return;
@@ -102,7 +103,7 @@ public class CommandsServiceImpl implements CommandsService {
         }
 
         String firstPart = input.split("\\s+", 2)[0].trim();
-        if (!commandsHolderService.isAnyCommand(firstPart)) {
+        if (commandCheck != null && !commandCheck.apply(firstPart)) {
             return;
         }
 

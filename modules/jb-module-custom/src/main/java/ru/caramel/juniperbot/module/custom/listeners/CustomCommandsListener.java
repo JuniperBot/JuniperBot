@@ -20,9 +20,11 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.StringUtils;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsService;
+import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
@@ -42,9 +44,25 @@ public class CustomCommandsListener extends DiscordEventListener {
     @Autowired
     private CustomCommandRepository commandRepository;
 
+    @Autowired
+    private ConfigService configService;
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        commandsService.sendMessage(event, this::sendCustomCommand);
+        commandsService.sendMessage(event, this::sendCustomCommand, e -> {
+            if (event.getGuild() == null) {
+                return false;
+            }
+            String prefix = configService.getPrefix(event.getGuild().getIdLong());
+            if (StringUtils.isEmpty(prefix)) {
+                return false;
+            }
+            if (!e.startsWith(prefix)) {
+                return false;
+            }
+            String key = e.replaceFirst("^" + prefix, "");
+            return commandRepository.existsByKeyAndConfigGuildId(key, event.getGuild().getIdLong());
+        });
     }
 
     private void sendCustomCommand(MessageReceivedEvent event, String content, String key, GuildConfig config) {
