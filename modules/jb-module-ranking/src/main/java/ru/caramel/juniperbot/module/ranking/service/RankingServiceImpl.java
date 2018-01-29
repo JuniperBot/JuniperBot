@@ -390,6 +390,7 @@ public class RankingServiceImpl implements RankingService {
         if (ranking == null && member != null) {
             ranking = new Ranking();
             ranking.setMember(member);
+            ranking.setRank(rankingRepository.countByGuildId(member.getGuildId()) + 1);
             rankingRepository.save(ranking);
         }
         return ranking;
@@ -402,6 +403,7 @@ public class RankingServiceImpl implements RankingService {
             LocalMember localMember = memberService.getOrCreate(member);
             ranking = new Ranking();
             ranking.setMember(localMember);
+            ranking.setRank(rankingRepository.countByGuildId(member.getGuild().getId()) + 1);
             rankingRepository.save(ranking);
         }
         return ranking;
@@ -415,6 +417,7 @@ public class RankingServiceImpl implements RankingService {
             if (localMember != null) {
                 ranking = new Ranking();
                 ranking.setMember(localMember);
+                ranking.setRank(rankingRepository.countByGuildId(guildId) + 1);
                 rankingRepository.save(ranking);
             }
         }

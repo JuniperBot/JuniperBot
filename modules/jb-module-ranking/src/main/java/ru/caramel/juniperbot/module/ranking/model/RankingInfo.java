@@ -45,7 +45,7 @@ public class RankingInfo {
 
     private long totalExp;
 
-    private int rank;
+    private long rank;
 
     private long cookies;
 
