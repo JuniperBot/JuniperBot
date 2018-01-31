@@ -81,14 +81,16 @@ public class MafiaService implements ModuleListener {
     public void stop(MafiaInstance instance) {
         instance.setState(MafiaState.FINISH);
 
-        String stopReason = StringUtils.isNotEmpty(instance.getEndReason())
-                ? instance.getEndReason()
-                : messageService.getMessage("mafia.stop.message");
+        if (!MafiaInstance.IGNORED_REASON.equals(instance.getEndReason())) {
+            String stopReason = StringUtils.isNotEmpty(instance.getEndReason())
+                    ? instance.getEndReason()
+                    : messageService.getMessage("mafia.stop.message");
 
-        EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(messageService.getMessage("mafia.name"));
-        builder.setDescription(stopReason);
-        instance.getChannel().sendMessage(builder.build()).complete();
+            EmbedBuilder builder = messageService.getBaseEmbed();
+            builder.setTitle(messageService.getMessage("mafia.name"));
+            builder.setDescription(stopReason);
+            instance.getChannel().sendMessage(builder.build()).complete();
+        }
 
         if (instance.getGoonChannel() != null) {
             instance.getGoonChannel().delete().complete();

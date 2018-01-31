@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.module.mafia.commands;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.enums.CommandSource;
@@ -30,6 +32,10 @@ public class MafiaStartCommand extends MafiaCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+        if (!PermissionUtil.checkPermission(message.getGuild().getSelfMember(), Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL)) {
+            messageService.onError(message.getChannel(), "discord.command.requirements");
+            return fail(message);
+        }
         if (!mafiaService.start(message.getAuthor(), message.getTextChannel())) {
             messageService.onError(message.getChannel(), "mafia.alreadyStarted");
             return fail(message);

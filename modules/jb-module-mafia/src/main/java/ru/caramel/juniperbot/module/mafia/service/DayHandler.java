@@ -114,6 +114,8 @@ public class DayHandler extends AbstractStateHandler {
         if (!endOfGame) {
             embedBuilder.setFooter(messageService.getMessage("mafia.day.start.footer",
                     getEndTimeText(instance, dayDelay), instance.getPrefix()), null);
+        } else {
+            instance.setEndReason(MafiaInstance.IGNORED_REASON);
         }
         instance.getDailyActions().clear();
         instance.getChannel().sendMessage(embedBuilder.build()).complete();

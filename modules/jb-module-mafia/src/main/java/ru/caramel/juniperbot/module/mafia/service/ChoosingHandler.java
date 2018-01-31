@@ -94,7 +94,7 @@ public class ChoosingHandler extends AbstractStateHandler {
             roleList.add(MafiaRole.GOON);
         }
         for (int i = 0; i < playerCount - roleList.size(); i++) {
-            roleList.add(MafiaRole.BROKER);
+            roleList.add(MafiaRole.TOWNIE);
         }
         Collections.shuffle(roleList);
         return roleList;

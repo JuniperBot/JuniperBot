@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 @Setter
 public class MafiaInstance {
 
+    public static final String IGNORED_REASON = "$end$";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MafiaInstance.class);
 
     private final String prefix;

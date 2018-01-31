@@ -51,7 +51,7 @@ public class MafiaPlayer {
     }
 
     public int damage() {
-        return --health;
+        return MafiaRole.DOCTOR.equals(role) ? health : --health;
     }
 
     public void heal() {
