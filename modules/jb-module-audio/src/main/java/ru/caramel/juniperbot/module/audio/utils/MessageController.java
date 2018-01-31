@@ -90,7 +90,7 @@ public class MessageController {
                 }
             }
 
-            reactionsListener.onReaction(message.getId(), event -> {
+            reactionsListener.onReactionAdd(message.getId(), event -> {
                 if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);

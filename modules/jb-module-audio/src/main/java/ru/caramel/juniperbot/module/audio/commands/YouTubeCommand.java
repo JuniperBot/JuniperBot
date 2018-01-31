@@ -90,7 +90,7 @@ public class YouTubeCommand extends PlayCommand {
             context.putAttribute(ATTR_SEARCH_RESULTS, urls);
             context.putAttribute(ATTR_SEARCH_MESSAGE, e);
             context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
-            reactionsListener.onReaction(e.getId(), event -> {
+            reactionsListener.onReactionAdd(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);

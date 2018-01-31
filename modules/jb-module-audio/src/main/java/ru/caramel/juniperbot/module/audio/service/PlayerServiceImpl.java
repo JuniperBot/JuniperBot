@@ -43,6 +43,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -55,7 +56,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class PlayerServiceImpl extends AudioEventAdapter implements PlayerService {
+public class PlayerServiceImpl extends AudioEventAdapter implements PlayerService, ModuleListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerServiceImpl.class);
 
@@ -89,8 +90,8 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         AudioSourceManagers.registerLocalSource(playerManager);
     }
 
-    @PreDestroy
-    public void destroy() {
+    @Override
+    public void onShutdown() {
         instances.values().forEach(PlaybackInstance::stop);
         playerManager.shutdown();
     }
