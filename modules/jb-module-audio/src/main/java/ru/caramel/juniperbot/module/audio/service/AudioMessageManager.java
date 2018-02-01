@@ -271,7 +271,8 @@ public class AudioMessageManager {
     private void runUpdater(TrackRequest request) {
         synchronized (request.getGuild()) {
             if (playRefreshInterval != null) {
-                ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> updateMessage(request),
+                ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() ->
+                                contextService.withContext(request.getGuild(), () -> updateMessage(request)),
                         playRefreshInterval);
                 ScheduledFuture<?> oldTask = updaterTasks.put(request.getGuild(), task);
                 if (oldTask != null) {

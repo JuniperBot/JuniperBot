@@ -79,7 +79,7 @@ public class MafiaService implements ModuleListener {
 
     public boolean stop(User requestedBy, TextChannel channel) {
         MafiaInstance instance = getRelatedInstance(channel.getIdLong());
-        if (instance == null || !instance.isPlayer(requestedBy)) {
+        if (instance == null || (!instance.getState().equals(MafiaState.CHOOSING) && !instance.isPlayer(requestedBy))) {
             return false;
         }
         stop(instance, true);
