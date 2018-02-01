@@ -175,4 +175,8 @@ public class MafiaInstance extends FeatureInstance {
         this.state = state;
         return current;
     }
+
+    public void setIgnoredReason() {
+        setEndReason(IGNORED_REASON);
+    }
 }

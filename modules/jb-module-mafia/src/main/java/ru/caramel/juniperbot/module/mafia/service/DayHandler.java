@@ -17,16 +17,18 @@
 package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.*;
 
-import java.util.Map;
+import java.util.*;
 
 @Component
-public class DayHandler extends AbstractStateHandler {
+public class DayHandler extends ChoiceStateHandler {
+
+    private final static String ATTR_CHOICES = "DayHandler.Choices";
 
     @Autowired
     private GoonHandler goonHandler;
@@ -108,31 +110,44 @@ public class DayHandler extends AbstractStateHandler {
         } else {
             message = messageService.getMessage("mafia.day.start.nothing");
         }
-
+        if (!endOfGame) {
+            message += "\n\n" + messageService.getMessage("mafia.day.exile.choice");
+        }
         EmbedBuilder embedBuilder = getBaseEmbed();
         embedBuilder.setDescription(message);
         if (!endOfGame) {
+            embedBuilder.addField(messageService.getMessage("mafia.start.playerList.title"),
+                    getPlayerList(instance.getAlive()), false);
             embedBuilder.setFooter(messageService.getMessage("mafia.day.start.footer",
                     getEndTimeText(instance, dayDelay), instance.getPrefix()), null);
         } else {
-            instance.setEndReason(MafiaInstance.IGNORED_REASON);
+            instance.setIgnoredReason();
         }
         instance.getDailyActions().clear();
-        instance.getChannel().sendMessage(embedBuilder.build()).complete();
+        Message resultMessage = instance.getChannel().sendMessage(embedBuilder.build()).complete();
 
-        return endOfGame || scheduleEnd(instance, dayDelay);
-    }
-
-    private void outPlayer(MafiaInstance instance, MafiaPlayer player) {
-        player.out();
-        if (player.getRole() == MafiaRole.GOON && instance.getGoonChannel() != null) {
-            PermissionOverride override = instance.getGoonChannel().getPermissionOverride(player.getMember());
-            override.delete().submit();
+        if (!endOfGame) {
+            sendChoice(instance, resultMessage);
         }
+        return endOfGame || scheduleEnd(instance, dayDelay);
     }
 
     @Override
     public boolean onEnd(User user, MafiaInstance instance) {
+        MafiaPlayer toExile = getChoiceResult(instance);
+        if (toExile != null) {
+            instance.getDailyActions().put(MafiaActionType.EXILE, toExile);
+        }
         return goonHandler.onStart(user, instance);
+    }
+
+    @Override
+    protected String getChoiceKey() {
+        return "DayHandler.Choices";
+    }
+
+    @Override
+    protected MafiaState getState() {
+        return MafiaState.DAY;
     }
 }

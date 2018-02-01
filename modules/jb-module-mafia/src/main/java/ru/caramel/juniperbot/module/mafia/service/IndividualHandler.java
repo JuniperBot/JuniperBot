@@ -116,7 +116,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
         }
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReactionAdd(message.getId(), event -> {
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && choiceStates.contains(instance.getState())) {
+            if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && choiceStates.contains(instance.getState())) {
                 String emote = event.getReaction().getReactionEmote().getName();
                 int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                 if (index >= 0 && index < players.size()) {

@@ -16,7 +16,10 @@
  */
 package ru.caramel.juniperbot.module.mafia.listeners;
 
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
@@ -36,8 +39,27 @@ public class MafiaMessageListener extends DiscordEventListener {
             case PRIVATE:
             case TEXT:
                 MafiaInstance instance = mafiaService.getRelatedInstance(event.getChannel().getIdLong());
-                if (instance != null && !instance.isInState(MafiaState.FINISH) && instance.isPlayer(event.getAuthor())) {
-                    instance.tick();
+                if (instance != null && !instance.isInState(MafiaState.FINISH)) {
+                    boolean isPlayer = instance.isPlayer(event.getAuthor());
+                    if (isPlayer) {
+                        instance.tick();
+                    }
+
+                    if (event.getChannelType().isGuild()) {
+                        Member selfMember = event.getGuild().getSelfMember();
+                        if (!event.getMember().equals(selfMember)
+                                && !instance.isInState(MafiaState.CHOOSING)
+                                && !event.getChannel().equals(instance.getGoonChannel())
+                                && PermissionUtil.checkPermission(event.getTextChannel(), selfMember, Permission.MESSAGE_MANAGE)) {
+                            if (instance.isInState(MafiaState.DAY)) {
+                                if (!isPlayer) {
+                                    event.getMessage().delete().submit();
+                                }
+                            } else {
+                                event.getMessage().delete().submit();
+                            }
+                        }
+                    }
                 }
                 break;
         }

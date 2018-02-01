@@ -20,56 +20,58 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.mafia.model.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class GoonHandler extends AbstractStateHandler {
+public class GoonHandler extends ChoiceStateHandler {
 
     @Autowired
     private BrokerHandler brokerHandler;
 
-    private final static String ATTR_CHOICES = "GoonHandler.Choices";
-
     @Override
     public boolean onStart(User user, MafiaInstance instance) {
         instance.setState(MafiaState.NIGHT_GOON);
-        instance.getChannel().sendMessage(getBaseEmbed("mafia.night.start").build()).complete();
-        sendChoiceMessage(instance);
-        return scheduleEnd(instance, dayDelay);
-    }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean onEnd(User user, MafiaInstance instance) {
-        if (user != null && !instance.isPlayer(user, MafiaRole.GOON)) {
-            return false;
-        }
+        MafiaPlayer exiledPlayer = instance.getDailyActions().get(MafiaActionType.EXILE);
 
-        Map<MafiaPlayer, Set<MafiaPlayer>> choices = (Map<MafiaPlayer, Set<MafiaPlayer>>) instance.removeAttribute(ATTR_CHOICES);
-        if (choices != null) {
-            int size = 0;
-            MafiaPlayer target = null;
-            for (Map.Entry<MafiaPlayer, Set<MafiaPlayer>> entry : choices.entrySet()) {
-                if (entry.getValue().size() > size) {
-                    size = entry.getValue().size();
-                    target = entry.getKey();
-                }
-            }
-            if (target != null) {
-                instance.getDailyActions().put(MafiaActionType.KILL, target);
+        boolean endOfGame = false;
+        StringBuilder stringBuilder = new StringBuilder();
+        if (exiledPlayer != null) {
+            outPlayer(instance, exiledPlayer);
+            String roleName = messageService.getEnumTitle(exiledPlayer.getRole());
+            stringBuilder.append(messageService.getMessage("mafia.night.start.exiled", roleName,
+                    exiledPlayer.getName()));
+
+            boolean hasAnyMafia = instance.hasAnyMafia();
+            boolean hasAnyTownie = instance.hasAnyTownie();
+            if (!hasAnyMafia && !hasAnyTownie) {
+                stringBuilder.append("\n\n").append(messageService.getMessage("mafia.end.standoff"));
+                endOfGame = true;
+            } else if (!hasAnyMafia) {
+                stringBuilder.append("\n\n").append(messageService.getMessage("mafia.end.townies-wins"));
+                endOfGame = true;
+            } else if (!hasAnyTownie) {
+                stringBuilder.append("\n\n").append(messageService.getMessage("mafia.end.mafia-wins"));
+                endOfGame = true;
             }
         }
-        return brokerHandler.onStart(user, instance);
-    }
 
-    public void sendChoiceMessage(MafiaInstance instance) {
+        if (!endOfGame) {
+            stringBuilder.append("\n\n").append(messageService.getMessage("mafia.night.start"));
+        }
+
+        EmbedBuilder embedBuilder = getBaseEmbed();
+        embedBuilder.setDescription(stringBuilder.toString());
+        instance.getChannel().sendMessage(embedBuilder.build()).complete();
+        if (endOfGame) {
+            instance.setIgnoredReason();
+            return true;
+        }
+
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         MessageBuilder builder = new MessageBuilder();
         EmbedBuilder embed = getBaseEmbed("mafia.goon.choice");
@@ -82,36 +84,31 @@ public class GoonHandler extends AbstractStateHandler {
 
         Message message = instance.getGoonChannel().sendMessage(builder.build()).complete();
 
-        Map<MafiaPlayer, Set<MafiaPlayer>> choices = new ConcurrentHashMap<>(players.size());
-        instance.putAttribute(ATTR_CHOICES, choices);
-        try {
-            for (int i = 0; i < players.size(); i++) {
-                message.addReaction(ReactionsListener.CHOICES[i]).submit();
-            }
-        } catch (Exception ex) {
-            // ignore
-        }
-        instance.getListenedMessages().add(message.getId());
-        reactionsListener.onReaction(message.getId(), (event, add) -> {
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && instance.isInState(MafiaState.NIGHT_GOON)) {
-                String emote = event.getReaction().getReactionEmote().getName();
-                int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
-                if (index >= 0 && index < players.size()) {
-                    MafiaPlayer target = players.get(index);
-                    MafiaPlayer chooser = instance.getPlayerByUser(event.getUser());
-                    if (target != null && chooser != null && chooser.getRole() == MafiaRole.GOON) {
-                        instance.tick();
-                        Set<MafiaPlayer> choosers = choices.computeIfAbsent(target, c -> Collections.synchronizedSet(new HashSet<>()));
-                        if (add) {
-                            choosers.add(chooser);
-                        } else {
-                            choosers.remove(chooser);
-                        }
-                    }
-                }
-            }
-            return false;
-        });
+        sendChoice(instance, message);
+
+        return scheduleEnd(instance, dayDelay);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean onEnd(User user, MafiaInstance instance) {
+        if (user != null && !instance.isPlayer(user, MafiaRole.GOON)) {
+            return false;
+        }
+        MafiaPlayer toKill = getChoiceResult(instance);
+        if (toKill != null) {
+            instance.getDailyActions().put(MafiaActionType.KILL, toKill);
+        }
+        return brokerHandler.onStart(user, instance);
+    }
+
+    @Override
+    protected String getChoiceKey() {
+        return "GoonHandler.Choices";
+    }
+
+    @Override
+    protected MafiaState getState() {
+        return MafiaState.NIGHT_GOON;
+    }
 }

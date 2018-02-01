@@ -53,7 +53,7 @@ public class ChoosingHandler extends AbstractStateHandler {
                 return true;
             }
             String emote = event.getReaction().getReactionEmote().getName();
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && CHOOSE.equals(emote)) {
+            if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && CHOOSE.equals(emote)) {
                 instance.tick();
                 if (add && instance.getPlayers().size() < 10) {
                     instance.getPlayers().add(new MafiaPlayer(event.getMember()));
@@ -73,7 +73,7 @@ public class ChoosingHandler extends AbstractStateHandler {
         int playerCount = instance.getPlayers().size();
         int minPlayers = debug ? 2 : 3;
         if (playerCount < minPlayers) {
-            messageService.onError(instance.getChannel(), "mafia.start.minPlayers.title", minPlayers);
+            instance.setEndReason(messageService.getMessage("mafia.start.minPlayers.title", minPlayers));
             return true;
         }
         Iterator<MafiaRole> roles = getRoles(playerCount).iterator();
@@ -84,15 +84,14 @@ public class ChoosingHandler extends AbstractStateHandler {
     private List<MafiaRole> getRoles(int playerCount) {
         List<MafiaRole> roleList = new ArrayList<>(playerCount);
         roleList.add(MafiaRole.GOON);
-        if (playerCount > 2) {
+        if (playerCount > 4) {
             roleList.add(MafiaRole.DOCTOR);
             roleList.add(MafiaRole.BROKER);
         }
-        if (playerCount > 5) {
-            roleList.add(MafiaRole.GOON);
+        if (playerCount > 6) {
             roleList.add(MafiaRole.COP);
         }
-        if (playerCount > 8) {
+        if (playerCount > 7) {
             roleList.add(MafiaRole.GOON);
         }
         for (int i = 0; i < playerCount - roleList.size(); i++) {

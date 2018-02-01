@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.mafia.model;
 
 public enum  MafiaActionType {
     KILL,
+    EXILE,
     BROKER_DAMAGE,
     DOCTOR_HEAL
 }
