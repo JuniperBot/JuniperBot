@@ -41,6 +41,7 @@ public class ChoosingHandler extends AbstractStateHandler {
 
     @Override
     public boolean onStart(User user, MafiaInstance instance) {
+        instance.tick();
         String delayText = getEndTimeText(instance, choosingDelay);
         EmbedBuilder builder = getBaseEmbed("mafia.start.message");
         builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix()), null);
@@ -53,6 +54,7 @@ public class ChoosingHandler extends AbstractStateHandler {
             }
             String emote = event.getReaction().getReactionEmote().getName();
             if (!event.getUser().equals(event.getJDA().getSelfUser()) && CHOOSE.equals(emote)) {
+                instance.tick();
                 if (add && instance.getPlayers().size() < 10) {
                     instance.getPlayers().add(new MafiaPlayer(event.getMember()));
                 }

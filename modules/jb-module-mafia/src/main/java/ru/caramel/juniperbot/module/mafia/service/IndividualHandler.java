@@ -78,7 +78,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
 
     @Override
     public boolean onEnd(User user, MafiaInstance instance) {
-        return instance.isPlayer(user, individualRole) && getNextHandler().onStart(user, instance);
+        return (user == null || instance.isPlayer(user, individualRole)) && getNextHandler().onStart(user, instance);
     }
 
     public boolean sendChoiceMessage(MafiaInstance instance, String welcomeCode) {
@@ -121,14 +121,15 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
                 int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                 if (index >= 0 && index < players.size()) {
                     MafiaPlayer player = players.get(index);
-                    contextService.initContext(instance.getGuild());
-                    if (player != null) {
-                        choiceAction(instance, player, channel);
-                    }
-                    if (pass) {
-                        instance.done(event.getUser());
-                    }
-                    contextService.resetContext();
+                    contextService.withContext(instance.getGuild(), () -> {
+                        if (player != null) {
+                            instance.tick();
+                            choiceAction(instance, player, channel);
+                        }
+                        if (pass) {
+                            instance.done(event.getUser());
+                        }
+                    });
                     return true;
                 }
             }

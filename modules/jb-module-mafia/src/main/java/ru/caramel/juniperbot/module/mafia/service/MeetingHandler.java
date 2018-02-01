@@ -43,6 +43,7 @@ public class MeetingHandler extends AbstractStateHandler {
 
     @Override
     public boolean onStart(User user, MafiaInstance instance) {
+        instance.tick();
         instance.setState(MafiaState.MEETING);
 
         EmbedBuilder builder = getBaseEmbed("mafia.meeting.welcome");

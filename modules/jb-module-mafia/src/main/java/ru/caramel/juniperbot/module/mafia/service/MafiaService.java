@@ -21,7 +21,10 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.service.ConfigService;
@@ -31,11 +34,16 @@ import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class MafiaService implements ModuleListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MafiaService.class);
+
+    private final static long TIMEOUT = 1800000; // 30 minutes
 
     @Autowired
     private ChoosingHandler choosingHandler;
@@ -69,13 +77,13 @@ public class MafiaService implements ModuleListener {
         return !choosingHandler.onStart(user, instance);
     }
 
-    public boolean stop(TextChannel channel) {
+    public boolean stop(User requestedBy, TextChannel channel) {
         MafiaInstance instance = getRelatedInstance(channel.getIdLong());
-        if (instance != null) {
-            stop(instance, true);
-            return true;
+        if (instance == null || !instance.isPlayer(requestedBy)) {
+            return false;
         }
-        return false;
+        stop(instance, true);
+        return true;
     }
 
     public void stop(MafiaInstance instance) {
@@ -94,11 +102,12 @@ public class MafiaService implements ModuleListener {
 
         if (instance.getGoonChannel() != null) {
             instance.getGoonChannel().delete().complete();
+            instances.remove(instance.getGoonChannel().getIdLong());
         }
         if (CollectionUtils.isNotEmpty(instance.getListenedMessages())) {
             reactionsListener.unsubscribeAll(instance.getListenedMessages());
         }
-        instances.remove(instance.getGuild().getIdLong());
+        instances.remove(instance.getChannel().getIdLong());
     }
 
     public void stop(MafiaInstance instance, boolean cancelScheduled) {
@@ -108,13 +117,16 @@ public class MafiaService implements ModuleListener {
         stop(instance);
     }
 
-    private MafiaInstance getRelatedInstance(long channelId) {
+    public MafiaInstance getRelatedInstance(long channelId) {
         MafiaInstance instance = instances.get(channelId);
         if (instance == null) {
             instance = instances.values().stream()
                     .filter(e -> e.getGoonChannel() != null && e.getGoonChannel().getIdLong() == channelId)
                     .findFirst()
                     .orElse(null);
+            if (instance != null) {
+                instances.put(channelId, instance); // cache goon channel
+            }
         }
         return instance;
     }
@@ -133,9 +145,25 @@ public class MafiaService implements ModuleListener {
     @Override
     public void onShutdown() {
         instances.values().forEach(e -> {
-            contextService.initContext(e.getGuild());
-            stop(e, true);
-            contextService.resetContext();
+            try {
+                contextService.withContext(e.getGuild(), () -> stop(e, true));
+            } catch (Exception ex) {
+                LOGGER.error("Could not stop correctly mafia {}", e.getChannel(), ex);
+            }
+        });
+    }
+
+    @Scheduled(fixedDelay = 15000)
+    public void monitor() {
+        long currentTimeMillis = System.currentTimeMillis();
+        new HashMap<>(this.instances).forEach((k, v) -> {
+            if (currentTimeMillis - v.getActiveTime() > TIMEOUT) {
+                if (!v.isInState(MafiaState.FINISH)) {
+                    contextService.withContext(v.getGuild(),
+                            () -> v.setEndReason(messageService.getMessage("mafia.stop.inactive.message")));
+                    stop(v, true);
+                }
+            }
         });
     }
 }

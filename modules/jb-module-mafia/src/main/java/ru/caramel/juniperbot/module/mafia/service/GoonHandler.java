@@ -48,7 +48,7 @@ public class GoonHandler extends AbstractStateHandler {
     @SuppressWarnings("unchecked")
     @Override
     public boolean onEnd(User user, MafiaInstance instance) {
-        if (!instance.isPlayer(user, MafiaRole.GOON)) {
+        if (user != null && !instance.isPlayer(user, MafiaRole.GOON)) {
             return false;
         }
 
@@ -100,6 +100,7 @@ public class GoonHandler extends AbstractStateHandler {
                     MafiaPlayer target = players.get(index);
                     MafiaPlayer chooser = instance.getPlayerByUser(event.getUser());
                     if (target != null && chooser != null && chooser.getRole() == MafiaRole.GOON) {
+                        instance.tick();
                         Set<MafiaPlayer> choosers = choices.computeIfAbsent(target, c -> Collections.synchronizedSet(new HashSet<>()));
                         if (add) {
                             choosers.add(chooser);

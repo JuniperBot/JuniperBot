@@ -23,7 +23,8 @@
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <context:component-scan base-package="
         ru.caramel.juniperbot.module.mafia.commands,
-        ru.caramel.juniperbot.module.mafia.service"/>
+        ru.caramel.juniperbot.module.mafia.service,
+        ru.caramel.juniperbot.module.mafia.listeners"/>
 
     <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="/mafia-jbmessages"/>
 

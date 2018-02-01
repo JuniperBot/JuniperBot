@@ -136,6 +136,16 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    public void withContext(Guild guild, Runnable action) {
+        initContext(guild);
+        try {
+            action.run();
+        } finally {
+            resetContext();
+        }
+    }
+
+    @Override
     public void initContext(User user) {
         if (user != null) {
             MDC.put(MDC_USER, user.getIdLong());
