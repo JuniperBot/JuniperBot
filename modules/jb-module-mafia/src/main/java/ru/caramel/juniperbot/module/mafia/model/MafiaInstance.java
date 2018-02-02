@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.core.model.FeatureInstance;
-import ru.caramel.juniperbot.module.mafia.service.MafiaStateHandler;
+import ru.caramel.juniperbot.module.mafia.service.base.MafiaStateHandler;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

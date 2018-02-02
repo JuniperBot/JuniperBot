@@ -14,27 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.mafia.service;
+package ru.caramel.juniperbot.module.mafia.service.individual;
 
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.module.mafia.model.*;
+import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
+import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
+import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
+import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.DayHandler;
 
 @Component
-public class BrokerHandler extends IndividualHandler<DoctorHandler> {
+public class CopHandler extends IndividualHandler<DayHandler> {
 
-    public BrokerHandler() {
-        super(MafiaRole.BROKER, MafiaState.NIGHT_BROKER);
+    public CopHandler() {
+        super(MafiaRole.COP, MafiaState.NIGHT_COP, MafiaState.MEETING);
     }
 
     @Override
     protected void choiceAction(MafiaInstance instance, MafiaPlayer target, PrivateChannel channel) {
-        instance.getDailyActions().put(MafiaActionType.BROKER_DAMAGE, target);
-        channel.sendMessage(messageService.getMessage("mafia.broker.choice.selected", target.getName())).complete();
+        channel.sendMessage(messageService.getMessage(target.getRole().isMafia()
+                ? "mafia.cop.choice.positive" : "mafia.cop.choice.negative")).complete();
     }
 
     @Override
-    protected Class<DoctorHandler> getNextType() {
-        return DoctorHandler.class;
+    protected Class<DayHandler> getNextType() {
+        return DayHandler.class;
     }
 }

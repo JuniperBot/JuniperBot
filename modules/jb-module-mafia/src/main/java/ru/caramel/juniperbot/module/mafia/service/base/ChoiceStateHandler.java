@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.mafia.service;
+package ru.caramel.juniperbot.module.mafia.service.base;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PermissionOverride;

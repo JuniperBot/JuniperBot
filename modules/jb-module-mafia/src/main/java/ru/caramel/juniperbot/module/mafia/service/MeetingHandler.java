@@ -28,6 +28,8 @@ import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.base.AbstractStateHandler;
+import ru.caramel.juniperbot.module.mafia.service.individual.CopHandler;
 
 import java.util.Arrays;
 import java.util.List;

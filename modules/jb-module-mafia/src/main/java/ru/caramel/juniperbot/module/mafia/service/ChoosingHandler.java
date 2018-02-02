@@ -25,6 +25,7 @@ import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.base.AbstractStateHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;

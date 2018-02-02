@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.mafia.service;
+package ru.caramel.juniperbot.module.mafia.service.individual;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -26,6 +26,8 @@ import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.base.AbstractStateHandler;
+import ru.caramel.juniperbot.module.mafia.service.base.MafiaStateHandler;
 
 import java.util.*;
 
@@ -139,7 +141,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
 
     }
 
-    protected synchronized T getNextHandler() {
+    private synchronized T getNextHandler() {
         if (nextHandler == null) {
             nextHandler = getHandler(getNextType());
         }

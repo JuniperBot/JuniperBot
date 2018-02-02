@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.mafia.service;
+package ru.caramel.juniperbot.module.mafia.service.base;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -32,6 +32,7 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.MafiaService;
 
 import java.util.Collection;
 import java.util.Date;
