@@ -29,6 +29,7 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
 
     @SuppressWarnings("unchecked")
     protected MafiaPlayer getChoiceResult(MafiaInstance instance) {
+        boolean duplicate = false;
         MafiaPlayer target = null;
         Map<MafiaPlayer, Set<MafiaPlayer>> choices = (Map<MafiaPlayer, Set<MafiaPlayer>>) instance.removeAttribute(getChoiceKey());
         if (choices != null) {
@@ -37,10 +38,13 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
                 if (entry.getValue().size() > size) {
                     size = entry.getValue().size();
                     target = entry.getKey();
+                    duplicate = false;
+                } else if (entry.getValue().size() == size) {
+                    duplicate = true;
                 }
             }
         }
-        return target;
+        return duplicate ? null : target;
     }
 
     protected void sendChoice(MafiaInstance instance, Message message) {

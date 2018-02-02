@@ -42,16 +42,16 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     @Value("${mafia.debug:false}")
     protected boolean debug;
 
-    @Value("${mafia.day.delay:600000}")
+    @Value("${mafia.day.delay:900000}")
     protected Long dayDelay;
 
-    @Value("${mafia.choosing.delay:180000}")
+    @Value("${mafia.choosing.delay:900000}")
     protected Long choosingDelay;
 
     @Value("${mafia.meeting.delay:30000}")
     protected Long meetingDelay;
 
-    @Value("${mafia.individual.delay:60000}")
+    @Value("${mafia.individual.delay:180000}")
     protected Long individualDelay;
 
     @Autowired

@@ -77,8 +77,14 @@ public class ChoosingHandler extends AbstractStateHandler {
             instance.setEndReason(messageService.getMessage("mafia.start.minPlayers.title", minPlayers));
             return true;
         }
-        Iterator<MafiaRole> roles = getRoles(playerCount).iterator();
-        instance.getPlayers().forEach(e -> e.setRole(roles.next()));
+        List<MafiaRole> roleList = getRoles(playerCount);
+        for (int i = 0; i < playerCount; i++) {
+            MafiaPlayer player = instance.getPlayers().get(i);
+            if (player == null) {
+                return true;
+            }
+            player.setRole(roleList.get(i));
+        }
         return meetingHandler.onStart(user, instance);
     }
 
@@ -95,7 +101,7 @@ public class ChoosingHandler extends AbstractStateHandler {
         if (playerCount > 7) {
             roleList.add(MafiaRole.GOON);
         }
-        for (int i = 0; i < playerCount - roleList.size(); i++) {
+        while (playerCount > roleList.size()) {
             roleList.add(MafiaRole.TOWNIE);
         }
         Collections.shuffle(roleList);
