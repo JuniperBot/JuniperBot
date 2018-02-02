@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.slf4j.Logger;
@@ -124,6 +125,10 @@ public class MafiaInstance extends FeatureInstance {
 
     public boolean isPlayer(User user) {
         return players.stream().anyMatch(e -> e.isAlive() && Objects.equals(user, e.getUser()));
+    }
+
+    public boolean isPlayer(Member member) {
+        return isPlayer(member.getUser());
     }
 
     public List<MafiaPlayer> getPlayersByRole(MafiaRole role) {

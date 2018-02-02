@@ -17,6 +17,8 @@
 package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,9 +79,11 @@ public class MafiaService implements ModuleListener {
         return !choosingHandler.onStart(user, instance);
     }
 
-    public boolean stop(User requestedBy, TextChannel channel) {
+    public boolean stop(Member requestedBy, TextChannel channel) {
         MafiaInstance instance = getRelatedInstance(channel.getIdLong());
-        if (instance == null || (!instance.getState().equals(MafiaState.CHOOSING) && !instance.isPlayer(requestedBy))) {
+        if (instance == null || !(instance.getState().equals(MafiaState.CHOOSING)
+                || instance.isPlayer(requestedBy)
+                || requestedBy.hasPermission(Permission.ADMINISTRATOR))) {
             return false;
         }
         stop(instance, true);

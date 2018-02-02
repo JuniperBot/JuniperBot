@@ -30,6 +30,6 @@ public class MafiaStopCommand extends MafiaCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        return mafiaService.stop(message.getAuthor(), message.getTextChannel()) || fail(message);
+        return mafiaService.stop(message.getMember(), message.getTextChannel()) || fail(message);
     }
 }
