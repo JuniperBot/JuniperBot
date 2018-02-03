@@ -26,16 +26,13 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.mafia.start.key",
         description = "discord.command.mafia.start.desc",
         group = "mafia.name",
+        permissions = {Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL},
         source = ChannelType.TEXT,
         priority = 1)
 public class MafiaStartCommand extends MafiaCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        if (!PermissionUtil.checkPermission(message.getGuild().getSelfMember(), Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL)) {
-            messageService.onError(message.getChannel(), "discord.command.requirements");
-            return fail(message);
-        }
         if (!mafiaService.start(message.getAuthor(), message.getTextChannel())) {
             messageService.onError(message.getChannel(), "mafia.alreadyStarted");
             return fail(message);

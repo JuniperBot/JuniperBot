@@ -20,6 +20,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
         description = "discord.command.play.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
+        permissions = {Permission.VOICE_CONNECT, Permission.VOICE_SPEAK},
         priority = 100)
 public class PlayCommand extends AudioCommand {
 
