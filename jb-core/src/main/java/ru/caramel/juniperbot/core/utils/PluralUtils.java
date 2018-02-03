@@ -27,7 +27,7 @@ public final class PluralUtils {
 
     static {
         Map<String, Pattern> ruRules = new LinkedHashMap<>();
-        ruRules.put("zero", Pattern.compile("^0$"));
+        ruRules.put("zero", Pattern.compile("^\\d*0$"));
         ruRules.put("one", Pattern.compile("^(-?\\d*[^1])?1$"));
         ruRules.put("two", Pattern.compile("^(-?\\d*[^1])?2$"));
         ruRules.put("few", Pattern.compile("(^(-?\\d*[^1])?3)|(^(-?\\d*[^1])?4)$"));
