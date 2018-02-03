@@ -42,10 +42,8 @@ public class MuteCommand extends ModeratorCommand {
         boolean global = StringUtils.containsIgnoreCase(event.getMessage().getContentRaw(),
                 messageService.getMessage("discord.command.mod.mute.key.everywhere"));
         boolean muted = moderationService.mute(event.getTextChannel(), mentioned, global);
-        EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setDescription(messageService.getMessage(muted
-                ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName()));
-        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
+        messageService.onEmbedMessage(event.getChannel(), muted
+                ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
         return true;
     }
 }

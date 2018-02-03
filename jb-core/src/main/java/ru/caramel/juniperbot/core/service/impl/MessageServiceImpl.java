@@ -96,6 +96,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public void onEmbedMessage(MessageChannel sourceChannel, String code, Object... args) {
+        EmbedBuilder builder = getBaseEmbed();
+        builder.setDescription(getMessage(code, args));
+        sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    @Override
     public void onTempMessage(MessageChannel sourceChannel, int sec, String code, Object... args) {
         onTempPlainMessage(sourceChannel, sec, getMessage(code, args));
     }

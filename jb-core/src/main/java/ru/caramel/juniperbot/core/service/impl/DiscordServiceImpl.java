@@ -141,14 +141,15 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent) {
         if (message != null) {
-            WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build();
-            client.send(message).exceptionally(e -> {
-                LOGGER.error("Can't execute webhook: ", e);
-                if (e.getMessage().contains("Request returned failure 404")) {
-                    onAbsent.accept(webHook);
-                }
-                return null;
-            });
+            try (WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build()) {
+                client.send(message).exceptionally(e -> {
+                    LOGGER.error("Can't execute webhook: ", e);
+                    if (e.getMessage().contains("Request returned failure 404")) {
+                        onAbsent.accept(webHook);
+                    }
+                    return null;
+                });
+            }
         }
     }
 

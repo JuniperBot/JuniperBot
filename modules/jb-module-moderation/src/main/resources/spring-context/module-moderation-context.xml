@@ -25,7 +25,8 @@
                 http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
     <context:component-scan base-package="
         ru.caramel.juniperbot.module.moderation.commands,
-        ru.caramel.juniperbot.module.moderation.service"/>
+        ru.caramel.juniperbot.module.moderation.service,
+        ru.caramel.juniperbot.module.moderation.listeners"/>
 
     <jpa:repositories base-package="ru.caramel.juniperbot.module.moderation.persistence.repository"/>
 

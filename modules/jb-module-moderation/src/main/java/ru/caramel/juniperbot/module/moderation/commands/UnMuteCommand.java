@@ -40,10 +40,8 @@ public class UnMuteCommand extends ModeratorCommand {
             return false;
         }
         boolean unmuted = moderationService.unmute(event.getTextChannel(), mentioned);
-        EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setDescription(messageService.getMessage(unmuted
-                ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName()));
-        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
+        messageService.onEmbedMessage(event.getChannel(), unmuted
+                ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
         return true;
     }
 }

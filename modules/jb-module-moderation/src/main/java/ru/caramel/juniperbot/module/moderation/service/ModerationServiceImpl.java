@@ -25,11 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.module.moderation.model.SlowMode;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.moderation.persistence.repository.ModerationConfigRepository;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ModerationServiceImpl implements ModerationService {
@@ -41,6 +44,8 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private ConfigService configService;
+
+    private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
     @Transactional
     @Override
@@ -156,5 +161,29 @@ public class ModerationServiceImpl implements ModerationService {
             result |= true;
         }
         return result;
+    }
+
+    @Override
+    public void slowMode(TextChannel channel, int interval) {
+        SlowMode slowMode = slowModeMap.computeIfAbsent(channel.getIdLong(), e -> {
+            SlowMode result = new SlowMode();
+            result.setChannelId(e);
+            return result;
+        });
+        slowMode.setInterval(interval);
+    }
+
+    @Override
+    public boolean isRestricted(TextChannel channel, Member member) {
+        if (isModerator(member) || member.getUser().isBot()) {
+            return false;
+        }
+        SlowMode slowMode = slowModeMap.get(channel.getIdLong());
+        return slowMode != null && slowMode.tick(member.getUser().getId());
+    }
+
+    @Override
+    public boolean slowOff(TextChannel channel) {
+        return slowModeMap.remove(channel.getIdLong()) != null;
     }
 }
