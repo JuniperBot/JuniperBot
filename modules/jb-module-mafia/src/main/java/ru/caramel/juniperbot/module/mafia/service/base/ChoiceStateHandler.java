@@ -91,7 +91,9 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
                             ready.remove(chooser);
                         }
                         if (CollectionUtils.isEqualCollection(ready, choosers)) {
-                            instance.done(event.getUser());
+                            if (instance.done(event.getUser())) {
+                                mafiaService.stop(instance);
+                            }
                             return true;
                         }
                         return false;
