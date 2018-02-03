@@ -35,6 +35,9 @@ public class MuteCommand extends ModeratorCommand {
     @Override
     public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
+        if (moderationService.isModerator(mentioned)) {
+            return false; // do not allow to mute moderators
+        }
         if (mentioned == null) {
             messageService.onError(event.getChannel(), "discord.command.mod.mute.mention");
             return false;
