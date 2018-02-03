@@ -175,7 +175,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     public boolean isRestricted(TextChannel channel, Member member) {
-        if (isModerator(member) || member.getUser().isBot()) {
+        if (member == null || isModerator(member) || member.getUser().isBot()) {
             return false;
         }
         SlowMode slowMode = slowModeMap.get(channel.getIdLong());

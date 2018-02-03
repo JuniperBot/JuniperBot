@@ -35,8 +35,6 @@ import java.util.List;
 @Component
 public class ChoosingHandler extends AbstractStateHandler {
 
-    private static final String CHOOSE = "✅";
-
     @Autowired
     private MeetingHandler meetingHandler;
 

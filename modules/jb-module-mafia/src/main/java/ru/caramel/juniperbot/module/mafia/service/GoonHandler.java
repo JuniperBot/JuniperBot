@@ -74,6 +74,10 @@ public class GoonHandler extends ChoiceStateHandler {
             return true;
         }
 
+        if (instance.getGoons().isEmpty()) {
+            return brokerHandler.onStart(user, instance);
+        }
+
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         MessageBuilder builder = new MessageBuilder();
         EmbedBuilder embed = getBaseEmbed("mafia.goon.choice");
@@ -86,7 +90,7 @@ public class GoonHandler extends ChoiceStateHandler {
 
         Message message = instance.getGoonChannel().sendMessage(builder.build()).complete();
 
-        sendChoice(instance, message);
+        sendChoice(instance, message, instance.getGoons());
 
         return scheduleEnd(instance, dayDelay);
     }

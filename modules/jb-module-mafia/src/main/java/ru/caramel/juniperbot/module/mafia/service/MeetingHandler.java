@@ -93,7 +93,7 @@ public class MeetingHandler extends AbstractStateHandler {
                 Permission.MESSAGE_ADD_REACTION);
 
         ChannelAction action = guild.getController()
-                .createTextChannel("wolfes")
+                .createTextChannel("wolves")
                 .setTopic(messageService.getMessage("mafia.goons"))
                 .addPermissionOverride(everyOne, null, permissionList)
                 .addPermissionOverride(guild.getSelfMember(), permissionList, null);

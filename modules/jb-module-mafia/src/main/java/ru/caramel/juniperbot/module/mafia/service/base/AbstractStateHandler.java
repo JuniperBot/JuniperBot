@@ -39,6 +39,8 @@ import java.util.Date;
 
 public abstract class AbstractStateHandler implements MafiaStateHandler {
 
+    protected static final String CHOOSE = "✅";
+
     @Value("${mafia.debug:false}")
     protected boolean debug;
 

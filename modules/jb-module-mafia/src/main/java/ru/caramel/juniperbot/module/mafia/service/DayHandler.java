@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.*;
@@ -94,17 +96,16 @@ public class DayHandler extends ChoiceStateHandler {
         boolean endOfGame = false;
         String message;
         if (builder.length() > 0) {
-            builder.append("\n\n");
             boolean hasAnyMafia = instance.hasAnyMafia();
             boolean hasAnyTownie = instance.hasAnyTownie();
             if (!hasAnyMafia && !hasAnyTownie) {
-                builder.append(messageService.getMessage("mafia.end.standoff"));
+                builder.append("\n\n").append(messageService.getMessage("mafia.end.standoff"));
                 endOfGame = true;
             } else if (!hasAnyMafia) {
-                builder.append(messageService.getMessage("mafia.end.townies-wins"));
+                builder.append("\n\n").append(messageService.getMessage("mafia.end.townies-wins"));
                 endOfGame = true;
             } else if (!hasAnyTownie) {
-                builder.append(messageService.getMessage("mafia.end.mafia-wins"));
+                builder.append("\n\n").append(messageService.getMessage("mafia.end.mafia-wins"));
                 endOfGame = true;
             }
             message = messageService.getMessage("mafia.day.start") + "\n\n" + builder.toString();
@@ -128,7 +129,7 @@ public class DayHandler extends ChoiceStateHandler {
         Message resultMessage = instance.getChannel().sendMessage(embedBuilder.build()).complete();
 
         if (!endOfGame) {
-            sendChoice(instance, resultMessage);
+            sendChoice(instance, resultMessage, instance.getAlive());
         }
         return endOfGame || scheduleEnd(instance, dayDelay);
     }
@@ -138,6 +139,11 @@ public class DayHandler extends ChoiceStateHandler {
         MafiaPlayer toExile = getChoiceResult(instance);
         if (toExile != null) {
             instance.getDailyActions().put(MafiaActionType.EXILE, toExile);
+        }
+        String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
+        if (messageId != null && PermissionUtil.checkPermission(instance.getChannel(),
+                instance.getChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+            instance.getChannel().unpinMessageById(messageId).submit();
         }
         return goonHandler.onStart(user, instance);
     }

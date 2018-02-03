@@ -16,8 +16,11 @@
  */
 package ru.caramel.juniperbot.module.mafia.service.base;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.mafia.model.*;
@@ -26,6 +29,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ChoiceStateHandler extends AbstractStateHandler {
+
+    protected static final String ATTR_MESSAGE_ID = "ChoiceState.messageId";
 
     @SuppressWarnings("unchecked")
     protected MafiaPlayer getChoiceResult(MafiaInstance instance) {
@@ -47,7 +52,7 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         return duplicate ? null : target;
     }
 
-    protected void sendChoice(MafiaInstance instance, Message message) {
+    protected void sendChoice(MafiaInstance instance, Message message, List<MafiaPlayer> choosers) {
         List<MafiaPlayer> players = instance.getAlive();
         Map<MafiaPlayer, Set<MafiaPlayer>> choices = new ConcurrentHashMap<>(players.size());
         instance.putAttribute(getChoiceKey(), choices);
@@ -55,25 +60,53 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
             for (int i = 0; i < players.size(); i++) {
                 message.addReaction(ReactionsListener.CHOICES[i]).submit();
             }
+            if (players.size() < 10) {
+                message.addReaction(CHOOSE).submit();
+            }
         } catch (Exception ex) {
             // ignore
         }
 
+        Set<MafiaPlayer> ready = new HashSet<>(choosers.size());
+
+        instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
+        if (PermissionUtil.checkPermission(instance.getChannel(),
+                instance.getChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+            instance.getChannel().pinMessageById(message.getId()).submit();
+        }
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReaction(message.getId(), (event, add) -> {
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && instance.isInState(getState())) {
-                String emote = event.getReaction().getReactionEmote().getName();
-                int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
-                if (index >= 0 && index < players.size()) {
-                    MafiaPlayer target = players.get(index);
+            if (!event.getUser().equals(event.getJDA().getSelfUser()) && instance.isInState(getState())) {
+                if (add && (event.getUser().isBot() || !instance.isPlayer(event.getUser()))) {
+                    event.getReaction().removeReaction(event.getUser()).submit();
+                    return false;
+                }
+                if (instance.isPlayer(event.getUser())) {
                     MafiaPlayer chooser = instance.getPlayerByUser(event.getUser());
-                    if (target != null && chooser != null) {
-                        instance.tick();
-                        Set<MafiaPlayer> choosers = choices.computeIfAbsent(target, c -> Collections.synchronizedSet(new HashSet<>()));
+                    String emote = event.getReaction().getReactionEmote().getName();
+                    if (CHOOSE.equals(emote) && chooser != null) {
                         if (add) {
-                            choosers.add(chooser);
+                            ready.add(chooser);
                         } else {
-                            choosers.remove(chooser);
+                            ready.remove(chooser);
+                        }
+                        if (CollectionUtils.isEqualCollection(ready, choosers)) {
+                            instance.done(event.getUser());
+                            return true;
+                        }
+                        return false;
+                    }
+                    int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
+                    if (index >= 0 && index < players.size()) {
+                        MafiaPlayer target = players.get(index);
+                        if (target != null && chooser != null) {
+                            instance.tick();
+                            Set<MafiaPlayer> choosed = choices.computeIfAbsent(target, c -> Collections.synchronizedSet(new HashSet<>()));
+                            if (add) {
+                                choosed.add(chooser);
+                            } else {
+                                choosed.remove(chooser);
+                            }
                         }
                     }
                 }
