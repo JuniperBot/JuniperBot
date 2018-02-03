@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.module.moderation.service;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 public interface ModerationService {
@@ -30,4 +32,9 @@ public interface ModerationService {
 
     boolean isModerator(Member member);
 
+    Role getMutedRole(Guild guild);
+
+    boolean mute(TextChannel channel, Member member, boolean global);
+
+    boolean unmute(TextChannel channel, Member member);
 }

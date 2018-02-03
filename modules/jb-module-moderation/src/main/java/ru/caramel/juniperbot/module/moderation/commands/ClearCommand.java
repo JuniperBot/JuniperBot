@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-@DiscordCommand(key = "discord.command.clear.key",
-        description = "discord.command.clear.desc",
+@DiscordCommand(key = "discord.command.mod.clear.key",
+        description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY},
