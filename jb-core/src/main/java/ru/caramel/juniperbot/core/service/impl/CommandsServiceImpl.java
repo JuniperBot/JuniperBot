@@ -147,7 +147,9 @@ public class CommandsServiceImpl implements CommandsService {
                             .filter(e -> !PermissionUtil.checkPermission(event.getTextChannel(), self, e))
                             .map(e -> messageService.getEnumTitle(e))
                             .collect(Collectors.joining("\n"));
-                    messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
+                    if (PermissionUtil.checkPermission(event.getTextChannel(), self, Permission.MESSAGE_WRITE)) {
+                        messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
+                    }
                     return;
                 }
             }

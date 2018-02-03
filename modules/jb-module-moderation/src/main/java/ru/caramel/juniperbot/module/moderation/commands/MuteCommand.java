@@ -28,7 +28,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         description = "discord.command.mod.mute.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
         priority = 5)
 public class MuteCommand extends ModeratorCommand {
 

@@ -36,7 +36,7 @@ import java.util.function.Predicate;
         description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY},
         priority = 1)
 public class ClearCommand extends ModeratorCommand {
 

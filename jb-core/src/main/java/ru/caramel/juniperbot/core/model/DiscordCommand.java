@@ -34,7 +34,7 @@ public @interface DiscordCommand {
 
     ChannelType[] source() default {};
 
-    Permission[] permissions() default {};
+    Permission[] permissions() default {Permission.MESSAGE_WRITE};
 
     String group() default "discord.command.group.common";
 

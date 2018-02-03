@@ -26,7 +26,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.mafia.start.key",
         description = "discord.command.mafia.start.desc",
         group = "mafia.name",
-        permissions = {Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL},
         source = ChannelType.TEXT,
         priority = 1)
 public class MafiaStartCommand extends MafiaCommand {

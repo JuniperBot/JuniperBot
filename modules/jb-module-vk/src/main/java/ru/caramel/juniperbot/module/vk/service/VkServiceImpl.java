@@ -215,7 +215,7 @@ public class VkServiceImpl implements VkService {
         if (!embeds.isEmpty()) {
             builder.addEmbeds(embeds.stream().map(EmbedBuilder::build).collect(Collectors.toList()));
         }
-        return builder.build();
+        return !builder.isEmpty() ? builder.build() : null;
     }
 
     private EmbedBuilder initBuilder(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {
