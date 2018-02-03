@@ -18,8 +18,10 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.*;
@@ -104,6 +106,11 @@ public class GoonHandler extends ChoiceStateHandler {
         MafiaPlayer toKill = getChoiceResult(instance);
         if (toKill != null) {
             instance.getDailyActions().put(MafiaActionType.KILL, toKill);
+        }
+        String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
+        if (messageId != null && PermissionUtil.checkPermission(instance.getChannel(),
+                instance.getGoonChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+            instance.getGoonChannel().unpinMessageById(messageId).submit();
         }
         return brokerHandler.onStart(user, instance);
     }

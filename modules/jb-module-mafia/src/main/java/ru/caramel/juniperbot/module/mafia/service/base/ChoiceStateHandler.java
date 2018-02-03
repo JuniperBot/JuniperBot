@@ -70,9 +70,9 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         Set<MafiaPlayer> ready = new HashSet<>(choosers.size());
 
         instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
-        if (PermissionUtil.checkPermission(instance.getChannel(),
-                instance.getChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
-            instance.getChannel().pinMessageById(message.getId()).submit();
+        if (PermissionUtil.checkPermission(message.getTextChannel(),
+                message.getTextChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+            message.getTextChannel().pinMessageById(message.getId()).submit();
         }
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReaction(message.getId(), (event, add) -> {
