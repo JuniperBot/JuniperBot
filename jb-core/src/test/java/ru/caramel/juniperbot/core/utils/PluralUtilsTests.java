@@ -29,6 +29,8 @@ public class PluralUtilsTests {
     public void testRuPlurals() {
         Locale ruLocale = Locale.forLanguageTag("ru-RU");
         Assert.assertEquals("zero", getPluralKey(ruLocale, 0));
+        Assert.assertEquals("zero", getPluralKey(ruLocale, 10));
+        Assert.assertEquals("zero", getPluralKey(ruLocale, 30));
 
         Assert.assertEquals("one", getPluralKey(ruLocale, 1));
         Assert.assertEquals("many", getPluralKey(ruLocale, 11));
