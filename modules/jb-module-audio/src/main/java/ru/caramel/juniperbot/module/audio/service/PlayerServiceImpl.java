@@ -42,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -73,6 +74,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     @Autowired
     private MusicConfigRepository musicConfigRepository;
+
+    @Autowired
+    private ContextService contextService;
 
     @Autowired
     @Qualifier("executor")
@@ -150,7 +154,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     @Override
     public void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
-        messageManager.onTrackAdd(request, instance.getCursor() < 0);
+        contextService.withContext(request.getGuild(), () -> messageManager.onTrackAdd(request, instance.getCursor() < 0));
         connectToChannel(instance, request.getMember());
         instance.play(request);
     }
@@ -248,7 +252,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             }
             if (currentTimeMillis - lastMillis > TIMEOUT) {
                 if (current != null) {
-                    messageManager.onIdle(current.getChannel());
+                    contextService.withContext(current.getGuild(), () -> messageManager.onIdle(current.getChannel()));
                 }
                 v.stop();
                 inactiveIds.add(k);
@@ -268,7 +272,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         }
         TrackRequest current = instance.getCurrent();
         if (current != null) {
-            messageManager.onTrackEnd(current);
+            contextService.withContext(current.getGuild(), () -> messageManager.onTrackEnd(current));
         }
         switch (endReason) {
             case STOPPED:
@@ -282,7 +286,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                     return;
                 }
                 if (current != null) {
-                    messageManager.onQueueEnd(current);
+                    contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
                 }
                 break;
         }
@@ -296,14 +300,14 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
-        messageManager.onTrackStart(instance.getCurrent());
+        contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackStart(instance.getCurrent()));
     }
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
         PlaybackInstance instance = player.getPlayingTrack().getUserData(PlaybackInstance.class);
         if (instance.isActive()) {
-            messageManager.onTrackPause(instance.getCurrent());
+            contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackPause(instance.getCurrent()));
         }
     }
 
@@ -313,7 +317,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         if (track != null) {
             PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
             if (instance.isActive()) {
-                messageManager.onTrackResume(instance.getCurrent());
+                contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackResume(instance.getCurrent()));
             }
         }
     }

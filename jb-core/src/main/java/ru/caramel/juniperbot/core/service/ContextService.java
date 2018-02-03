@@ -48,6 +48,8 @@ public interface ContextService {
 
     void initContext(Guild guild);
 
+    void withContext(long serverId, Runnable action);
+
     void withContext(Guild guild, Runnable action);
 
     void initContext(User user);
