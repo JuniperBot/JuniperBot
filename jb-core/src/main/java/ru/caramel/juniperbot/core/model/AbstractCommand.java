@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.core.model;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +33,10 @@ public abstract class AbstractCommand implements Command {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
 
     @Autowired
-    private MessageService messageService;
+    protected MessageService messageService;
 
     @Override
-    public boolean isAvailable(GuildConfig config) {
+    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
         return true;
     }
 
@@ -70,5 +72,10 @@ public abstract class AbstractCommand implements Command {
         } catch (Exception e) {
             LOGGER.error("Add emotion error", e);
         }
+    }
+
+    protected Member getMentioned(MessageReceivedEvent event) {
+        return event.getGuild() != null && CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
+                ? event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0)) : null;
     }
 }

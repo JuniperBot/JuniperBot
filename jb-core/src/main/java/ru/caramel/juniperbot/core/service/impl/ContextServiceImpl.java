@@ -38,6 +38,12 @@ import java.util.Map;
 @Service
 public class ContextServiceImpl implements ContextService {
 
+    private static class ContextHolder {
+        private Locale locale;
+        private Long guildId;
+        private String userId;
+    }
+
     private static final String MDC_GUILD = "guildId";
 
     private static final String MDC_USER = "userId";
@@ -100,6 +106,14 @@ public class ContextServiceImpl implements ContextService {
         }
     }
 
+    public void setGuildId(Long guildId) {
+        if (guildId == null) {
+            guildHolder.remove();
+        } else {
+            guildHolder.set(guildId);
+        }
+    }
+
     @Override
     public boolean isSupported(String tag) {
         return supportedLocales.containsKey(tag);
@@ -136,6 +150,33 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    public void withContext(long serverId, Runnable action) {
+        ContextHolder currentContext = getContext();
+        resetContext();
+        initContext(serverId);
+        try {
+            action.run();
+        } finally {
+            setContext(currentContext);
+        }
+    }
+
+    @Override
+    public void withContext(Guild guild, Runnable action) {
+        if (guild == null) {
+            return;
+        }
+        ContextHolder currentContext = getContext();
+        resetContext();
+        initContext(guild);
+        try {
+            action.run();
+        } finally {
+            setContext(currentContext);
+        }
+    }
+
+    @Override
     public void initContext(User user) {
         if (user != null) {
             MDC.put(MDC_USER, user.getIdLong());
@@ -154,6 +195,21 @@ public class ContextServiceImpl implements ContextService {
         MDC.remove(MDC_USER);
         guildHolder.remove();
         localeHolder.remove();
+    }
+
+    public ContextHolder getContext() {
+        ContextHolder holder = new ContextHolder();
+        holder.guildId = guildHolder.get();
+        holder.locale = localeHolder.get();
+        holder.userId = (String) MDC.get(MDC_USER);
+        return holder;
+    }
+
+    public void setContext(ContextHolder holder) {
+        setLocale(holder.locale);
+        setGuildId(holder.guildId);
+        MDC.put(MDC_GUILD, holder.guildId);
+        MDC.put(MDC_USER, holder.userId);
     }
 
     private void setLocale(String tag) {

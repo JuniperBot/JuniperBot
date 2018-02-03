@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
@@ -78,30 +77,13 @@ public class AudioMessageManager {
 
     public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
-            initLocale(request);
             messageService.sendMessageSilent(request.getChannel()::sendMessage, getBasicMessage(request).build());
-        }
-    }
-
-    private void initLocale(TrackRequest request) {
-        if (request != null) {
-            contextService.initContext(request.getGuild());
-            if (request.getMember() != null) {
-                contextService.initContext(request.getMember().getUser());
-            }
-        }
-    }
-
-    private void initLocale(MessageChannel channel) {
-        if (channel != null && channel instanceof TextChannel) {
-            contextService.initContext(((TextChannel)channel).getGuild());
         }
     }
 
     public void onTrackStart(TrackRequest request) {
         synchronized (request.getGuild()) {
             try {
-                initLocale(request);
                 request.setResetMessage(false);
                 request.getChannel()
                         .sendMessage(getPlayMessage(request).build())
@@ -120,7 +102,6 @@ public class AudioMessageManager {
 
     public void onTrackEnd(TrackRequest request) {
         synchronized (request.getGuild()) {
-            initLocale(request);
             cancelUpdate(request);
             controllers.computeIfPresent(request.getGuild(), (g, c) -> {
                 markAsPassed(request, c, true);
@@ -166,7 +147,6 @@ public class AudioMessageManager {
 
     public void onTrackPause(TrackRequest request) {
         synchronized (request.getGuild()) {
-            initLocale(request);
             updateMessage(request);
             cancelUpdate(request);
         }
@@ -174,7 +154,6 @@ public class AudioMessageManager {
 
     public void onTrackResume(TrackRequest request) {
         synchronized (request.getGuild()) {
-            initLocale(request);
             if (request.isResetOnResume()) {
                 deleteMessage(request);
                 onTrackStart(request);
@@ -185,28 +164,24 @@ public class AudioMessageManager {
     }
 
     public void onQueueEnd(TrackRequest request) {
-        initLocale(request);
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.end"));
         messageService.sendMessageSilent(request.getChannel()::sendMessage, builder.build());
     }
 
     public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
-        initLocale(sourceChannel);
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage(code, args));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onNoMatches(MessageChannel sourceChannel, String query) {
-        initLocale(sourceChannel);
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage("discord.command.audio.search.noMatches", query));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onQueueError(MessageChannel sourceChannel, String code, Object... args) {
-        initLocale(sourceChannel);
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription(messageService.getMessage(code, args));
@@ -214,7 +189,6 @@ public class AudioMessageManager {
     }
 
     public void onEmptyQueue(MessageChannel sourceChannel) {
-        initLocale(sourceChannel);
         EmbedBuilder builder = getQueueMessage();
         builder.setColor(Color.RED);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.empty"));
@@ -222,14 +196,12 @@ public class AudioMessageManager {
     }
 
     public void onIdle(MessageChannel sourceChannel) {
-        initLocale(sourceChannel);
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.idle"));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
     public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
-        initLocale(sourceChannel);
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
         final int totalPages = parts.size();
@@ -271,7 +243,8 @@ public class AudioMessageManager {
     private void runUpdater(TrackRequest request) {
         synchronized (request.getGuild()) {
             if (playRefreshInterval != null) {
-                ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() -> updateMessage(request),
+                ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() ->
+                                contextService.withContext(request.getGuild(), () -> updateMessage(request)),
                         playRefreshInterval);
                 ScheduledFuture<?> oldTask = updaterTasks.put(request.getGuild(), task);
                 if (oldTask != null) {
@@ -283,7 +256,6 @@ public class AudioMessageManager {
 
     public void updateMessage(TrackRequest request) {
         try {
-            initLocale(request);
             Message message;
             if (request.isResetMessage()) {
                 message = request.getChannel()

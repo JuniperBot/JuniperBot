@@ -42,9 +42,6 @@ public class StatsCommand extends AbstractInfoCommand {
     private MetricRegistry metricRegistry;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private ContextService contextService;
 
     @Override

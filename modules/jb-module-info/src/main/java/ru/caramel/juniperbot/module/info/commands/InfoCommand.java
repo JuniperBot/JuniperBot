@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -28,16 +28,14 @@ import org.springframework.beans.factory.annotation.Value;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
+
+import java.util.Date;
 
 @DiscordCommand(key = "discord.command.info.key",
         description = "discord.command.info.desc",
         group = "discord.command.group.info",
         priority = 0)
 public class InfoCommand extends AbstractInfoCommand {
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private ConfigService configService;
@@ -85,7 +83,8 @@ public class InfoCommand extends AbstractInfoCommand {
     }
 
     @Value("${build.timestamp}")
-    public void setBuildTimestamp(Long value) {
-        buildTimestamp = new DateTime(value).withZone(DateTimeZone.UTC);
+    public void setBuildTimestamp(String value) {
+        buildTimestamp = new DateTime(StringUtils.isNumeric(value) ? Long.parseLong(value) : new Date())
+                .withZone(DateTimeZone.UTC);
     }
 }

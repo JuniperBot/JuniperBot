@@ -59,9 +59,6 @@ public class RemindCommand extends AbstractCommand {
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private ConfigService configService;
 
     @Override

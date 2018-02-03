@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands;
 
 import com.google.api.services.youtube.model.Video;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.lang3.ArrayUtils;
@@ -25,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.service.YouTubeService;
 
@@ -39,15 +38,12 @@ import java.util.List;
         key = "discord.command.youtube.key",
         description = "discord.command.youtube.desc",
         group = "discord.command.group.music",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 103)
 public class YouTubeCommand extends PlayCommand {
 
     @Autowired
     private YouTubeService youTubeService;
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private ReactionsListener reactionsListener;
@@ -90,7 +86,7 @@ public class YouTubeCommand extends PlayCommand {
             context.putAttribute(ATTR_SEARCH_RESULTS, urls);
             context.putAttribute(ATTR_SEARCH_MESSAGE, e);
             context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
-            reactionsListener.onReaction(e.getId(), event -> {
+            reactionsListener.onReactionAdd(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);

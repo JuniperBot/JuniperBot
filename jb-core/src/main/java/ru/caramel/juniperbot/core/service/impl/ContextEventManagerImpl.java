@@ -28,17 +28,14 @@ import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 @Service
 public class ContextEventManagerImpl implements IEventManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContextEventManagerImpl.class);
 
-    private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private final Set<EventListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     @Autowired
     private ContextService contextService;
@@ -70,6 +67,9 @@ public class ContextEventManagerImpl implements IEventManager {
             }
         }
 
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Handle event: " + event);
+        }
         for (EventListener listener : listeners) {
             try {
                 listener.onEvent(event);

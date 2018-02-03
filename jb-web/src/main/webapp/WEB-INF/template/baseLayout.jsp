@@ -38,6 +38,18 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="theme-color" content="#f39c12" />
 
+    <meta property="og:site_name" content="JuniperBOT" />
+    <meta property="og:title" content="<c:if test="${not empty serverName}"><c:out value="${serverName}"/> — </c:if><spring:message code="${pageTitle}"/>" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Fluffy Discord Bot (Music, Ranking, Reminder, Vk Community bridge, JuniperFoxx blog posts, WikiFur)" />
+    <meta property="og:url" content="<c:url value="/"/>" />
+    <c:if test="${not empty serverIcon}">
+        <meta property="og:image" content="<c:out value="${serverIcon}"/>" />
+    </c:if>
+    <c:if test="${empty serverIcon}">
+        <meta property="og:image" content="<c:url value="/resources/img/icon.png"/>" />
+    </c:if>
+
     <link rel="stylesheet" media="screen" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="<c:url value="/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/webjars/bootstrap3-dialog/1.35.3/dist/css/bootstrap-dialog.min.css"/>">

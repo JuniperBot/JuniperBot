@@ -35,7 +35,15 @@ public interface MessageService {
 
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
+    <T> Message sendMessageSilentComplete(Function<T, RestAction<Message>> action, T embed);
+
     void onMessage(MessageChannel sourceChannel, String code, Object... args);
+
+    void onEmbedMessage(MessageChannel sourceChannel, String code, Object... args);
+
+    void onTempMessage(MessageChannel sourceChannel, int sec, String code, Object... args);
+
+    void onTempPlainMessage(MessageChannel sourceChannel, int sec, String message);
 
     void onTitledMessage(MessageChannel sourceChannel, String titleCode, String code, Object... args);
 
@@ -52,4 +60,6 @@ public interface MessageService {
     <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title);
 
     String getEnumTitle(Enum<?> clazz);
+
+    String getCountPlural(long count, String code);
 }

@@ -16,8 +16,9 @@
  */
 package ru.caramel.juniperbot.core.model;
 
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 
 import java.lang.annotation.*;
 
@@ -31,7 +32,9 @@ public @interface DiscordCommand {
 
     String description();
 
-    CommandSource[] source() default {};
+    ChannelType[] source() default {};
+
+    Permission[] permissions() default {Permission.MESSAGE_WRITE};
 
     String group() default "discord.command.group.common";
 

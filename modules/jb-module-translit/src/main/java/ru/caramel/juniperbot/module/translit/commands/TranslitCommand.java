@@ -76,9 +76,6 @@ public class TranslitCommand extends AbstractCommand {
         return map;
     }
 
-    @Autowired
-    private MessageService messageService;
-
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {

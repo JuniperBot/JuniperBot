@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.service.AudioMessageManager;
@@ -67,6 +68,8 @@ public class MessageController {
 
     private final AudioMessageManager messageManager;
 
+    private final ContextService contextService;
+
     private boolean cancelled = false;
 
     private List<RequestFuture<Void>> reactionFutures = new ArrayList<>();
@@ -76,6 +79,7 @@ public class MessageController {
         this.reactionsListener = context.getBean(ReactionsListener.class);
         this.playerService = context.getBean(PlayerService.class);
         this.messageManager = context.getBean(AudioMessageManager.class);
+        this.contextService = context.getBean(ContextService.class);
         init();
     }
 
@@ -90,12 +94,12 @@ public class MessageController {
                 }
             }
 
-            reactionsListener.onReaction(message.getId(), event -> {
+            reactionsListener.onReactionAdd(message.getId(), event -> {
                 if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
                     if (action != null && playerService.isInChannel(event.getMember())) {
-                        handleAction(action, event.getMember());
+                        contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
                     if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
                             Permission.MESSAGE_MANAGE)) {

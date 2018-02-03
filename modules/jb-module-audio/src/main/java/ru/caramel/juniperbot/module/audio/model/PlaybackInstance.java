@@ -22,6 +22,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
+import ru.caramel.juniperbot.core.model.FeatureInstance;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class PlaybackInstance {
+public class PlaybackInstance extends FeatureInstance {
 
     private final AudioPlayer player;
 
@@ -42,8 +43,6 @@ public class PlaybackInstance {
     private RepeatMode mode;
 
     private int cursor;
-
-    private Long activeTime;
 
     private long guildId;
 
@@ -215,9 +214,5 @@ public class PlaybackInstance {
     public synchronized void offer(TrackRequest request) {
         request.getTrack().setUserData(this);
         playlist.add(request);
-    }
-
-    private synchronized void tick() {
-        activeTime = System.currentTimeMillis();
     }
 }

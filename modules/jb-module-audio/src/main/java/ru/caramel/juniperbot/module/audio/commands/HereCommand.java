@@ -16,11 +16,11 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -30,7 +30,7 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
         key = "discord.command.here.key",
         description = "discord.command.here.desc",
         group = "discord.command.group.music",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 104)
 public class HereCommand extends AudioCommand {
 
@@ -53,7 +53,10 @@ public class HereCommand extends AudioCommand {
     }
 
     @Override
-    public boolean isAvailable(GuildConfig config) {
+    public boolean isAvailable(MessageReceivedEvent message, GuildConfig config) {
+        if (config == null) {
+            return false;
+        }
         MusicConfig musicConfig = playerService.getConfig(config.getGuildId());
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }

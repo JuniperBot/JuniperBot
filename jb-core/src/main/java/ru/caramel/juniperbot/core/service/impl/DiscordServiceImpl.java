@@ -44,10 +44,12 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.support.ModuleListener;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -87,6 +89,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Getter
     private ShardManager shardManager;
 
+    @Autowired
+    private List<ModuleListener> moduleListeners;
+
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
@@ -110,6 +115,14 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @PreDestroy
     public void destroy() {
+        // destroy every service manually before discord shutdown
+        moduleListeners.forEach(listener -> {
+            try {
+                listener.onShutdown();
+            } catch (Exception e) {
+                LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
+            }
+        });
         shardManager.shutdown();
     }
 
@@ -128,14 +141,15 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent) {
         if (message != null) {
-            WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build();
-            client.send(message).exceptionally(e -> {
-                LOGGER.error("Can't execute webhook: ", e);
-                if (e.getMessage().contains("Request returned failure 404")) {
-                    onAbsent.accept(webHook);
-                }
-                return null;
-            });
+            try (WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build()) {
+                client.send(message).exceptionally(e -> {
+                    LOGGER.error("Can't execute webhook: ", e);
+                    if (e.getMessage().contains("Request returned failure 404")) {
+                        onAbsent.accept(webHook);
+                    }
+                    return null;
+                });
+            }
         }
     }
 

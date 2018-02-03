@@ -16,11 +16,9 @@
  */
 package ru.caramel.juniperbot.core.model;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
@@ -28,9 +26,9 @@ public interface Command {
 
     boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
-    boolean isAvailable(GuildConfig config);
+    boolean isAvailable(MessageReceivedEvent event, GuildConfig config);
 
-    default boolean isApplicable(MessageChannel channel, GuildConfig config) {
+    default boolean isApplicable(MessageReceivedEvent event, GuildConfig config) {
         if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
             return false;
         }
@@ -38,13 +36,19 @@ public interface Command {
         if (config != null && ArrayUtils.contains(config.getDisabledCommands(), command.key())) {
             return false;
         }
-        if (!isAvailable(config)) {
+        if (!isAvailable(event, config)) {
             return false;
         }
         if (command.source().length == 0) {
             return true;
         }
-        CommandSource source = channel instanceof TextChannel ? CommandSource.GUILD : CommandSource.DM;
-        return ArrayUtils.contains(command.source(), source);
+        return ArrayUtils.contains(command.source(), event.getChannelType());
+    }
+
+    default Permission[] getPermissions() {
+        if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
+            return null;
+        }
+        return getClass().getAnnotation(DiscordCommand.class).permissions();
     }
 }

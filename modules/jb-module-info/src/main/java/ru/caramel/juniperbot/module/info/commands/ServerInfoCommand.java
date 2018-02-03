@@ -19,23 +19,19 @@ package ru.caramel.juniperbot.module.info.commands;
 import java.util.List;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 @DiscordCommand(
         key = "discord.command.server.key",
         description = "discord.command.server.desc",
         group = "discord.command.group.info",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 2)
 public class ServerInfoCommand extends AbstractInfoCommand {
 

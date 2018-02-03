@@ -23,12 +23,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MessageService;
 
 public abstract class AbstractInfoCommand extends AbstractCommand {
-
-    @Autowired
-    protected MessageService messageService;
 
     @Autowired
     protected ContextService contextService;

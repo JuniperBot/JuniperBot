@@ -27,9 +27,6 @@ public class WikiFurCommand extends AbstractCommand {
     private WikiFurService wikiFurService;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private ReactionsListener reactionsListener;
 
     @Override
@@ -79,7 +76,7 @@ public class WikiFurCommand extends AbstractCommand {
             } catch (Exception ex) {
                 // ignore
             }
-            reactionsListener.onReaction(e.getId(), event -> {
+            reactionsListener.onReactionAdd(e.getId(), event -> {
                 if (!event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);

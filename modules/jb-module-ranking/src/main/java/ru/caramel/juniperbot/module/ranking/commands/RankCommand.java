@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.ranking.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 
@@ -33,7 +33,7 @@ import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
         key = "discord.command.rank.key",
         description = "discord.command.rank.desc",
         group = "discord.command.group.ranking",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 202)
 public class RankCommand extends RankingCommand {
 
