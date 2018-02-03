@@ -25,4 +25,26 @@
         <modifyDataType tableName="ranking" columnName="rank" newDataType="BIGINT" />
     </changeSet>
 
+    <changeSet id="3.9-29012018-2" author="caramel">
+        <createTable tableName="mod_config">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_mod_config"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="fk_mod_config_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="roles" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3.9-29012018-3" author="caramel">
+        <createIndex tableName="mod_config" indexName="idx_mod_config_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

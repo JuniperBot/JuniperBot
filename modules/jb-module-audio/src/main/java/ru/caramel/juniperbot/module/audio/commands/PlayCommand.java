@@ -20,6 +20,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -31,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
         key = "discord.command.play.key",
         description = "discord.command.play.desc",
         group = "discord.command.group.music",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 100)
 public class PlayCommand extends AudioCommand {
 

@@ -30,7 +30,6 @@ import ru.caramel.juniperbot.core.model.CommandExtension;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,9 +45,6 @@ public class HelpCommand extends AbstractCommand {
     private CommandsHolderService holderService;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private ConfigService configService;
 
     @Autowired(required = false)
@@ -59,7 +55,7 @@ public class HelpCommand extends AbstractCommand {
         boolean direct = context.getConfig() != null && Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
         List<DiscordCommand> discordCommands = holderService.getCommands().entrySet().stream()
-                .filter(e -> e.getValue().isApplicable(message.getChannel(), context.getConfig()))
+                .filter(e -> e.getValue().isApplicable(message, context.getConfig()))
                 .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());

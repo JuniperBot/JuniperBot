@@ -214,90 +214,112 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <div class="col-lg2-6">
-            <div class="box box-warning">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>
-                </div>
-
-                <div class="box-body">
-                    <form:hidden path="webHook.available" />
-                    <spring:bind path="privateHelp">
-                        <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
-                            <label for="input-help" class="col-sm-4 control-label">
-                                <jb:command code="discord.command.help.key" var="helpCommand"/>
-                                <spring:message code="page.config.publish.privateHelp" arguments="${helpCommand}"/>
+            <div class="row">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><spring:message code="page.config.mod.title"/></h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="modRoles" class="col-sm-5 control-label">
+                                <spring:message code="page.config.mod.roles"/>
                             </label>
-                            <div class="col-sm-8">
-                                <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
-                                <p class="help-block"><spring:message code="page.config.publish.privateHelp.note"/></p>
-                                <form:errors path="privateHelp" class="help-block" />
+                            <div class="col-sm-7">
+                                <form:select id="modRoles" path="modConfig.roles" disabled="${not serverAdded}"
+                                             cssClass="form-control select2" cssStyle="width: 100%;"
+                                             items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple" />
+                                <form:errors path="modConfig.roles" class="help-block" />
                             </div>
                         </div>
-                    </spring:bind>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>
+                    </div>
 
-                    <spring:bind path="webHook.channelId">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="publish-channel" class="col-sm-4 control-label">
-                                <spring:message code="page.config.publish.juni"/>
-                            </label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
+                    <div class="box-body">
+                        <form:hidden path="webHook.available" />
+                        <spring:bind path="privateHelp">
+                            <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
+                                <label for="input-help" class="col-sm-4 control-label">
+                                    <jb:command code="discord.command.help.key" var="helpCommand"/>
+                                    <spring:message code="page.config.publish.privateHelp" arguments="${helpCommand}"/>
+                                </label>
+                                <div class="col-sm-8">
+                                    <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
+                                    <p class="help-block"><spring:message code="page.config.publish.privateHelp.note"/></p>
+                                    <form:errors path="privateHelp" class="help-block" />
+                                </div>
+                            </div>
+                        </spring:bind>
+
+                        <spring:bind path="webHook.channelId">
+                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                <label for="publish-channel" class="col-sm-4 control-label">
+                                    <spring:message code="page.config.publish.juni"/>
+                                </label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
                                     <span class="input-group-addon">
                                         <form:checkbox disabled="${not config.webHook.available}" path="webHook.enabled" />
                                     </span>
-                                    <form:select id="publish-channel" path="webHook.channelId" disabled="${not config.webHook.available}" cssClass="form-control select2" cssStyle="width: 100%;"
-                                                 items="${textChannels}" itemValue="idLong" itemLabel="name" />
-                                    <form:errors path="webHook.channelId" class="help-block" />
+                                        <form:select id="publish-channel" path="webHook.channelId" disabled="${not config.webHook.available}" cssClass="form-control select2" cssStyle="width: 100%;"
+                                                     items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                        <form:errors path="webHook.channelId" class="help-block" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </spring:bind>
+                        </spring:bind>
 
-                    <div id="vk-connection-list">
-                        <c:forEach items="${config.vkConnections}" var="vkConnection" varStatus="status">
-                            <form:hidden path="vkConnections[${status.index}].id" />
-                            <form:hidden path="vkConnections[${status.index}].webHook.available" />
-                            <div class="form-group">
-                                <label for="vk-connection-${status.index}" class="col-sm-4 control-label"><i class="fa fa-vk"></i> <c:out value="${vkConnection.name}"/></label>
-                                <div class="col-sm-8">
-                                    <div class="input-group">
-                                        <c:if test="${config.vkConnections[status.index].status == 'CONNECTED'}">
+                        <div id="vk-connection-list">
+                            <c:forEach items="${config.vkConnections}" var="vkConnection" varStatus="status">
+                                <form:hidden path="vkConnections[${status.index}].id" />
+                                <form:hidden path="vkConnections[${status.index}].webHook.available" />
+                                <div class="form-group">
+                                    <label for="vk-connection-${status.index}" class="col-sm-4 control-label"><i class="fa fa-vk"></i> <c:out value="${vkConnection.name}"/></label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <c:if test="${config.vkConnections[status.index].status == 'CONNECTED'}">
                                             <span class="input-group-addon">
                                                 <form:checkbox path="vkConnections[${status.index}].webHook.enabled"
                                                                disabled="${not config.vkConnections[status.index].webHook.available}" />
                                             </span>
-                                            <form:select id="vk-connection-${status.index}"
-                                                         path="vkConnections[${status.index}].webHook.channelId" disabled="${not config.vkConnections[status.index].webHook.available}"
-                                                         cssClass="form-control select2" cssStyle="width: 100%;"
-                                                         items="${textChannels}" itemValue="idLong" itemLabel="name" />
-                                            <form:errors path="vkConnections[${status.index}].webHook.channelId" class="help-block" />
-                                        </c:if>
-                                        <c:if test="${config.vkConnections[status.index].status == 'CONFIRMATION'}">
-                                            <input id="vk-connection-${status.index}" type="text" class="form-control" disabled
-                                                   value="<spring:message code="page.config.vk.awaiting"/>">
-                                        </c:if>
-                                        <span class="input-group-btn">
+                                                <form:select id="vk-connection-${status.index}"
+                                                             path="vkConnections[${status.index}].webHook.channelId" disabled="${not config.vkConnections[status.index].webHook.available}"
+                                                             cssClass="form-control select2" cssStyle="width: 100%;"
+                                                             items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                                <form:errors path="vkConnections[${status.index}].webHook.channelId" class="help-block" />
+                                            </c:if>
+                                            <c:if test="${config.vkConnections[status.index].status == 'CONFIRMATION'}">
+                                                <input id="vk-connection-${status.index}" type="text" class="form-control" disabled
+                                                       value="<spring:message code="page.config.vk.awaiting"/>">
+                                            </c:if>
+                                            <span class="input-group-btn">
                                         <button type="button" class="btn btn-danger btn-flat vk-remove-btn"
                                                 data-vk-id="${config.vkConnections[status.index].id}"
                                                 data-vk-name="${config.vkConnections[status.index].name}">
                                             <i class="fa fa-remove"></i>
                                         </button>
                                     </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:forEach>
-                    </div>
-
-                    <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
-                        <i class="fa fa-vk" style="margin-top: -2px;"></i> <spring:message code="page.config.vk.connectButton"/>
-                    </a>
-
-                    <c:if test="${not config.webHook.available}">
-                        <div class="callout callout-warning">
-                            <p><spring:message code="page.config.webHook.unavailable"/></p>
+                            </c:forEach>
                         </div>
-                    </c:if>
+
+                        <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
+                            <i class="fa fa-vk" style="margin-top: -2px;"></i> <spring:message code="page.config.vk.connectButton"/>
+                        </a>
+
+                        <c:if test="${not config.webHook.available}">
+                            <div class="callout callout-warning">
+                                <p><spring:message code="page.config.webHook.unavailable"/></p>
+                            </div>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>

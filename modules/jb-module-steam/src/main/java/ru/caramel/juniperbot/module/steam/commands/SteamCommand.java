@@ -30,7 +30,6 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.steam.model.details.*;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamApp;
 import ru.caramel.juniperbot.module.steam.service.SteamService;
@@ -44,9 +43,6 @@ import java.util.List;
 public class SteamCommand extends AbstractCommand {
 
     private static final String APP_PAGE =  "http://store.steampowered.com/app/";
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private SteamService steamService;

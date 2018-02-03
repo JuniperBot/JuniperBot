@@ -31,13 +31,12 @@ import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepo
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
-import ru.caramel.juniperbot.web.dto.ConfigDto;
-import ru.caramel.juniperbot.web.dto.MusicConfigDto;
-import ru.caramel.juniperbot.web.dto.VkConnectionDto;
-import ru.caramel.juniperbot.web.dto.WebHookDto;
+import ru.caramel.juniperbot.web.dto.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +68,9 @@ public class ConfigDao extends AbstractDao {
 
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private ModerationService moderationService;
 
     @Transactional
     public ConfigDto getConfig(long serverId) {
@@ -102,6 +104,10 @@ public class ConfigDao extends AbstractDao {
             }
         }
         dto.setMusicConfig(musicConfigDto);
+
+        ModerationConfig modConfig = moderationService.getConfig(serverId);
+        ModerationConfigDto modConfigDto = mapper.getModerationDto(modConfig);
+        dto.setModConfig(modConfigDto);
         return dto;
     }
 
@@ -126,6 +132,12 @@ public class ConfigDao extends AbstractDao {
         MusicConfig musicConfig = playerService.getConfig(serverId);
         mapper.updateMusicConfig(musicConfigDto, musicConfig);
         musicConfigRepository.save(musicConfig);
+
+        // update mod config
+        ModerationConfigDto modConfigDto = dto.getModConfig();
+        ModerationConfig modConfig = moderationService.getConfig(serverId);
+        mapper.updateModerationConfig(modConfigDto, modConfig);
+        moderationService.save(modConfig);
 
         // update webhook config
         JuniPost juniPost = getJuniPost(config);

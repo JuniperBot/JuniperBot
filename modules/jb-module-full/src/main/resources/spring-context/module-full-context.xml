@@ -32,4 +32,5 @@
         <import resource="classpath:spring-context/module-info-context.xml" />
         <import resource="classpath:spring-context/module-steam-context.xml" />
         <import resource="classpath:spring-context/module-mafia-context.xml" />
+        <import resource="classpath:spring-context/module-moderation-context.xml" />
 </beans>

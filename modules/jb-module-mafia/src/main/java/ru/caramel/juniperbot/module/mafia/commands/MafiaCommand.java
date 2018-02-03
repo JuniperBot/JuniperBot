@@ -26,6 +26,4 @@ public abstract class MafiaCommand extends AbstractCommand {
     @Autowired
     protected MafiaService mafiaService;
 
-    @Autowired
-    protected MessageService messageService;
 }

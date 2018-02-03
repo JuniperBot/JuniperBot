@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.control;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 
@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
         key = "discord.command.stop.key",
         description = "discord.command.stop.desc",
         group = "discord.command.group.music",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 107)
 public class StopCommand extends AudioCommand {
 

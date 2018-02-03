@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
@@ -34,6 +35,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MapperService {
 
+    @Mappings({
+            @Mapping(target = "musicConfig", ignore = true),
+            @Mapping(target = "modConfig", ignore = true),
+            @Mapping(target = "webHook", ignore = true),
+            @Mapping(target = "vkConnections", ignore = true)
+    })
     ConfigDto getConfigDto(GuildConfig config);
 
     VkConnectionDto getVkConnectionDto(VkConnection connection);
@@ -45,6 +52,8 @@ public interface MapperService {
     MusicConfigDto getMusicDto(MusicConfig musicConfig);
 
     RankingConfigDto getRankingDto(RankingConfig rankingConfig);
+
+    ModerationConfigDto getModerationDto(ModerationConfig moderationConfig);
 
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
 
@@ -86,7 +95,8 @@ public interface MapperService {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true)
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true)
     })
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
 
@@ -96,6 +106,13 @@ public interface MapperService {
             @Mapping(target = "guildConfig", ignore = true)
     })
     void updateRankingConfig(RankingConfigDto source, @MappingTarget RankingConfig target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true)
+    })
+    void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

@@ -14,8 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.model.enums;
+package ru.caramel.juniperbot.web.dto;
 
-public enum CommandSource {
-    DM, GUILD
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.List;
+
+@Getter
+@Setter
+public class ModerationConfigDto implements Serializable {
+
+    private static final long serialVersionUID = 2373520739258476656L;
+
+    private List<Long> roles;
 }

@@ -17,13 +17,13 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -33,7 +33,7 @@ import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioReposit
 @DiscordCommand(key = "discord.command.bio.key",
         description = "discord.command.bio.desc",
         group = "discord.command.group.info",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 15)
 public class BioCommand extends AbstractInfoCommand {
 

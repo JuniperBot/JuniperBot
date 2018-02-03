@@ -19,8 +19,11 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,8 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CommandsServiceImpl implements CommandsService {
@@ -126,11 +131,26 @@ public class CommandsServiceImpl implements CommandsService {
     @Override
     public void sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
         Command command = commandsHolderService.getByLocale(key);
-        if (command != null && !command.isApplicable(event.getChannel(), guildConfig)) {
+        if (command != null && !command.isApplicable(event, guildConfig)) {
             return;
         }
         if (command == null) {
             return;
+        }
+
+        if (event.getChannelType().isGuild()) {
+            Permission[] permissions = command.getPermissions();
+            if (permissions != null && permissions.length > 0) {
+                Member self = event.getGuild().getSelfMember();
+                if (self != null && !PermissionUtil.checkPermission(event.getTextChannel(), self, permissions)) {
+                    String list = Stream.of(permissions)
+                            .filter(e -> !PermissionUtil.checkPermission(event.getTextChannel(), self, e))
+                            .map(e -> messageService.getEnumTitle(e))
+                            .collect(Collectors.joining("\n"));
+                    messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
+                    return;
+                }
+            }
         }
 
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());

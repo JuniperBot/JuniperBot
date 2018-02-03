@@ -23,7 +23,6 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.audio.service.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
@@ -34,9 +33,6 @@ public abstract class AudioCommand extends AbstractCommand {
 
     @Autowired
     protected AudioMessageManager messageManager;
-
-    @Autowired
-    protected MessageService messageService;
 
     protected abstract boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 

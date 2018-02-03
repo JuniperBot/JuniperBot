@@ -26,7 +26,6 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.groovy.service.GroovyService;
 
@@ -40,9 +39,6 @@ public class GroovyCommand extends AbstractCommand {
 
     @Autowired
     private GroovyService groovyService;
-
-    @Autowired
-    private MessageService messageService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {

@@ -23,14 +23,17 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.utils.PluralUtils;
 
 import java.awt.*;
 import java.util.Locale;
@@ -58,6 +61,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private TaskScheduler scheduler;
 
     @Override
     public EmbedBuilder getBaseEmbed() {
@@ -87,6 +93,19 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void onMessage(MessageChannel sourceChannel, String code, Object... args) {
         onTitledMessage(sourceChannel, null, code, args);
+    }
+
+    @Override
+    public void onTempMessage(MessageChannel sourceChannel, int sec, String code, Object... args) {
+        onTempPlainMessage(sourceChannel, sec, getMessage(code, args));
+    }
+
+    @Override
+    public void onTempPlainMessage(MessageChannel sourceChannel, int sec, String text) {
+        Message message = sendMessageSilentComplete(sourceChannel::sendMessage, text);
+        if (message != null) {
+            scheduler.schedule(() -> message.delete().submit(), new DateTime().plusSeconds(sec).toDate());
+        }
     }
 
     @Override
@@ -134,6 +153,16 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    @Override
+    public <T> Message sendMessageSilentComplete(Function<T, RestAction<Message>> action, T embed) {
+        try {
+            return action.apply(embed).complete();
+        } catch (PermissionException e) {
+            LOGGER.warn("No permission to message", e);
+            return null;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title) {
@@ -148,6 +177,12 @@ public class MessageServiceImpl implements MessageService {
             return null;
         }
         return getMessage(value.getClass().getName() + "." + value.name());
+    }
+
+    @Override
+    public String getCountPlural(long count, String code) {
+        String key = PluralUtils.getPluralKey(contextService.getLocale(), count);
+        return getMessage(String.format("%s[%s]", code, key));
     }
 
     @Value("${message.accentColor:#FFA550}")

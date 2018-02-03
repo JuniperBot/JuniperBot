@@ -31,10 +31,10 @@ public abstract class AbstractCommand implements Command {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
 
     @Autowired
-    private MessageService messageService;
+    protected MessageService messageService;
 
     @Override
-    public boolean isAvailable(GuildConfig config) {
+    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
         return true;
     }
 

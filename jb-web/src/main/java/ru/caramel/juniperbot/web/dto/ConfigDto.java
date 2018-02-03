@@ -49,6 +49,9 @@ public class ConfigDto implements Serializable {
     private MusicConfigDto musicConfig;
 
     @Valid
+    private ModerationConfigDto modConfig;
+
+    @Valid
     private WebHookDto webHook;
 
     @Valid

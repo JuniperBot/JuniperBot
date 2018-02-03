@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.Date;
 
@@ -37,9 +36,6 @@ import java.util.Date;
         group = "discord.command.group.info",
         priority = 0)
 public class InfoCommand extends AbstractInfoCommand {
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private ConfigService configService;

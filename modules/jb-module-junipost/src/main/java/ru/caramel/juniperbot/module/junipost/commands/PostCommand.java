@@ -28,7 +28,6 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.junipost.service.InstagramService;
 import ru.caramel.juniperbot.module.junipost.service.PostService;
 
@@ -47,9 +46,6 @@ public class PostCommand extends AbstractCommand {
 
     @Autowired
     protected PostService postService;
-
-    @Autowired
-    protected MessageService messageService;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

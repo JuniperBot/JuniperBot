@@ -16,15 +16,15 @@
  */
 package ru.caramel.juniperbot.module.mafia.commands;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.enums.CommandSource;
 
 @DiscordCommand(key = "discord.command.mafia.stop.key",
         description = "discord.command.mafia.stop.desc",
         group = "mafia.name",
-        source = CommandSource.GUILD,
+        source = ChannelType.TEXT,
         priority = 10)
 public class MafiaStopCommand extends MafiaCommand {
 
