@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.module.mafia.service.base;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PermissionOverride;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
@@ -70,8 +69,8 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         Set<MafiaPlayer> ready = new HashSet<>(choosers.size());
 
         instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
-        if (PermissionUtil.checkPermission(message.getTextChannel(),
-                message.getTextChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+        if (message.getTextChannel().getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+                Permission.MESSAGE_MANAGE)) {
             message.getTextChannel().pinMessageById(message.getId()).submit();
         }
         instance.getListenedMessages().add(message.getId());

@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.module.mafia.listeners;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
@@ -50,7 +49,7 @@ public class MafiaMessageListener extends DiscordEventListener {
                         if (!event.getMember().equals(selfMember)
                                 && !instance.isInState(MafiaState.CHOOSING)
                                 && !event.getChannel().equals(instance.getGoonChannel())
-                                && PermissionUtil.checkPermission(event.getTextChannel(), selfMember, Permission.MESSAGE_MANAGE)) {
+                                && selfMember.hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                             if (instance.isInState(MafiaState.DAY)) {
                                 if (!isPlayer) {
                                     event.getMessage().delete().submit();

@@ -42,5 +42,6 @@ public class CustomCommandDto implements Serializable {
     private String key;
 
     @NotBlank(message = "{validation.commands.content.NotBlank.message}")
+    @Size(max = 2000, message = "{validation.commands.content.Size.message}")
     private String content;
 }

@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.module.moderation.service;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,7 +87,7 @@ public class ModerationServiceImpl implements ModerationService {
     public Role getMutedRole(Guild guild) {
         List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
         Role role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
-        if (role == null || !PermissionUtil.canInteract(guild.getSelfMember(), role)) {
+        if (role == null || !guild.getSelfMember().canInteract(role)) {
             role = guild.getController()
                     .createRole()
                     .setColor(Color.GRAY)

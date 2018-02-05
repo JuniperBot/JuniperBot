@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.*;
@@ -141,8 +140,8 @@ public class DayHandler extends ChoiceStateHandler {
             instance.getDailyActions().put(MafiaActionType.EXILE, toExile);
         }
         String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
-        if (messageId != null && PermissionUtil.checkPermission(instance.getChannel(),
-                instance.getChannel().getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
+        if (messageId != null && instance.getChannel().getGuild().getSelfMember().hasPermission(instance.getChannel(),
+                Permission.MESSAGE_MANAGE)) {
             instance.getChannel().unpinMessageById(messageId).submit();
         }
         return goonHandler.onStart(user, instance);

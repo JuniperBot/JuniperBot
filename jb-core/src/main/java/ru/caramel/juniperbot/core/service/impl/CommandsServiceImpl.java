@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,12 +141,12 @@ public class CommandsServiceImpl implements CommandsService {
             Permission[] permissions = command.getPermissions();
             if (permissions != null && permissions.length > 0) {
                 Member self = event.getGuild().getSelfMember();
-                if (self != null && !PermissionUtil.checkPermission(event.getTextChannel(), self, permissions)) {
+                if (self != null && !self.hasPermission(event.getTextChannel(), permissions)) {
                     String list = Stream.of(permissions)
-                            .filter(e -> !PermissionUtil.checkPermission(event.getTextChannel(), self, e))
+                            .filter(e -> !self.hasPermission(event.getTextChannel(), e))
                             .map(e -> messageService.getEnumTitle(e))
                             .collect(Collectors.joining("\n"));
-                    if (PermissionUtil.checkPermission(event.getTextChannel(), self, Permission.MESSAGE_WRITE)) {
+                    if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
                         messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
                     }
                     return;

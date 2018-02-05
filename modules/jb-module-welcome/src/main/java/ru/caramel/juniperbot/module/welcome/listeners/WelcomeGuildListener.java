@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
@@ -49,11 +48,11 @@ public class WelcomeGuildListener extends DiscordEventListener {
                 return;
             }
             TextChannel channel = guild.getDefaultChannel();
-            if (channel != null && PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MESSAGE_WRITE)) {
+            if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
                 channel.sendMessage(embed).submit();
             } else {
                 for (TextChannel textChannel : guild.getTextChannels()) {
-                    if (PermissionUtil.checkPermission(textChannel, guild.getSelfMember(), Permission.MESSAGE_WRITE)) {
+                    if (guild.getSelfMember().hasPermission(textChannel, Permission.MESSAGE_WRITE)) {
                         textChannel.sendMessage(embed).submit();
                         break;
                     }

@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.module.moderation.listeners;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
@@ -33,7 +32,7 @@ public class SlowModeListener extends DiscordEventListener {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (PermissionUtil.checkPermission(event.getChannel(), event.getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)
+        if (event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
                 && moderationService.isRestricted(event.getChannel(), event.getMember())) {
             event.getMessage().delete().submit();
         }
