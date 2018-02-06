@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,12 +100,12 @@ public class HolidayService {
             channel = guild.getTextChannelById(notification.getChannelId());
         }
 
-        if (channel != null && PermissionUtil.checkPermission(channel, self, Permission.MESSAGE_WRITE)) {
+        if (channel != null && self.hasPermission(channel, Permission.MESSAGE_WRITE)) {
             return channel;
         }
 
         for (TextChannel textChannel : guild.getTextChannels()) {
-            if (PermissionUtil.checkPermission(textChannel, self, Permission.MESSAGE_WRITE)) {
+            if (self.hasPermission(textChannel, Permission.MESSAGE_WRITE)) {
                 return textChannel;
             }
         }

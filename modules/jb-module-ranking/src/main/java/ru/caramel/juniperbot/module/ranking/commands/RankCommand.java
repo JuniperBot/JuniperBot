@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
@@ -50,8 +49,7 @@ public class RankCommand extends RankingCommand {
             return false;
         }
 
-        if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
-                Permission.MESSAGE_EMBED_LINKS)) {
+        if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);
             addFields(builder, info, member.getGuild());
             builder.setAuthor(member.getEffectiveName(), null, member.getUser().getAvatarUrl());

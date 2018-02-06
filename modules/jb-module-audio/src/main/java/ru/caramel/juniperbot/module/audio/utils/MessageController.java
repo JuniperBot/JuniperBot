@@ -20,8 +20,8 @@ import lombok.Getter;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.RequestFuture;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -84,8 +84,9 @@ public class MessageController {
     }
 
     private void init() {
-        if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
-                Permission.MESSAGE_MANAGE, Permission.MESSAGE_ADD_REACTION)) {
+        if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+                Permission.MESSAGE_MANAGE,
+                Permission.MESSAGE_ADD_REACTION)) {
             for (Action action : Action.values()) {
                 try {
                     reactionFutures.add(message.addReaction(action.code).submit());
@@ -101,7 +102,7 @@ public class MessageController {
                     if (action != null && playerService.isInChannel(event.getMember())) {
                         contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
-                    if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(),
+                    if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                             Permission.MESSAGE_MANAGE)) {
                         event.getReaction().removeReaction(event.getUser()).submit();
                     }
@@ -174,14 +175,23 @@ public class MessageController {
     }
 
     public void remove(boolean soft) {
-        if (soft) {
-            cancelled = true;
-            if (PermissionUtil.checkPermission(message.getTextChannel(), message.getGuild().getSelfMember(), Permission.MESSAGE_MANAGE)) {
-                reactionFutures.forEach(e -> e.cancel(false));
-                message.clearReactions().complete();
+        try {
+            if (soft) {
+                cancelled = true;
+                if (message.getGuild().isAvailable() && message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_MANAGE)) {
+                    reactionFutures.forEach(e -> e.cancel(false));
+                    message.clearReactions().complete();
+                }
+            } else {
+                message.delete().complete();
             }
-        } else {
-            message.delete().complete();
+        } catch (ErrorResponseException e) {
+            switch (e.getErrorCode()) {
+                case 50001:
+                    return;
+                default:
+                    throw e;
+            }
         }
     }
 }

@@ -24,10 +24,7 @@ import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 import ru.caramel.juniperbot.web.dto.CustomCommandDto;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,11 +45,7 @@ public class CustomCommandsDao extends AbstractDao {
         if (commands == null) {
             commands = Collections.emptyList();
         }
-
         List<CustomCommand> result = new ArrayList<>();
-        // adding new commands
-        result.addAll(mapper.getCommands(commands.stream().filter(e -> e.getId() == null).collect(Collectors.toList())));
-        result.forEach(e -> e.setConfig(config));
 
         // update existing
         commands.stream().filter(e -> e.getId() != null).forEach(e -> {
@@ -62,6 +55,11 @@ public class CustomCommandsDao extends AbstractDao {
                 result.add(command);
             }
         });
+
+        // adding new commands
+        Set<String> keys = customCommands.stream().map(CustomCommand::getKey).collect(Collectors.toSet());
+        result.addAll(mapper.getCommands(commands.stream().filter(e -> e.getId() == null && !keys.contains(e.getKey())).collect(Collectors.toList())));
+        result.forEach(e -> e.setConfig(config));
 
         commandRepository.save(result);
 

@@ -19,12 +19,10 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
@@ -58,11 +56,11 @@ public class WebHookServiceImpl implements WebHookService {
     public void updateWebHook(long guildId, Long channelId, WebHook webHook, String name) {
         if (discordService.isConnected(guildId)) {
             Guild guild = discordService.getShardManager().getGuildById(guildId);
-            if (guild != null && channelId != null && guild.getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
+            if (guild != null && channelId != null) {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
-                    if (PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MANAGE_WEBHOOKS)) {
+                    if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
                         webhook = channel.createWebhook(name).complete();
                     }
                 }

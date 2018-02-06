@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.core.model;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -62,8 +61,8 @@ public abstract class AbstractCommand implements Command {
 
     private void sendEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
         try {
-            if (message.getGuild() == null || PermissionUtil.checkPermission(message.getTextChannel(),
-                    message.getMember(), Permission.MESSAGE_ADD_REACTION)) {
+            if (message.getGuild() == null || message.getMember().hasPermission(message.getTextChannel(),
+                    Permission.MESSAGE_ADD_REACTION)) {
                 message.getMessage().addReaction(emoji).submit();
             } else if (StringUtils.isNotEmpty(messageCode)) {
                 String text = messageService.getMessage(messageCode, args);

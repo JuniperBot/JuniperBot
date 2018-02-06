@@ -26,6 +26,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
@@ -76,11 +77,12 @@ public class CustomCommandsListener extends DiscordEventListener {
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
                     commandContent = commandContent.substring(args[0].length(), commandContent.length()).trim();
-                    commandsService.sendCommand(event, commandContent, args[0], config);
+                    commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
                 }
                 break;
             case MESSAGE:
-                messageService.sendMessageSilent(event.getChannel()::sendMessage, commandContent);
+                messageService.sendMessageSilent(event.getChannel()::sendMessage,
+                        CommonUtils.trimTo(commandContent, 2000));
                 break;
         }
     }

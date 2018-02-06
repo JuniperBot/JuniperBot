@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -345,7 +344,7 @@ public class RankingServiceImpl implements RankingService {
         Member self = member.getGuild().getSelfMember();
         if (!discordService.isConnected(member.getGuild().getIdLong())
                 || CollectionUtils.isEmpty(config.getRewards())
-                || !PermissionUtil.checkPermission(self, Permission.MANAGE_ROLES)) {
+                || !self.hasPermission(Permission.MANAGE_ROLES)) {
             return;
         }
 
