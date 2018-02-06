@@ -75,10 +75,8 @@ public class RankingController extends AbstractController {
         RankingConfig rankingConfig = rankingService.getConfig(serverId);
         ModelAndView mv;
         if (!forceUser && authorized) {
-            mv = createModel("ranking.admin", serverId)
-                    .addObject("config", mapperService.getRankingDto(rankingConfig))
-                    .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
-                    .addObject("roles", getRoles(serverId));
+            mv = createAdminModel(serverId)
+                    .addObject("config", mapperService.getRankingDto(rankingConfig));
         } else {
             mv = createModel("ranking.user", serverId, false)
                     .addObject("rewards", getRewards(serverId, rankingConfig));
@@ -93,14 +91,20 @@ public class RankingController extends AbstractController {
             BindingResult result) {
         validateGuildId(serverId);
         if (result.hasErrors()) {
-            return createModel("ranking.admin", serverId)
-                    .addObject("prefix", configService.getPrefix(serverId))
-                    .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
-                    .addObject("roles", getRoles(serverId));
+            return createAdminModel(serverId)
+                    .addObject("prefix", configService.getPrefix(serverId));
         }
         rankingDao.saveConfig(config, serverId);
         flash.success("flash.rating.save.success.message");
         return view(serverId, false);
+    }
+
+    protected ModelAndView createAdminModel(long serverId) {
+        ModelAndView mv = super.createModel("ranking.admin", serverId);
+        return mv
+                .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
+                .addObject("roles", getRoles(serverId, false))
+                .addObject("rolesInteract", getRoles(serverId, true));
     }
 
     @RequestMapping(value = "/ranking/list/{serverId}/count", method = RequestMethod.POST)

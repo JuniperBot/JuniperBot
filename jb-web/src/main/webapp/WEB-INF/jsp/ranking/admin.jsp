@@ -133,7 +133,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </tr>
                             </thead>
                             <tbody>
-                            <c:forEach items="${roles}" var="role" varStatus="i" begin="0">
+                            <c:forEach items="${rolesInteract}" var="role" varStatus="i" begin="0">
                                 <tr>
                                     <td>
                                         <input name="rewards[${i.index}].roleId" type="hidden" value="${role.idLong}">
