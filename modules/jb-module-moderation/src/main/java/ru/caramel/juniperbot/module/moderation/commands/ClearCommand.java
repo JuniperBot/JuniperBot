@@ -59,7 +59,7 @@ public class ClearCommand extends ModeratorCommand {
                 return creationDate.isAfter(limit) && Objects.equals(m.getMember(), mentioned);
             });
         } else {
-            int result = 100;
+            int result = 10;
             if (StringUtils.isNotBlank(query) && StringUtils.isNumeric(query)) {
                 result = Integer.parseInt(query);
             }

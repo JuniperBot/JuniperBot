@@ -75,7 +75,7 @@ public class ConfigurationController extends AbstractController {
         return super.createModel(name, serverId)
                 .addObject("voiceChannels", getVoiceChannels(serverId))
                 .addObject("textChannels", getTextChannels(serverId))
-                .addObject("roles", getRoles(serverId))
+                .addObject("roles", getRoles(serverId, false))
                 .addObject("locales", contextService.getSupportedLocales().keySet());
     }
 

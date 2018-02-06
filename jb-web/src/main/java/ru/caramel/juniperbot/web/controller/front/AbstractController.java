@@ -138,10 +138,11 @@ public abstract class AbstractController {
         return guild != null ? guild.getVoiceChannels() : Collections.emptyList();
     }
 
-    protected List<Role> getRoles(long guildId) {
+    protected List<Role> getRoles(long guildId, boolean onlyInteract) {
         Guild guild = getGuild(guildId);
         return guild != null
-                ? guild.getRoles().stream().filter(e -> !"@everyone".equals(e.getName())).collect(Collectors.toList())
-                : Collections.emptyList();
+                ? guild.getRoles().stream()
+                .filter(e -> !"@everyone".equals(e.getName()) && (!onlyInteract || guild.getSelfMember().canInteract(e)))
+                .collect(Collectors.toList()) : Collections.emptyList();
     }
 }
