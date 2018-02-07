@@ -28,14 +28,13 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION, Permission.MANAGE_CHANNEL},
         source = ChannelType.TEXT,
         priority = 1)
-public class MafiaStartCommand extends MafiaCommand {
+public class MafiaStartCommand extends MafiaCommandAsync {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    protected void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
         if (!mafiaService.start(message.getAuthor(), message.getTextChannel())) {
             messageService.onError(message.getChannel(), "mafia.alreadyStarted");
-            return fail(message);
+            fail(message);
         }
-        return true;
     }
 }

@@ -81,9 +81,7 @@ public class HelpCommand extends AbstractCommand {
             return false;
         }
 
-        List<EmbedBuilder> messages = new ArrayList<>();
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
-        messages.add(embedBuilder);
 
         String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
 
@@ -92,22 +90,14 @@ public class HelpCommand extends AbstractCommand {
                 messageService.getMessage(e.description()), false));
         if (COMMON_GROUP.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
-                if (direct) {
-                    EmbedBuilder groupBuilder = getBaseEmbed(group, message);
-                    commands.forEach(e -> groupBuilder.addField(
-                            prefix + messageService.getMessage(e.key()),
-                            messageService.getMessage(e.description()), false));
-                    messages.add(groupBuilder);
-                } else {
-                    String groupTitle = messageService.getMessage(group);
-                    embedBuilder.addField(String.format("%s (%s%s %s):",
-                            groupTitle,
-                            prefix,
-                            messageService.getMessage("discord.command.help.key"),
-                            groupTitle.toLowerCase()),
-                            commands.stream().map(e -> '`' + prefix + messageService.getMessage(e.key()) + '`')
-                                    .collect(Collectors.joining(" ")), false);
-                }
+                String groupTitle = messageService.getMessage(group);
+                embedBuilder.addField(String.format("%s (%s%s %s):",
+                        groupTitle,
+                        prefix,
+                        messageService.getMessage("discord.command.help.key"),
+                        groupTitle.toLowerCase()),
+                        commands.stream().map(e -> '`' + prefix + messageService.getMessage(e.key()) + '`')
+                                .collect(Collectors.joining(" ")), false);
             });
 
             if (CollectionUtils.isNotEmpty(extensions)) {
@@ -117,28 +107,28 @@ public class HelpCommand extends AbstractCommand {
             }
         }
 
-        MessageChannel channel = null;
         if (direct) {
             if (message.getAuthor() != null) {
                 try {
-                    channel = message.getAuthor().openPrivateChannel().complete();
+                    message.getAuthor().openPrivateChannel()
+                            .queue(channel -> send(message, channel, embedBuilder, true));
                 } catch (Exception e) {
                     LOGGER.warn("Could not open private channel for {}", message.getAuthor(), e);
                 }
             }
         } else {
-            channel = message.getChannel();
-        }
-        if (channel == null) {
-            return false;
-        }
-        for (EmbedBuilder builder : messages) {
-            channel.sendMessage(builder.build()).queue();
-        }
-        if (direct && message.getAuthor() != null) {
-            messageService.onMessage(message.getChannel(), "discord.command.help.sent", message.getAuthor().getAsMention());
+            send(message, message.getChannel(), embedBuilder, false);
         }
         return true;
+    }
+
+    private void send(MessageReceivedEvent message, MessageChannel channel, EmbedBuilder embedBuilder, boolean direct) {
+        channel.sendMessage(embedBuilder.build()).queue();
+        if (direct && message.getAuthor() != null) {
+            contextService.withContext(message.getGuild(), () -> {
+                messageService.onMessage(message.getChannel(), "discord.command.help.sent", message.getAuthor().getAsMention());
+            });
+        }
     }
 
     private EmbedBuilder getBaseEmbed(String group, MessageReceivedEvent message) {

@@ -85,11 +85,15 @@ public class WikiFurCommand extends AbstractCommand {
                         SearchResult result = finalResult.get(index);
                         message.getTextChannel().sendTyping().queue();
                         MessageEmbed searchEmbed = wikiFurService.renderArticle(result.getTitle());
-                        if (searchEmbed == null) {
-                            messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");
-                            return true;
-                        }
-                        messageService.sendMessageSilent(message.getChannel()::sendMessage, searchEmbed);
+                        contextService.withContext(event.getGuild(), () -> {
+                            if (searchEmbed == null) {
+                                messageService.onTitledMessage(message.getChannel(),
+                                        "discord.command.wikifur.title",
+                                        "discord.command.wikifur.noResults");
+                                return;
+                            }
+                            messageService.sendMessageSilent(message.getChannel()::sendMessage, searchEmbed);
+                        });
                         return true;
                     }
                 }

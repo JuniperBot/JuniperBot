@@ -30,23 +30,22 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
         priority = 5)
-public class MuteCommand extends ModeratorCommand {
+public class MuteCommand extends ModeratorCommandAsync {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (moderationService.isModerator(mentioned)) {
-            return false; // do not allow to mute moderators
+            return; // do not allow to mute moderators
         }
         if (mentioned == null) {
             messageService.onError(event.getChannel(), "discord.command.mod.mute.mention");
-            return false;
+            return;
         }
         boolean global = StringUtils.containsIgnoreCase(event.getMessage().getContentRaw(),
                 messageService.getMessage("discord.command.mod.mute.key.everywhere"));
         boolean muted = moderationService.mute(event.getTextChannel(), mentioned, global);
         messageService.onEmbedMessage(event.getChannel(), muted
                 ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
-        return true;
     }
 }
