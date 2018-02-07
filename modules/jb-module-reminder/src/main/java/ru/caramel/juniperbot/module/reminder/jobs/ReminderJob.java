@@ -54,7 +54,7 @@ public class ReminderJob implements Job {
         StringBuilder message = new StringBuilder();
         if (guildId != null) {
             Guild guild = shardManager.getGuildById(guildId);
-            if (guild != null) {
+            if (guild != null && guild.isAvailable()) {
                 channel = guild.getTextChannelById(channelId);
                 if (user != null && guild.isMember(user)) {
                     message.append(user.getAsMention()).append(" ");

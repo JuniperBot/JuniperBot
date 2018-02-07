@@ -45,4 +45,6 @@ public interface PlayerService {
     void monitor();
 
     long getActiveCount();
+
+    void stop(Guild guild);
 }

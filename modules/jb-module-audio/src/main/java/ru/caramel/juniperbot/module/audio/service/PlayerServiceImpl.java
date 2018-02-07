@@ -332,4 +332,15 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     public long getActiveCount() {
         return instances.size();
     }
+
+    @Override
+    public void stop(Guild guild) {
+        instances.computeIfPresent(guild.getIdLong(), (g, e) -> {
+            e.stop();
+            e.reset();
+            return null;
+        });
+        instances.remove(guild.getIdLong());
+        messageManager.clear(guild);
+    }
 }

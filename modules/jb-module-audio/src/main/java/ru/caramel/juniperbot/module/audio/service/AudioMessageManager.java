@@ -138,8 +138,17 @@ public class AudioMessageManager {
         }
     }
 
-    private void cancelUpdate(TrackRequest request) {
-        updaterTasks.computeIfPresent(request.getGuild(), (g, e) -> {
+    public void clear(Guild guild) {
+        cancelUpdate(guild);
+        controllers.remove(guild);
+    }
+
+    public void cancelUpdate(TrackRequest request) {
+        cancelUpdate(request.getGuild());
+    }
+
+    public void cancelUpdate(Guild guild) {
+        updaterTasks.computeIfPresent(guild, (g, e) -> {
             e.cancel(false);
             return null;
         });
@@ -280,10 +289,15 @@ public class AudioMessageManager {
             LOGGER.warn("No permission to update", e);
             cancelUpdate(request);
         } catch (ErrorResponseException e) {
-            if (e.getErrorCode() == 10008 /* Unknown message */) {
-                cancelUpdate(request);
-            } else {
-                LOGGER.error("Update message error", e);
+            switch (e.getErrorResponse()) {
+                case UNKNOWN_MESSAGE:
+                case MISSING_ACCESS:
+                    cancelUpdate(request);
+                    break;
+                default:
+                    LOGGER.error("Update message error", e);
+                    break;
+
             }
         }
     }

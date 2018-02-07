@@ -186,8 +186,8 @@ public class MessageController {
                 message.delete().complete();
             }
         } catch (ErrorResponseException e) {
-            switch (e.getErrorCode()) {
-                case 50001:
+            switch (e.getErrorResponse()) {
+                case MISSING_ACCESS:
                     return;
                 default:
                     throw e;
