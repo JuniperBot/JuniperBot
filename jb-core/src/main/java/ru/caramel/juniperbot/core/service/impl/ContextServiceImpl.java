@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Service
 public class ContextServiceImpl implements ContextService {
@@ -191,6 +193,11 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void execute(Guild guild, Runnable action) {
         taskExecutor.execute(() -> withContext(guild, action));
+    }
+
+    @Override
+    public <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success) {
+        action.queue(e -> withContext(guild, () -> success.accept(e)));
     }
 
     @Override

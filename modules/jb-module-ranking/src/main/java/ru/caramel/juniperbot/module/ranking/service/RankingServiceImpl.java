@@ -210,10 +210,10 @@ public class RankingServiceImpl implements RankingService {
                     MessageChannel channel = event.getChannel();
                     if (config.isWhisper()) {
                         try {
-                            event.getAuthor().openPrivateChannel()
-                                    .queue(c -> contextService.withContext(event.getGuild(),
-                                            () -> messageService.sendMessageSilent(channel::sendMessage,
-                                                    getAnnounce(config, event.getAuthor().getAsMention(), newLevel))));
+                            contextService.queue(event.getGuild(), event.getAuthor().openPrivateChannel(), c -> {
+                                messageService.sendMessageSilent(channel::sendMessage,
+                                        getAnnounce(config, event.getAuthor().getAsMention(), newLevel));
+                            });
                         } catch (Exception e) {
                             LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
                         }
