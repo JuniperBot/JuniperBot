@@ -180,10 +180,10 @@ public class MessageController {
                 cancelled = true;
                 if (message.getGuild().isAvailable() && message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                     reactionFutures.forEach(e -> e.cancel(false));
-                    message.clearReactions().complete();
+                    message.clearReactions().queue();
                 }
             } else {
-                message.delete().complete();
+                message.delete().queue();
             }
         } catch (ErrorResponseException e) {
             switch (e.getErrorResponse()) {

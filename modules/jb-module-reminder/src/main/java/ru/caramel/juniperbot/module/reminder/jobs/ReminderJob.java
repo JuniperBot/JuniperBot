@@ -63,11 +63,10 @@ public class ReminderJob implements Job {
         } else {
             channel = shardManager.getPrivateChannelById(channelId);
         }
+        message.append(messageRaw);
         if (channel == null && user != null) {
-            channel = user.openPrivateChannel().complete();
-        }
-        if (channel != null) {
-            message.append(messageRaw);
+            user.openPrivateChannel().queue(c -> c.sendMessage(message.toString()).queue());
+        } else if (channel != null) {
             channel.sendMessage(message.toString()).queue();
         }
     }

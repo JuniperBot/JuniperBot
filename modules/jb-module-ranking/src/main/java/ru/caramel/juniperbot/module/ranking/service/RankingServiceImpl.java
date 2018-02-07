@@ -39,10 +39,7 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MemberService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
@@ -96,6 +93,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private DiscordService discordService;
+
+    @Autowired
+    private ContextService contextService;
 
     private static Object DUMMY = new Object();
 
@@ -208,16 +208,19 @@ public class RankingServiceImpl implements RankingService {
             if (newLevel < 1000 && level != newLevel) {
                 if (config.isAnnouncementEnabled()) {
                     MessageChannel channel = event.getChannel();
-                    String mention = event.getMember().getAsMention();
                     if (config.isWhisper()) {
                         try {
-                            channel = event.getAuthor().openPrivateChannel().complete();
-                            mention = event.getAuthor().getAsMention();
+                            event.getAuthor().openPrivateChannel()
+                                    .queue(c -> contextService.withContext(event.getGuild(),
+                                            () -> messageService.sendMessageSilent(channel::sendMessage,
+                                                    getAnnounce(config, event.getAuthor().getAsMention(), newLevel))));
                         } catch (Exception e) {
                             LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
                         }
+                    } else {
+                        messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config,
+                                event.getMember().getAsMention(), newLevel));
                     }
-                    messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config, mention, newLevel));
                 }
                 updateRewards(config, event.getMember(), ranking);
             }

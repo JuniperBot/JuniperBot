@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.awt.*;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface MessageService {
@@ -35,7 +36,8 @@ public interface MessageService {
 
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
-    <T> Message sendMessageSilentComplete(Function<T, RestAction<Message>> action, T embed);
+    <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,
+                                Consumer<Message> messageConsumer);
 
     void onMessage(MessageChannel sourceChannel, String code, Object... args);
 

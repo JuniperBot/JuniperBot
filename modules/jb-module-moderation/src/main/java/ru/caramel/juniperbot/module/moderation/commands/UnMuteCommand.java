@@ -30,18 +30,17 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
         priority = 10)
-public class UnMuteCommand extends ModeratorCommand {
+public class UnMuteCommand extends ModeratorCommandAsync {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
             messageService.onError(event.getChannel(), "discord.command.mod.mute.mention");
-            return false;
+            return;
         }
         boolean unmuted = moderationService.unmute(event.getTextChannel(), mentioned);
         messageService.onEmbedMessage(event.getChannel(), unmuted
                 ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
-        return true;
     }
 }

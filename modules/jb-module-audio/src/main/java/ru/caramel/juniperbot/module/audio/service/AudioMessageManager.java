@@ -90,7 +90,8 @@ public class AudioMessageManager {
                         .queue(e -> {
                             MessageController oldController = controllers.put(request.getGuild(), new MessageController(context, e));
                             if (oldController != null) {
-                                markAsPassed(request, oldController, true);
+                                contextService.withContext(request.getGuild(),
+                                        () -> markAsPassed(request, oldController, true));
                             }
                             runUpdater(request);
                         });
@@ -115,7 +116,7 @@ public class AudioMessageManager {
             controller.remove(soft);
             if (soft) {
                 try {
-                    controller.getMessage().editMessage(getPlayMessage(request, true).build()).complete();
+                    controller.getMessage().editMessage(getPlayMessage(request, true).build()).queue();
                 } catch (Exception e) {
                     // fall down and skip
                 }
@@ -265,24 +266,24 @@ public class AudioMessageManager {
 
     public void updateMessage(TrackRequest request) {
         try {
-            Message message;
             if (request.isResetMessage()) {
-                message = request.getChannel()
+                request.getChannel()
                         .sendMessage(getPlayMessage(request).build())
-                        .complete();
-                MessageController oldController = controllers.put(request.getGuild(),
-                        new MessageController(context, message));
-                if (oldController != null) {
-                    oldController.remove(false);
-                }
-                request.setResetMessage(false);
+                        .queue(m -> {
+                            MessageController oldController = controllers.put(request.getGuild(),
+                                    new MessageController(context, m));
+                            if (oldController != null) {
+                                oldController.remove(false);
+                            }
+                            request.setResetMessage(false);
+                        });
                 return;
             }
             MessageController controller = controllers.get(request.getGuild());
             if (controller != null) {
-                message = controller.getMessage();
+                Message message = controller.getMessage();
                 if (message != null) {
-                    message.editMessage(getPlayMessage(request).build()).complete();
+                    message.editMessage(getPlayMessage(request).build()).queue();
                 }
             }
         } catch (PermissionException e) {

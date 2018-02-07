@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
@@ -47,6 +48,9 @@ public class WelcomeUserListener extends DiscordEventListener {
     private MessageService messageService;
 
     @Autowired
+    private ContextService contextService;
+
+    @Autowired
     private WelcomeMessageRepository welcomeMessageRepository;
 
     @Override
@@ -56,19 +60,18 @@ public class WelcomeUserListener extends DiscordEventListener {
             return;
         }
 
-        MessageChannel channel = null;
         if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
             User user = event.getUser();
             try {
-                channel = user.openPrivateChannel().complete();
+                user.openPrivateChannel().queue(c -> contextService.withContext(event.getGuild(), () ->
+                        send(event, c, message.getJoinMessage(), message.isJoinRichEnabled())));
             } catch (Exception e) {
                 LOGGER.error("Could not open private channel for user {}", user, e);
             }
+        } else {
+            MessageChannel channel = event.getGuild().getTextChannelById(message.getJoinChannelId());
+            send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
         }
-        if (channel == null) {
-            channel = event.getGuild().getTextChannelById(message.getJoinChannelId());
-        }
-        send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
     }
 
     @Override

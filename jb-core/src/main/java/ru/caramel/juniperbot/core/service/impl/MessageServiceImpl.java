@@ -39,6 +39,7 @@ import java.awt.*;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -109,10 +110,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void onTempPlainMessage(MessageChannel sourceChannel, int sec, String text) {
-        Message message = sendMessageSilentComplete(sourceChannel::sendMessage, text);
-        if (message != null) {
+        sendMessageSilentQueue(sourceChannel::sendMessage, text, message -> {
             scheduler.schedule(() -> message.delete().queue(), new DateTime().plusSeconds(sec).toDate());
-        }
+        });
     }
 
     @Override
@@ -153,20 +153,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed) {
-        try {
-            action.apply(embed).queue();
-        } catch (PermissionException e) {
-            LOGGER.warn("No permission to message", e);
-        }
+        sendMessageSilentQueue(action, embed, null);
     }
 
     @Override
-    public <T> Message sendMessageSilentComplete(Function<T, RestAction<Message>> action, T embed) {
+    public <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,
+                                                             Consumer<Message> messageConsumer) {
         try {
-            return action.apply(embed).complete();
+            action.apply(embed).queue(messageConsumer);
         } catch (PermissionException e) {
             LOGGER.warn("No permission to message", e);
-            return null;
         }
     }
 
