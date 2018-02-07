@@ -33,7 +33,7 @@ public class LeadersCommand extends RankingCommand {
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         message.getTextChannel().sendMessage(messageService.getMessage("discord.command.leaders.message",
-                message.getGuild().getId())).submit();
+                message.getGuild().getId())).queue();
         return true;
     }
 }

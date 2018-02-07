@@ -52,10 +52,10 @@ public class MafiaMessageListener extends DiscordEventListener {
                                 && selfMember.hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                             if (instance.isInState(MafiaState.DAY)) {
                                 if (!isPlayer) {
-                                    event.getMessage().delete().submit();
+                                    event.getMessage().delete().queue();
                                 }
                             } else {
-                                event.getMessage().delete().submit();
+                                event.getMessage().delete().queue();
                             }
                         }
                     }

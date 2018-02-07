@@ -45,7 +45,7 @@ public class ChoosingHandler extends AbstractStateHandler {
         EmbedBuilder builder = getBaseEmbed("mafia.start.message");
         builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix()), null);
         Message message = instance.getChannel().sendMessage(builder.build()).complete();
-        message.addReaction(CHOOSE).submit();
+        message.addReaction(CHOOSE).queue();
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReaction(message.getId(), (event, add) -> {
             if (!instance.isInState(MafiaState.CHOOSING)) {

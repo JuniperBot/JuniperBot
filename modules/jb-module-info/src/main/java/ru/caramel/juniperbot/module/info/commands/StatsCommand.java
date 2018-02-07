@@ -41,9 +41,6 @@ public class StatsCommand extends AbstractInfoCommand {
     @Autowired
     private MetricRegistry metricRegistry;
 
-    @Autowired
-    private ContextService contextService;
-
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         EmbedBuilder builder = messageService.getBaseEmbed(true);

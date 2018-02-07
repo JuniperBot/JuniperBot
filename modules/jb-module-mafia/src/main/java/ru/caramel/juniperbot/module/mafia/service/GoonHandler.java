@@ -109,7 +109,7 @@ public class GoonHandler extends ChoiceStateHandler {
         String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
         if (messageId != null && instance.getGoonChannel().getGuild().getSelfMember().hasPermission(
                 instance.getChannel(), Permission.MESSAGE_MANAGE)) {
-            instance.getGoonChannel().unpinMessageById(messageId).submit();
+            instance.getGoonChannel().unpinMessageById(messageId).queue();
         }
         return brokerHandler.onStart(user, instance);
     }

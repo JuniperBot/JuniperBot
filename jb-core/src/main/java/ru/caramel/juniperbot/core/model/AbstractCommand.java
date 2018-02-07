@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 public abstract class AbstractCommand implements Command {
@@ -33,6 +34,9 @@ public abstract class AbstractCommand implements Command {
 
     @Autowired
     protected MessageService messageService;
+
+    @Autowired
+    protected ContextService contextService;
 
     @Override
     public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
@@ -63,7 +67,7 @@ public abstract class AbstractCommand implements Command {
         try {
             if (message.getGuild() == null || message.getMember().hasPermission(message.getTextChannel(),
                     Permission.MESSAGE_ADD_REACTION)) {
-                message.getMessage().addReaction(emoji).submit();
+                message.getMessage().addReaction(emoji).queue();
             } else if (StringUtils.isNotEmpty(messageCode)) {
                 String text = messageService.getMessage(messageCode, args);
                 messageService.sendMessageSilent(message.getChannel()::sendMessage, text);

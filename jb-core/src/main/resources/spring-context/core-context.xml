@@ -31,7 +31,7 @@
                                   location="${juniperbot-config-location:classpath:}application.properties"/>
     <context:component-scan base-package="ru.caramel.juniperbot.core"/>
 
-    <task:executor id="executor" pool-size="25" queue-capacity="100"/>
+    <task:executor id="executor" pool-size="25"/>
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
     <task:scheduler id="scheduler" pool-size="10"/>
 

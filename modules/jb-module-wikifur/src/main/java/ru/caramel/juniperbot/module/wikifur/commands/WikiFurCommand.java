@@ -71,7 +71,7 @@ public class WikiFurCommand extends AbstractCommand {
         message.getChannel().sendMessage(builder.build()).queue(e -> {
             try {
                 for (int i = 0; i < finalResult.size(); i++) {
-                    e.addReaction(ReactionsListener.CHOICES[i]).submit();
+                    e.addReaction(ReactionsListener.CHOICES[i]).queue();
                 }
             } catch (Exception ex) {
                 // ignore

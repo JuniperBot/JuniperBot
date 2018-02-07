@@ -58,4 +58,8 @@ public interface ContextService {
 
     void resetContext();
 
+    void execute(long serverId, Runnable action);
+
+    void execute(Guild guild, Runnable action);
+
 }

@@ -101,7 +101,7 @@ public class ModerationServiceImpl implements ModerationService {
                     || !override.getDenied().contains(Permission.MESSAGE_WRITE)) {
                 channel.createPermissionOverride(role)
                         .setDeny(Permission.MESSAGE_WRITE)
-                        .submit();
+                        .queue();
             }
         }
 
@@ -110,7 +110,7 @@ public class ModerationServiceImpl implements ModerationService {
             if (override == null || !override.getDenied().contains(Permission.VOICE_SPEAK)) {
                 channel.createPermissionOverride(role)
                         .setDeny(Permission.VOICE_SPEAK)
-                        .submit();
+                        .queue();
             }
         }
         return role;
@@ -124,19 +124,19 @@ public class ModerationServiceImpl implements ModerationService {
                 channel.getGuild()
                         .getController()
                         .addRolesToMember(member, mutedRole)
-                        .submit();
+                        .queue();
                 return true;
             }
         } else {
             PermissionOverride override = channel.getPermissionOverride(member);
             if (override != null && !override.getDenied().contains(Permission.MESSAGE_WRITE)) {
-                override.getManagerUpdatable().deny(Permission.MESSAGE_WRITE).update().submit();
+                override.getManagerUpdatable().deny(Permission.MESSAGE_WRITE).update().queue();
                 return true;
             }
             if (override == null) {
                 channel.createPermissionOverride(member)
                         .setDeny(Permission.MESSAGE_WRITE)
-                        .submit();
+                        .queue();
                 return true;
             }
         }
@@ -151,12 +151,12 @@ public class ModerationServiceImpl implements ModerationService {
             channel.getGuild()
                     .getController()
                     .removeRolesFromMember(member, mutedRole)
-                    .submit();
+                    .queue();
             result = true;
         }
         PermissionOverride override = channel.getPermissionOverride(member);
         if (override != null) {
-            override.delete().submit();
+            override.delete().queue();
             result |= true;
         }
         return result;

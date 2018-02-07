@@ -57,10 +57,10 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         instance.putAttribute(getChoiceKey(), choices);
         try {
             for (int i = 0; i < players.size(); i++) {
-                message.addReaction(ReactionsListener.CHOICES[i]).submit();
+                message.addReaction(ReactionsListener.CHOICES[i]).queue();
             }
             if (players.size() < 10) {
-                message.addReaction(CHOOSE).submit();
+                message.addReaction(CHOOSE).queue();
             }
         } catch (Exception ex) {
             // ignore
@@ -71,13 +71,13 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
         if (message.getTextChannel().getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                 Permission.MESSAGE_MANAGE)) {
-            message.getTextChannel().pinMessageById(message.getId()).submit();
+            message.getTextChannel().pinMessageById(message.getId()).queue();
         }
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReaction(message.getId(), (event, add) -> {
             if (!event.getUser().equals(event.getJDA().getSelfUser()) && instance.isInState(getState())) {
                 if (add && (event.getUser().isBot() || !instance.isPlayer(event.getUser()))) {
-                    event.getReaction().removeReaction(event.getUser()).submit();
+                    event.getReaction().removeReaction(event.getUser()).queue();
                     return false;
                 }
                 if (instance.isPlayer(event.getUser())) {
@@ -120,7 +120,7 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         player.out();
         if (player.getRole() == MafiaRole.GOON && instance.getGoonChannel() != null) {
             PermissionOverride override = instance.getGoonChannel().getPermissionOverride(player.getMember());
-            override.delete().submit();
+            override.delete().queue();
         }
     }
 

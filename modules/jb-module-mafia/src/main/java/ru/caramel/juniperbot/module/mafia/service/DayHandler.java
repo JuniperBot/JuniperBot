@@ -142,7 +142,7 @@ public class DayHandler extends ChoiceStateHandler {
         String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
         if (messageId != null && instance.getChannel().getGuild().getSelfMember().hasPermission(instance.getChannel(),
                 Permission.MESSAGE_MANAGE)) {
-            instance.getChannel().unpinMessageById(messageId).submit();
+            instance.getChannel().unpinMessageById(messageId).queue();
         }
         return goonHandler.onStart(user, instance);
     }
