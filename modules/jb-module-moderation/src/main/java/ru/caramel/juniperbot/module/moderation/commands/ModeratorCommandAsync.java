@@ -14,21 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.info.commands;
+package ru.caramel.juniperbot.module.moderation.commands;
 
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
-public abstract class AbstractInfoCommand extends AbstractCommand {
+public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
 
-    protected MessageEmbed.Field getDateField(long epochSecond, String nameKey, DateTimeFormatter formatter) {
-        DateTime dateTime = new DateTime(epochSecond * 1000).withZone(DateTimeZone.UTC);
-        return new MessageEmbed.Field(messageService.getMessage(nameKey),
-                String.format("**%s**", formatter.print(dateTime)), true);
+    @Autowired
+    protected ModerationService moderationService;
+
+    @Override
+    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
+        return moderationService.isModerator(event.getMember());
     }
 }

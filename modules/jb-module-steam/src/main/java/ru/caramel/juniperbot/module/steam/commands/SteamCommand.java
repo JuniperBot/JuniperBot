@@ -47,16 +47,13 @@ public class SteamCommand extends AbstractCommand {
     @Autowired
     private SteamService steamService;
 
-    @Autowired
-    private ContextService contextService;
-
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {
             messageService.onMessage(message.getChannel(), "discord.command.steam.enter");
             return true;
         }
-        message.getChannel().sendTyping().submit();
+        message.getChannel().sendTyping().queue();
         SteamApp app = null;
         if (StringUtils.isNumeric(query)) {
             app = steamService.findByAppId(Long.parseLong(query));

@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -31,54 +33,49 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @DiscordCommand(key = "discord.command.mod.clear.key",
         description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY},
-        priority = 1)
-public class ClearCommand extends ModeratorCommand {
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY})
+public class ClearCommand extends ModeratorCommandAsync {
 
     private static final int MAX_MESSAGES = 1000;
 
+    private static final Pattern COUNT_PATTERN = Pattern.compile("(\\d+)$");
+
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) throws DiscordException {
         TextChannel channel = event.getTextChannel();
         List<Message> messages;
-        DateTime limit = new DateTime()
-                .minusWeeks(2)
-                .minusHours(1);
+
+        int deletedCount;
+        int number = getCount(query);
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())) {
             Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
             if (mentioned == null) {
-                return false;
+                return;
             }
-            messages = getMessages(channel, null, m -> {
-                DateTime creationDate = CommonUtils.getDate(m.getCreationTime());
-                return creationDate.isAfter(limit) && Objects.equals(m.getMember(), mentioned);
-            });
+            channel.sendTyping().queue();
+            messages = getMessages(channel, number, m -> Objects.equals(m.getMember(), mentioned));
+            deletedCount = messages.size();
         } else {
-            int result = 10;
-            if (StringUtils.isNotBlank(query) && StringUtils.isNumeric(query)) {
-                result = Integer.parseInt(query);
-            }
-            int number = Math.min(result, MAX_MESSAGES);
-            messages = getMessages(channel, number + 1, m -> {
-                DateTime creationDate = CommonUtils.getDate(m.getCreationTime());
-                return creationDate.isAfter(limit);
-            });
+            channel.sendTyping().queue();
+            messages = getMessages(channel, number + 1, null);
+            deletedCount = messages.size() - 1;
         }
 
-        if (CollectionUtils.isEmpty(messages)) {
+        if (CollectionUtils.isEmpty(messages) || messages.size() == 1) {
             messageService.onError(event.getChannel(), "discord.mod.clear.absent");
-            return fail(event);
+            fail(event);
+            return;
         }
-        int deletedCount = messages.size() - 1;
         String pluralMessages = messageService.getCountPlural(deletedCount, "discord.plurals.message");
         deleteMessages(channel, messages);
         messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", deletedCount, pluralMessages);
-        return true;
     }
 
     private void deleteMessages(TextChannel channel, List<Message> messages) {
@@ -90,7 +87,7 @@ public class ClearCommand extends ModeratorCommand {
                 chunk.add(iterator.next());
             }
             if (!chunk.isEmpty()) {
-                channel.sendTyping().submit();
+                channel.sendTyping().queue();
                 if (chunk.size() == 1) {
                     chunk.get(0).delete().complete();
                 } else {
@@ -100,9 +97,24 @@ public class ClearCommand extends ModeratorCommand {
         }
     }
 
+    private int getCount(String queue) throws DiscordException {
+        int result = 10;
+        if (StringUtils.isNotBlank(queue)) {
+            Matcher matcher = COUNT_PATTERN.matcher(queue.trim());
+            if (!matcher.find()) {
+                throw new ValidationException("discord.mode.clear.help");
+            }
+            result = Integer.parseInt(matcher.group(1));
+        }
+        return Math.min(result, MAX_MESSAGES);
+    }
+
     private List<Message> getMessages(TextChannel channel, Integer limitCount, Predicate<Message> predicate) {
         List<Message> messages = limitCount != null ? new ArrayList<>(limitCount) : new ArrayList<>();
         MessageHistory history = channel.getHistory();
+        DateTime limit = new DateTime()
+                .minusWeeks(2)
+                .minusHours(1);
         while (limitCount == null || limitCount > 0) {
             int count = limitCount == null || limitCount > 100 ? 100 : limitCount;
             List<Message> retrieved = history.retrievePast(count).complete();
@@ -110,12 +122,15 @@ public class ClearCommand extends ModeratorCommand {
                 break;
             }
             for (Message message : retrieved) {
-                if (!predicate.test(message)) {
-                    break;
+                DateTime creationDate = CommonUtils.getDate(message.getCreationTime());
+                if (creationDate.isBefore(limit)) {
+                    return messages;
                 }
-                messages.add(message);
-                if (limitCount != null) {
-                    limitCount--;
+                if (predicate == null || predicate.test(message)) {
+                    messages.add(message);
+                    if (limitCount != null) {
+                        limitCount--;
+                    }
                 }
             }
         }

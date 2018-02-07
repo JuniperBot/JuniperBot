@@ -358,7 +358,7 @@ public class RankingServiceImpl implements RankingService {
                 .collect(Collectors.toSet());
 
         if (!rolesToGive.isEmpty()) {
-            member.getGuild().getController().addRolesToMember(member, rolesToGive).submit();
+            member.getGuild().getController().addRolesToMember(member, rolesToGive).queue();
         }
     }
 

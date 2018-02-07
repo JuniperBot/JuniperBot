@@ -104,7 +104,7 @@ public class MessageController {
                     }
                     if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                             Permission.MESSAGE_MANAGE)) {
-                        event.getReaction().removeReaction(event.getUser()).submit();
+                        event.getReaction().removeReaction(event.getUser()).queue();
                     }
                 }
                 return false;

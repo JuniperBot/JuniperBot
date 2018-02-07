@@ -111,7 +111,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
         Message message = channel.sendMessage(builder.build()).complete();
         try {
             for (int i = 0; i < players.size(); i++) {
-                message.addReaction(ReactionsListener.CHOICES[i]).submit();
+                message.addReaction(ReactionsListener.CHOICES[i]).queue();
             }
         } catch (Exception ex) {
             // ignore

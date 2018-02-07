@@ -42,18 +42,18 @@ public class WelcomeGuildListener extends DiscordEventListener {
     public void onGuildJoin(GuildJoinEvent event) {
         Guild guild = event.getGuild();
         MessageEmbed embed = createWelcomeMessage(guild);
-        guild.getOwner().getUser().openPrivateChannel().submit().whenComplete((e, t) -> {
+        guild.getOwner().getUser().openPrivateChannel().queue(e -> {
             if (e != null) {
-                e.sendMessage(embed).submit();
+                e.sendMessage(embed).queue();
                 return;
             }
             TextChannel channel = guild.getDefaultChannel();
             if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
-                channel.sendMessage(embed).submit();
+                channel.sendMessage(embed).queue();
             } else {
                 for (TextChannel textChannel : guild.getTextChannels()) {
                     if (guild.getSelfMember().hasPermission(textChannel, Permission.MESSAGE_WRITE)) {
-                        textChannel.sendMessage(embed).submit();
+                        textChannel.sendMessage(embed).queue();
                         break;
                     }
                 }

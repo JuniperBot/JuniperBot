@@ -111,7 +111,7 @@ public class MessageServiceImpl implements MessageService {
     public void onTempPlainMessage(MessageChannel sourceChannel, int sec, String text) {
         Message message = sendMessageSilentComplete(sourceChannel::sendMessage, text);
         if (message != null) {
-            scheduler.schedule(() -> message.delete().submit(), new DateTime().plusSeconds(sec).toDate());
+            scheduler.schedule(() -> message.delete().queue(), new DateTime().plusSeconds(sec).toDate());
         }
     }
 

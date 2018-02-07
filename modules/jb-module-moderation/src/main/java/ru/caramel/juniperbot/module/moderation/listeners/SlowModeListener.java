@@ -34,7 +34,7 @@ public class SlowModeListener extends DiscordEventListener {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
                 && moderationService.isRestricted(event.getChannel(), event.getMember())) {
-            event.getMessage().delete().submit();
+            event.getMessage().delete().queue();
         }
     }
 

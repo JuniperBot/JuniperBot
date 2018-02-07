@@ -64,9 +64,6 @@ public class PlayCommand extends AudioCommand {
     @Autowired
     protected ValidationService validationService;
 
-    @Autowired
-    private ContextService contextService;
-
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
         if (!message.getMessage().getAttachments().isEmpty()) {

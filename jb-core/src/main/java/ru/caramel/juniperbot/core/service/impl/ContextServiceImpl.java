@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -60,6 +62,10 @@ public class ContextServiceImpl implements ContextService {
 
     @Autowired
     private SourceResolverService resolverService;
+
+    @Autowired
+    @Qualifier("executor")
+    private TaskExecutor taskExecutor;
 
     @PostConstruct
     public void init() {
@@ -164,6 +170,7 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void withContext(Guild guild, Runnable action) {
         if (guild == null) {
+            action.run();
             return;
         }
         ContextHolder currentContext = getContext();
@@ -174,6 +181,16 @@ public class ContextServiceImpl implements ContextService {
         } finally {
             setContext(currentContext);
         }
+    }
+
+    @Override
+    public void execute(long serverId, Runnable action) {
+        taskExecutor.execute(() -> withContext(serverId, action));
+    }
+
+    @Override
+    public void execute(Guild guild, Runnable action) {
+        taskExecutor.execute(() -> withContext(guild, action));
     }
 
     @Override
