@@ -1,3 +1,19 @@
+/*
+ * This file is part of JuniperBotJ.
+ *
+ * JuniperBotJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBotJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ru.caramel.juniperbot.module.ranking.service;
 
 import org.jsoup.Jsoup;
@@ -5,6 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,11 +38,9 @@ public class Mee6Provider {
 
     private Pattern NAME_PATTERN = Pattern.compile("\\s*(.*)\\s*#(\\d{4})");
 
-    private Pattern EXP_PATTERN = Pattern.compile("(\\d+)\\s*/\\s*(\\d+)\\s+XP\\s+\\[\\s*(\\d+)\\s+total\\s*\\]");
+    private Pattern EXP_JS_PATTERN = Pattern.compile("getXpInfo[(](\\d+)[)]"); // Ha! JavaScript? Really? Why are you so evil?
 
     private Pattern RANK_PATTERN = Pattern.compile("#(\\d+)");
-
-    private Pattern LEVEL_PATTERN = Pattern.compile("Level\\s+(\\d+)");
 
     public List<RankingInfo> export(long guildId) throws IOException {
         Document document = Jsoup.connect(String.format(LEVELS_PAGE, guildId)).get();
@@ -45,41 +60,30 @@ public class Mee6Provider {
                                 entryInfo.setId(userId);
                                 entryInfo.setAvatarUrl(avatarUrl);
 
-                                boolean valid = false;
-                                Element expBlock = entry.selectFirst(".col-md-4 > center");
-                                if (expBlock != null) {
-                                    matcher = EXP_PATTERN.matcher(expBlock.text());
-                                    if (matcher.find()) {
-                                        entryInfo.setRemainingExp(Long.parseLong(matcher.group(1)));
-                                        entryInfo.setLevelExp(Long.parseLong(matcher.group(2)));
-                                        entryInfo.setTotalExp(Long.parseLong(matcher.group(3)));
-                                        result.add(entryInfo);
-                                        valid = true;
-                                    }
-                                }
-                                if (!valid) continue;
+                                matcher = EXP_JS_PATTERN.matcher(entry.toString());
+                                if (matcher.find()) {
+                                    Long totalExp = Long.parseLong(matcher.group(1));
+                                    entryInfo.setTotalExp(totalExp);
+                                    entryInfo.setLevel(RankingUtils.getLevelFromExp(totalExp));
+                                    entryInfo.setRemainingExp(RankingUtils.getRemainingExp(totalExp));
+                                    entryInfo.setLevelExp(RankingUtils.getLevelExp(entryInfo.getLevel()));
+                                    result.add(entryInfo);
 
-                                Element rankBlock = entry.selectFirst("div > h3");
-                                if (rankBlock != null) {
-                                    matcher = RANK_PATTERN.matcher(rankBlock.text());
-                                    if (matcher.find()) {
-                                        entryInfo.setRank(Integer.parseInt(matcher.group(1)));
+                                    Element rankBlock = entry.selectFirst("div > h3");
+                                    if (rankBlock != null) {
+                                        matcher = RANK_PATTERN.matcher(rankBlock.text());
+                                        if (matcher.find()) {
+                                            entryInfo.setRank(Integer.parseInt(matcher.group(1)));
+                                        }
                                     }
-                                }
-                                Element nameBlock = entry.selectFirst(".col-md-4 > h3");
-                                if (nameBlock != null) {
-                                    matcher = NAME_PATTERN.matcher(nameBlock.text());
-                                    if (matcher.find()) {
-                                        entryInfo.setName(matcher.group(1));
-                                        entryInfo.setNick(matcher.group(1));
-                                        entryInfo.setDiscriminator(matcher.group(2));
-                                    }
-                                }
-                                Element levelBlock = entry.selectFirst(".col-md-2");
-                                if (levelBlock != null) {
-                                    matcher = LEVEL_PATTERN.matcher(levelBlock.text());
-                                    if (matcher.find()) {
-                                        entryInfo.setLevel(Integer.parseInt(matcher.group(1)));
+                                    Element nameBlock = entry.selectFirst(".col-md-4 > h3");
+                                    if (nameBlock != null) {
+                                        matcher = NAME_PATTERN.matcher(nameBlock.text());
+                                        if (matcher.find()) {
+                                            entryInfo.setName(matcher.group(1));
+                                            entryInfo.setNick(matcher.group(1));
+                                            entryInfo.setDiscriminator(matcher.group(2));
+                                        }
                                     }
                                 }
                             }
