@@ -63,8 +63,9 @@ public class WelcomeUserListener extends DiscordEventListener {
         if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
             User user = event.getUser();
             try {
-                user.openPrivateChannel().queue(c -> contextService.withContext(event.getGuild(), () ->
-                        send(event, c, message.getJoinMessage(), message.isJoinRichEnabled())));
+                contextService.queue(event.getGuild(), user.openPrivateChannel(), c -> {
+                    send(event, c, message.getJoinMessage(), message.isJoinRichEnabled());
+                });
             } catch (Exception e) {
                 LOGGER.error("Could not open private channel for user {}", user, e);
             }

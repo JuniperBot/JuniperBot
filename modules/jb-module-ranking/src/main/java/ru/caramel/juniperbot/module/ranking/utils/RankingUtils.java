@@ -32,15 +32,19 @@ public final class RankingUtils {
         return level;
     }
 
+    public static long getRemainingExp(long totalExp) {
+        long remaining = totalExp;
+        for (int i = 0; i < getLevelFromExp(totalExp); i++) {
+            remaining -= getLevelExp(i);
+        }
+        return remaining;
+    }
+
     public static RankingInfo calculateInfo(Ranking ranking) {
         RankingInfo info = new RankingInfo(ranking.getMember());
         info.setTotalExp(ranking.getExp());
         info.setLevel(getLevelFromExp(ranking.getExp()));
-        long remaining = info.getTotalExp();
-        for (int i = 0; i < info.getLevel(); i++) {
-            remaining -= getLevelExp(i);
-        }
-        info.setRemainingExp(remaining);
+        info.setRemainingExp(getRemainingExp(ranking.getExp()));
         info.setLevelExp(getLevelExp(info.getLevel()));
         info.setRank(ranking.getRank());
         return info;

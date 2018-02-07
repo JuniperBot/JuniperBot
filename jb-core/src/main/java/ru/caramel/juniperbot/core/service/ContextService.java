@@ -17,12 +17,13 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface ContextService {
 
@@ -61,5 +62,7 @@ public interface ContextService {
     void execute(long serverId, Runnable action);
 
     void execute(Guild guild, Runnable action);
+
+    <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success);
 
 }

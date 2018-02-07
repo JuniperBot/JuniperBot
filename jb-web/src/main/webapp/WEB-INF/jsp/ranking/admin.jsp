@@ -255,7 +255,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <div id="import-content" class="hidden">
     <p><spring:message code="page.ranking.admin.modal.import.content.1"/></p>
-    <p><spring:message code="page.ranking.admin.modal.import.content.2" arguments="${serverId}"/></p>
+    <p><spring:message code="page.ranking.admin.modal.import.content.2" arguments="${serverId.toString()}"/></p>
     <div class="callout callout-warning no-margin">
         <p><spring:message code="page.ranking.admin.modal.import.content.hint.1"/></p>
         <p><spring:message code="page.ranking.admin.modal.import.content.hint.2"/></p>
