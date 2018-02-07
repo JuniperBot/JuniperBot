@@ -112,7 +112,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
         instance.setScheduledStep(scheduler.schedule(() -> {
             if (!MafiaState.FINISH.equals(instance.getState())) {
                 contextService.withContext(instance.getGuild(), () -> {
-                    if (onEnd(null, instance)) {
+                    if (!instance.getGuild().isAvailable() || onEnd(null, instance)) {
                         mafiaService.stop(instance);
                     }
                 });

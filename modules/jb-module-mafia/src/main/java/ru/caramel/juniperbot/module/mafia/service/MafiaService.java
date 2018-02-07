@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -38,7 +39,10 @@ import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class MafiaService implements ModuleListener {
@@ -86,14 +90,20 @@ public class MafiaService implements ModuleListener {
                 || requestedBy.hasPermission(Permission.ADMINISTRATOR))) {
             return false;
         }
-        stop(instance, true);
+        stop(instance);
         return true;
     }
 
-    public void stop(MafiaInstance instance) {
-        instance.setState(MafiaState.FINISH);
+    public void stop(Guild guild) {
+        Set<MafiaInstance> guildInstances = instances.values().stream()
+                .filter(e -> Objects.equals(guild, e.getGuild())).collect(Collectors.toSet());
+        guildInstances.forEach(this::stop);
+    }
 
-        if (!MafiaInstance.IGNORED_REASON.equals(instance.getEndReason())) {
+    public void stop(MafiaInstance instance) {
+        instance.stop();
+        instance.setState(MafiaState.FINISH);
+        if (instance.getGuild().isAvailable() && !MafiaInstance.IGNORED_REASON.equals(instance.getEndReason())) {
             String stopReason = StringUtils.isNotEmpty(instance.getEndReason())
                     ? instance.getEndReason()
                     : messageService.getMessage("mafia.stop.message");
@@ -101,24 +111,27 @@ public class MafiaService implements ModuleListener {
             EmbedBuilder builder = messageService.getBaseEmbed();
             builder.setTitle(messageService.getMessage("mafia.name"));
             builder.setDescription(stopReason);
-            instance.getChannel().sendMessage(builder.build()).complete();
+            try {
+                instance.getChannel().sendMessage(builder.build()).queue();
+            } catch (Exception e) {
+                LOGGER.warn("Cannot send end message", e);
+            }
         }
 
         if (instance.getGoonChannel() != null) {
-            instance.getGoonChannel().delete().complete();
+            if (instance.getGuild().isAvailable()) {
+                try {
+                    instance.getGoonChannel().delete().queue();
+                } catch (Exception e) {
+                    LOGGER.warn("Cannot delete goon channel", e);
+                }
+            }
             instances.remove(instance.getGoonChannel().getIdLong());
         }
         if (CollectionUtils.isNotEmpty(instance.getListenedMessages())) {
             reactionsListener.unsubscribeAll(instance.getListenedMessages());
         }
         instances.remove(instance.getChannel().getIdLong());
-    }
-
-    public void stop(MafiaInstance instance, boolean cancelScheduled) {
-        if (cancelScheduled) {
-            instance.stop();
-        }
-        stop(instance);
     }
 
     public MafiaInstance getRelatedInstance(long channelId) {
@@ -141,7 +154,7 @@ public class MafiaService implements ModuleListener {
             return false;
         }
         if (instance.done(user)) {
-            stop(instance, true);
+            stop(instance);
         }
         return true;
     }
@@ -150,7 +163,7 @@ public class MafiaService implements ModuleListener {
     public void onShutdown() {
         instances.values().forEach(e -> {
             try {
-                contextService.withContext(e.getGuild(), () -> stop(e, true));
+                contextService.withContext(e.getGuild(), () -> stop(e));
             } catch (Exception ex) {
                 LOGGER.error("Could not stop correctly mafia {}", e.getChannel(), ex);
             }
@@ -165,7 +178,7 @@ public class MafiaService implements ModuleListener {
                 if (!v.isInState(MafiaState.FINISH)) {
                     contextService.withContext(v.getGuild(),
                             () -> v.setEndReason(messageService.getMessage("mafia.stop.inactive.message")));
-                    stop(v, true);
+                    stop(v);
                 }
             }
         });
