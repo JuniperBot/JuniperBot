@@ -1,0 +1,9 @@
+0,CONTACTID *,*,*,<contactid><star/></contactid>,contactfunctions.aiml
+0,MULTIPLEIDS *,*,*,<multipleids><star/></multipleids>,contactfunctions.aiml
+0,ADDINFO DISPLAYNAME * DIALNUMBER * PHONETYPE * EMAILADDRESS * EMAILTYPE * BIRTHDAY *,*,*,<addinfo>#Newline<displayname><star/></displayname>#Newline<dialnumber><srai>DENORMALIZE <star index="2"/></srai></dialnumber>#Newline<phonetype><star index="3"/></phonetype>#Newline<emailaddress><srai>DENORMALIZE <star index="4"/></srai></emailaddress>#Newline<emailtype><star index="5"/></emailtype>#Newline<birthday><star index="6"/></birthday>#Newline</addinfo>,contactfunctions.aiml
+0,DISPLAYNAME *,*,*,<displayname><star/></displayname>,contactfunctions.aiml
+0,DIALNUMBER * *,*,*,<dialnumber><type><star/></type><id><star index="2"/></id></dialnumber>,contactfunctions.aiml
+0,DIALNUMBER *,*,*,unknown,contactfunctions.aiml
+0,CONTACTBIRTHDAY *,*,*,<contactbirthday><star/></contactbirthday>,contactfunctions.aiml
+0,EMAILADDRESS * *,*,*,<emailaddress><type><star/></type><id><star index="2"/></id></emailaddress>,contactfunctions.aiml
+0,EMAILADDRESS *,*,*,unknown,contactfunctions.aiml

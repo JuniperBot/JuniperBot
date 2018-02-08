@@ -1,0 +1,43 @@
+0,SEASON,*,*,<think><set var="month"><date format="%B" jformat="MMMMMMMMM"/></set>#Newline</think>#Newline<condition var="month">#Newline<li><value>January</value>Winter</li>#Newline<li><value>February</value>Winter</li>#Newline<li><value>March</value>Winter</li>#Newline<li><value>April</value>Spring</li>#Newline<li><value>May</value>Spring</li>#Newline<li><value>June</value>Summer</li>#Newline<li><value>July</value>Summer</li>#Newline<li><value>August</value>Summer</li>#Newline<li><value>September</value>Fall</li>#Newline<li><value>October</value>Fall</li>#Newline<li><value>November</value>Winter</li>#Newline<li><value>December</value>Winter</li>#Newline<li>unknown</li>#Newline</condition>,date.aiml
+0,DAY,*,*,Today is <date format="%A" jformat="EEEEEEEEEE"/>,date.aiml
+0,TOMORROW ^,*,*,<think><set var="today"><date format="%A" jformat="EEEEEEEEEE"/></set></think>#Newline<map name="tomorrow"><get var="today"/></map>,date.aiml
+0,YEAR ^,*,*,This is <date format="%Y" jformat="yyyy"/>,date.aiml
+0,NEXT YEAR ^,*,*,<map><name>successor</name><date format="%Y" jformat="yyyy"/></map>,date.aiml
+0,LAST YEAR ^,*,*,<map><name>predecessor</name><date format="%Y" jformat="yyyy"/></map>,date.aiml
+0,MONTH,*,*,This is <date format="%B" jformat="MMMMMMMMM"/>,date.aiml
+0,TIME,*,*,The time is <date format="%I:%M %p" jformat="h:mm a"/>,date.aiml
+0,DATE,*,*,Today is <date format="%B %d#Comma %Y" jformat="MMMMMMMMM dd#Comma yyyy"/>,date.aiml
+0,DAY PHASE,*,*,<think>#Newline<set var="hour"><date format="%I" jformat="h"/></set>#Newline<set var="ampm"><date format="%p" jformat="a"/></set>#Newline</think>#Newline<condition>#Newline<li value="AM" var="ampm">Morning</li>#Newline<li><condition var="hour">#Newline    <li value="12">Noon</li>#Newline    <li value="1">Afternoon</li>#Newline    <li value="2">Afternoon</li>#Newline    <li value="3">Afternoon</li>#Newline    <li value="4">Afternoon</li>#Newline    <li value="5">Afternoon</li>#Newline    <li value="6">Afternoon</li>#Newline    <li>Night</li>#Newline  </condition>#Newline</li>#Newline</condition>,date.aiml
+0,DATE AND TIME,*,*,The date and time is <date/>,date.aiml
+0,DAYS UNTIL CHRISTMAS,*,*,<interval format="%B %d" jformat="MMMMMMMMM dd">#Newline<style>days</style>#Newline<from><date format="%B %d" jformat="MMMMMMMMM dd"/></from>#Newline<to>December 25</to>#Newline</interval> days until Christmas.,date.aiml
+0,DAYS UNTIL <SET>MONTH</SET> <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<interval format="%B %d %Y" jformat="MMMMMMMMM dd yyyy">#Newline<style>days</style>#Newline<from><date format="%B %d %Y" jformat="MMMMMMMMM dd yyyy"/></from>#Newline<to><star/> <star index="2"/> <star index="3"/></to>#Newline</interval> days.,date.aiml
+0,DAYS UNTIL <SET>MONTH</SET> <SET>NUMBER</SET>,*,*,<interval format="%B %d %Y" jformat="MMMMMMMMM dd yyyy">#Newline<style>days</style>#Newline<from><date format="%B %d %Y" jformat="MMMMMMMMM dd yyyy"/></from>#Newline<to><star/> <star index="2"/> <date format="%Y" jformat="yyyy"/></to>#Newline</interval> days.,date.aiml
+0,DATE TOMORROW,*,*,<srai>TOMORROWDATE <date format="%B %d %Y" jformat="MMMMMMMMM dd yyyy"/></srai>,date.aiml
+0,TOMORROWDATE * <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<star/> <map name="successor"><star index="2"/></map>#Comma <star index="3"/>,date.aiml
+0,TOMORROWDATE JANUARY 31 <SET>NUMBER</SET>,*,*,February 1#Comma <star/>,date.aiml
+0,TOMORROWDATE FEBRUARY 28 2012,*,*,February 29#Comma <star/>,date.aiml
+0,TOMORROWDATE FEBRUARY 28 2016,*,*,February 29#Comma 2016,date.aiml
+0,TOMORROWDATE FEBRUARY 28 2020,*,*,February 29#Comma 2020,date.aiml
+0,TOMORROWDATE FEBRUARY 28 2024,*,*,February 29#Comma 2024,date.aiml
+0,TOMORROWDATE FEBRUARY 28 2028,*,*,February 29#Comma 2028,date.aiml
+0,TOMORROWDATE FEBRUARY 28 <SET>NUMBER</SET>,*,*,March 1#Comma <star/>,date.aiml
+0,TOMORROWDATE FEBRUARY 29 <SET>NUMBER</SET>,*,*,March 1#Comma <star/>,date.aiml
+0,TOMORROWDATE MARCH 31 <SET>NUMBER</SET>,*,*,April 1#Comma <star/>,date.aiml
+0,TOMORROWDATE APRIL 30 <SET>NUMBER</SET>,*,*,May 1#Comma <star/>,date.aiml
+0,TOMORROWDATE MAY 31 <SET>NUMBER</SET>,*,*,June 1#Comma <star/>,date.aiml
+0,TOMORROWDATE JUNE 30 <SET>NUMBER</SET>,*,*,July 1#Comma <star/>,date.aiml
+0,TOMORROWDATE JULY 31 <SET>NUMBER</SET>,*,*,August 1#Comma <star/>,date.aiml
+0,TOMORROWDATE AUGUST 31 <SET>NUMBER</SET>,*,*,September 1#Comma <star/>,date.aiml
+0,TOMORROWDATE SEPTEMBER 30 <SET>NUMBER</SET>,*,*,October 1#Comma <star/>,date.aiml
+0,TOMORROWDATE OCTOBER 31 <SET>NUMBER</SET>,*,*,November 1#Comma <star/>,date.aiml
+0,TOMORROWDATE NOVEMBER 30 <SET>NUMBER</SET>,*,*,December 1#Comma <star/>,date.aiml
+0,TOMORROWDATE DECEMBER 31 <SET>NUMBER</SET>,*,*,January 1#Comma <map name="successor"><star/></map>,date.aiml
+0,DAYAFTERTOMORROWDATE * <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<srai>TOMORROWDATE <srai>TOMORROWDATE <star/> <star index="2"/> <star index="3"/></srai></srai>,date.aiml
+0,DAYAFTERTOMORROWDATE,*,*,<srai>DATE IN 2 DAYS</srai>,date.aiml
+0,DAY AFTER TOMORROW,*,*,<map name="tomorrow"><map name="tomorrow"><date format="%A" jformat="EEEEEEEEEE"/></map></map>,date.aiml
+0,DATE IN <SET>NUMBER</SET> DAYS,*,*,<think><set var="days"><star/></set>#Newline<set var="date"><date format="%B %d %Y" jformat="MMMMMMMMM dd yyyy"/></set>#Newline</think>#Newline<condition var="days">#Newline<li value="0"><get var="date"/></li>#Newline<li><think><set var="date"><srai>TOMORROWDATE <get var="date"/></srai></set> <set var="days"><map name="predecessor"><get var="days"/></map></set></think> <loop/></li>#Newline</condition>,date.aiml
+0,DAYS UNTIL <SET>WEEKDAY</SET>,*,*,<think>#Newline<set var="day"><star/></set>#Newline<set var="today"><date format="%A" jformat="EEEEEEEEEE"/></set>#Newline<set var="days">0</set></think>#Newline<condition var="today">#Newline<li><value><get var="day"/></value><get var="days"/></li>#Newline<li><think><set var="today"><map name="tomorrow"><get var="today"/></map></set> <set var="days"><map name="successor"><get var="days"/></map></set></think> <loop/></li>#Newline</condition>,date.aiml
+0,DATE ON <SET>WEEKDAY</SET>,*,*,<srai>DATE IN <srai>DAYS UNTIL <star/></srai> DAYS</srai>,date.aiml
+0,DATE ON WEEKEND,*,*,<srai>DATE IN <srai>DAYS UNTIL SATURDAY</srai> DAYS</srai>,date.aiml
+0,DATE A WEEK FROM <SET>WEEKDAY</SET>,*,*,<srai>DATE IN #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>SUCCESSOR #Newline<srai>DAYS UNTIL <star/></srai>#Newline</srai>#Newline</srai>#Newline</srai>#Newline</srai>#Newline</srai>#Newline</srai>#Newline</srai>#NewlineDAYS</srai>,date.aiml
+0,WEEKDAY IN <SET>NUMBER</SET> DAYS,*,*,<think>#Newline<set var="days"><star/></set>#Newline<set var="day"><date format="%A" jformat="EEEEEEEEEE"/></set>#Newline</think>#Newline<condition var="days">#Newline<li value="0"><get var="day"/></li>#Newline<li><think><set var="day"><map name="tomorrow"><get var="day"/></map></set>#Newline<set var="days"><map name="predecessor"><get var="days"/></map></set></think> <loop/></li>#Newline</condition>,date.aiml

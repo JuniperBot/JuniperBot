@@ -1,0 +1,16 @@
+0,<SET>NUMBER</SET> #,HOW OLD ARE YOU,*,<think><set name="age"><star/></set></think>#Newline<srai>MY AGE IS <star/></srai>,inquiry.aiml
+0,INQUIRY LOCATION,*,*,<srai>INQUIRY LOCATION <get name="location"/></srai>,inquiry.aiml
+0,INQUIRY LOCATION WHERE,*,*,Where are you?,inquiry.aiml
+0,INQUIRY LOCATION *,*,*,<srai>RANDOM PICKUP LINE</srai>,inquiry.aiml
+0,INQUIRY NAME,*,*,<srai>INQUIRY NAME <get name="name"/></srai>,inquiry.aiml
+0,INQUIRY NAME *,*,*,<srai>RANDOM PICKUP LINE</srai>,inquiry.aiml
+0,INQUIRY NAME FRIEND,*,*,What is your name?,inquiry.aiml
+0,INQUIRY AGE,*,*,<srai>INQUIRY AGE <get name="age"/></srai>,inquiry.aiml
+0,INQUIRY AGE HOW MANY,*,*,How old are you?,inquiry.aiml
+0,INQUIRY AGE *,*,*,<srai>RANDOM PICKUP LINE</srai>,inquiry.aiml
+0,INQUIRY GENDER,*,*,<srai>INQUIRY GENDER <get name="gender"/></srai>,inquiry.aiml
+0,INQUIRY GENDER UNKNOWN,*,*,Are you a man or a woman?,inquiry.aiml
+0,INQUIRY GENDER *,*,*,<srai>RANDOM PICKUP LINE</srai>,inquiry.aiml
+0,MAN,ARE YOU A MAN OR A WOMAN,*,<srai>MY GENDER IS MALE</srai>,inquiry.aiml
+0,WOMAN,ARE YOU A MAN OR A WOMAN,*,<srai>MY GENDER IS FEMALE</srai>,inquiry.aiml
+0,<SET>GENDER</SET>,ARE YOU A MAN OR A WOMAN,*,<srai>MY GENDER IS <map><name>gendermap</name><star/></map></srai>,inquiry.aiml

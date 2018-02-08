@@ -1,0 +1,5 @@
+0,JOKE,*,*,<sraix bot="drwallace/jokebot" botid="c98daf062e345a88" host="callmom.pandorabots.com">JOKE</sraix>,sraix_combine.aiml
+0,LIMERICK,*,*,<sraix bot="drwallace/jokebot" botid="c98daf062e345a88" host="callmom.pandorabots.com">LIMERICK</sraix>,sraix_combine.aiml
+0,FAVORITE *,*,*,<sraix bot="drwallace/currentevents" botid="844a85704e345a9a" host="callmom.pandorabots.com">FAVORITE <star/></sraix>,sraix_combine.aiml
+0,RECOMMEND *,*,*,<sraix bot="drwallace/currentevents" botid="844a85704e345a9a" host="callmom.pandorabots.com">RECOMMEND <star/></sraix>,sraix_combine.aiml
+0,DEFINE *,*,*,<think><set name="it">#Newline<set name="topic"><star/></set></set>#Newline<set var="response">#Newline<sraix bot="drwallace/wndef" botid="f038d2f99e345a95" host="callmom.pandorabots.com">WNDEF <star/></sraix></set>#Newline</think>#Newline<get var="response"/>,sraix_combine.aiml

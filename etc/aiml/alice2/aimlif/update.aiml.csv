@@ -1,0 +1,7 @@
+0,TEST DENORMALIZE,*,*,<think>#Newline<set var="x1">555 dash 1212</set>#Newline<set var="x2">drwallace at gmail dot com</set>#Newline<set var="x3">Lparen 3 star 7 point 3 rparen slash 4</set>#Newline</think>#NewlineDenormalize <get var="x1"/> = <denormalize><get var="x1"/></denormalize><br/>#NewlineDenormalize <get var="x2"/> = <denormalize><get var="x2"/></denormalize><br/>#NewlineDenormalize <get var="x3"/> = <denormalize><get var="x3"/></denormalize><br/>,update.aiml
+0,TEST HTML,*,*,<h1>A.L.I.C.E. 2.0</h1> <h2><em>Release</em> 0.9.1</h2>,update.aiml
+0,TEST HTML 2,*,*,<h2><b>SPACE</b> <em>between</em> <b>Words</b></h2>#Newline<b>SPACE</b> <em>between</em> <b>Words</b><br/>#Newline<p>This is a paragraph.  Second sentence.  Third sentence.</p>#Newline<p>New paragraph. <em>Another sentence.</em>  And another</p>,update.aiml
+0,BRAIN VERSION,*,*,A.L.I.C.E. 2.0 Release 0.9.2,update.aiml
+0,TEST CRASH,*,*,<srai>TEST CRASH</srai>,update.aiml
+0,PROGRAM VERSION,*,*,Program AB 0.0.6.24 beta -- AI Foundation Reference AIML 2.1 implementation,update.aiml
+0,BRAIN BUILD,*,*,Mon Sep 21 19:49:01 PDT 2015,update.aiml

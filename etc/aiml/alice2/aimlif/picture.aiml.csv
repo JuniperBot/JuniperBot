@@ -1,0 +1,2 @@
+0,SHOW ME *,*,*,<srai>PICTUREBLAB <star/></srai>#Newline<sraix default="PICFAILED" hint="pic" service="pannous">SHOW ME <star/></sraix>,picture.aiml
+0,PICTUREBLAB *,*,*,<random>#Newline<li>Here you are.</li>#Newline<li>I hope you like this picture.</li>#Newline<li>I have this picture.</li>#Newline<li>There you go.</li>#Newline<li>Look at that <star/>.</li>#Newline<li>This is what <star/> looks like.</li>#Newline<li>I found this pic of <star/>.</li>#Newline<li>I've displayed a picture for you.</li>#Newline</random>,picture.aiml

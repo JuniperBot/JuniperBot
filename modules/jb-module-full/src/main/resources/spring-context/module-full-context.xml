@@ -33,4 +33,5 @@
         <import resource="classpath:spring-context/module-steam-context.xml" />
         <import resource="classpath:spring-context/module-mafia-context.xml" />
         <import resource="classpath:spring-context/module-moderation-context.xml" />
+        <import resource="classpath:spring-context/module-aiml-context.xml" />
 </beans>
