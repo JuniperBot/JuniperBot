@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.function.Function;
 
-public interface CommandsService extends MessageSender {
+public interface CommandsService extends CommandSender {
 
     String EXECUTIONS_METER = "commands.executions.rate";
 
@@ -28,5 +28,7 @@ public interface CommandsService extends MessageSender {
 
     void onMessageReceived(MessageReceivedEvent event);
 
-    void sendMessage(MessageReceivedEvent event, MessageSender sender, Function<String, Boolean> commandCheck);
+    boolean sendMessage(MessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
+
+    void registerHandler(CommandHandler sender);
 }

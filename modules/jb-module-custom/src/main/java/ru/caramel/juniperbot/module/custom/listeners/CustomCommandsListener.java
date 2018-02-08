@@ -21,18 +21,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
-import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 
+import javax.annotation.PostConstruct;
+
 @Component
-public class CustomCommandsListener extends DiscordEventListener {
+public class CustomCommandsListener implements CommandSender, CommandHandler {
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
@@ -48,28 +47,35 @@ public class CustomCommandsListener extends DiscordEventListener {
     @Autowired
     private ConfigService configService;
 
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        commandsService.sendMessage(event, this::sendCustomCommand, e -> {
-            if (event.getGuild() == null) {
-                return false;
-            }
-            String prefix = configService.getPrefix(event.getGuild().getIdLong());
-            if (StringUtils.isEmpty(prefix)) {
-                return false;
-            }
-            if (!e.startsWith(prefix)) {
-                return false;
-            }
-            String key = e.replaceFirst("^" + prefix, "");
-            return commandRepository.existsByKeyAndConfigGuildId(key, event.getGuild().getIdLong());
-        });
+    @PostConstruct
+    public void init() {
+        commandsService.registerHandler(this);
     }
 
-    private void sendCustomCommand(MessageReceivedEvent event, String content, String key, GuildConfig config) {
+    @Override
+    public boolean handleMessage(MessageReceivedEvent event) {
+        return commandsService.sendMessage(event, this, e -> isAnyCustomCommand(event, e));
+    }
+
+    public boolean isAnyCustomCommand(MessageReceivedEvent event, String input) {
+        if (event.getGuild() == null) {
+            return false;
+        }
+        String prefix = configService.getPrefix(event.getGuild().getIdLong());
+        if (StringUtils.isEmpty(prefix)) {
+            return false;
+        }
+        if (!input.startsWith(prefix)) {
+            return false;
+        }
+        String key = input.replaceFirst("^" + prefix, "");
+        return commandRepository.existsByKeyAndConfigGuildId(key, event.getGuild().getIdLong());
+    }
+
+    public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig config) {
         CustomCommand command = commandRepository.findByKeyAndConfig(key, config);
         if (command == null) {
-            return;
+            return false;
         }
         String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
         switch (command.getType()) {
@@ -77,14 +83,20 @@ public class CustomCommandsListener extends DiscordEventListener {
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
                     commandContent = commandContent.substring(args[0].length(), commandContent.length()).trim();
-                    commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
+                    return commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
                 }
                 break;
             case MESSAGE:
                 messageService.sendMessageSilent(event.getChannel()::sendMessage,
                         CommonUtils.trimTo(commandContent, 2000));
-                break;
+                return true;
         }
+        return false;
+    }
+
+    @Override
+    public int getPriority() {
+        return 1;
     }
 
     private MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {

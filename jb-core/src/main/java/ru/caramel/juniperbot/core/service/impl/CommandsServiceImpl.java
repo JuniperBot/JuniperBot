@@ -37,8 +37,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,6 +65,8 @@ public class CommandsServiceImpl implements CommandsService {
 
     private Counter counter;
 
+    private Set<CommandHandler> handlers = new TreeSet<>(Comparator.comparingInt(CommandHandler::getPriority));
+
     @PostConstruct
     public void init() {
         executions = statisticsService.getMeter(EXECUTIONS_METER);
@@ -75,18 +76,24 @@ public class CommandsServiceImpl implements CommandsService {
     @Override
     @Transactional
     public void onMessageReceived(MessageReceivedEvent event) {
-        sendMessage(event, this, commandsHolderService::isAnyCommand);
-    }
-
-    @Override
-    public void sendMessage(MessageReceivedEvent event, MessageSender sender, Function<String, Boolean> commandCheck) {
-        JDA jda = event.getJDA();
         if (event.getAuthor().isBot()) {
             return;
         }
+        if (!sendMessage(event, this, commandsHolderService::isAnyCommand)) {
+            for (CommandHandler handler : handlers) {
+                if (handler.handleMessage(event)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean sendMessage(MessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck) {
+        JDA jda = event.getJDA();
         String content = event.getMessage().getContentRaw().trim();
         if (StringUtils.isEmpty(content)) {
-            return;
+            return false;
         }
 
         String prefix = null;
@@ -108,7 +115,7 @@ public class CommandsServiceImpl implements CommandsService {
 
         String firstPart = input.split("\\s+", 2)[0].trim();
         if (commandCheck != null && !commandCheck.apply(firstPart)) {
-            return;
+            return false;
         }
 
         GuildConfig guildConfig = null;
@@ -123,18 +130,26 @@ public class CommandsServiceImpl implements CommandsService {
         if (content.startsWith(prefix)) {
             String[] args = input.split("\\s+", 2);
             input = args.length > 1 ? args[1] : "";
-            sender.sendCommand(event, input, args[0], guildConfig);
+            return sender.sendCommand(event, input, args[0], guildConfig);
+        }
+        return true;
+    }
+
+    @Override
+    public void registerHandler(CommandHandler handler) {
+        synchronized (this) {
+            handlers.add(handler);
         }
     }
 
     @Override
-    public void sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
+    public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
         Command command = commandsHolderService.getByLocale(key);
         if (command != null && !command.isApplicable(event, guildConfig)) {
-            return;
+            return false;
         }
         if (command == null) {
-            return;
+            return false;
         }
 
         if (event.getChannelType().isGuild()) {
@@ -149,7 +164,7 @@ public class CommandsServiceImpl implements CommandsService {
                     if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
                         messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
                     }
-                    return;
+                    return true;
                 }
             }
         }
@@ -169,5 +184,6 @@ public class CommandsServiceImpl implements CommandsService {
         } finally {
             executions.mark();
         }
+        return true;
     }
 }
