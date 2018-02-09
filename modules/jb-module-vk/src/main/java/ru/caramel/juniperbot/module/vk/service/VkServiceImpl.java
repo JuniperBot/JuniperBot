@@ -199,7 +199,8 @@ public class VkServiceImpl implements VkService {
 
         List<EmbedBuilder> processEmbeds = new ArrayList<>();
 
-        attachments.forEach(e -> processAttachment(connection, processEmbeds, message, e));
+        Set<String> images = new HashSet<>();
+        attachments.forEach(e -> processAttachment(images, connection, processEmbeds, message, e));
 
         List<EmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
 
@@ -243,24 +244,20 @@ public class VkServiceImpl implements VkService {
                 ? prevBuilder : initBuilder(message, builders);
     }
 
-    private EmbedBuilder addField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
+    private void addField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
         EmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
         prevBuilder.addField(name, CommonUtils.maskDiscordFormat(value), inline);
-        return prevBuilder;
     }
 
-    private EmbedBuilder addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
+    private void addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
         EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
-        if (prevBuilder != null && prevBuilder.getFields().size() == 24) { // do not add last empty fields
+        if (prevBuilder == null || prevBuilder.getFields().size() == 24) { // do not add last empty fields
             initBuilder(message, builders);
         }
-        if (prevBuilder.getFields().isEmpty()) { // do not add first field
-            return prevBuilder;
-        }
-        return addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
+        addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
     }
 
-    private boolean hasImage(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {
+    private boolean hasImage(List<EmbedBuilder> builders) {
         EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
         try {
             if (prevBuilder != null && FieldUtils.readField(prevBuilder, "image", true) != null) {
@@ -272,14 +269,13 @@ public class VkServiceImpl implements VkService {
         return false;
     }
 
-    private void processAttachment(VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
+    private void processAttachment(Set<String> images, VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
         if (connection.getAttachments() != null && connection.getAttachments().contains(attachment.getType())) {
             return; // ignore attachments
         }
         EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
 
-        Set<String> images = new HashSet<>();
-        boolean hasImage = hasImage(message, builders);
+        boolean hasImage = hasImage(builders);
         switch (attachment.getType()) {
             case PHOTO:
                 Photo photo = attachment.getPhoto();
@@ -320,7 +316,7 @@ public class VkServiceImpl implements VkService {
                 if (audio == null) {
                     return;
                 }
-                if (hasImage(message, builders)) {
+                if (hasImage(builders)) {
                     initBuilder(message, builders);
                 }
                 if (StringUtils.isNotEmpty(audio.getArtist()) || StringUtils.isNotEmpty(audio.getTitle())) {
