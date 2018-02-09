@@ -47,4 +47,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="3.9-29012018-4" author="caramel">
+        <addColumn tableName="vk_connection">
+            <column name="attachments" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

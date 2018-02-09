@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.dto;
 
+import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
@@ -23,6 +24,7 @@ import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,6 +40,8 @@ public class VkConnectionDto implements Serializable {
     private String name;
 
     private VkConnectionStatus status;
+
+    private List<WallpostAttachmentType> attachments;
 
     @Valid
     private WebHookDto webHook;

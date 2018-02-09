@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.utils;
 
 import net.dv8tion.jda.core.entities.User;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTime;
@@ -28,6 +29,8 @@ import org.springframework.web.util.UriUtils;
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,5 +181,13 @@ public final class CommonUtils {
 
     public static DateTime getDate(OffsetDateTime offsetDateTime) {
         return new DateTime(offsetDateTime.toEpochSecond() * 1000).withZone(DateTimeZone.UTC);
+    }
+
+    public static <T> List<T> reverse(List<T> collection, List<T> part) {
+        List<T> arrayList = new ArrayList<>(collection);
+        if (CollectionUtils.isNotEmpty(part)) {
+            arrayList.removeAll(part);
+        }
+        return arrayList;
     }
 }

@@ -155,7 +155,8 @@ function VkConnector(lang) {
             '    <div class="input-group">' +
             '      <input type="text" value="' + lang.awaitingConnection + '" class="form-control" disabled="">' +
             '      <span class="input-group-btn">' +
-            '        <button type="button" class="btn btn-danger btn-flat vk-remove-btn" data-vk-id="' + id + '" data-vk-name="' + name + '">' +
+            '        <button type="button" class="btn btn-danger btn-flat vk-remove-btn" title="' + lang.modalDeleteTitle
+                            + '" data-toggle="tooltip" data-container="body" data-placement="left" data-vk-id="' + id + '" data-vk-name="' + name + '">' +
             '          <i class="fa fa-remove"></i>' +
             '        </button>' +
             '      </span>' +

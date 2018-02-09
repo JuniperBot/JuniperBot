@@ -26,6 +26,7 @@ import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
@@ -36,6 +37,7 @@ import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
+import ru.caramel.juniperbot.module.vk.service.VkService;
 import ru.caramel.juniperbot.web.dto.*;
 
 import java.util.HashMap;
@@ -72,6 +74,9 @@ public class ConfigDao extends AbstractDao {
     @Autowired
     private ModerationService moderationService;
 
+    @Autowired
+    private VkService vkService;
+
     @Transactional
     public ConfigDto getConfig(long serverId) {
         GuildConfig config = configService.getOrCreate(serverId);
@@ -84,6 +89,8 @@ public class ConfigDao extends AbstractDao {
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(serverId);
         List<VkConnectionDto> vkConnectionDtos = mapper.getVkConnectionDtos(vkConnections);
         if (CollectionUtils.isNotEmpty(vkConnections)) {
+            vkConnectionDtos.forEach(e -> e.setAttachments(CommonUtils.reverse(vkService.getAttachmentTypes(),
+                    e.getAttachments())));
             for (VkConnection connection : vkConnections) {
                 WebHookDto vkHookDto = webHookDao.getDtoForView(config.getGuildId(), connection.getWebHook());
                 vkConnectionDtos.stream()
@@ -155,12 +162,15 @@ public class ConfigDao extends AbstractDao {
                 VkConnection connection = vkConnections.stream()
                         .filter(e1 -> e.getId().equals(e1.getId()))
                         .findFirst().orElse(null);
-                if (connection != null
-                        && e.getWebHook() != null
-                        && e.getWebHook().getChannelId() != null
-                        && VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
-                    mapper.updateWebHook(e.getWebHook(), connection.getWebHook());
-                    updateMap.put(connection, e.getWebHook().getChannelId());
+                if (connection != null) {
+                    connection.setAttachments(CommonUtils.reverse(vkService.getAttachmentTypes(), e.getAttachments()));
+                    if (e.getWebHook() != null
+                            && e.getWebHook().getChannelId() != null
+                            && VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
+                        mapper.updateWebHook(e.getWebHook(), connection.getWebHook());
+                        updateMap.put(connection, e.getWebHook().getChannelId());
+                    }
+                    vkConnectionRepository.save(connection);
                 }
             });
             updateMap.forEach((k, v) -> webHookService.updateWebHook(config.getGuildId(), v, k.getWebHook(), k.getName()));

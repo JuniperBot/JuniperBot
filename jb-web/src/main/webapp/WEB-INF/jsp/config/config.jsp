@@ -19,6 +19,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <spring:url value="/config/${serverId}" var="actionUrl" />
 
+<spring:message code="global.switch.on" var="switchOn"/>
+<spring:message code="global.switch.off" var="switchOff"/>
+
 <div id="vk-connect-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vk-connect-modal-label">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -276,6 +279,55 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
                         <div id="vk-connection-list">
                             <c:forEach items="${config.vkConnections}" var="vkConnection" varStatus="status">
+                                <div id="vk_edit_${status.index}" class="modal bootstrap-dialog type-warning fade size-normal" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <div class="bootstrap-dialog-header">
+                                                    <div class="bootstrap-dialog-close-button">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+                                                    <div class="bootstrap-dialog-title">
+                                                        <spring:message code="page.config.vk.modal.edit.title"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="bootstrap-dialog-body">
+                                                    <div class="bootstrap-dialog-message">
+                                                        <p><spring:message code="page.config.vk.modal.edit.content"/></p>
+                                                        <ul class="list-group vk-attachments">
+                                                            <c:forEach items="${vkAttachmentTypes}" var="attachmentType">
+                                                                <li class="list-group-item">
+                                                                    <label class="pull-left">
+                                                                        <spring:message code="com.vk.api.sdk.objects.wall.WallpostAttachmentType.${attachmentType}"/>
+                                                                    </label>
+                                                                    <div class="pull-right">
+                                                                        <form:checkbox id="vk_cb_${status.index}_${attachmentType}"
+                                                                                       path="vkConnections[${status.index}].attachments"
+                                                                                       value="${attachmentType}"
+                                                                                       data-toggle="toggle"
+                                                                                       data-onstyle="warning"
+                                                                                       data-size="small"
+                                                                                       data-on="${switchOn}"
+                                                                                       data-off="${switchOff}"/>
+                                                                    </div>
+                                                                    <div class="clearfix"></div>
+                                                                </li>
+                                                            </c:forEach>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-warning">
+                                                    <spring:message code="global.button.save" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <form:hidden path="vkConnections[${status.index}].id" />
                                 <form:hidden path="vkConnections[${status.index}].webHook.available" />
                                 <div class="form-group">
@@ -283,10 +335,10 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                     <div class="col-sm-8">
                                         <div class="input-group">
                                             <c:if test="${config.vkConnections[status.index].status == 'CONNECTED'}">
-                                            <span class="input-group-addon">
-                                                <form:checkbox path="vkConnections[${status.index}].webHook.enabled"
-                                                               disabled="${not config.vkConnections[status.index].webHook.available}" />
-                                            </span>
+                                                <span class="input-group-addon">
+                                                    <form:checkbox path="vkConnections[${status.index}].webHook.enabled"
+                                                                   disabled="${not config.vkConnections[status.index].webHook.available}" />
+                                                </span>
                                                 <form:select id="vk-connection-${status.index}"
                                                              path="vkConnections[${status.index}].webHook.channelId" disabled="${not config.vkConnections[status.index].webHook.available}"
                                                              cssClass="form-control select2" cssStyle="width: 100%;"
@@ -298,12 +350,27 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                                        value="<spring:message code="page.config.vk.awaiting"/>">
                                             </c:if>
                                             <span class="input-group-btn">
-                                        <button type="button" class="btn btn-danger btn-flat vk-remove-btn"
-                                                data-vk-id="${config.vkConnections[status.index].id}"
-                                                data-vk-name="${config.vkConnections[status.index].name}">
-                                            <i class="fa fa-remove"></i>
-                                        </button>
-                                    </span>
+                                                <span data-toggle="modal" data-target="#vk_edit_${status.index}">
+                                                    <button type="button" class="btn vk-attachments-btn"
+                                                            title="<spring:message code="page.config.vk.modal.edit.title"/>"
+                                                            data-toggle="tooltip"
+                                                            data-container="body"
+                                                            data-toggle="modal" data-target="#myModal"
+                                                            data-vk-id="${config.vkConnections[status.index].id}"
+                                                            data-vk-name="${config.vkConnections[status.index].name}">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </span>
+                                                <button type="button" class="btn btn-danger vk-remove-btn"
+                                                        title="<spring:message code="page.config.vk.modal.delete.title"/>"
+                                                        data-toggle="tooltip"
+                                                        data-container="body"
+                                                        data-placement="left"
+                                                        data-vk-id="${config.vkConnections[status.index].id}"
+                                                        data-vk-name="${config.vkConnections[status.index].name}">
+                                                    <i class="fa fa-remove"></i>
+                                                </button>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
