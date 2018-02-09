@@ -29,6 +29,7 @@ import com.vk.api.sdk.objects.photos.PhotoSizes;
 import com.vk.api.sdk.objects.polls.Poll;
 import com.vk.api.sdk.objects.video.Video;
 import com.vk.api.sdk.objects.wall.*;
+import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
@@ -53,6 +54,7 @@ import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
 
+import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,7 +80,9 @@ public class VkServiceImpl implements VkService {
 
     private final static Map<WallpostAttachmentType, Integer> ATTACHMENT_PRIORITY;
 
-    // /[^0-9a-zA-Z_\.]/g
+    @Getter
+    private List<WallpostAttachmentType> attachmentTypes;
+
     static {
         Map<Integer, String> types = new HashMap<>();
         types.put(1, "vk.message.documentType.text");
@@ -91,7 +95,7 @@ public class VkServiceImpl implements VkService {
         types.put(8, "vk.message.documentType.unknown");
         DOC_TYPE_NAMES = Collections.unmodifiableMap(types);
 
-        Map<WallpostAttachmentType, Integer> priorities = new HashMap<>();
+        Map<WallpostAttachmentType, Integer> priorities = new LinkedHashMap<>();
         priorities.put(WallpostAttachmentType.PHOTO, 10);
         priorities.put(WallpostAttachmentType.POSTED_PHOTO, 9);
         priorities.put(WallpostAttachmentType.GRAFFITI, 8);
@@ -122,6 +126,11 @@ public class VkServiceImpl implements VkService {
 
     @Autowired
     private ContextService contextService;
+
+    @PostConstruct
+    public void init() {
+        attachmentTypes = Collections.unmodifiableList(new ArrayList<>(ATTACHMENT_PRIORITY.keySet()));
+    }
 
     @Override
     @Transactional
@@ -167,15 +176,15 @@ public class VkServiceImpl implements VkService {
         if (!connection.getWebHook().isValid()) {
             return;
         }
-        contextService.initContext(connection.getConfig().getGuildId());
-        discordService.executeWebHook(connection.getWebHook(), createMessage(connection.getConfig(), message), e -> {
-            e.setEnabled(false);
-            hookRepository.save(e);
+        contextService.withContext(connection.getConfig().getGuildId(), () -> {
+            discordService.executeWebHook(connection.getWebHook(), createMessage(connection, message), e -> {
+                e.setEnabled(false);
+                hookRepository.save(e);
+            });
         });
-        contextService.resetContext();
     }
 
-    private WebhookMessage createMessage(GuildConfig config, CallbackMessage<CallbackWallPost> message) {
+    private WebhookMessage createMessage(VkConnection connection, CallbackMessage<CallbackWallPost> message) {
         CallbackWallPost post = message.getObject();
         if (PostType.SUGGEST.equals(post.getPostType())) {
             return null; // do not post suggestions
@@ -190,7 +199,7 @@ public class VkServiceImpl implements VkService {
 
         List<EmbedBuilder> processEmbeds = new ArrayList<>();
 
-        attachments.forEach(e -> processAttachment(processEmbeds, message, e));
+        attachments.forEach(e -> processAttachment(connection, processEmbeds, message, e));
 
         List<EmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
 
@@ -263,9 +272,13 @@ public class VkServiceImpl implements VkService {
         return false;
     }
 
-    private void processAttachment(List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
+    private void processAttachment(VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
+        if (connection.getAttachments() != null && connection.getAttachments().contains(attachment.getType())) {
+            return; // ignore attachments
+        }
         EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
 
+        Set<String> images = new HashSet<>();
         boolean hasImage = hasImage(message, builders);
         switch (attachment.getType()) {
             case PHOTO:
@@ -274,7 +287,7 @@ public class VkServiceImpl implements VkService {
                     return;
                 }
                 builder = initBuilder(message, builders);
-                setPhoto(builder, message, photo, true);
+                setPhoto(images, builder, message, photo, true);
                 break;
             case POSTED_PHOTO:
                 PostedPhoto postedPhoto = attachment.getPostedPhoto();
@@ -282,7 +295,7 @@ public class VkServiceImpl implements VkService {
                     return;
                 }
                 builder = initBuilder(message, builders);
-                builder.setImage(coalesce(postedPhoto.getPhoto604(), postedPhoto.getPhoto130()));
+                setPhoto(images, builder, postedPhoto.getPhoto604(), postedPhoto.getPhoto130());
                 break;
             case VIDEO:
                 Video video = attachment.getVideo();
@@ -297,7 +310,7 @@ public class VkServiceImpl implements VkService {
 
                 builder = initBuilder(message, builders);
                 setText(builder, video.getTitle(), url);
-                builder.setImage(coalesce(video.getPhoto800(), video.getPhoto320(), video.getPhoto130()));
+                setPhoto(images, builder, video.getPhoto800(), video.getPhoto320(), video.getPhoto130());
                 if (video.getDate() != null) {
                     builder.setTimestamp(new Date(((long) video.getDate()) * 1000).toInstant());
                 }
@@ -365,7 +378,7 @@ public class VkServiceImpl implements VkService {
                     if (builder == null || hasImage) {
                         builder = initBuilder(message, builders);
                     }
-                    builder.setImage(imgUrl);
+                    setPhoto(images, builder, imgUrl);
                 }
                 addField(message, builders, messageService.getMessage("vk.message.documentType", messageService.getMessage(type)), name, true);
                 break;
@@ -375,7 +388,7 @@ public class VkServiceImpl implements VkService {
                     return;
                 }
                 builder = initBuilder(message, builders);
-                builder.setImage(coalesce(graffiti.getPhoto586(), graffiti.getPhoto200()));
+                setPhoto(images, builder, graffiti.getPhoto586(), graffiti.getPhoto200());
                 break;
             case LINK:
                 Link link = attachment.getLink();
@@ -385,7 +398,7 @@ public class VkServiceImpl implements VkService {
 
                 if (!hasImage && link.getPhoto() != null) {
                     builder = initBuilder(message, builders);
-                    setPhoto(builder, message, link.getPhoto(), false);
+                    setPhoto(images, builder, message, link.getPhoto(), false);
                 }
                 if (hasImage) {
                     initBuilder(message, builders);
@@ -441,7 +454,7 @@ public class VkServiceImpl implements VkService {
 
                 builder = initBuilder(message, builders);
                 if (album.getThumb() != null) {
-                    setPhoto(builder, message, album.getThumb(), false);
+                    setPhoto(images, builder, message, album.getThumb(), false);
                 }
                 builder.setDescription(HtmlUtils.htmlUnescape(album.getDescription()));
 
@@ -454,24 +467,35 @@ public class VkServiceImpl implements VkService {
         }
     }
 
-    private void setPhoto(EmbedBuilder builder, CallbackMessage<CallbackWallPost> message, Photo photo, boolean showText) {
-        String url = String.format(PHOTO_URL,
-                Math.abs(message.getGroupId()),
-                message.getObject().getId(),
-                Math.abs(photo.getOwnerId()),
-                photo.getId());
-
-        if (showText) {
-            setText(builder, photo.getText(), url);
+    private void setPhoto(Set<String> images, EmbedBuilder builder, String... urls) {
+        String imageUrl = coalesce(urls);
+        if (imageUrl != null && images.add(imageUrl)) {
+            builder.setImage(imageUrl);
         }
-        builder.setImage(coalesce(photo.getPhoto2560(),
+    }
+
+    private void setPhoto(Set<String> images, EmbedBuilder builder, CallbackMessage<CallbackWallPost> message, Photo photo, boolean showText) {
+        String imageUrl = coalesce(photo.getPhoto2560(),
                 photo.getPhoto1280(),
                 photo.getPhoto807(),
                 photo.getPhoto604(),
                 photo.getPhoto130(),
-                photo.getPhoto75()));
-        if (photo.getDate() != null) {
-            builder.setTimestamp(new Date(((long) photo.getDate()) * 1000).toInstant());
+                photo.getPhoto75());
+        if (images.add(imageUrl)) {
+            String url = String.format(PHOTO_URL,
+                    Math.abs(message.getGroupId()),
+                    message.getObject().getId(),
+                    Math.abs(photo.getOwnerId()),
+                    photo.getId());
+
+            if (showText) {
+                setText(builder, photo.getText(), url);
+            }
+
+            builder.setImage(imageUrl);
+            if (photo.getDate() != null) {
+                builder.setTimestamp(new Date(((long) photo.getDate()) * 1000).toInstant());
+            }
         }
     }
 

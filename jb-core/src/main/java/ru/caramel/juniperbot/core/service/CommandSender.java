@@ -14,27 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.service;
+package ru.caramel.juniperbot.core.service;
 
-import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
-import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
-import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 
-import java.util.List;
-
-public interface VkService {
-
-    VkConnection create(GuildConfig config, String name, String code);
-
-    void delete(GuildConfig config, long id);
-
-    VkConnection getForToken(String token);
-
-    String confirm(VkConnection connection, CallbackMessage message);
-
-    void post(VkConnection connection, CallbackMessage<CallbackWallPost> message);
-
-    List<WallpostAttachmentType> getAttachmentTypes();
+public interface CommandSender {
+    boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
 }

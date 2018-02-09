@@ -17,8 +17,12 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
-public interface MessageSender {
-    void sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
+public interface CommandHandler {
+
+    boolean handleMessage(MessageReceivedEvent event);
+
+    default int getPriority() {
+        return 0;
+    }
 }
