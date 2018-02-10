@@ -708,3 +708,14 @@ h6.hyperlink:hover > a {
     width: 200px;
     margin: 0 0 10px 5px;
 }
+
+.list-group.vk-attachments {
+    margin: 0;
+}
+
+.list-group.vk-attachments > li.list-group-item > label  {
+    margin-top: 5px;
+}
+.list-group.vk-attachments div.toggle  {
+    min-width: 60px;
+}

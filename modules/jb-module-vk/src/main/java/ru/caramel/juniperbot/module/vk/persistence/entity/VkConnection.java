@@ -16,14 +16,17 @@
  */
 package ru.caramel.juniperbot.module.vk.persistence.entity;
 
+import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -55,5 +58,9 @@ public class VkConnection extends BaseEntity {
     @Column
     @Enumerated(EnumType.STRING)
     private VkConnectionStatus status;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    private List<WallpostAttachmentType> attachments;
 
 }

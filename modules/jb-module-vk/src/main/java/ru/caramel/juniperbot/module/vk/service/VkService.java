@@ -18,8 +18,11 @@ package ru.caramel.juniperbot.module.vk.service;
 
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
+import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+
+import java.util.List;
 
 public interface VkService {
 
@@ -32,4 +35,6 @@ public interface VkService {
     String confirm(VkConnection connection, CallbackMessage message);
 
     void post(VkConnection connection, CallbackMessage<CallbackWallPost> message);
+
+    List<WallpostAttachmentType> getAttachmentTypes();
 }

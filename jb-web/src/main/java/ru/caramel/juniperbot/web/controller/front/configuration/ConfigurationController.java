@@ -24,6 +24,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.module.vk.service.VkService;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.common.validation.ConfigValidator;
@@ -43,6 +44,9 @@ public class ConfigurationController extends AbstractController {
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private VkService vkService;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -76,9 +80,7 @@ public class ConfigurationController extends AbstractController {
                 .addObject("voiceChannels", getVoiceChannels(serverId))
                 .addObject("textChannels", getTextChannels(serverId))
                 .addObject("roles", getRoles(serverId, false))
-                .addObject("locales", contextService.getSupportedLocales().keySet());
+                .addObject("locales", contextService.getSupportedLocales().keySet())
+                .addObject("vkAttachmentTypes", vkService.getAttachmentTypes());
     }
-
-
-
 }
