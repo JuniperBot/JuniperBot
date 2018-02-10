@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.CommandHandler;
 import ru.caramel.juniperbot.core.service.CommandsService;
+import ru.caramel.juniperbot.core.service.ContextService;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -25,6 +26,9 @@ public class AimlService implements CommandHandler {
 
     @Autowired
     private CommandsService commandsService;
+
+    @Autowired
+    private ContextService contextService;
 
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
@@ -58,7 +62,7 @@ public class AimlService implements CommandHandler {
             return false;
         }
 
-        boolean usingMention = false;
+        boolean usingMention;
         String mention = jda.getSelfUser().getAsMention();
         if (!(usingMention = content.startsWith(mention))) {
             mention = String.format("<@!%s>", jda.getSelfUser().getId());
@@ -67,10 +71,12 @@ public class AimlService implements CommandHandler {
         if (usingMention) {
             String input = content.substring(mention.length()).trim();
             if (StringUtils.isNotBlank(input)) {
-                event.getChannel().sendTyping().queue();
-                Chat chatSession = getSession("juniper_en", event.getAuthor());
-                String respond = chatSession.multisentenceRespond(input);
-                event.getChannel().sendMessage(respond).queue();
+                contextService.execute(event.getGuild(), () -> {
+                    event.getChannel().sendTyping().complete();
+                    Chat chatSession = getSession("juniper_en", event.getAuthor());
+                    String respond = chatSession.multisentenceRespond(input);
+                    event.getChannel().sendMessage(respond).queue();
+                });
                 return true;
             }
         }

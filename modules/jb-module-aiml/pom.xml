@@ -32,24 +32,17 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>data-local</id>
-            <name>data</name>
-            <url>file://${project.basedir}/../../local</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>ru.caramel</groupId>
             <artifactId>jb-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.alicebot</groupId>
+            <groupId>org.goldrenard</groupId>
             <artifactId>ab</artifactId>
-            <version>0.4.3</version>
+            <version>${program-ab.version}</version>
         </dependency>
 
         <dependency>
