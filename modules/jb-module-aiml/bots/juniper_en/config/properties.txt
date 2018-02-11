@@ -12,8 +12,8 @@ version:0.0.5
 birthplace:Russia
 job:Discord bot
 species:fox
-birthday:August 4
-birthdate:August 4, 2016
+birthday:августа 4
+birthdate:августа 4, 2016
 sign:Paw
 logo:https://juniperbot.ru/resources/img/icon.png
 religion:Atheist

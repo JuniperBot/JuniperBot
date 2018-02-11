@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
+import org.alicebot.ab.configuration.BotConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,12 @@ public class AimlService implements CommandHandler {
     }
 
     public Bot createBot(String name) {
-        return bots.computeIfAbsent(name, e -> new Bot(e, path, "chat"));
+        BotConfiguration configuration = BotConfiguration.builder()
+                .name(name)
+                .path(path)
+                .action("chat")
+                .build();
+        return bots.computeIfAbsent(name, e -> new Bot(configuration));
     }
 
     public Chat getSession(String botName, User user) {
