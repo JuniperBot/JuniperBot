@@ -85,7 +85,6 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
 
     private LoadingCache<String, List<DiscordGuildDetails>> guilds = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
-            .weakKeys()
             .maximumSize(10000)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build(

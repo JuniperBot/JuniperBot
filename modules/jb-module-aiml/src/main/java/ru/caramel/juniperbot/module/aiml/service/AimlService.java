@@ -1,5 +1,7 @@
 package ru.caramel.juniperbot.module.aiml.service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
@@ -8,6 +10,8 @@ import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
 import org.alicebot.ab.configuration.BotConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,9 +22,13 @@ import ru.caramel.juniperbot.core.service.ContextService;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AimlService implements CommandHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AimlService.class);
 
     @Value("${aiml.bots.path}")
     private String path;
@@ -33,7 +41,10 @@ public class AimlService implements CommandHandler {
 
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
-    private final Map<User, Chat> sessions = new ConcurrentHashMap<>();
+    private Cache<User, Chat> sessions = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .build();
 
     @PostConstruct
     public void init() {
@@ -51,7 +62,12 @@ public class AimlService implements CommandHandler {
 
     public Chat getSession(String botName, User user) {
         Bot bot = createBot(botName);
-        return sessions.computeIfAbsent(user, e -> new Chat(bot, false, user.getId()));
+        try {
+            return sessions.get(user, () -> new Chat(bot, false, user.getId()));
+        } catch (ExecutionException e) {
+            LOGGER.error("Error creating session", e);
+        }
+        return null;
     }
 
     @Override
@@ -80,8 +96,10 @@ public class AimlService implements CommandHandler {
                 contextService.execute(event.getGuild(), () -> {
                     event.getChannel().sendTyping().complete();
                     Chat chatSession = getSession("juniper_en", event.getAuthor());
-                    String respond = chatSession.multisentenceRespond(input);
-                    event.getChannel().sendMessage(respond).queue();
+                    if (chatSession != null) {
+                        String respond = chatSession.multisentenceRespond(input);
+                        event.getChannel().sendMessage(respond).queue();
+                    }
                 });
                 return true;
             }
