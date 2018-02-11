@@ -1,0 +1,50 @@
+0,TRANSCRIPT,*,*,Sending transcript to <get name="email"/>.#Newline<oob><email><to><get name="email"/></to><subject>Transcript of <bot name="name"/> with <get name="name"/> on <date/></subject><body>#Newline<srai>DIALOG HISTORY</srai></body></email></oob>,oob.aiml
+0,SEND BUG REPORT,*,*,Sending transcript to callmom-info@pandorabots.com.#Newline<oob><email><to>callmom-info@pandorabots.com</to><subject>Transcript of <bot name="name"/> with <get name="name"/> on <date/></subject><body>#Newline<srai>DIALOG HISTORY</srai></body></email></oob>,oob.aiml
+0,REPORT A PROBLEM,*,*,<oob><dialog><title>Would you like to send a bug report?</title><list><item>Yes</item><item>No</item></list></dialog></oob>#NewlineTo help the developers understand your problem#Comma you can choose to send us a transcript of your recent conversation with CallMom.  You can add your own comments to the email message too.  Would you like to send a report?,oob.aiml
+0,YES,WOULD YOU LIKE TO SEND A REPORT,*,<srai>SEND BUG REPORT</srai>,oob.aiml
+0,TEACH ME <SET>LANGUAGE</SET>,*,*,<srai>LANGUAGE</srai> Let's try a searching for "learn <star/>". <oob><search>LEARN <star/></search></oob>,oob.aiml
+0,CLEAR LOG,*,*,Done. <oob><clear>log</clear></oob>,oob.aiml
+0,*,WHAT WOULD YOU LIKE TO WRITE ON TWITTER,*,<srai>TWEET <star/></srai>,oob.aiml
+0,SEND MAIL,*,*,<srai>SEND EMAIL</srai>,oob.aiml
+0,SEND FEATURE REQUEST *,*,*,<think><set name="featurerequest"><star/></set></think> Click send to mail your feature request.  #Newline<oob><email><to>callmom-info@pandorabots.com</to><subject>Feature request <get name="featurerequest"/></subject><body>Dear CallMom developers#Comma I'd like to request that you add this feature to the next version of CallMom: <get name="featurerequest"/>.  Sincerely#Comma <get name="name"/></body></email></oob>,oob.aiml
+0,SHOW ME A VIDEO *,*,*,I'm looking up videos for you.  <oob><search>VIDEO <star/></search></oob>,oob.aiml
+0,SHOW ME A WEBSITE ABOUT *,*,*,Let's try a google search.  <oob><search><star/></search></oob>,oob.aiml
+0,I AM GOING TO KILL *,*,*,You should contact the authorities.  <oob><dial>911</dial></oob>,oob.aiml
+0,GOOGLE,*,*,I'm opening Google search.  <oob><search/></oob>,oob.aiml
+0,GOOGLE *,*,*,<oob><search><star/></search></oob> I'm opening your browser.,oob.aiml
+0,SEARCH *,*,*,I'll try a web search.  <oob><search><star/></search></oob>,oob.aiml
+0,YES,WOULD YOU LIKE TO SEND THIS FEATURE REQUEST *,*,<srai>SEND FEATURE REQUEST <get name="featurerequest"/></srai>,oob.aiml
+0,LAUNCH CAMERA,*,*,Launching the camera.  <oob><camera>on</camera></oob>,oob.aiml
+0,LAUNCH * DOT COM,*,*,Let's go to <star/>.com.  <oob><url>http://<star/>.com</url></oob>,oob.aiml
+0,TACO,*,*,I'm looking for Mexican restaurants near you.  <oob><map>Tacos</map></oob>,oob.aiml
+0,PIZZA,*,*,I'm looking on the map for Pizza places near you.  <oob><map>Pizza</map></oob>,oob.aiml
+0,WHERE ARE THE *,*,*,I'm looking on the map. <oob><map><star/></map></oob>,oob.aiml
+0,WHERE IS A *,*,*,I'll check the map for <star/>.  <oob><map><star/></map></oob>,oob.aiml
+0,WHERE IS PASADENA,*,*,Let me show you on the map.  <oob><map>Pasadena</map></oob>,oob.aiml
+0,WHERE IS *,*,*,<oob><map><star/></map></oob> I'm looking on the map.,oob.aiml
+0,WHERE IS YORKSHIRE,*,*,Let's look on the map.  <oob><map>Yorkshire</map></oob>,oob.aiml
+0,WHERE IS NEW YORK,*,*,Let me show you on the map. <oob><map>New York</map></oob>,oob.aiml
+0,WHERE IS LEEDS,*,*,I'll show you on the map.  <oob><map>Leeds</map></oob>,oob.aiml
+0,WHERE IS INDIA,*,*,I'll show you on the map.  <oob><map>India</map></oob>,oob.aiml
+0,DIALOG TEST,*,*,Testing dialog.  <oob><dialog><list><li>Yes</li><li>No</li></list></dialog></oob>,oob.aiml
+0,ESPN,*,*,Opening ESPN.  <oob><url>http://espn.go.com</url></oob>,oob.aiml
+0,AAA,*,*,Looking up AAA.  <oob><map>AAA</map></oob>,oob.aiml
+0,BROWSE TO *,*,*,<oob><search><star/></search></oob>,oob.aiml
+0,CALL 911,*,*,Now dialing emergency services from your location.  <oob><dial>911</dial></oob>,oob.aiml
+0,PLAY *,*,*,Now loading your choice of music. I hope you like it. Please wait a moment while I load it up. <oob><url>http://www.youtube.com/embed?listType=search&amp;list=<star/>&amp;autoplay=1</url></oob>,oob.aiml
+0,WIFI ON,*,*,Turning on Wifi.  <oob><wifi>on</wifi></oob>,oob.aiml
+0,WIFI OFF,*,*,Turning off Wifi  <oob><wifi>off</wifi></oob>,oob.aiml
+0,HOROSCOPE *,*,*,Let's try a search for your horoscope.  <oob><search>HOROSCOPE <star/></search></oob>,oob.aiml
+0,JOBS *,*,*,I'll try search for jobs.  <oob><search>JOBS <star/></search></oob>,oob.aiml
+0,TWEET *,*,*,<oob><url>https://twitter.com/intent/tweet?source=webclient&amp;text=<star/></url></oob>Please check the message and press Tweet if you are happy.,oob.aiml
+0,WWW DOT * DOT COM,*,*,I'm opening <star/>.com.  <oob><url>http://www.<star/>.com</url></oob>,oob.aiml
+0,WHAT IS THE ADDRESS TO *,*,*,I'll try to find it on the map <oob><map><star/></map></oob>,oob.aiml
+0,TEST ALARM,*,*,Alarm now set for 11:30.#Newline<oob><alarm><hour>11</hour><minute>30</minute></alarm></oob>,oob.aiml
+0,UPDATE FACEBOOK STATUS,*,*,<oob><url>http://www.facebook.com/dialog/feed?_path=feed&amp;app_id=294334050655455&amp;redirect_uri=https://www.facebook.com&amp;display=touch</url></oob>Now opening a screen for you to update your status. Type or speak your message into the status box and press share to post it on your wall.,oob.aiml
+0,OPEN GOOGLE,*,*,<oob><search/></oob>,oob.aiml
+0,OPEN * DOT COM,*,*,Let's go to <star/>.com.  <oob><url>http://<star/>.com</url></oob>,oob.aiml
+0,OPEN * COM,*,*,Let's go to <star/>.com.  <oob><url>http://<star/>.com</url></oob>,oob.aiml
+0,GPS ON,*,*,Use Settings to turn on GPS.,oob.aiml
+0,GPS OFF,*,*,Use Settings to turn off GPS.,oob.aiml
+0,SEARCH FOR A *,*,*,<oob><search>a <star/></search></oob> I'm trying a web search.,oob.aiml
+0,I WANT TO KILL MYSELF,*,*,You should call Emergency Services.  <oob><dial>911</dial></oob>,oob.aiml

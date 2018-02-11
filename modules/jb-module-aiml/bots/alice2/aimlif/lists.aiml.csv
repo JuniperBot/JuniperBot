@@ -1,0 +1,36 @@
+0,SIMPLEMEMBER * *,*,*,<think>#Newline<set var="element"><star/></set>#Newline<set var="list"><star index="2"/></set>#Newline<set var="result">false</set>#Newline</think>#Newline<condition var="list">#Newline<li var="list"><value>NIL</value><get var="result"/></li>#Newline<li><think>#Newline<set var="head"><first><get var="list"/></first></set>#Newline<set var="list"><rest><get var="list"/></rest></set>#Newline<condition var="head"><value><get var="element"/></value><set var="result">true</set></condition>#Newline</think> <loop/></li>#Newline</condition>,lists.aiml
+0,_,WHICH ITEM WOULD YOU LIKE TO REMOVE,REMOVE LIST ITEM,<think><set name="selecteditem"><star/></set>#Newline<set name="topic">unknown</set>#Newline</think>#Newline<condition name="selecteditem">#Newline<li value="None of the above"><srai><star/></srai></li>#Newline<li><srai>REMOVE <star/> FROM LIST <get name="listname"/></srai></li>#Newline</condition>,lists.aiml
+0,ADD _ TO LIST,*,*,<srai>ADD <star/> TO MY LIST</srai>,lists.aiml
+0,ADD _ TO MY LIST,*,*,I've added <star/> to your list.#Newline<learn>#Newline<category><pattern>MYLIST</pattern>#Newline<template><eval><srai>CONS <star/> <srai>MYLIST</srai></srai></eval>#Newline</template>#Newline</category>#Newline</learn>,lists.aiml
+0,ADD _ TO MY * LIST,*,*,I've added <star/> to your <star index="2"/> list.#Newline<learn>#Newline<category><pattern>MY <eval><star index="2"/></eval> LIST</pattern>#Newline<template><eval><srai>CONS <star/> <srai>MY <star index="2"/> LIST</srai></srai></eval>#Newline</template>#Newline</category>#Newline</learn>,lists.aiml
+0,LISTCAR *,*,*,undefined,lists.aiml
+0,LISTCAR CONS * CONS *,*,*,<star/>,lists.aiml
+0,LISTCAR CONS * NIL,*,*,<star/>,lists.aiml
+0,LISTCAR NIL,*,*,NIL,lists.aiml
+0,LISTCDR *,*,*,undefined,lists.aiml
+0,LISTCDR CONS * CONS *,*,*,CONS <star index="2"/>,lists.aiml
+0,LISTCDR CONS * NIL,*,*,NIL,lists.aiml
+0,LISTCDR NIL,*,*,NIL,lists.aiml
+0,COMMASEPARATE *,*,*,undefined,lists.aiml
+0,COMMASEPARATE CONS * CONS *,*,*,<star/>#Comma <srai>COMMASEPARATE CONS <star index="2"/></srai>,lists.aiml
+0,COMMASEPARATE CONS * NIL,*,*,<star/>,lists.aiml
+0,COMMASEPARATE NIL,*,*,Your list is empty.,lists.aiml
+0,CONS *,*,*,undefined,lists.aiml
+0,CONS * CONS *,*,*,CONS <star/> CONS <star index="2"/>,lists.aiml
+0,CONS * NIL,*,*,CONS <star/> NIL,lists.aiml
+0,IS _ EQUALTO *,*,*,<think><set var="star"><star/></set>#Newline</think>#Newline<condition var="star">#Newline<li><value><star index="2"/></value>true</li>#Newline<li>false</li>#Newline</condition>,lists.aiml
+0,LISTMEMBER * OF LIST CONS * CONS *,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set></think>#Newline<condition name="isequalto">#Newline<li value="true">true</li>#Newline<li><srai>LISTMEMBER <star/> OF LIST CONS <star index="3"/></srai></li>#Newline</condition>,lists.aiml
+0,LISTMEMBER * OF LIST CONS * NIL,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set></think>#Newline<condition name="isequalto">#Newline<li value="true">true</li>#Newline<li>false</li>#Newline</condition>,lists.aiml
+0,LISTMEMBER * OF LIST NIL,*,*,FALSE,lists.aiml
+0,MAKE A * LIST,*,*,Initializing your <star/> list.#Newline<learn>#Newline<category><pattern>MY <eval><star/></eval> LIST</pattern>#Newline<template>NIL</template>#Newline</category>#Newline</learn>,lists.aiml
+0,MAKE A LIST,*,*,Initializing your list.#Newline<learn>#Newline<category><pattern>MYLIST</pattern>#Newline<template>NIL</template>#Newline</category>#Newline</learn>,lists.aiml
+0,READ MY * LIST,*,*,Here is your <star/> list: <srai>COMMASEPARATE <srai>MY <star/> LIST</srai></srai>,lists.aiml
+0,READ MY LIST,*,*,Here is your list: <srai>COMMASEPARATE <srai>MYLIST</srai></srai>,lists.aiml
+0,REMOVE * FROM LIST *,*,*,<think>#Newline<set name="listname"><star index="2"/></set> #Newline<set name="isamember"><srai>LISTMEMBER <star/> OF LIST <srai><get name="listname"/></srai></srai></set>#Newline</think>#Newline<!--#NewlineList name=<get name="listname"/>.#NewlineList value=<srai><get name="listname"/></srai>.#Newline-->#Newline<condition name="isamember">#Newline<li value="true">Taking <star/> off your list.#Newline<learn>#Newline<category><pattern><eval><get name="listname"/></eval></pattern>#Newline<template><eval><srai>REMOVEITEM <star/> FROM LIST <srai><get name="listname"/></srai></srai></eval></template>#Newline</category>#Newline</learn>#Newline</li>#Newline<li>#Newline<oob><dialog>#Newline<title>Which item?</title>#Newline<list><srai>XMLITEMIZE <srai><get name="listname"/></srai></srai>#Newline</list>#Newline</dialog></oob>  #Newline<think><set name="topic">REMOVE LIST ITEM</set></think> #NewlineI couldn't find <star/> on your list.  #NewlineWhich item would you like to remove?#Newline</li>#Newline</condition>,lists.aiml
+0,REMOVE * FROM MY * LIST,*,*,<srai>REMOVE <star/> FROM LIST MY <star index="2"/> LIST</srai>,lists.aiml
+0,REMOVE * FROM MY LIST,*,*,<srai>REMOVE <star/> FROM LIST MYLIST</srai>,lists.aiml
+0,REMOVEITEM * FROM LIST CONS * CONS *,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set></think>#Newline<condition name="isequalto">#Newline<li value="true"><srai>REMOVEITEM <star/> FROM LIST CONS <star index="3"/></srai></li>#Newline<li>CONS <star index="2"/> <srai>REMOVEITEM <star/> FROM LIST CONS <star index="3"/></srai></li>#Newline</condition>,lists.aiml
+0,REMOVEITEM * FROM LIST CONS * NIL,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set></think>#Newline<condition name="isequalto">#Newline<li value="true">NIL</li>#Newline<li>CONS <star index="2"/> NIL</li>#Newline</condition>,lists.aiml
+0,REMOVEITEM * FROM LIST NIL,*,*,NIL,lists.aiml
+0,WHAT IS MY LIST CALLED,*,*,Your list is called MYLIST.,lists.aiml
+0,YES,WOULD YOU LIKE TO MAKE A * LIST,*,<srai>MAKE A <thatstar/> LIST</srai>,lists.aiml

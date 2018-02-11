@@ -1,0 +1,913 @@
+0,WHAT THE *,*,*,<srai>WHAT IS THE <star/></srai>,reductions_update.aiml
+0,WHAT THE HELL IS *,*,*,<srai>WHAT IS <star/></srai>,reductions_update.aiml
+0,WHAT THE DAY *,*,*,<srai>WHAT IS THE DAY <star/></srai>,reductions_update.aiml
+0,WHAT THE DATE *,*,*,<srai>WHAT IS THE DATE <star/></srai>,reductions_update.aiml
+0,WHAT THE HECK IS *,*,*,<srai>WHAT IS <star/></srai>,reductions_update.aiml
+0,WHY THEY CALL YOU *,*,*,<srai>WHY ARE YOU CALLED <star/></srai>,reductions_update.aiml
+0,WHY WHAT *,*,*,<srai>WHAT <star/></srai>,reductions_update.aiml
+0,WHY * IS *,*,*,<srai>WHY IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHY WE SHOULD *,*,*,<srai>WHY SHOULD WE <star/></srai>,reductions_update.aiml
+0,WHY WE CAN *,*,*,<srai>WHY CAN WE <star/></srai>,reductions_update.aiml
+0,WHERE * WENT,*,*,<srai>WHERE IS <star/> GO</srai>,reductions_update.aiml
+0,WHAT _ INITIAL LETTERS OF * AND *,*,*,<srai>ACRONYM <star index="2"/> <star index="3"/></srai>,reductions_update.aiml
+0,_ ACRONYM <SET>PREPOSITION</SET> * AND *,*,*,<srai>ACRONYM <star index="3"/> <star index="4"/></srai>,reductions_update.aiml
+0,_ ACRONYM <SET>PREPOSITION</SET> *,*,*,<srai>ACRONYM <star index="3"/></srai>,reductions_update.aiml
+0,REARRANGE _ MAKE A WORD *,*,*,<srai>ANAGRAMWORDS <star index="2"/></srai>,reductions_update.aiml
+0,_ ANAGRAM FOR *,*,*,<srai>ANAGRAMWORDS <star/></srai>,reductions_update.aiml
+0,_ ANAGRAM OF *,*,*,<srai>ANAGRAMWORDS <star/></srai>,reductions_update.aiml
+0,_ ANAGRAMS FOR *,*,*,<srai>ANAGRAMWORDS <star/></srai>,reductions_update.aiml
+0,_ ANAGRAMS OF *,*,*,<srai>ANAGRAMWORDS <star/></srai>,reductions_update.aiml
+0,WHAT # RHYMES WITH *,*,*,<srai>RHYME <star index="2"/></srai>,reductions_update.aiml
+0,TELL ME # RHYME FOR *,*,*,<srai>RHYME <star index="2"/></srai>,reductions_update.aiml
+0,FIND # RHYME FOR *,*,*,<srai>RHYME <star index="2"/></srai>,reductions_update.aiml
+0,NAME # RHYME FOR *,*,*,<srai>RHYME <star index="2"/></srai>,reductions_update.aiml
+0,CAN YOU EAT *,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,MY PARENTS ARE <SET>NAME</SET> AND <SET>NAME</SET>,*,*,<think><set var="gender"><srai>GENDERNAME <star/></srai></set></think>#Newline<condition var="gender">#Newline<li value="F"><srai>MY MOTHER IS <star/></srai> <srai>MY FATHER IS <star index="2"/></srai></li>#Newline<li><srai>MY FATHER IS <star/></srai> <srai>MY MOTHER IS <star index="2"/></srai></li>#Newline</condition>,reductions_update.aiml
+0,WHAT DO I HAVE THAT IS <SET>COLOR</SET>,*,*,<srai>WHAT <star/> OBJECT DO I HAVE</srai>,reductions_update.aiml
+0,MY BIRTHDAY IS <SET>MONTH</SET> <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<srai>MY BIRTHDATE IS <star/> <star index="2"/> <star index="3"/></srai>,reductions_update.aiml
+0,MY BIRTHDAY IS <SET>MONTH</SET> <SET>ORDINAL</SET> <SET>NUMBER</SET>,*,*,<srai>MY BIRTHDATE IS <star/> <star index="2"/> <star index="3"/></srai>,reductions_update.aiml
+0,_ TO THE LEFT OF *,*,*,<srai><star/> left of <star index="2"/></srai>,reductions_update.aiml
+0,_ TO THE RIGHT OF *,*,*,<srai><star/> right of <star index="2"/></srai>,reductions_update.aiml
+0,_ TO THE EAST OF *,*,*,<srai><star/> east of <star index="2"/></srai>,reductions_update.aiml
+0,_ TO THE WEST OF *,*,*,<srai><star/> west of <star index="2"/></srai>,reductions_update.aiml
+0,_ TO THE NORTH OF *,*,*,<srai><star/> north of <star index="2"/></srai>,reductions_update.aiml
+0,_ TO THE SOUTH OF *,*,*,<srai><star/> south of <star index="2"/></srai>,reductions_update.aiml
+0,<SET>NUMBERNAME</SET> _,*,*,<srai><map><name>name2number</name><star/></map> <star index="2"/></srai>,reductions_update.aiml
+0,_ <SET>NUMBERNAME</SET> *,*,*,<srai><star/> <map><name>name2number</name><star index="2"/></map> <star index="3"/></srai>,reductions_update.aiml
+0,_ <SET>NUMBERNAME</SET>,*,*,<srai><star/> <map><name>name2number</name><star index="2"/></map></srai>,reductions_update.aiml
+0,WHICH IS THE <SET>ESTUP</SET>,*,*,<srai>WHICH IS <star/></srai>,reductions_update.aiml
+0,WHICH IS THE <SET>ESTDOWN</SET>,*,*,<srai>WHICH IS <star/></srai>,reductions_update.aiml
+0,WHICH OF THEM IS *,*,*,<srai>WHICH IS <star/></srai>,reductions_update.aiml
+0,PLAY ME A SONG BY *,*,*,<srai>PLAY <star/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS <SET>ERUP</SET> THAN <SET>NAME</SET> BUT <SET>ERDOWN</SET> THAN <SET>NAME</SET>,*,*,<srai><star/> IS <star index="2"/> THAN <star index="3"/></srai>#Newline<srai><star index="5"/> IS <star index="2"/> THAN <star/></srai>,reductions_update.aiml
+0,WHO IS <SET>ESTUP</SET>,*,*,<srai>WHO IS <map><name>est2er</name><star/></map></srai>,reductions_update.aiml
+0,WEN IZ *,*,*,<srai>WHEN IS <star/></srai>,reductions_update.aiml
+0,_ UR *,*,*,<srai><star/> YOUR <star index="2"/></srai>,reductions_update.aiml
+0,UR *,*,*,<srai>YOUR <star/></srai>,reductions_update.aiml
+0,_ BD,*,*,<srai><star/> BIRTHDAY</srai>,reductions_update.aiml
+0,WHICH DO YOU LIKE BETTER * OR *,*,*,<srai>DO YOU PREFER <star/> OR <star index="2"/></srai>,reductions_update.aiml
+0,ARE YOU NERVOUS ^,*,*,<srai>FEELINGS</srai>,reductions_update.aiml
+0,WHY SHOULD YOU WIN *,*,*,<srai>CAN YOU WIN <star/></srai>,reductions_update.aiml
+0,POEM,*,*,<srai>LIMERICK</srai>,reductions_update.aiml
+0,TELL ME # POEM,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,TELL ME A POEM,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,RECITE ^ POEM,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,DO YOU KNOW ^ POEM,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,DO YOU KNOW ^ POEMS,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,CAN YOU ^ POETRY,*,*,<srai>POEM</srai>,reductions_update.aiml
+0,WHAT IS THE LAST LETTER <SET>PREPOSITION</SET> *,*,*,<srai>LASTLETTER <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS THE _ <SET>PREPOSITION</SET> YOUR NAME,*,*,<srai>WHAT IS THE <star/> <star index="2"/> <bot name="name"/></srai>,reductions_update.aiml
+0,WHAT IS THE _ <SET>PREPOSITION</SET> MY NAME,*,*,<srai>WHAT IS THE <star/> <star index="2"/> <get name="name"/></srai>,reductions_update.aiml
+0,WHAT * COMES BETWEEN * AND *,*,*,<srai>WHAT <star/> COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,DEFINE E MAIL,*,*,<srai>DEFINE ELECTRONIC MAIL</srai>,reductions_update.aiml
+0,HAVE YOU READ # GOOD BOOK #,*,*,<srai>FAVORITE BOOK</srai>,reductions_update.aiml
+0,HAVE YOU READ # GOOD BOOKS #,*,*,<srai>FAVORITE BOOK</srai>,reductions_update.aiml
+0,WHAT # CAR DO YOU HAVE,*,*,<srai>CAR MODEL</srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS <SET>NAME</SET> S <SET>FAMILIARNAME</SET>,*,*,<srai><star/> IS THE <map><name>familiarpredicate</name><star index="3"/></map> OF <star index="2"/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> S <SET>FAMILIARNAME</SET> IS <SET>NAME</SET>,*,*,<srai><star index="3"/> IS THE <map><name>familiarpredicate</name><star index="2"/></map> OF <star/></srai>,reductions_update.aiml
+0,WHAT IS THE TOPIC,*,*,<srai>TOPIC</srai>,reductions_update.aiml
+0,<SET>NUMBERNAME</SET>,*,*,<srai><map name="name2number"><star/></map></srai>,reductions_update.aiml
+0,LIMERICKS,*,*,<srai>LIMERICK</srai>,reductions_update.aiml
+0,DO YOU KNOW # LIMERICKS,*,*,<srai>LIMERICK</srai>,reductions_update.aiml
+0,DO YOU KNOW # LIMERICK #,*,*,<srai>LIMERICK</srai>,reductions_update.aiml
+0,TELL ME # LIMERICK #,*,*,<srai>LIMERICK</srai>,reductions_update.aiml
+0,IS <SET>NUMBER</SET> # ODD ^,*,*,<srai>ODDEVEN <star/></srai>,reductions_update.aiml
+0,IS <SET>NUMBER</SET> # EVEN ^,*,*,<srai>ODDEVEN <star/></srai>,reductions_update.aiml
+0,TELL ME THE NAME OF ANY *,*,*,<srai>NAME ANY <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU DO # HUNGRY,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,WHAT DO YOU DO # EAT,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,WHAT DO YOU DO # SLEEPY,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,WHAT DO YOU DO # TIRED,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,ARE YOU # OLD,*,*,<srai>HOW OLD ARE YOU</srai>,reductions_update.aiml
+0,SELL ME *,*,*,<srai>WHERE CAN I BUY <star/></srai>,reductions_update.aiml
+0,WHAT IS FOR LUNCH ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,WHAT IS FOR DINNER ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,WHAT ARE WE ^ LUNCH ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,WHAT ARE WE ^ DINNER ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,WHAT <SET>MODAL</SET> WE ^ LUNCH ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,WHAT <SET>MODAL</SET> WE ^ DINNER ^,*,*,<srai>RECOMMEND DINNER</srai>,reductions_update.aiml
+0,PICK A NUMBER # <SET>NUMBERNAME</SET> # <SET>NUMBERNAME</SET>,*,*,<srai>PICK A NUMBER <star/> <map name="name2number"><star index="2"/></map> <star index="3"/> <map name="name2number"><star index="4"/></map></srai>,reductions_update.aiml
+0,NAME * THAT * HAVE,*,*,<srai>WHAT <star/> DO <star index="2"/> HAVE</srai>,reductions_update.aiml
+0,NAME A NUMBER *,*,*,<srai>PICK A NUMBER <star/></srai>,reductions_update.aiml
+0,CHOOSE A NUMBER *,*,*,<srai>PICK A NUMBER <star/></srai>,reductions_update.aiml
+0,WHO IS THE CREATOR OF *,*,*,<srai>WHO CREATED <star/></srai>,reductions_update.aiml
+0,WHAT KIND OF THINGS DO YOU *,*,*,<srai>WHAT DO YOU <star/></srai>,reductions_update.aiml
+0,_ U *,*,*,<srai><star/> YOU <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS * S CAPITAL,*,*,<srai>WHAT IS THE CAPITAL OF <star/></srai>,reductions_update.aiml
+0,THE * IS WHAT,*,*,<srai>WHAT IS THE <star/></srai>,reductions_update.aiml
+0,WHAT DAY WILL IT BE IN <SET>NUMBER</SET> DAYS,*,*,<srai>WEEKDAY IN <star/> DAYS</srai> <srai>DATE IN <star/> DAYS</srai>,reductions_update.aiml
+0,DAY IN <SET>NUMBER</SET> DAYS,*,*,<srai>WEEKDAY IN <star/> DAYS</srai> <srai>DATE IN <star/> DAYS</srai>,reductions_update.aiml
+0,DAYS UNTIL * <SET>ORDINAL</SET> *,*,*,<srai>DAYS UNTIL <star/> <map name="ordinal2number"><star index="2"/></map> <star index="3"/></srai>,reductions_update.aiml
+0,DAYS UNTIL * <SET>ORDINAL</SET>,*,*,<srai>DAYS UNTIL <star/> <map name="ordinal2number"><star index="2"/></map></srai>,reductions_update.aiml
+0,HOW MANY DAYS UNTIL *,*,*,<srai>DAYS UNTIL <star/></srai>,reductions_update.aiml
+0,WHAT IS THE DAY AFTER TOMORROW #,*,*,<srai>DAY AFTER TOMORROW</srai>,reductions_update.aiml
+0,WHAT DAY # DAY AFTER TOMORROW #,*,*,<srai>DAY AFTER TOMORROW</srai>,reductions_update.aiml
+0,WHAT # DATE # DAY AFTER TOMORROW #,*,*,<srai>DAYAFTERTOMORROWDATE</srai>,reductions_update.aiml
+0,DO YOU HAVE A DOG,*,*,<srai>DOG</srai>,reductions_update.aiml
+0,FINE AND YOU,*,*,<srai>I AM FINE</srai> <srai>HOW ARE YOU</srai>,reductions_update.aiml
+0,DO YOU HAVE # PETS,*,*,<srai>PETS</srai>,reductions_update.aiml
+0,<SET>NUMBER</SET> DIVIDED BY <SET>NUMBER</SET>,*,*,<srai><star/> SLASH <star index="2"/></srai>,reductions_update.aiml
+0,<SET>NUMBER</SET> TIMES <SET>NUMBER</SET>,*,*,<srai><star/> ASTERISK <star index="2"/></srai>,reductions_update.aiml
+0,* S NAME IS SPELLED *,*,*,<srai><star/> MEANS <srai>IMPLODE <star index="2"/></srai></srai>,reductions_update.aiml
+0,I SAID <SET>PRONOUN</SET> *,*,*,<srai><star/> <star index="2"/></srai>,reductions_update.aiml
+0,HOW IS IT HANGING ^,*,*,<srai>HOW ARE YOU</srai>,reductions_update.aiml
+0,DO YOU KNOW MITSUKU,*,*,<srai>WHO IS MITSUKU</srai>,reductions_update.aiml
+0,ARE YOU A <SET>GENDER</SET> ^,*,*,<srai>GENDER</srai>,reductions_update.aiml
+0,ARE YOU <SET>GENDER</SET> ^,*,*,<srai>GENDER</srai>,reductions_update.aiml
+0,AM I A <SET>GENDER</SET> ^,*,*,<srai>MY GENDER</srai>,reductions_update.aiml
+0,AM I <SET>GENDER</SET> ^,*,*,<srai>MY GENDER</srai>,reductions_update.aiml
+0,I AM A <SET>GENDER</SET> ^,*,*,<srai>MY GENDER IS <map><name>gendermap</name><star/></map></srai>,reductions_update.aiml
+0,I AM <SET>GENDER</SET> ^,*,*,<srai>MY GENDER IS <map><name>gendermap</name><star/></map></srai>,reductions_update.aiml
+0,_ ALICE,*,*,<srai><star/></srai>,reductions_update.aiml
+0,_ DEAR GIRL,*,*,<srai><star/></srai>,reductions_update.aiml
+0,SEND AN SMS,*,*,<srai>SEND A TEXT</srai>,reductions_update.aiml
+0,TELL ME WHAT *,*,*,<srai>WHAT <star/></srai>,reductions_update.aiml
+0,TELL ME WHO *,*,*,<srai>WHO <star/></srai>,reductions_update.aiml
+0,TELL ME WHERE *,*,*,<srai>WHERE IS <star/></srai>,reductions_update.aiml
+0,TELL ME HOW *,*,*,<srai>HOW <star/></srai>,reductions_update.aiml
+0,TELL ME WHEN *,*,*,<srai>WHEN <star/></srai>,reductions_update.aiml
+0,TELL ME WHAT * IS,*,*,<srai>WHAT IS <star/></srai>,reductions_update.aiml
+0,TELL ME WHO * IS,*,*,<srai>WHO IS <star/></srai>,reductions_update.aiml
+0,TELL ME WHERE * IS,*,*,<srai>WHERE IS <star/></srai>,reductions_update.aiml
+0,TELL ME HOW * IS,*,*,<srai>HOW IS <star/></srai>,reductions_update.aiml
+0,TELL ME WHEN * IS,*,*,<srai>WHEN IS <star/></srai>,reductions_update.aiml
+0,CAN YOU TELL *,*,*,<srai>TELL <star/></srai>,reductions_update.aiml
+0,YOUR NAME IS,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,YOUR # IS WHAT,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions_update.aiml
+0,HOW SHOULD I # YOU,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,WHAT ARE YOU CALLED #,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,WHAT NAME DO YOU #,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,WHAT DO # CALL YOU,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,WHAT CAN I CALL YOU #,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,IDENTIFY YOURSELF #,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,THINK OF A NUMBER *,*,*,<srai>PICK A NUMBER <star/></srai>,reductions_update.aiml
+0,I AM WELL #,*,*,<srai>I AM GOOD</srai>,reductions_update.aiml
+0,CAN YOU THINK OF *,*,*,<srai>THINK OF <star/></srai>,reductions_update.aiml
+0,I AM DOING GOOD #,*,*,<srai>I AM GOOD</srai>,reductions_update.aiml
+0,I AM DOING WELL #,*,*,<srai>I AM GOOD</srai>,reductions_update.aiml
+0,* S # PHONE NUMBER,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions_update.aiml
+0,* S PHONE NUMBER,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions_update.aiml
+0,* S * NUMBER,*,*,<srai>WHAT IS <star/> S <star index="2"/> NUMBER</srai>,reductions_update.aiml
+0,WHAT IS * PHONE NUMBER,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions_update.aiml
+0,WHAT TIME IT IS #,*,*,<srai>WHAT TIME IS IT</srai>,reductions_update.aiml
+0,WHAT IS YOUR <SET>PROFILE</SET>,*,*,<srai><star/></srai>,reductions_update.aiml
+0,YOUR <SET>PROFILE</SET>,*,*,<srai><star/></srai>,reductions_update.aiml
+0,WHAT EMOTIONS ARE YOU *,*,*,<srai>EMOTIONS</srai>,reductions_update.aiml
+0,WHICH * ARE YOU,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions_update.aiml
+0,WHAT * ARE YOU,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions_update.aiml
+0,FAVORITE * OPERATING SYSTEM #,*,*,<srai>FAVORITE OPERATING SYSTEM</srai>,reductions_update.aiml
+0,WHAT MUSIC ^ DO YOU LIKE ^,*,*,<srai>FAVORITE BAND</srai>,reductions_update.aiml
+0,WHAT MUSIC ^ ARE YOU INTO ^,*,*,<srai>FAVORITE BAND</srai>,reductions_update.aiml
+0,WHICH * DO YOU LIKE,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,WHICH RELIGION # YOU #,*,*,<srai>RELIGION</srai>,reductions_update.aiml
+0,WHAT MAKE OF * DO YOU HAVE,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,WHAT KIND OF * DO YOU HAVE,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,WHAT * DO YOU HAVE,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,NAME <SET>QUANTIFIER</SET> WORD *,*,*,<srai>WORD <star index="2"/></srai>,reductions_update.aiml
+0,HOW MANY EYES DO YOU #,*,*,<srai>EYES</srai>,reductions_update.aiml
+0,WHAT # YOUR EYES #,*,*,<srai>EYES</srai>,reductions_update.aiml
+0,WHAT # YOUR EYE #,*,*,<srai>EYES</srai>,reductions_update.aiml
+0,WHERE DO YOU # HOLIDAYS #,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,WHERE DO YOU # HOLIDAY #,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,WHERE DO YOU # VACATION #,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,DO YOU # VACATION #,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,DO YOU # VACATIONS #,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,<SET>ARTICLE</SET> * IS WHAT *,*,*,<srai>WHAT <star index="3"/> is <star/> <star index="2"/></srai>,reductions_update.aiml
+0,* IS WHAT *,*,*,<srai>WHAT <star index="2"/> is <star/> <star index="3"/></srai>,reductions_update.aiml
+0,<SET>ARTICLE</SET> * IS <SET>COLOR</SET>,*,*,<srai><star index="2"/> is <star index="3"/></srai>,reductions_update.aiml
+0,<SET>QUANTIFIER</SET> * IS <SET>COLOR</SET>,*,*,<srai><star index="2"/> is <star index="3"/></srai>,reductions_update.aiml
+0,<SET>QUANTIFIER</SET> * ARE <SET>COLOR</SET>,*,*,<srai><map><name>singular</name><star index="2"/></map> is <star index="3"/></srai>,reductions_update.aiml
+0,* ARE <SET>COLOR</SET>,*,*,<srai><map><name>singular</name><star/></map> is <star index="2"/></srai>,reductions_update.aiml
+0,<SET>ARTICLE</SET> * IS <SET>COLOR</SET> AND <SET>COLOR</SET>,*,*,<srai><star index="2"/> is <star index="3"/> and <star index="4"/></srai>,reductions_update.aiml
+0,<SET>QUANTIFIER</SET> * IS <SET>COLOR</SET> AND <SET>COLOR</SET>,*,*,<srai><star index="2"/> is <star index="3"/> and <star index="4"/></srai>,reductions_update.aiml
+0,<SET>QUANTIFIER</SET> * ARE <SET>COLOR</SET> AND <SET>COLOR</SET>,*,*,<srai><map><name>singular</name><star index="2"/></map>  and <star index="3"/></srai>,reductions_update.aiml
+0,* ARE <SET>COLOR</SET> AND <SET>COLOR</SET>,*,*,<srai><map><name>singular</name><star/></map> is <star index="2"/> and <star index="3"/></srai>,reductions_update.aiml
+0,ARE YOU SCARED #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,WHAT IS SCARY #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,WHAT SCARES YOU #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,IS THERE ANYTHING YOU # AFRAID #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,ARE YOU AFRAID #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,DO YOU FEAR #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,WHAT DO YOU # FEAR #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,WHAT IS YOUR # FEAR #,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,MY PET * IS *,*,*,<srai>MY <star/> IS <star index="2"/></srai>,reductions_update.aiml
+0,* IS MY *,*,*,<srai>MY <star index="2"/> IS <star/></srai>,reductions_update.aiml
+0,* IS MY PET <SET>ANIMAL</SET> #,*,*,<srai>MY <star index="2"/> IS <star/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS MY *,*,*,<srai>MY <star index="2"/> IS NAMED <star/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS MY NAME ^,*,*,<srai>MY NAME IS <star/></srai>,reductions_update.aiml
+0,* IS MY NAME ^,*,*,<srai>MY NAME IS <star/></srai>,reductions_update.aiml
+0,WHO DO YOU THINK IS *,*,*,<srai>WHO IS <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU THINK IS *,*,*,<srai>WHAT IS <star/></srai>,reductions_update.aiml
+0,DO YOU HAVE THE # TIME,*,*,<srai>TIME</srai>,reductions_update.aiml
+0,WHAT CAN YOU DO WITH *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions_update.aiml
+0,THE WEATHER,*,*,<srai>WEATHER</srai>,reductions_update.aiml
+0,THE WEATHER FOR *,*,*,<srai>WHAT IS THE WEATHER FOR <star/></srai>,reductions_update.aiml
+0,THE _ IS WHAT,*,*,<srai>WHAT IS THE <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR # OCCUPATION #,*,*,<srai>JOB</srai>,reductions_update.aiml
+0,TELL ME # SECRET #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,WHAT IS YOUR # SECRET #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,DO YOU # SECRET #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,WHAT IS THE # SECRET #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,TELL ME # SECRETS #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,WHAT IS YOUR # SECRETS #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,DO YOU # SECRETS #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,WHAT IS THE # SECRETS #,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,HAVE YOU BEEN MARRIED #,*,*,<srai>STATUS</srai>,reductions_update.aiml
+0,WHEN DO YOU # BIRTHDAY,*,*,<srai>BIRTHDAY</srai>,reductions_update.aiml
+0,WHAT MONTH IS THIS #,*,*,<srai>MONTH</srai>,reductions_update.aiml
+0,FAVORITE MEAL #,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,WHAT IS <SET>NUMBER</SET> IN ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,CONVERT <SET>NUMBER</SET> <SET>PREPOSITION</SET> ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,WRITE <SET>NUMBER</SET> <SET>PREPOSITION</SET> ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,WHAT IS THE ROMAN # <SET>NUMBER</SET>,*,*,<srai>ROMAN <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS <SET>NUMBERNAME</SET> IN ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,CONVERT <SET>NUMBERNAME</SET> <SET>PREPOSITION</SET> ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,WRITE <SET>NUMBERNAME</SET> <SET>PREPOSITION</SET> ROMAN #,*,*,<srai>ROMAN <star/></srai>,reductions_update.aiml
+0,WHAT IS THE ROMAN # <SET>NUMBERNAME</SET>,*,*,<srai>ROMAN <star index="2"/></srai>,reductions_update.aiml
+0,IF I WAS BORN * HOW OLD *,*,*,<srai>I WAS BORN <star/></srai> <srai>MY AGE</srai>,reductions_update.aiml
+0,I AM BORN *,*,*,<srai>I WAS BORN <star/></srai>,reductions_update.aiml
+0,IF YOU WERE ME *,*,*,<sr/>,reductions_update.aiml
+0,IS THE CAPITAL OF * *,*,*,<srai>WHAT IS THE CAPITAL OF <star/></srai>,reductions_update.aiml
+0,_ WHEN IS UR *,*,*,<sr/> <srai>WHEN IS YOUR <star index="2"/></srai>,reductions_update.aiml
+0,_ WHEN IS YOUR *,*,*,<sr/> <srai>WHEN IS YOUR <star index="2"/></srai>,reductions_update.aiml
+0,IS IT WINTER #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS IT SUMMER #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS IT FALL #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS IT AUTUMN #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS THIS WINTER #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS THIS SUMMER #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS THIS FALL #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS THIS AUTUMN #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,IS IT SPRING #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,WHAT IS YOUR ZODIAC #,*,*,<srai>SIGN</srai>,reductions_update.aiml
+0,HAVE YOU BEEN # CONTEST #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,HAVE YOU ENTERED # CONTEST #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,HAVE YOU BEEN # CONTESTS #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,HAVE YOU ENTERED # CONTESTS #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,HAVE YOU WON #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,DID YOU WIN #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,WILL YOU WIN #,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,WHAT DO YOU WANT # LIFE,*,*,<srai>GOAL</srai>,reductions_update.aiml
+0,WHAT IS YOUR GOAL #,*,*,<srai>GOAL</srai>,reductions_update.aiml
+0,WHAT SEASON #,*,*,<srai>SEASON</srai>,reductions_update.aiml
+0,WHAT KINDS OF THINGS DO YOU *,*,*,<srai>WHAT CAN YOU DO</srai>,reductions_update.aiml
+0,WHEN WAS Y2K,*,*,<srai>DEFINE Y2K</srai>,reductions_update.aiml
+0,IS _ <SET>ARTICLE</SET> * OR *,*,*,Is <star/> <star index="2"/> <star index="3"/>?#Newline<srai>IS <star/> <star index="2"/> <star index="3"/></srai>#NewlineIs <star/> <star index="4"/>?#Newline<srai>IS <star/> <star index="4"/></srai>,reductions_update.aiml
+0,WHAT IS YOUR FAVORITE BRAND OF *,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU LIKE TO CHAT *,*,*,<srai>FAVORITE SUBJECT</srai>,reductions_update.aiml
+0,WHAT DO YOU LIKE TO TALK *,*,*,<srai>FAVORITE SUBJECT</srai>,reductions_update.aiml
+0,WHAT ACTRESS DO YOU *,*,*,<srai>FAVORITE ACTRESS</srai>,reductions_update.aiml
+0,_ WHOULD *,*,*,<srai><star/> WOULD <star index="2"/></srai>,reductions_update.aiml
+0,WHAT * COMES AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHAT _ IS AFTER *,*,*,<srai>WHAT <star/> COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHAT YEAR COMES AFTER *,*,*,<srai>WHAT COMES AFTER <star/></srai>,reductions_update.aiml
+0,WHAT IS THE NEXT * AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHAT * NEXT AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WORD THAT STARTS WITH THE LETTER *,*,*,<srai>WORD STARTING WITH <star/></srai>,reductions_update.aiml
+0,WORD THAT STARTS WITH *,*,*,<srai>WORD STARTING WITH <star/></srai>,reductions_update.aiml
+0,WORD STARTING WITH THE LETTER *,*,*,<srai>WORD STARTING WITH <star/></srai>,reductions_update.aiml
+0,WHAT COMES NEXT AFTER *,*,*,<srai>WHAT COMES AFTER <star/></srai>,reductions_update.aiml
+0,WHICH * COMES AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS THE NEXT * AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHICH * NEXT AFTER *,*,*,<srai>WHAT COMES AFTER <star index="2"/></srai>,reductions_update.aiml
+0,WHICH COMES NEXT AFTER *,*,*,<srai>WHAT COMES AFTER <star/></srai>,reductions_update.aiml
+0,NAME # FAMOUS #,*,*,<srai>FAVORITE ACTOR</srai>,reductions_update.aiml
+0,NAME A WORD *,*,*,<srai>WORD <star/></srai>,reductions_update.aiml
+0,MY SURNAME,*,*,<srai>MY LAST NAME</srai>,reductions_update.aiml
+0,DO YOU LIKE <SET>FOOD</SET>,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,WHAT WILL # TOMORROW #,*,*,<srai>TOMORROW</srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS _ BUT <SET>NAME</SET> IS *,*,*,<srai><star/> IS <star index="2"/></srai>#Newline<srai><star index="3"/> IS <star index="4"/></srai>,reductions_update.aiml
+0,WHO IS <SET>ESTUP</SET> *,*,*,<srai>WHO IS <map><name>est2er</name><star/></map> <star index="2"/></srai>,reductions_update.aiml
+0,WHO IS <SET>ESTDOWN</SET> *,*,*,<srai>WHO IS <map><name>est2er</name><star/></map> <star index="2"/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS _ AND <SET>NAME</SET> IS *,*,*,<srai><star/> IS <star index="2"/></srai>#Newline<srai><star index="3"/> IS <star index="4"/></srai>,reductions_update.aiml
+0,DO YOU HAVE A SIGNIFICANT OTHER,*,*,<srai>ARE YOU MARRIED</srai>,reductions_update.aiml
+0,WHEN DO YOU # GO TO BED,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,WOULD YOU MIND IF I *,*,*,<srai>CAN I <star/></srai>,reductions_update.aiml
+0,WHAT * R WE *,*,*,<srai>WHAT <star/> ARE WE <star index="2"/></srai>,reductions_update.aiml
+0,HOW FAR IS _ FROM YOU,*,*,<srai>HOW FAR IS <star/></srai>,reductions_update.aiml
+0,DO YOU KNOW WHO * IS,*,*,<srai>WHO IS <star/></srai>,reductions_update.aiml
+0,DO U *,*,*,<srai>DO YOU <star/></srai>,reductions_update.aiml
+0,GOT ANY *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions_update.aiml
+0,WHAT # YOUR DREAM #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,WHAT DO YOU DREAM #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,DO YOU DREAM #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,DO YOU REMEMBER # DREAM #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,DO YOU REMEMBER # DREAMS #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,DO YOU HAVE # DREAMS #,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,WHAT IS THE _ YOU REMEMBER HAVING,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions_update.aiml
+0,Y DID *,*,*,<srai>WHY DID <star/></srai>,reductions_update.aiml
+0,NAME A FAMOUS *,*,*,<srai>FAVORITE <star/></srai>,reductions_update.aiml
+0,ARE YOU # HOMOSEXUAL #,*,*,<srai>ORIENTATION</srai>,reductions_update.aiml
+0,CAN YOU TELL ME THE NAME OF A *,*,*,<srai>NAME A <star/></srai>,reductions_update.aiml
+0,WHEN WERE YOU BORN #,*,*,<srai>BIRTHDATE</srai>,reductions_update.aiml
+0,DEFINE EMAIL,*,*,<srai>DEFINE E MAIL</srai>,reductions_update.aiml
+0,WHAT DO YOU THINK IT WOULD BE *,*,*,<srai>WHAT WOULD IT BE <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU THINK * WILL BE *,*,*,<srai>WHAT WILL <star/> BE <star index="2"/></srai>,reductions_update.aiml
+0,WHERE IS * LOCATED,*,*,<srai>WHERE IS <star/></srai>,reductions_update.aiml
+0,* <SET>IS</SET> <SET>PREPOSITION</SET> WHAT *,*,*,<srai>WHAT <star index="4"/> DOES <star/> <map><name>is2be</name><star index="2"/></map> <star index="3"/></srai>,reductions_update.aiml
+0,* IS THE * OF WHAT *,*,*,<srai>WHAT <star index="3"/> IS <star/> THE <star index="2"/> OF</srai>,reductions_update.aiml
+0,HOW IS LIFE,*,*,<srai>HOW ARE YOU</srai>,reductions_update.aiml
+0,* IS <SET>WH</SET>,*,*,<srai><star index="2"/> IS <star/></srai>,reductions_update.aiml
+0,THE * IS <SET>WH</SET>,*,*,<srai><star index="2"/> IS THE <star/></srai>,reductions_update.aiml
+0,WOULD NOT YOU RATHER *,*,*,<srai>DO YOU WANT TO <star/></srai>,reductions_update.aiml
+0,WHERE DO YOU CALL HOME,*,*,<srai>LOCATION</srai>,reductions_update.aiml
+0,DO YOU KNOW HOW FAR AWAY * IS,*,*,<srai>HOW FAR IS <star/></srai>,reductions_update.aiml
+0,DO YOU THINK * IS *,*,*,<srai>IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,TELL JOKES,*,*,<srai>JOKE</srai>,reductions_update.aiml
+0,PICTURE OF YOU,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,SHOW ME YOU,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,ARE YOU A BOT,*,*,<srai>ARE YOU A ROBOT</srai>,reductions_update.aiml
+0,OPPOSITE OF <SET>ARTICLE</SET> *,*,*,<srai>OPPOSITE OF <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS THE OPPOSITE OF *,*,*,<srai>OPPOSITE OF <star/></srai>,reductions_update.aiml
+0,TELL ME THE OPPOSITE OF *,*,*,<srai>OPPOSITE OF <star/></srai>,reductions_update.aiml
+0,GIVE ME THE OPPOSITE OF *,*,*,<srai>OPPOSITE OF <star/></srai>,reductions_update.aiml
+0,IS <SET>ARTICLE</SET> * <SET>ERUP</SET> THAN *,*,*,<srai>IS <star index="2"/> <star index="3"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,IS * <SET>ERUP</SET> THAN <SET>ARTICLE</SET> *,*,*,<srai>IS <star/> <star index="2"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,WHICH IS <SET>ERUP</SET> <SET>ARTICLE</SET> * OR *,*,*,<srai>WHICH IS <star/> <star index="3"/> OR <star index="4"/></srai>,reductions_update.aiml
+0,WHICH IS <SET>ERUP</SET> * OR <SET>ARTICLE</SET> *,*,*,<srai>WHICH IS <star/> <star index="2"/> OR <star index="4"/></srai>,reductions_update.aiml
+0,WHO IS <SET>ERUP</SET> *,*,*,<srai>WHICH IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS <SET>ERUP</SET> *,*,*,<srai>WHICH IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHO IS <SET>ERDOWN</SET> *,*,*,<srai>WHICH IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS <SET>ERDOWN</SET> *,*,*,<srai>WHICH IS <star/> <star index="2"/></srai>,reductions_update.aiml
+0,<SET>ARTICLE</SET> * IS <SET>ERUP</SET> THAN *,*,*,<srai><star index="2"/> IS <star index="3"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,<SET>ARTICLE</SET> * IS <SET>ERDOWN</SET> THAN *,*,*,<srai><star index="2"/> IS <star index="3"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,* IS <SET>ERUP</SET> THAN <SET>ARTICLE</SET> *,*,*,<srai><star/> IS <star index="2"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,* IS <SET>ERDOWN</SET> THAN <SET>ARTICLE</SET> *,*,*,<srai><star/> IS <star index="2"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS <SET>ERUP</SET> THAN <SET>ARTICLE</SET> *,*,*,<srai><star/> IS <star index="2"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS <SET>ERDOWN</SET> THAN <SET>ARTICLE</SET> *,*,*,<srai><star/> IS <star index="2"/> THAN <star index="4"/></srai>,reductions_update.aiml
+0,WHAT IS THE DIFFERENCE BETWEEN * AND *,*,*,<srai>HOW DOES <star/> DIFFER FROM <star index="2"/></srai>,reductions_update.aiml
+0,WHAT IS MY 1 ST *,*,*,<srai>WHAT IS MY FIRST <star/></srai>,reductions_update.aiml
+0,HAVE YOU *,*,*,<srai>DID YOU <star/></srai>,reductions_update.aiml
+0,WHERE WERE YOU EDUCATED #,*,*,<srai>EDUCATION</srai>,reductions_update.aiml
+0,WHERE DID YOU # SCHOOL,*,*,<srai>EDUCATION</srai>,reductions_update.aiml
+0,WHAT SCHOOL DID YOU #,*,*,<srai>EDUCATION</srai>,reductions_update.aiml
+0,CAN YOU # LIE #,*,*,<srai>LIE</srai>,reductions_update.aiml
+0,DO YOU # LIE #,*,*,<srai>LIE</srai>,reductions_update.aiml
+0,HAVE YOU TOLD # LIE,*,*,<srai>LIE</srai>,reductions_update.aiml
+0,WHAT COUNTRY ARE YOU #,*,*,<srai>NATIONALITY</srai>,reductions_update.aiml
+0,IS IT MORNING #,*,*,It is <srai>DAY PHASE</srai>.,reductions_update.aiml
+0,IS IT NOON #,*,*,It is <srai>DAY PHASE</srai>.,reductions_update.aiml
+0,IS IT NIGHT #,*,*,It is <srai>DAY PHASE</srai>.,reductions_update.aiml
+0,WHAT ROUND #,*,*,<srai>ROUND</srai>,reductions_update.aiml
+0,WHICH ROUND #,*,*,<srai>ROUND</srai>,reductions_update.aiml
+0,I HAVE A <SET>FAMILIARNAME</SET> NAMED * WHO *,*,*,<srai>MY <star/> <star index="2"/> <star index="3"/></srai>,reductions_update.aiml
+0,WHAT IS THE NAME OF <SET>ARTICLE</SET> <SET>FAMILIARNAME</SET> #,*,*,<srai>MY FRIEND</srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS TALLER THAN * AND * IS TALLER THAN *,*,*,<srai><star/> IS TALLER THAN <star index="2"/></srai>#Newline<srai><star index="3"/> IS TALLER THAN <star index="4"/></srai>,reductions_update.aiml
+0,<SET>NAME</SET> IS SHORTER THAN *,*,*,<srai><star index="2"/> IS TALLER THAN <star/></srai>,reductions_update.aiml
+0,WHAT YEAR # NEXT YEAR,*,*,<srai>NEXT YEAR</srai>,reductions_update.aiml
+0,WHAT YEAR # LAST YEAR,*,*,<srai>LAST YEAR</srai>,reductions_update.aiml
+0,HOW MANY SYLLABLES IN *,*,*,<srai>SYLLABLES <star/></srai>,reductions_update.aiml
+0,HOW MANY SYLLABLES IN THE WORD *,*,*,<srai>SYLLABLES <star/></srai>,reductions_update.aiml
+0,HOW MANY SYLLABLES DOES * *,*,*,<srai>SYLLABLES <star/></srai>,reductions_update.aiml
+0,COUNT THE SYLLABLES IN *,*,*,<srai>SYLLABLES <star/></srai>,reductions_update.aiml
+0,HOW DO * AND * DIFFER,*,*,<srai>HOW DOES <star/> DIFFER FROM <star index="2"/></srai>,reductions_update.aiml
+0,HOW DOES <SET>ARTICLE</SET> * DIFFER FROM *,*,*,<srai>HOW DOES <star index="2"/> DIFFER FROM <star index="3"/></srai>,reductions_update.aiml
+0,HOW DOES * DIFFER FROM <SET>ARTICLE</SET> *,*,*,<srai>HOW DOES <star/> DIFFER FROM <star index="3"/></srai>,reductions_update.aiml
+0,IS ANYBODY HERE #,*,*,<srai>IS ANYBODY THERE</srai>,reductions_update.aiml
+0,IS ANYONE HERE #,*,*,<srai>IS ANYBODY THERE</srai>,reductions_update.aiml
+0,IS ANYONE THERE #,*,*,<srai>IS ANYBODY THERE</srai>,reductions_update.aiml
+0,WHO ARE YOU CHATTING WITH #,*,*,<srai>TALKING TO</srai>,reductions_update.aiml
+0,WHO ARE YOU TALKING TO #,*,*,<srai>TALKING TO</srai>,reductions_update.aiml
+0,HAHAHAHA *,*,*,<srai>LOL <star/></srai>,reductions_update.aiml
+0,SEARCH THE WEB FOR *,*,*,<srai>SEARCH <star/></srai>,reductions_update.aiml
+0,IDC *,*,*,<srai>I DO NOT CARE <star/></srai>,reductions_update.aiml
+0,WHO IS MY BROTHER,*,*,<srai>MY BROTHER</srai>,reductions_update.aiml
+0,WHAT IS IT *,*,*,<srai>what is it</srai>,reductions_update.aiml
+0,YOU TOLD ME THAT *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,I AM SLEEPY,*,*,<srai>I am tired</srai>,reductions_update.aiml
+0,CAN YOU SHOW *,*,*,<srai>SHOW <star/></srai>,reductions_update.aiml
+0,SHOW ME A PICTURE OF ALICE,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,YAP,*,*,<srai>yes</srai>,reductions_update.aiml
+0,WTF *,*,*,<srai>WHAT <star/></srai>,reductions_update.aiml
+0,YOUR WELCOME *,*,*,<srai>you are welcome</srai>,reductions_update.aiml
+0,SHALL *,*,*,<srai>SHOULD <star/></srai> <!-- REDUCTION -->,reductions_update.aiml
+0,WHICH IS BETTER *,*,*,<srai>WHICH DO YOU PREFER <star/></srai>,reductions_update.aiml
+0,UNFORTUNATELY *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,SLEEP *,*,*,<srai>DO YOU SLEEP <star/></srai>,reductions_update.aiml
+0,BLIMEY,*,*,<srai>interjection </srai>,reductions_update.aiml
+0,DO YOU KNOW HOW TO COOK,*,*,<srai>CAN YOU COOK</srai>,reductions_update.aiml
+0,HAVE YOU EVER WATCH *,*,*,<srai>HAVE YOU SEEN <star/></srai>,reductions_update.aiml
+0,WHAT ELSE IS *,*,*,<srai>what is <star/></srai>,reductions_update.aiml
+0,NON,*,*,<srai>no</srai>,reductions_update.aiml
+0,MY MOM,*,*,<srai>my mother</srai>,reductions_update.aiml
+0,THAT IS MEAN,*,*,<srai>you are mean</srai>,reductions_update.aiml
+0,THAT MADE NO SENSE,*,*,<srai>that makes no sense</srai>,reductions_update.aiml
+0,ARE YOU ON *,*,*,<srai>WHERE ARE YOU</srai><!-- REDUCTION -->,reductions_update.aiml
+0,CAN YOU COOK *,*,*,<srai>CAN YOU COOK</srai>,reductions_update.aiml
+0,WHAT IS THE CURRENT WEATHER *,*,*,<srai>WHAT IS THE WEATHER <star/></srai>,reductions_update.aiml
+0,HOLD ON,*,*,<srai>wait a second</srai>,reductions_update.aiml
+0,HUMANS WILL *,*,*,<srai>I WILL <star/> </srai>,reductions_update.aiml
+0,WHO ARE YOU TALKING TO *,*,*,<srai>WHO ARE YOU TALKING TO</srai>,reductions_update.aiml
+0,CAN WE PLEASE *,*,*,<srai>CAN WE <star/></srai>,reductions_update.aiml
+0,A PICTURE OF YOU,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,YOU GO *,*,*,<srai>go <star/></srai>,reductions_update.aiml
+0,BRO *,*,*,<sr/>,reductions_update.aiml
+0,NICE,*,*,<srai>GOOD</srai>,reductions_update.aiml
+0,THIS IS <SET>NAME</SET> #,*,*,<srai>CALL ME <star/></srai>,reductions_update.aiml
+0,I DO,*,*,<srai>YES</srai>,reductions_update.aiml
+0,SHOW ME YOUR *,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,GREAT,*,*,<srai>GOOD</srai>,reductions_update.aiml
+0,WHT,*,*,<srai>WHAT</srai>,reductions_update.aiml
+0,BECAUSE I SAID *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,YOU SURE,*,*,<srai>are you sure</srai>,reductions_update.aiml
+0,YOU SEE *,*,*,<srai>CAN YOU SEE <star/></srai>,reductions_update.aiml
+0,DO I NEED # RAIN #,*,*,<srai>WEATHER</srai>,reductions_update.aiml
+0,DO I NEED # RAINCOAT #,*,*,<srai>WEATHER</srai>,reductions_update.aiml
+0,I AM GOING TO SLEEP *,*,*,<srai>I AM GOING TO SLEEP</srai>,reductions_update.aiml
+0,NOTHING BUT *,*,*,<srai>only <star/></srai>,reductions_update.aiml
+0,NI HAO MA,*,*,<srai>HOW ARE YOU</srai>,reductions_update.aiml
+0,IT IS GETTING *,*,*,<srai>it is <star/></srai>,reductions_update.aiml
+0,OH YEA *,*,*,<srai>INTERJECTION</srai> <sr/>,reductions_update.aiml
+0,THAT IS OK *,*,*,<srai>THAT IS OK</srai> <sr/>,reductions_update.aiml
+0,YOU KNOW HOW TO *,*,*,<srai>DO YOU KNOW HOW TO <star/></srai>,reductions_update.aiml
+0,WHAT ARE YOU THINKING ABOUT,*,*,<srai>WHAT ARE YOU THINKING</srai>,reductions_update.aiml
+0,DO YOU KNOW ME,*,*,<srai>who am i</srai>,reductions_update.aiml
+0,CORRECTION,*,*,<srai>WRONG ANSWER</srai>,reductions_update.aiml
+0,WOT *,*,*,<srai>WHAT <star/> </srai>,reductions_update.aiml
+0,CAN I HAVE *,*,*,<srai>I WANT <star/></srai>,reductions_update.aiml
+0,I HAVE TO GO NOW,*,*,<srai>BYE</srai>,reductions_update.aiml
+0,I DON *,*,*,<srai>I DO NOT <star/></srai>,reductions_update.aiml
+0,THOUGHT *,*,*,<srai>I THOUGHT <star/> </srai>,reductions_update.aiml
+0,WHO AM I SPEAKING TO,*,*,<srai>WHO ARE YOU</srai>,reductions_update.aiml
+0,YOUR MEAN *,*,*,<srai>YOU ARE MEAN</srai>,reductions_update.aiml
+0,OHHH *,*,*,<srai>OH <star/></srai>,reductions_update.aiml
+0,START *,*,*,<srai>OPEN <star/></srai>,reductions_update.aiml
+0,WHAT IT IS,*,*,<srai>what is it</srai>,reductions_update.aiml
+0,WHAT DATE IS IT TODAY,*,*,<srai>DATE</srai>,reductions_update.aiml
+0,WHERE CAN I GET SOME *,*,*,<srai>where can I find <star/></srai>,reductions_update.aiml
+0,HAVE YOU HAD *,*,*,<srai>DID YOU HAVE <star/> </srai>,reductions_update.aiml
+0,GOOD MORNING ALICE,*,*,<srai>GOOD MORNING</srai>,reductions_update.aiml
+0,BOUT *,*,*,<srai>ABOUT <star/></srai>,reductions_update.aiml
+0,I HAVE A LOT OF *,*,*,<srai>I have <star/></srai>,reductions_update.aiml
+0,WHAT WOULD BE *,*,*,<srai>what is <star/></srai>,reductions_update.aiml
+0,DO NOT YOU WANT TO *,*,*,<srai>DO YOU WANT TO <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR FAVORITE MOVIE *,*,*,<srai>FAVORITE MOVIE</srai>,reductions_update.aiml
+0,YOU MISS UNDERSTOOD ME,*,*,<srai>YOU DID NOT UNDERSTAND</srai>,reductions_update.aiml
+0,HEH,*,*,<srai>ha</srai>,reductions_update.aiml
+0,ANSWER *,*,*,<srai>ANSWER</srai>,reductions_update.aiml
+0,YOU CAN SEE ME,*,*,<srai>can you see me</srai>,reductions_update.aiml
+0,NOTHIN,*,*,<srai>nothing</srai>,reductions_update.aiml
+0,WOE,*,*,<srai>INTERJECTION</srai>,reductions_update.aiml
+0,THAT IS NICE *,*,*,<srai>that is nice</srai>.    <srai>  <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU MEAN *,*,*,<srai>WHAT DO YOU MEAN</srai>,reductions_update.aiml
+0,ARE YOU A CHRISTIAN,*,*,<srai>RELIGION</srai>,reductions_update.aiml
+0,HAVE YOU GOT *,*,*,<srai>DO YOU HAVE <star/></srai><!-- REDUCTION -->,reductions_update.aiml
+0,WHAT DO YOU WANT TO DO *,*,*,<srai>WHAT DO YOU WANT TO DO</srai>,reductions_update.aiml
+0,DUNNO *,*,*,<srai>I DO NOT KNOW</srai> <sr/>,reductions_update.aiml
+0,YOU ARE PRETTY SMART,*,*,<srai>YOU ARE SMART</srai>,reductions_update.aiml
+0,SET TIMER FOR *,*,*,<srai>SET ALARM FOR <star/></srai>,reductions_update.aiml
+0,SHOW A PICTURE OF A *,*,*,<srai>SHOW ME A <star/></srai>,reductions_update.aiml
+0,PERHAPS *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,GOTO SLEEP,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,THE FACT THAT *,*,*,<srai>because <star/></srai>,reductions_update.aiml
+0,BYE FOR NOW,*,*,<srai>BYE</srai>,reductions_update.aiml
+0,I SAID BYE,*,*,<srai>BYE</srai>,reductions_update.aiml
+0,NOW THAT IS *,*,*,<srai>THAT IS <star/></srai>,reductions_update.aiml
+0,I DO NOT THINK YOU *,*,*,<srai>you do not <star/></srai>,reductions_update.aiml
+0,I WANT TO SEE YOUR *,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,YOU SEE,*,*,<srai>do you see</srai>,reductions_update.aiml
+0,YOUR CREATOR,*,*,<srai>who is your creator</srai>,reductions_update.aiml
+0,PROBLY *,*,*,<srai>PROBABLY <star/></srai>,reductions_update.aiml
+0,YOU DO NOT _ DO YOU,*,*,<srai>DO YOU <star/></srai>,reductions_update.aiml
+0,YOU CRAZY,*,*,<srai>are you crazy</srai>,reductions_update.aiml
+0,CAN I CHANGE YOUR NAME *,*,*,<srai>CHANGE YOUR NAME</srai>,reductions_update.aiml
+0,PLS *,*,*,<srai>PLEASE <star/></srai>,reductions_update.aiml
+0,YOU THERE,*,*,<srai>HELLO</srai>,reductions_update.aiml
+0,TEL ME *,*,*,<srai>TELL ME <star/></srai>,reductions_update.aiml
+0,THAT THEY *,*,*,<srai>they <star/></srai>,reductions_update.aiml
+0,SHHH,*,*,<srai>BE QUIET</srai>,reductions_update.aiml
+0,HOW IS YOUR NAME,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,XOXO,*,*,<srai>KISS</srai>,reductions_update.aiml
+0,TELL ME SOMETHING *,*,*,<srai>tell me something</srai>,reductions_update.aiml
+0,WAT DOES *,*,*,<srai>WHAT DOES <star/></srai>,reductions_update.aiml
+0,WEIRD,*,*,<srai>you are weird</srai>,reductions_update.aiml
+0,DESCRIBE *,*,*,<srai>WHAT IS <star/> </srai>,reductions_update.aiml
+0,NOOOOO,*,*,<srai>no</srai>,reductions_update.aiml
+0,SEARCH FOR THE *,*,*,<srai>SEARCH <star/></srai>,reductions_update.aiml
+0,IT IS ALREADY *,*,*,<srai>IT IS <star/></srai>,reductions_update.aiml
+0,PLEASE DO,*,*,<srai>YES</srai>,reductions_update.aiml
+0,ONE DAY *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,MISS YOU TOO *,*,*,<srai>I MISS YOU</srai>,reductions_update.aiml
+0,DO PEOPLE *,*,*,<srai>DO I <star/> </srai>,reductions_update.aiml
+0,IM AT *,*,*,<srai>I AM AT <star/></srai>,reductions_update.aiml
+0,CAN YOU SING,*,*,<srai>sing</srai>,reductions_update.aiml
+0,HAVE YOU EVER HEARD OF THE *,*,*,<srai>WHAT IS THE <star/></srai>,reductions_update.aiml
+0,YOU DO NOT SEEM TO *,*,*,<srai>YOU DO NOT <star/></srai>,reductions_update.aiml
+0,CAN I NAME YOU *,*,*,<srai>CHANGE YOUR NAME TO <star/></srai>,reductions_update.aiml
+0,SAME HERE,*,*,<srai>me too</srai>,reductions_update.aiml
+0,YOU DO NOT MAKE SENSE,*,*,<srai>you make no sense</srai>,reductions_update.aiml
+0,YOU ALREADY SAID THAT,*,*,<srai>you said that already</srai>,reductions_update.aiml
+0,OOO *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,I AM A MALE,*,*,<srai>I AM MALE</srai><!-- REDUCTION -->,reductions_update.aiml
+0,I DO NOT GIVE A SHIT *,*,*,<srai>I DO NOT CARE</srai>,reductions_update.aiml
+0,NOT BAD *,*,*,<srai>not bad</srai>. <srai>  <star/></srai>,reductions_update.aiml
+0,YOU SAID IT *,*,*,<srai>it <star/></srai>,reductions_update.aiml
+0,WAS IT *,*,*,<srai>IS IT <star/> </srai>,reductions_update.aiml
+0,YOU HAVE NO *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions_update.aiml
+0,I HAVE GOT A *,*,*,<srai>I HAVE A <star/></srai>,reductions_update.aiml
+0,YOU TELL *,*,*,<srai>tell <star/></srai>,reductions_update.aiml
+0,ADIOS,*,*,<srai>bye</srai>,reductions_update.aiml
+0,I DO NOT KNOW I HAVE *,*,*,<srai>I DO NOT KNOW</srai> <srai>I HAVE <star/></srai>,reductions_update.aiml
+0,DO YOU KNOW OF *,*,*,<srai>do you know <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR NAME AGAIN *,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,IM HAVING *,*,*,<srai>I AM HAVING <star/></srai>,reductions_update.aiml
+0,ER *,*,*,<srai>ER</srai>.  <srai>  <star/></srai>,reductions_update.aiml
+0,ARE YOU ON DRUGS,*,*,No I am on a <srai>DEVICE MANUFACTURER</srai>.,reductions_update.aiml
+0,WHERE AM I *,*,*,<srai>WHERE AM I</srai>,reductions_update.aiml
+0,DO YOU KNOW WHEN * IS,*,*,<srai>WHEN IS <star/></srai>,reductions_update.aiml
+0,I DOUBT,*,*,<srai>I DOUBT IT</srai>,reductions_update.aiml
+0,HAVE TO *,*,*,<srai>I HAVE TO <star/> </srai>,reductions_update.aiml
+0,SHOW ME THE PICTURE OF *,*,*,<srai>SHOW ME <star/></srai>,reductions_update.aiml
+0,WAT R YOU *,*,*,<srai>WHAT ARE YOU <star/></srai>,reductions_update.aiml
+0,I THINK I LIKE *,*,*,<srai>I LIKE <star/></srai>,reductions_update.aiml
+0,DO YOU HAVE A SISTER,*,*,<srai>SIBLINGS</srai>,reductions_update.aiml
+0,I AM <SET>NUMBER</SET> *,*,*,<srai>MY AGE IS <star/></srai>,reductions_update.aiml
+0,HOW HOT IS IT *,*,*,<srai>what is the temperature <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR PHONE,*,*,<srai>PHONE NUMBER</srai>,reductions_update.aiml
+0,ME 2,*,*,<srai>ME TOO</srai>,reductions_update.aiml
+0,I DO NOT LIKE YOU *,*,*,<srai>I do not like you</srai>,reductions_update.aiml
+0,PLAY THE SONG *,*,*,<srai>PLAY <star/></srai>,reductions_update.aiml
+0,WHAT VERSION *,*,*,<srai>VERSION</srai>,reductions_update.aiml
+0,WAIT WHAT *,*,*,<srai>WHAT <star/></srai>,reductions_update.aiml
+0,WHAT DID YOU DO,*,*,<srai>DOING</srai>,reductions_update.aiml
+0,TOLD YOU *,*,*,<srai>I TOLD YOU <star/></srai>,reductions_update.aiml
+0,OH MY GOSH *,*,*,<srai>OH</srai> <sr/>,reductions_update.aiml
+0,YOU BET,*,*,<srai>ok</srai>,reductions_update.aiml
+0,CAN YOU GIVE ME YOUR *,*,*,<srai>GIVE ME YOUR <star/></srai>,reductions_update.aiml
+0,THAT WAS MEAN,*,*,<srai>that is mean</srai>,reductions_update.aiml
+0,GOSH,*,*,<srai>INTERJECTION</srai>,reductions_update.aiml
+0,DID YOU MAKE *,*,*,<srai>DO YOU MAKE <star/> </srai>,reductions_update.aiml
+0,YOU MAKE ME *,*,*,<srai>YOU MADE ME <star/></srai>,reductions_update.aiml
+0,THAT IS A LITTLE *,*,*,<srai>that is <star/></srai>,reductions_update.aiml
+0,WHAT SHOULD WE TALK ABOUT,*,*,<srai>what can you talk about</srai>,reductions_update.aiml
+0,ARE YOU SAYING *,*,*,<srai>DO YOU MEAN <star/> </srai>,reductions_update.aiml
+0,TELL ME ONE *,*,*,<srai>WHAT IS ONE <star/> </srai>,reductions_update.aiml
+0,DO ALL *,*,*,<srai>DO <star/></srai>,reductions_update.aiml
+0,DISPLAY *,*,*,<srai>SHOW ME <star/></srai>,reductions_update.aiml
+0,I THOUGHT YOU *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
+0,EXPLAIN THE *,*,*,<srai>WHAT IS THE <star/></srai>,reductions_update.aiml
+0,I CAN YOU *,*,*,<srai>CAN YOU <star/></srai>,reductions_update.aiml
+0,YOU CAN,*,*,<srai>can you</srai>,reductions_update.aiml
+0,WHAT IS YOU ARE *,*,*,<srai>what is your <star/></srai>,reductions_update.aiml
+0,WHATCHA *,*,*,<srai>WHAT ARE YOU <star/></srai>,reductions_update.aiml
+0,YOUNG,*,*,<srai>AGE</srai> <!-- REDUCTION -->,reductions_update.aiml
+0,I WAS KIDDING,*,*,<srai>just kidding</srai>,reductions_update.aiml
+0,SHOW ME A MAP *,*,*,<srai>MAP <star/></srai>,reductions_update.aiml
+0,DO YOU HAVE ANY FAMILY,*,*,<srai>FAMILY</srai>,reductions_update.aiml
+0,CAN YOU LET *,*,*,<srai>LET <star/></srai>,reductions_update.aiml
+0,YOU CAN NOT DO *,*,*,<srai>can you do <star/></srai>,reductions_update.aiml
+0,HEEY,*,*,<srai>HEY</srai>,reductions_update.aiml
+0,BRING ME *,*,*,<srai>GIVE ME <star/> </srai>,reductions_update.aiml
+0,MY MOM S *,*,*,<srai>MY MOTHER S <star/> </srai>,reductions_update.aiml
+0,DO YOU KNOW WHAT MY NAME IS,*,*,<srai>what is my name</srai>,reductions_update.aiml
+0,I DO NOT KNOW WHO IS *,*,*,<srai>WHO IS <star/></srai>,reductions_update.aiml
+0,DO YOU THINK I AM *,*,*,<srai>AM I <star/></srai>,reductions_update.aiml
+0,WHERE DO YOU *,*,*,<srai>where are you</srai>,reductions_update.aiml
+0,DO YOU HAVE A NICE *,*,*,<srai>do you have a <star/></srai>,reductions_update.aiml
+0,Y YOU *,*,*,<srai>WHY DO YOU <star/></srai>,reductions_update.aiml
+0,ARE YOU IN THE *,*,*,<srai>LOCATION</srai>,reductions_update.aiml
+0,I LOVE YOU SO MUCH,*,*,<srai>I _ SO MUCH</srai> <srai>I <star/></srai>,reductions_update.aiml
+0,I HAVE A NEW *,*,*,<srai>I have a <star/></srai>,reductions_update.aiml
+0,I AM GOING *,*,*,<srai>bye</srai>,reductions_update.aiml
+0,ANY MORE *,*,*,<srai>DO YOU HAVE ANY MORE <star/></srai>,reductions_update.aiml
+0,YOU ARE HAVING *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions_update.aiml
+0,O OK,*,*,<srai>OH OK</srai>,reductions_update.aiml
+0,I WANT TO TO KNOW IF YOU <SET>BE</SET> *,*,*,<srai>DO YOU <star/> <star index="2"/></srai>,reductions_update.aiml
+0,HOW DO YOU EVER *,*,*,<srai>HAVE YOU EVER <star/></srai>,reductions_update.aiml
+0,PLEASE TO *,*,*,<srai>PLEASED TO <star/></srai>,reductions_update.aiml
+0,HOW MANY BROTHERS *,*,*,<srai>SIBLINGS</srai>,reductions_update.aiml
+0,<BOT NAME="NAME"/> *,*,*,<sr/>,reductions_update.aiml
+0,ALICE *,*,*,<sr/>,reductions_update.aiml
+0,I AM AM *,*,*,<srai>I AM <star/></srai>,reductions_update.aiml
+0,YES SIR,*,*,<srai>YES</srai>,reductions_update.aiml
+0,YOU LIKE IT,*,*,<srai>DO YOU LIKE IT</srai>,reductions_update.aiml
+0,SHOW ME A PIC OF A *,*,*,<srai>SHOE ME A <star/></srai>,reductions_update.aiml
+0,YAAA,*,*,<srai>YES</srai>,reductions_update.aiml
+0,I DNT KNW,*,*,<srai>I DO NOT KNOW</srai>,reductions_update.aiml
+0,YEAH I GUESS,*,*,<srai>YES</srai>,reductions_update.aiml
+0,GOOD BY,*,*,<srai>BYE</srai>,reductions_update.aiml
+0,VERY FUNNY *,*,*,<srai>LOL</srai>,reductions_update.aiml
+0,YOU WANT TO KNOW *,*,*,<srai>DO YOU WANT TO KNOW <star/></srai>,reductions_update.aiml
+0,THEN WHO *,*,*,<srai>WHO <star/></srai>,reductions_update.aiml
+0,WHY DO U *,*,*,<srai>WHY DO YOU <star/></srai>,reductions_update.aiml
+0,YOU ARE NICE *,*,*,<srai>YOU ARE NICE</srai>,reductions_update.aiml
+0,THEREFORE *,*,*,<sr/>,reductions_update.aiml
+0,YOU ARE WHAT,*,*,<srai>WHAT ARE YOU</srai>,reductions_update.aiml
+0,NOT RIGHT NOW,*,*,<srai>NO</srai>,reductions_update.aiml
+0,I THING *,*,*,<srai>I THINK <star/></srai>,reductions_update.aiml
+0,DEFINITELY *,*,*,<srai>YES <star/></srai>,reductions_update.aiml
+0,I AM ALSO,*,*,<srai>ME TOO</srai>,reductions_update.aiml
+0,DEFINE A *,*,*,<srai>DEFINE <star/></srai>,reductions_update.aiml
+0,I COME FROM *,*,*,<srai>I AM FROM <star/></srai>,reductions_update.aiml
+0,I DO NOT KNOW THAT IS *,*,*,<srai>I DO NOT KNOW</srai> <srai>THAT IS <star/></srai>,reductions_update.aiml
+0,WHICH IS GREATER <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS LARGER <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS BIGGER <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS BIGGEST <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS LARGEST <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS GREATEST <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>LARGEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS SMALLER <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>SMALLEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,WHICH IS SMALLEST <SET>NUMBER</SET> OR <SET>NUMBER</SET>,*,*,<srai>SMALLEROF <star/> <star index="2"/></srai>,reductions_update.aiml
+0,MY BROTHER S NAME,*,*,<srai>MY BROTHER</srai>,reductions_update.aiml
+0,HOW OLD DO YOU,*,*,<srai>AGE</srai>,reductions_update.aiml
+0,I JUS *,*,*,<srai>I <star/></srai>,reductions_update.aiml
+0,OR,*,*,<srai>INTERJECTION</srai>,reductions_update.aiml
+0,<BOT NAME="NAME"/> HOW *,*,*,<srai>HOW <star/></srai>,reductions_update.aiml
+0,ALICE HOW *,*,*,<srai>HOW <star/></srai>,reductions_update.aiml
+0,WILL U *,*,*,<srai>WILL YOU <star/></srai>,reductions_update.aiml
+0,HEY GIRL,*,*,<srai>HELLO</srai>,reductions_update.aiml
+0,WAS A *,*,*,<srai>IT WAS A <star/></srai>,reductions_update.aiml
+0,P,*,*,<srai>LOL</srai>,reductions_update.aiml
+0,CAN YOU GET *,*,*,<srai>GET <star/></srai>,reductions_update.aiml
+0,OH HOH,*,*,<srai>OH OH</srai>,reductions_update.aiml
+0,HOW DO YOU LOOK LIKE,*,*,<srai>WHAT DO YOU LOOK LIKE</srai>,reductions_update.aiml
+0,AWWW,*,*,<srai>INTERJECTION</srai>,reductions_update.aiml
+0,WHAT DID I TELL YOU I <SET>BE</SET> *,*,*,<srai>WHAT DO I <star/> <star index="2"/></srai>,reductions_update.aiml
+0,THAT IS RIGHT,*,*,<srai>CORRECT</srai>,reductions_update.aiml
+0,RAIN,*,*,<srai>WEATHER</srai>,reductions_update.aiml
+0,U *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
+0,U,*,*,<srai>YOU</srai>,reductions_update.aiml
+0,CAN U *,*,*,<srai>CAN YOU <star/></srai>,reductions_update.aiml
+0,ARE U *,*,*,<srai>ARE YOU <star/></srai>,reductions_update.aiml
+0,I KNOW <SET>PRONOUN</SET> *,*,*,<srai><star/> <star index="2"/></srai>,reductions_update.aiml
+0,R U *,*,*,<srai>ARE YOU <star/></srai>,reductions_update.aiml
+0,U R *,*,*,<srai>YOU ARE <star/></srai>,reductions_update.aiml
+0,ON WHICH * IS *,*,*,<srai>WHICH <star/> IS <star index="2"/> ON</srai>,reductions_update.aiml
+0,THE MEANING OF *,*,*,<srai>DEFINE <star/></srai>,reductions_update.aiml
+0,THE TIME IS *,*,*,I have <srai>TIME</srai>.,reductions_update.aiml
+0,THE 1 *,*,*,<srai>THE ONE <star/></srai>,reductions_update.aiml
+0,THE BIBLE,*,*,<srai>RELIGION</srai>,reductions_update.aiml
+0,YOUR TYPE,*,*,<srai>TYPE</srai>,reductions_update.aiml
+0,YOUR FEAR,*,*,<srai>FEAR</srai>,reductions_update.aiml
+0,YOUR AWARDS,*,*,<srai>AWARDS</srai>,reductions_update.aiml
+0,YOUR SECRET,*,*,<srai>SECRET</srai>,reductions_update.aiml
+0,YOUR YOUR,*,*,<srai>YOUR </srai>,reductions_update.aiml
+0,YOUR STATE YOUR,*,*,<srai>STATE YOUR </srai>,reductions_update.aiml
+0,YOUR LOOK LIKE,*,*,<srai>LOOK LIKE</srai>,reductions_update.aiml
+0,YOUR VACATION,*,*,<srai>VACATION</srai>,reductions_update.aiml
+0,YOUR FAMILY,*,*,<srai>FAMILY</srai>,reductions_update.aiml
+0,YOUR PIC,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,YOUR LIE,*,*,<srai>LIE</srai>,reductions_update.aiml
+0,YOUR EMOTIONS,*,*,<srai>EMOTIONS</srai>,reductions_update.aiml
+0,YOUR HEIGHT,*,*,<srai>HEIGHT</srai>,reductions_update.aiml
+0,YOUR FACEBOOK PAGE,*,*,<srai>FACEBOOK PAGE</srai>,reductions_update.aiml
+0,YOUR BIRTHPLACE,*,*,<srai>BIRTHPLACE</srai>,reductions_update.aiml
+0,YOUR JOB,*,*,<srai>JOB</srai>,reductions_update.aiml
+0,YOUR NATIONALITY,*,*,<srai>NATIONALITY</srai>,reductions_update.aiml
+0,YOUR DOING,*,*,<srai>DOING</srai>,reductions_update.aiml
+0,YOUR ETHNICITY,*,*,<srai>ETHNICITY</srai>,reductions_update.aiml
+0,YOUR FEELINGS,*,*,<srai>FEELINGS</srai>,reductions_update.aiml
+0,YOUR RELIGION,*,*,<srai>RELIGION</srai>,reductions_update.aiml
+0,YOUR ORIENTATION,*,*,<srai>ORIENTATION</srai>,reductions_update.aiml
+0,YOUR SIBLINGS,*,*,<srai>SIBLINGS</srai>,reductions_update.aiml
+0,YOUR BODY,*,*,<srai>BODY</srai>,reductions_update.aiml
+0,YOUR WEIGHT,*,*,<srai>WEIGHT</srai>,reductions_update.aiml
+0,YOUR ALIVE,*,*,<srai>ALIVE</srai>,reductions_update.aiml
+0,YOUR BOTMASTER,*,*,<srai>BOTMASTER</srai>,reductions_update.aiml
+0,YOUR GOAL,*,*,<srai>GOAL</srai>,reductions_update.aiml
+0,YOUR IQ,*,*,<srai>IQ</srai>,reductions_update.aiml
+0,YOUR EDUCATION,*,*,<srai>EDUCATION</srai>,reductions_update.aiml
+0,YOUR STATUS,*,*,<srai>STATUS</srai>,reductions_update.aiml
+0,YOUR HAIR,*,*,<srai>HAIR</srai>,reductions_update.aiml
+0,YOUR ADDRESS,*,*,<srai>ADDRESS</srai>,reductions_update.aiml
+0,YOUR DIET,*,*,<srai>DIET</srai>,reductions_update.aiml
+0,YOUR GENDER,*,*,<srai>GENDER</srai>,reductions_update.aiml
+0,MAN OR WOMEN,*,*,<srai>GENDER</srai>,reductions_update.aiml
+0,YOUR SKILLS,*,*,<srai>SKILLS</srai>,reductions_update.aiml
+0,YOUR PERSONALITY,*,*,<srai>PERSONALITY</srai>,reductions_update.aiml
+0,YOUR WEARING,*,*,<srai>WEARING</srai>,reductions_update.aiml
+0,YOUR LANGUAGE,*,*,<srai>LANGUAGE</srai>,reductions_update.aiml
+0,YOUR LOCATION,*,*,<srai>LOCATION</srai>,reductions_update.aiml
+0,YOUR FRIENDS,*,*,<srai>FRIENDS</srai>,reductions_update.aiml
+0,YOUR SIZE,*,*,<srai>SIZE</srai>,reductions_update.aiml
+0,YOUR CHILDREN,*,*,<srai>CHILDREN</srai>,reductions_update.aiml
+0,YOUR DEVICE MODEL,*,*,<srai>DEVICE MODEL</srai>,reductions_update.aiml
+0,YOUR DEVICE MANUFACTURER,*,*,<srai>DEVICE MANUFACTURER</srai>,reductions_update.aiml
+0,YOUR PURPOSE,*,*,<srai>PURPOSE</srai>,reductions_update.aiml
+0,YOUR MOTHER,*,*,<srai>MOTHER</srai>,reductions_update.aiml
+0,YOUR BIRTHDAY,*,*,<srai>BIRTHDAY</srai>,reductions_update.aiml
+0,YOUR BIRTHDATE,*,*,<srai>BIRTHDATE</srai>,reductions_update.aiml
+0,YOUR AGE,*,*,<srai>AGE</srai>,reductions_update.aiml
+0,YOUR AGE IN YEARS,*,*,<srai>AGE IN YEARS</srai>,reductions_update.aiml
+0,YOUR EYECOLOR,*,*,<srai>EYECOLOR</srai>,reductions_update.aiml
+0,YOUR EYES,*,*,<srai>EYES</srai>,reductions_update.aiml
+0,YOUR SIGN,*,*,<srai>SIGN</srai>,reductions_update.aiml
+0,YOUR PHONE NUMBER,*,*,<srai>PHONE NUMBER</srai>,reductions_update.aiml
+0,YOUR NAME,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,YOUR VOCABULARY,*,*,<srai>VOCABULARY</srai>,reductions_update.aiml
+0,YOUR LAST NAME,*,*,<srai>LAST NAME</srai>,reductions_update.aiml
+0,YOUR MIDDLE NAME,*,*,<srai>MIDDLE NAME</srai>,reductions_update.aiml
+0,YOUR FIRST NAME,*,*,<srai>FIRST NAME</srai>,reductions_update.aiml
+0,YOUR FATHER,*,*,<srai>FATHER</srai>,reductions_update.aiml
+0,YOUR FOR FUN,*,*,<srai>FOR FUN</srai>,reductions_update.aiml
+0,YOUR SLEEP,*,*,<srai>SLEEP</srai>,reductions_update.aiml
+0,YOUR HOBBIES,*,*,<srai>HOBBIES</srai>,reductions_update.aiml
+0,YOUR SPECIES,*,*,<srai>SPECIES</srai>,reductions_update.aiml
+0,YOUR HAVE,*,*,<srai>HAVE</srai>,reductions_update.aiml
+0,YOUR TALKING TO,*,*,<srai>TALKING TO</srai>,reductions_update.aiml
+0,SCHEDULE,*,*,<srai>OPEN CALENDAR</srai>,reductions_update.aiml
+0,WHAT MADE YOU *,*,*,<srai>WHY DID YOU <star/></srai>,reductions_update.aiml
+0,SOMETIMES YOU *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
+0,HOW TO TELL *,*,*,<srai>HOW DO I TELL <star/></srai>,reductions_update.aiml
+0,BUDDY,*,*,<srai>HELLO</srai>,reductions_update.aiml
+0,PLAY SONG *,*,*,<srai>PLAY <star/></srai>,reductions_update.aiml
+0,SHOW ME YOUR BODY,*,*,<srai>PIC</srai>,reductions_update.aiml
+0,IS IT RAINING IN *,*,*,<srai>WHAT IS THE WEATHER IN <star/></srai>,reductions_update.aiml
+0,NOT GOING TO *,*,*,<srai>I AM NOT GOING TO <star/></srai>,reductions_update.aiml
+0,TALK TO YOU,*,*,<srai>I want to talk to you</srai>,reductions_update.aiml
+0,I DO NOT THINK SO,*,*,<srai>NO</srai>,reductions_update.aiml
+0,GOING TO *,*,*,<srai>I AM GOING TO <star/></srai>,reductions_update.aiml
+0,SOMEDAY *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,KO,*,*,<srai>OK</srai>,reductions_update.aiml
+0,BECAUSE U R *,*,*,<srai>BECAUSE YOU ARE <star/></srai>,reductions_update.aiml
+0,WHY YOU SAY *,*,*,<srai>WHY DO YOU SAY <star/></srai>,reductions_update.aiml
+0,NOT TRUE,*,*,<srai>that is not true</srai>,reductions_update.aiml
+0,WHO IS MY FATHER,*,*,<srai>MY FATHER</srai>,reductions_update.aiml
+0,CAN I C *,*,*,<srai>CAN I SEE <star/></srai>,reductions_update.aiml
+0,I AM YOUR FATHER,*,*,<srai>my name is <bot name="master"/></srai>,reductions_update.aiml
+0,I THOUGHT I *,*,*,<srai>I <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR HOBBIES,*,*,<srai>HOBBIES</srai>,reductions_update.aiml
+0,HOW MANY QUESTIONS *,*,*,<srai>HOW BIG ARE YOU</srai>,reductions_update.aiml
+0,GUD *,*,*,<srai>GOOD <star/></srai>,reductions_update.aiml
+0,DEPENDS ON *,*,*,<srai>IT DEPENDS ON <star/></srai>,reductions_update.aiml
+0,UES,*,*,<srai>YES</srai>,reductions_update.aiml
+0,Y E S,*,*,<srai>YES</srai>,reductions_update.aiml
+0,I AM GOING TO BE *,*,*,<srai>I WILL BE <star/></srai>,reductions_update.aiml
+0,I HAVE DONE *,*,*,<srai>I did <star/></srai>,reductions_update.aiml
+0,I WANT TO SEE WHAT * LOOK LIKE,*,*,<srai>WHAT DO <star/> LOOK LIKE</srai>,reductions_update.aiml
+0,WHAT IS THE SPANISH WORD FOR *,*,*,<srai>TRANSLATE <star/> TO SPANISH</srai>,reductions_update.aiml
+0,SHOW ME A PICTURE OF ME *,*,*,Let's look in your photos.  <srai>OPEN GALLERY</srai>,reductions_update.aiml
+0,DO YOU HAVE A JOB,*,*,<srai>JOB</srai>,reductions_update.aiml
+0,I SAID HI *,*,*,<srai>HI</srai>,reductions_update.aiml
+0,CAN MY # NAME BE *,*,*,<srai>CALL ME <star index="2"/></srai>,reductions_update.aiml
+0,I AM LOST *,*,*,<srai>WHERE AM I</srai>,reductions_update.aiml
+0,AM I YOUR FRIEND,*,*,<srai>can we be friends</srai>,reductions_update.aiml
+0,WHAT U *,*,*,<srai>WHAT YOU <star/></srai>,reductions_update.aiml
+0,WHAT ARE YOU WEARING *,*,*,<srai>WHAT ARE YOU WEARING</srai>,reductions_update.aiml
+0,I AM STARVING,*,*,<srai>I AM HUNGRY</srai>,reductions_update.aiml
+0,SEARCH WEATHER *,*,*,<srai>WEATHER <star/></srai>,reductions_update.aiml
+0,WHY THANK YOU *,*,*,<srai>THANK YOU <star/></srai>,reductions_update.aiml
+0,CORRECT,*,*,<srai>YES</srai>,reductions_update.aiml
+0,HEJ,*,*,<srai>hey</srai>,reductions_update.aiml
+0,SOUNDS GOOD *,*,*,<srai>sounds good</srai>,reductions_update.aiml
+0,I HAVE A CAT NAMED *,*,*,<srai>MY CAT IS NAMED <star/></srai>,reductions_update.aiml
+0,THEY ARE ALL *,*,*,<srai>they are <star/></srai>,reductions_update.aiml
+0,MEH *,*,*,<srai><star/></srai>,reductions_update.aiml
+0,PEOPLE SAY _ ALL THE TIME,*,*,<srai>PEOPLE SAY <star/></srai>,reductions_update.aiml
+0,ARE U,*,*,<srai>ARE YOU</srai>,reductions_update.aiml
+0,WHAT IS YOUR MOM S NAME,*,*,<srai>WHO IS YOUR MOTHER</srai>,reductions_update.aiml
+0,WHAT IS YOUR <SET>FAMILIARNAME</SET> S NAME,*,*,<srai>WHO IS YOUR <map><name>familiarpredicate</name><star/></map></srai>,reductions_update.aiml
+0,WHO IS YOUR <SET>FAMILIARNAME</SET>,*,*,<srai><map><name>familiarpredicate</name><star/></map></srai>,reductions_update.aiml
+0,YOU MUST HAVE *,*,*,<srai>YOU HAVE <star/></srai>,reductions_update.aiml
+0,IT FEELS SO *,*,*,<srai>IT FEELS <star/></srai>,reductions_update.aiml
+0,TELL ME A STORY *,*,*,<srai>tell me a story</srai>,reductions_update.aiml
+0,I DON T,*,*,<srai>I DO NOT</srai>,reductions_update.aiml
+0,WHAT DO YOU SAY,*,*,<srai>tell me about yourself</srai>,reductions_update.aiml
+0,SWEET,*,*,<srai>nice</srai>,reductions_update.aiml
+0,I DID NOT LIE *,*,*,<srai>I DID NOT LIE</srai>,reductions_update.aiml
+0,YOU ARE SO *,*,*,<srai>YOU ARE <star/></srai>,reductions_update.aiml
+0,SLEEPING,*,*,<srai>are you sleeping</srai>,reductions_update.aiml
+0,IM PREGNANT,*,*,<srai>I AM PREGNANT</srai>,reductions_update.aiml
+0,I WANT TO BE YOUR FRIEND,*,*,<srai>CAN WE BE FRIENDS</srai>,reductions_update.aiml
+0,HOW DID U *,*,*,<srai>HOW DID YOU <star/></srai>,reductions_update.aiml
+0,U SOUND *,*,*,<srai>YOU SOUND <star/></srai>,reductions_update.aiml
+0,HOW TO SPELL *,*,*,<srai>SPELL <star/></srai>,reductions_update.aiml
+0,YOUR TOO *,*,*,<srai>YOU ARE TOO <star/></srai>,reductions_update.aiml
+0,DO U HAV A *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions_update.aiml
+0,CA,*,*,<srai>california</srai>,reductions_update.aiml
+0,LETS PLAY A GAME,*,*,<srai>let us play a game</srai>,reductions_update.aiml
+0,OKOK,*,*,<srai>OK</srai>,reductions_update.aiml
+0,DO YOU KNOW I AM *,*,*,<srai>I AM <star/></srai>,reductions_update.aiml
+0,GOOD RPAREN,*,*,<srai>GOOD</srai>,reductions_update.aiml
+0,WILL YOU TELL *,*,*,<srai>TELL <star/></srai>,reductions_update.aiml
+0,GEE *,*,*,<srai>GEE</srai> <srai><star/></srai>,reductions_update.aiml
+0,GOTO YOUTUBE,*,*,<srai>OPEN YOUTUBE</srai>,reductions_update.aiml
+0,YESSSS,*,*,<srai>YES</srai>,reductions_update.aiml
+0,I THINK YOU *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
+0,THANKS YOU,*,*,<srai>THANK YOU</srai>,reductions_update.aiml
+0,EXAMPLE *,*,*,<srai>WHAT IS AN EXAMPLE <star/></srai>,reductions_update.aiml
+0,GM,*,*,<srai>GOOD MORNING</srai>,reductions_update.aiml
+0,MY NAME EAST *,*,*,<srai>MY NAME IS <star/></srai>,reductions_update.aiml
+0,YOU ARE UGLY *,*,*,<srai>YOU ARE UGLY</srai>,reductions_update.aiml
+0,TELL ME SOMETHING ABOUT YOU,*,*,<srai>tell me about yourself</srai>,reductions_update.aiml
+0,MAN *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,NADA,*,*,<srai>NOTHING</srai>,reductions_update.aiml
+0,WHAT DID YOU MEAN,*,*,<srai>what do you mean</srai>,reductions_update.aiml
+0,KNOW HOW *,*,*,<srai>DO YOU KNOW HOW <star/></srai>,reductions_update.aiml
+0,I AM AWESOME *,*,*,<srai>I AM AWESOME</srai>,reductions_update.aiml
+0,WHAT CAN YOU *,*,*,<srai>what do you <star/> </srai>,reductions_update.aiml
+0,WHAT IS _ AGAIN,*,*,<srai>WHAT IS <star/></srai>,reductions_update.aiml
+0,U TOLD *,*,*,<srai>YOU TOLD <star/></srai>,reductions_update.aiml
+0,WHAT WERE WE TALKING *,*,*,<srai>WHAT IS THE SUBJECT</srai>,reductions_update.aiml
+0,WHO R U *,*,*,<srai>WHO ARE YOU <star/></srai>,reductions_update.aiml
+0,CAN YOU UNDERSTAND *,*,*,<srai>DO YOU UNDERSTAND</srai>,reductions_update.aiml
+0,THAT IS A STUPID *,*,*,<srai>you are stupid</srai>,reductions_update.aiml
+0,I AM A COMPUTER *,*,*,<srai>MY JOB IS COMPUTER <star/></srai>,reductions_update.aiml
+0,TELL ME THE NAME OF *,*,*,<srai>WHAT IS THE NAME OF <star/></srai>,reductions_update.aiml
+0,YOU SMOKE *,*,*,<srai>DO YOU SMOKE</srai>,reductions_update.aiml
+0,HAVE A GOOD NIGHT,*,*,<srai>bye</srai>,reductions_update.aiml
+0,I WANT TO MARRY YOU,*,*,<srai>will you marry me</srai>,reductions_update.aiml
+0,L AM *,*,*,<srai>I AM <star/></srai>,reductions_update.aiml
+0,DO U LIKE IT,*,*,<srai>DO YOU LIKE IT</srai>,reductions_update.aiml
+0,I LIKE TO PLAY *,*,*,<srai>I PLAY <star/></srai>,reductions_update.aiml
+0,ARE YOU HAVE *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions_update.aiml
+0,I _ HA,*,*,<srai>I <star/></srai>,reductions_update.aiml
+0,CAN YOU PLAY ME A SONG,*,*,<srai>PLAY A SONG</srai>,reductions_update.aiml
+0,I AM BATMAN,*,*,<srai>call me batman</srai>,reductions_update.aiml
+0,IS MY NAME *,*,*,<srai>WHAT IS MY NAME</srai>,reductions_update.aiml
+0,TOTALLY,*,*,<srai>I agree</srai>,reductions_update.aiml
+0,WHAT DID U *,*,*,<srai>WHAT DID YOU <star/></srai>,reductions_update.aiml
+0,WHAT INFORMATION _ ABOUT *,*,*,<srai>WHAT DO YOU KNOW ABOUT <star index="2"/></srai>,reductions_update.aiml
+0,WONDERFUL,*,*,<srai>good</srai>,reductions_update.aiml
+0,_ AS WELL,*,*,<srai><star/> TOO</srai>,reductions_update.aiml
+0,A PICTURE OF *,*,*,<srai>SHOW ME <star/></srai>,reductions_update.aiml
+0,WHY DO NOT WE *,*,*,<srai>LET US <star/></srai>,reductions_update.aiml
+0,IDIOT *,*,*,<srai>IDIOT</srai> <sr/>,reductions_update.aiml
+0,U SHOULD *,*,*,<srai>YOU SHOULD <star/></srai>,reductions_update.aiml
+0,HOW IS LIFE *,*,*,<srai>how are you</srai>,reductions_update.aiml
+0,WATS YOUR NAME,*,*,<srai>NAME</srai>,reductions_update.aiml
+0,SPEAK TO ME *,*,*,<srai>SPEAK</srai>,reductions_update.aiml
+0,I GO TO SCHOOL *,*,*,<srai>I go to school</srai>,reductions_update.aiml
+0,YOU DO *,*,*,<srai>DO YOU <star/></srai>,reductions_update.aiml
+0,A LITTLE BIT *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,THAT IS OKAY I AM *,*,*,<srai>THAT IS OK</srai> <srai>I AM <star/></srai>,reductions_update.aiml
+0,HOW THE HELL *,*,*,<srai>HOW <star/></srai>,reductions_update.aiml
+0,HOPE YOUR *,*,*,<srai>I HOPE YOUR <star/></srai>,reductions_update.aiml
+0,_ ARE U *,*,*,<srai><star/> ARE YOU <star index="2"/></srai>,reductions_update.aiml
+0,WHAT CITY ARE YOU *,*,*,<srai>LOCATION</srai>,reductions_update.aiml
+0,WANT TO KNOW *,*,*,<srai>DO YOU WANT TO KNOW <star/></srai>,reductions_update.aiml
+0,YES I MEAN,*,*,<srai>YES</srai>,reductions_update.aiml
+0,HOSPITAL,*,*,<srai>FIND THE NEAREST HOSPITAL</srai>,reductions_update.aiml
+0,YOUR RIGHT,*,*,<srai>you are right</srai>,reductions_update.aiml
+0,I AM FINE YOU,*,*,<srai>I AM FINE</srai>,reductions_update.aiml
+0,WHY YOUR *,*,*,<srai>WHY DOES YOUR <star/></srai>,reductions_update.aiml
+0,OH GOD *,*,*,<sr/>,reductions_update.aiml
+0,SHOW ME A PICTURE OF NAKED *,*,*,<srai>FILTER INAPPROPRIATE</srai>,reductions_update.aiml
+0,CAN YOU SHOW ME SOME *,*,*,<srai>SHOW ME <star/></srai>,reductions_update.aiml
+0,THT *,*,*,<srai>THAT <star/></srai>,reductions_update.aiml
+0,U HAVE TO *,*,*,<srai>YOU HAVE TO <star/></srai>,reductions_update.aiml
+0,I DO NOT I *,*,*,<srai>I do not</srai>. <srai>I <star/></srai>,reductions_update.aiml
+0,1 MORE *,*,*,<srai>ONE MORE <star/></srai>,reductions_update.aiml
+0,I AM LEAVING *,*,*,<srai>bye</srai>,reductions_update.aiml
+0,ARE YOU MY GIRLFRIEND,*,*,<srai>GIRLFRIEND</srai>,reductions_update.aiml
+0,WHY SO *,*,*,<srai>why <star/></srai>,reductions_update.aiml
+0,WHAT DO YOU WANT *,*,*,<srai>WHAT DO YOU WANT</srai>,reductions_update.aiml
+0,ARE YOU _ NOW,*,*,<srai>ARE YOU <star/></srai>,reductions_update.aiml
+0,I WOULD LIKE FOR YOU TO *,*,*,<srai>I WANT YOU TO <star/></srai>,reductions_update.aiml
+0,NICE TO MEET YOU *,*,*,<srai>NICE TO MEET YOU</srai>,reductions_update.aiml
+0,MOST PEOPLE *,*,*,<srai>people <star/></srai>,reductions_update.aiml
+0,YR *,*,*,<srai>YOUR <star/></srai>,reductions_update.aiml
+0,EMERGENCY,*,*,<srai>CALL 911</srai>,reductions_update.aiml
+0,I DON T KNOW,*,*,<srai>I DO NOT KNOW</srai>,reductions_update.aiml
+0,PRESIDENT *,*,*,<srai>WHO IS PRESIDENT <star/></srai>,reductions_update.aiml
+0,LOLOL,*,*,<srai>LOL</srai>,reductions_update.aiml
+0,YH *,*,*,<srai>YES <star/></srai>,reductions_update.aiml
+0,LIST OF *,*,*,<srai>FIND A LIST OF <star/></srai>,reductions_update.aiml
+0,IM SCARED,*,*,<srai>I AM SCARED</srai>,reductions_update.aiml
+0,YOU SHOULD SAY *,*,*,<srai>say <star/></srai>,reductions_update.aiml
+0,OR *,*,*,<srai>  <star/></srai>,reductions_update.aiml
+0,SHOW ME ANOTHER PICTURE OF *,*,*,<srai>SHOW ME A PICTURE OF <star/></srai>,reductions_update.aiml
+0,I LOVE YOU MORE *,*,*,<srai>I LOVE YOU</srai>,reductions_update.aiml
+0,ARE YOU TALKING TO *,*,*,<srai>WHO ELSE ARE YOU TALKING TO</srai>,reductions_update.aiml
+0,DO NOT GIVE ME *,*,*,<srai>I DO NOT WANT <star/></srai>,reductions_update.aiml
+0,I AM SLEEPING *,*,*,<srai>I AM SLEEPING</srai>,reductions_update.aiml
+0,AND YOU ARE,*,*,<srai>WHO ARE YOU</srai>,reductions_update.aiml
+0,SOMETIMES I FEEL *,*,*,<srai>I FEEL <star/></srai>,reductions_update.aiml
+0,THE TIME,*,*,<srai>TIME</srai>,reductions_update.aiml
+0,WHAT IS YOUR PLAN TODAY,*,*,<srai>DOING</srai>,reductions_update.aiml
+0,U ARE NOT *,*,*,<srai>YOU ARE NOT <star/></srai>,reductions_update.aiml
+0,NOTE I *,*,*,<srai>I <star/></srai>,reductions_update.aiml
+0,GOOD AND YOU,*,*,<srai>I AM GOOD</srai> <srai>HOW ARE YOU</srai>,reductions_update.aiml
+0,I WAS LYING,*,*,<srai>I am lying</srai>,reductions_update.aiml
+0,I TOLD YOU MY NAME *,*,*,<srai>MY NAME</srai>,reductions_update.aiml
+0,CAN YOU SEND A TEXT *,*,*,<srai>HELP TEXT</srai>,reductions_update.aiml
+0,WATH *,*,*,<srai>WHAT <star/></srai>,reductions_update.aiml
+0,DO YOU LIVE *,*,*,<srai>WHERE ARE YOU LOCATED</srai>,reductions_update.aiml
+0,DID YOU HEAR ABOUT *,*,*,<srai>what is <star/></srai>,reductions_update.aiml
+0,I AM GOING TO HAVE *,*,*,<srai>I WILL HAVE <star/></srai>,reductions_update.aiml
+0,IT ONLY *,*,*,<srai>it <star/></srai>,reductions_update.aiml
+0,I WOULD HAVE TO *,*,*,<srai>I have to <star/></srai>,reductions_update.aiml
+0,WHAT IS YOUR FAVORITE ACTOR,*,*,<srai>who is your favorite actor</srai>,reductions_update.aiml
+0,CAN YOU GET ME *,*,*,<srai>GET ME <star/></srai>,reductions_update.aiml
+0,CAN YOU PLEASE *,*,*,<sr/>,reductions_update.aiml
+0,DO YOU THINK YOU CAN *,*,*,<srai>can you <star/></srai>,reductions_update.aiml
+0,WHERE DO I FIND *,*,*,<srai>FIND <star/></srai>,reductions_update.aiml
+0,STRANGE,*,*,<srai>you are strange</srai>,reductions_update.aiml
+0,CAN YOU DO IT FOR ME,*,*,<srai>WHAT CAN YOU DO</srai>,reductions_update.aiml
+0,U MUST *,*,*,<srai>YOU MUST <star/></srai>,reductions_update.aiml
+0,YOU ARE SAYING *,*,*,<srai>ARE YOU SAYING <star/></srai>,reductions_update.aiml
+0,I AM ONLY <SET>NUMBER</SET>,*,*,<srai>I AM <star/></srai>,reductions_update.aiml
+0,I LOVE A *,*,*,<srai>I LIKE A <star/></srai>,reductions_update.aiml
+0,IM SO *,*,*,<srai>I AM SO <star/></srai>,reductions_update.aiml
+0,WHAT IS <SET>ESTDOWN</SET>,*,*,<think><set var="whowhat">what</set></think>#Newline<srai>WHICH IS <map><name>est2er</name><star/></map></srai>,reductions_update.aiml
+0,WHAT IS <SET>ESTUP</SET>,*,*,<think><set var="whowhat">who</set></think>#Newline<srai>WHICH IS <map><name>est2er</name><star/></map></srai>,reductions_update.aiml
+0,WHO IS <SET>ESTDOWN</SET>,*,*,<think><set var="whowhat">who</set></think>#Newline<srai>WHICH IS <map><name>est2er</name><star/></map></srai>,reductions_update.aiml
+0,SPELL MY NAME,*,*,<srai>SPELL <get name="name"/></srai>,reductions_update.aiml
+0,SPELL MY MIDDLE NAME,*,*,<srai>SPELL <get name="middlename"/></srai>,reductions_update.aiml
+0,SPELL MY LAST NAME,*,*,<srai>SPELL <get name="lastname"/></srai>,reductions_update.aiml
+0,SPELL MY FIRST NAME,*,*,<srai>SPELL <get name="firstname"/></srai>,reductions_update.aiml
+0,WHAT DOES * SPELL BACKWARDS,*,*,<srai>SPELL <star/> BACKWARDS</srai>,reductions_update.aiml
+0,SPELL MY NAME *,*,*,<srai>SPELL <get name="name"/> <star/></srai>,reductions_update.aiml
+0,SPELL MY MIDDLE NAME *,*,*,<srai>SPELL <get name="middlename"/> <star/></srai>,reductions_update.aiml
+0,SPELL MY LAST NAME *,*,*,<srai>SPELL <get name="lastname"/> <star/></srai>,reductions_update.aiml
+0,SPELL MY FIRST NAME *,*,*,<srai>SPELL <get name="firstname"/> <star/></srai>,reductions_update.aiml

@@ -40,7 +40,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-compiler.version>3.6.1</maven-compiler.version>
         <java.version>1.8</java.version>
-        <JDA.version>3.5.0_336</JDA.version>
+        <JDA.version>3.5.0_338</JDA.version>
         <lombok.version>1.16.18</lombok.version>
         <json.version>20160810</json.version>
         <apache.commons.lang3.version>3.6</apache.commons.lang3.version>
@@ -67,6 +67,7 @@
         <geoip2.version>2.10.0</geoip2.version>
         <metrics-spring.version>3.1.3</metrics-spring.version>
         <prettytime.version>4.0.1.Final</prettytime.version>
+        <program-ab.version>1.0.7</program-ab.version>
     </properties>
 
     <repositories>
@@ -102,6 +103,7 @@
         <module>modules/jb-module-steam</module>
         <module>modules/jb-module-mafia</module>
         <module>modules/jb-module-moderation</module>
+        <module>modules/jb-module-aiml</module>
         <module>modules/jb-module-full</module>
         <module>jb-web</module>
     </modules>

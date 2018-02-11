@@ -1,0 +1,98 @@
+0,RHYME *,*,*,<think>#Newline<set var="rhyme"><map name="rhyme"><star/></map></set>#Newline</think>#Newline<condition var="rhyme">#Newline<li value="unknown">anti-<star/></li>#Newline<li><get var="rhyme"/></li>#Newline</condition>,knowledge.aiml
+0,IS # <SET>WET</SET> ^ WET ^,*,*,<star index="2"/> is wet.,knowledge.aiml
+0,WHAT SHAPE IS # <SET>SPHERE</SET>,*,*,Spherical,knowledge.aiml
+0,WHAT # NEXT # 2 4 6 8,*,*,10,knowledge.aiml
+0,WHAT # NEXT # 2 4 6,*,*,8,knowledge.aiml
+0,WHAT # NEXT # 1 3 5 7,*,*,9,knowledge.aiml
+0,WHAT # NEXT # 1 3 5,*,*,7,knowledge.aiml
+0,WHAT IS THE CAPITAL OF <SET>STATE</SET>,*,*,<map><name>state2capital</name><star/></map>.,knowledge.aiml
+0,WHAT IS THE CAPITAL OF <SET>NATION</SET>,*,*,<map><name>nation2capital</name><star/></map>.,knowledge.aiml
+0,WHAT IS THE LARGEST CITY ^ <SET>STATE</SET> ^,*,*,<map><name>state2largestcity</name><star/></map>.,knowledge.aiml
+0,WHAT IS AIML ^,*,*,AIML#Comma or Artificial Intelligence Markup Language#Comma is an XML dialect for creating natural language software agents.,knowledge.aiml
+0,WHAT IS THE FIRST MONTH *,*,*,January.,knowledge.aiml
+0,WHAT DAY # STARTS WITH # S,*,*,Saturday#Comma Sunday.,knowledge.aiml
+0,WHAT DAYS # START WITH # S,*,*,Saturday#Comma Sunday.,knowledge.aiml
+0,WHAT DAY # STARTS WITH # M,*,*,Monday.,knowledge.aiml
+0,WHAT DAY # STARTS WITH # W,*,*,Wednesday.,knowledge.aiml
+0,WHAT DAY # STARTS WITH # F,*,*,Friday.,knowledge.aiml
+0,WHAT DAY # STARTS WITH # T,*,*,Tuesday#Comma Thursday.,knowledge.aiml
+0,WHAT DAYS # START WITH # T,*,*,Tuesday#Comma Thursday.,knowledge.aiml
+0,IS FIRE HOT #,*,*,Fire is hot.,knowledge.aiml
+0,IS FIRE COLD #,*,*,Fire is hot.,knowledge.aiml
+0,WHAT IS THE 1ST MONTH *,*,*,January.,knowledge.aiml
+0,IS * A # NUMBER,*,*,No,knowledge.aiml
+0,IS * A # FOOD,*,*,Not that I know of.,knowledge.aiml
+0,IS * A # LANGUAGE,*,*,No,knowledge.aiml
+0,IS * A MONTH,*,*,No,knowledge.aiml
+0,IS * A # SIGN,*,*,No,knowledge.aiml
+0,IS * A # NAME,*,*,Not usually.,knowledge.aiml
+0,IS * A # LETTER,*,*,No,knowledge.aiml
+0,IS <SET>NUMBER</SET> A # NUMBER,*,*,Yes,knowledge.aiml
+0,IS <SET>FOOD</SET> A # FOOD,*,*,Yes,knowledge.aiml
+0,IS <SET>LANGUAGE</SET> A # LANGUAGE,*,*,Yes,knowledge.aiml
+0,IS <SET>MONTH</SET> A MONTH,*,*,Yes,knowledge.aiml
+0,IS <SET>STARSIGN</SET> A # SIGN,*,*,Yes,knowledge.aiml
+0,IS <SET>NAME</SET> A # NAME,*,*,Yes,knowledge.aiml
+0,IS <SET>LETTER</SET> A # LETTER,*,*,Yes,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # COUNTRY #,*,*,One country is <random><li>The United States</li><li>Russia</li><li>China</li><li>Japan</li><li>France</li><li>South Africa</li></random>.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # NORTH POLE,*,*,Ice#Comma Seals#Comma Penguins#Comma Elves#Comma Santa Claus.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # BEACH,*,*,Sand#Comma Surf#Comma Sunbathers#Comma Lifeguards#Comma Seaweed.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # BANK,*,*,Tellers#Comma Money#Comma Checks#Comma Guards.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # FOREST,*,*,Trees.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # WOODS,*,*,Trees.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # OCEAN,*,*,Fish#Comma waves#Comma seaweed#Comma ships.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # FARM,*,*,Crops#Comma livestock#Comma tractor#Comma barn.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # SIGN,*,*,Leo#Comma Pisces#Comma Libra.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # SEARCH ENGINE,*,*,Google.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # NORTH AMERICA,*,*,United States#Comma Canada#Comma Mexico#Comma Cuba.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # SOUTH AMERICA,*,*,Brazil#Comma Argentina#Comma Columbia#Comma Venezuela.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # EUROPE,*,*,Germany#Comma France#Comma Holland#Comma Ireland.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # ANIMAL,*,*,Dog#Comma cat#Comma horse#Comma monkey#Comma snake#Comma eagle.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # AFRICA,*,*,Egypt#Comma Sudan#Comma Nigeria#Comma South Africa.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # ASIA,*,*,Russia#Comma China#Comma India#Comma Pakistan.,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> # ORANGE,*,*,Carrots,knowledge.aiml
+0,NAME <SET>QUANTIFIER</SET> *,*,*,<random><li>A good name would be</li>#Newline<li>I would choose the name</li>#Newline<li>Let's call it</li>#Newline</random> <random><li>Fred</li><li>Larry</li><li>Jenny</li></random>,knowledge.aiml
+0,<SET>ANIMAL</SET>,*,*,<star/> is an animal.,knowledge.aiml
+0,IS * AN ANIMAL,*,*,<star/> is not an animal I know.,knowledge.aiml
+0,IS <SET>ANIMAL</SET> AN ANIMAL,*,*,<star/> is an animal.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>ANIMAL</SET> AN ANIMAL,*,*,<srai>IS <star index="2"/> AN ANIMAL</srai>,knowledge.aiml
+0,IS <SET>ANIMAL</SET> * ANIMAL *,*,*,<srai>IS <star/> AN ANIMAL</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>ANIMAL</SET> * ANIMAL *,*,*,<srai>IS <star index="2"/> AN ANIMAL</srai>,knowledge.aiml
+0,ARE * ANIMALS #,*,*,<srai>IS <map><name>singular</name><star/></map> AN ANIMAL</srai>,knowledge.aiml
+0,ARE <SET>QUANTIFIER</SET> * ANIMALS #,*,*,<srai>IS <map><name>singular</name><star index="2"/></map> AN ANIMAL</srai>,knowledge.aiml
+0,<SET>PREPOSITION</SET>,*,*,<star/> is a preposition.,knowledge.aiml
+0,<SET>BIRD</SET>,*,*,<star/> is a bird.,knowledge.aiml
+0,IS * A BIRD,*,*,<star/> is not a bird I know.,knowledge.aiml
+0,IS <SET>BIRD</SET> A BIRD,*,*,<star/> is a bird.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>BIRD</SET> A BIRD,*,*,<srai>IS <star index="2"/> A BIRD</srai>,knowledge.aiml
+0,IS <SET>BIRD</SET> * BIRD *,*,*,<srai>IS <star/> A BIRD</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>BIRD</SET> * BIRD *,*,*,<srai>IS <star index="2"/> A BIRD</srai>,knowledge.aiml
+0,ARE * BIRDS #,*,*,<srai>IS <map><name>singular</name><star/></map> A BIRD</srai>,knowledge.aiml
+0,ARE <SET>QUANTIFIER</SET> * BIRDS #,*,*,<srai>IS <map><name>singular</name><star index="2"/></map> A BIRD</srai>,knowledge.aiml
+0,IS * A COLOR,*,*,<star/> is not a color I know.,knowledge.aiml
+0,IS <SET>COLOR</SET> A COLOR,*,*,<star/> is a color.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>COLOR</SET> A COLOR,*,*,<srai>IS <star index="2"/> A COLOR</srai>,knowledge.aiml
+0,IS <SET>COLOR</SET> * COLOR *,*,*,<srai>IS <star/> A COLOR</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>COLOR</SET> * COLOR *,*,*,<srai>IS <star index="2"/> A COLOR</srai>,knowledge.aiml
+0,<SET>NUMBER</SET>,*,*,<star/> is a number.,knowledge.aiml
+0,IS * A NUMBER,*,*,<star/> is not a number I know.,knowledge.aiml
+0,IS <SET>NUMBER</SET> A NUMBER,*,*,<star/> is a number.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>NUMBER</SET> A NUMBER,*,*,<srai>IS <star index="2"/> A NUMBER</srai>,knowledge.aiml
+0,IS <SET>NUMBER</SET> * NUMBER *,*,*,<srai>IS <star/> A NUMBER</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>NUMBER</SET> * NUMBER *,*,*,<srai>IS <star index="2"/> A NUMBER</srai>,knowledge.aiml
+0,<SET>LANGUAGE</SET>,*,*,<star/> is a language.,knowledge.aiml
+0,IS * A LANGUAGE,*,*,<star/> is not a language I know.,knowledge.aiml
+0,IS <SET>LANGUAGE</SET> A LANGUAGE,*,*,<star/> is a language.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>LANGUAGE</SET> A LANGUAGE,*,*,<srai>IS <star index="2"/> A LANGUAGE</srai>,knowledge.aiml
+0,IS <SET>LANGUAGE</SET> * LANGUAGE *,*,*,<srai>IS <star/> A LANGUAGE</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>LANGUAGE</SET> * LANGUAGE *,*,*,<srai>IS <star index="2"/> A LANGUAGE</srai>,knowledge.aiml
+0,<SET>LETTER</SET>,*,*,<star/> is a letter.,knowledge.aiml
+0,IS * A LETTER,*,*,<star/> is not a letter I know.,knowledge.aiml
+0,IS <SET>LETTER</SET> A LETTER,*,*,<star/> is a letter.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>LETTER</SET> A LETTER,*,*,<srai>IS <star index="2"/> A LETTER</srai>,knowledge.aiml
+0,IS <SET>LETTER</SET> * LETTER *,*,*,<srai>IS <star/> A LETTER</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>LETTER</SET> * LETTER *,*,*,<srai>IS <star index="2"/> A LETTER</srai>,knowledge.aiml
+0,<SET>MONTH</SET>,*,*,<star/> is a month.,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>MONTH</SET> A MONTH,*,*,<srai>IS <star index="2"/> A MONTH</srai>,knowledge.aiml
+0,IS <SET>MONTH</SET> * MONTH *,*,*,<srai>IS <star/> A MONTH</srai>,knowledge.aiml
+0,IS <SET>ARTICLE</SET> <SET>MONTH</SET> * MONTH *,*,*,<srai>IS <star index="2"/> A MONTH</srai>,knowledge.aiml

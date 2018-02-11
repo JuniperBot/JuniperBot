@@ -1,0 +1,1488 @@
+0,HAVE YOU <SET>BEEN</SET> A GOOD * LATELY,*,*,<srai>WHAT IS YOUR FAVORITE <star index="2"/></srai>,reductions2.aiml
+0,THE * WAS <SET>BEEN</SET> BY *,*,*,<srai><star index="3"/> <map><name>be2was</name><map><name>been2be</name><star index="2"/></map></map> the <star/></srai>,reductions2.aiml
+0,DO YOU KNOW WHAT * <SET>NAME</SET> <SET>IS</SET> *,*,*,<srai>WHAT <star/> DOES <star index="2"/> <map><name>is2be</name><star index="3"/></map> <star index="4"/></srai>,reductions2.aiml
+0,COUNT UP TO *,*,*,<srai>COUNT TO <star/></srai>,reductions2.aiml
+0,WHAT TIME * YOU * BED,*,*,<srai>SLEEP</srai>,reductions2.aiml
+0,WHAT TIME * YOU * BED *,*,*,<srai>SLEEP</srai>,reductions2.aiml
+0,_ 60 MINUTES,*,*,<srai><star/> ONE HOUR</srai>,reductions2.aiml
+0,_ AN HOUR,*,*,<srai><star/> ONE HOUR</srai>,reductions2.aiml
+0,IF IT WERE *,*,*,<srai>IF IT IS <star/></srai>,reductions2.aiml
+0,_ WHO IS <SET>ARTICLE</SET> SHORTER,*,*,<srai><star/> WHO IS SHORTER</srai>,reductions2.aiml
+0,_ WHO IS <SET>ARTICLE</SET> TALLER,*,*,<srai><star/> WHO IS TALLER</srai>,reductions2.aiml
+0,WHICH IS LARGER * AND *,*,*,<srai>WHICH IS LARGER <star/> OR <star index="2"/></srai>,reductions2.aiml
+0,IS * LARGER THAN *,*,*,<srai>WHICH IS LARGER <star/> OR <star index="2"/></srai>,reductions2.aiml
+0,IS * SMALLER THAN *,*,*,<srai>WHICH IS SMALLER <star/> OR <star index="2"/></srai>,reductions2.aiml
+0,IS * BIGGER THAN *,*,*,<srai>WHICH IS BIGGER <star/> OR <star index="2"/></srai>,reductions2.aiml
+0,WHICH IS SMALLER * OR *,*,*,<think>#Newline<set var="smaller"><srai>SMALLEROF <star/> AND <star index="2"/></srai></set>#Newline</think>#Newline<condition var="smaller">#Newline<li value="unknown">I can't tell which one is smaller.</li>#Newline<li value="same">They are about the same size.</li>#Newline<li><formal><get var="smaller"/></formal> is smaller.</li>#Newline</condition>,reductions2.aiml
+0,IS <SET>ARTICLE</SET> * LARGER THAN *,*,*,<srai>IS <star index="2"/> LARGER THAN <star index="3"/></srai>,reductions2.aiml
+0,IS * LARGER THAN <SET>ARTICLE</SET> *,*,*,<srai>IS <star/> LARGER THAN <star index="3"/></srai>,reductions2.aiml
+0,TODAY,*,*,<srai>DAY</srai>,reductions2.aiml
+0,WHAT DAY OF THE WEEK IS IT,*,*,<srai>TODAY</srai>,reductions2.aiml
+0,WHAT DAY IS IT,*,*,<srai>TODAY</srai>,reductions2.aiml
+0,WHAT DAY IS TODAY,*,*,<srai>TODAY</srai>,reductions2.aiml
+0,WHAT DAY IS IT TODAY,*,*,<srai>TODAY</srai>,reductions2.aiml
+0,WHAT DAY WILL IT BE TOMORROW,*,*,<srai>TOMORROW</srai>,reductions2.aiml
+0,WHAT DAY IS TOMORROW,*,*,<srai>TOMORROW</srai>,reductions2.aiml
+0,WHAT DAY WILL TOMORROW BE,*,*,<srai>TOMORROW</srai>,reductions2.aiml
+0,WHAT MONTH * IS IT,*,*,<srai>MONTH</srai>,reductions2.aiml
+0,WHAT MONTH <SET>PREPOSITION</SET> <SET>ARTICLE</SET> YEAR IS IT,*,*,<srai>MONTH</srai>,reductions2.aiml
+0,WHAT MONTH <SET>PREPOSITION</SET> <SET>ARTICLE</SET> YEAR IS *,*,*,<srai>MONTH</srai>,reductions2.aiml
+0,WHAT NUMBER COMES AFTER <SET>NUMBER</SET>,*,*,<srai>SUCCESSOR <star/></srai>,reductions2.aiml
+0,WHAT NUMBER COMES AFTER <SET>NUMBERNAME</SET>,*,*,<srai>SUCCESSOR <map><name>name2number</name><star/></map></srai>,reductions2.aiml
+0,WHAT NUMBER COMES BEFORE <SET>NUMBER</SET>,*,*,<srai>PREDECESSOR <star/></srai>,reductions2.aiml
+0,WHAT NUMBER COMES BEFORE <SET>NUMBERNAME</SET>,*,*,<srai>PREDECESSOR <map><name>name2number</name><star/></map></srai>,reductions2.aiml
+0,WHERE ARE YOU,*,*,<srai>LOCATION</srai>,reductions2.aiml
+0,HOW IS * DIFFERENT FROM *,*,*,<srai>HOW DOES <star/> DIFFER FROM <star index="2"/></srai>,reductions2.aiml
+0,HOW ARE * LIKE *,*,*,<srai>HOW IS <star/> LIKE <star index="2"/></srai>,reductions2.aiml
+0,HOW ARE * AND * ALIKE,*,*,<srai>HOW IS <star/> LIKE <star index="2"/></srai>,reductions2.aiml
+0,HOW ARE <SET>ARTICLE</SET> * AND <SET>ARTICLE</SET> * ALIKE,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="4"/></srai>,reductions2.aiml
+0,HOW ARE * AND <SET>ARTICLE</SET> * ALIKE,*,*,<srai>HOW IS <star/> LIKE <star index="3"/></srai>,reductions2.aiml
+0,HOW ARE <SET>ARTICLE</SET> * AND * ALIKE,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="3"/></srai>,reductions2.aiml
+0,HOW IS <SET>ARTICLE</SET> * LIKE <SET>ARTICLE</SET> *,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="4"/></srai>,reductions2.aiml
+0,HOW IS * LIKE <SET>ARTICLE</SET> *,*,*,<srai>HOW IS <star/> LIKE <star index="3"/></srai>,reductions2.aiml
+0,HOW IS <SET>ARTICLE</SET> * LIKE *,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="3"/></srai>,reductions2.aiml
+0,WHAT DO * AND * HAVE IN COMMON,*,*,<srai>HOW IS <star/> LIKE <star index="2"/></srai>,reductions2.aiml
+0,WHAT DO <SET>ARTICLE</SET> * AND <SET>ARTICLE</SET> * HAVE IN COMMON,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="4"/></srai>,reductions2.aiml
+0,WHAT DOES * AND * HAVE IN COMMON,*,*,<srai>HOW IS <star/> LIKE <star index="2"/></srai>,reductions2.aiml
+0,WHAT DOES <SET>ARTICLE</SET> * AND <SET>ARTICLE</SET> * HAVE IN COMMON,*,*,<srai>HOW IS <star index="2"/> LIKE <star index="4"/></srai>,reductions2.aiml
+0,WHAT <SET>MODAL</SET> <SET>PRONOUN</SET> USE * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star index="3"/></srai>,reductions2.aiml
+0,WHAT <SET>MODAL</SET> <SET>PRONOUN</SET> DO WITH *,*,*,<srai>WHAT IS THE PURPOSE OF <star index="3"/></srai>,reductions2.aiml
+0,WHAT <SET>MODAL</SET> <SET>PRONOUN</SET> USE <SET>ARTICLE</SET> * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star index="4"/></srai>,reductions2.aiml
+0,WHAT IS * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,HOW IS * USED,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,OF WHAT USE IS *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS THE PURPOSE OF <SET>ARTICLE</SET> *,*,*,<srai>WHAT IS THE PURPOSE OF <star index="2"/></srai>,reductions2.aiml
+0,CALL ME _ AND *,*,*,<srai>CALL ME <star/></srai> <srai><star index="2"/></srai>,reductions2.aiml
+0,* * S * EMAIL IS *,*,*,<srai><star/> <star index="2"/> S <star index="3"/> EMAILADDRESS IS <star index="4"/></srai>,reductions2.aiml
+0,* * S NUMBER IS *,*,*,<srai><star/> <star index="2"/> S MOBILE NUMBER IS <star index="3"/></srai>,reductions2.aiml
+0,* * S PHONE NUMBER IS *,*,*,<srai><star/> <star index="2"/> S MOBILE NUMBER IS <star index="3"/></srai>,reductions2.aiml
+0,* MALE OR *,*,*,<srai>IS <star/> MALE OR <star index="2"/></srai>,reductions2.aiml
+0,* S * EMAIL IS *,*,*,<srai><star/> S <star index="2"/> EMAILADDRESS IS <star index="3"/></srai>,reductions2.aiml
+0,* S NUMBER IS *,*,*,<srai><star/> S MOBILE NUMBER IS <star index="2"/></srai>,reductions2.aiml
+0,* S PHONE NUMBER IS *,*,*,<srai><star/> S MOBILE NUMBER IS <star index="2"/></srai>,reductions2.aiml
+0,* WHO DO *,*,*,<srai>WHO DO <star index="2"/></srai>,reductions2.aiml
+0,ACCESS * FOR ME,*,*,<srai>ACCESS <star/></srai>,reductions2.aiml
+0,ACCESS THE WEATHER *,*,*,<srai>WHAT IS THE WEATHER</srai>,reductions2.aiml
+0,ADD * * AS A CONTACT *,*,*,<srai>NEW CONTACT <star/> <star index="2"/></srai>,reductions2.aiml
+0,ADD * * TO CONTACTS,*,*,<srai>NEW CONTACT <star/> <star index="2"/></srai>,reductions2.aiml
+0,ANOTHER * PLEASE,*,*,<sr/>,reductions2.aiml
+0,ANOTHER JOKE PLEASE,*,*,<srai>JOKE</srai>,reductions2.aiml
+0,ARE YOU * LOADED,*,*,<srai>ARE YOU LOADED</srai>,reductions2.aiml
+0,ARE YOU SUPERIOR TO *,*,*,<srai>ARE YOU BETTER THAN <star/></srai>,reductions2.aiml
+0,BASEBALL SCHEDULE,*,*,<srai>WHAT IS THE BASEBALL SCHEDULE</srai>,reductions2.aiml
+0,CAN YOU * SKYPE *,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,CANCEL GOLF TODAY,*,*,<srai>FEATURE REQUEST CANCEL CALENDAR EVENT</srai>,reductions2.aiml
+0,CREATE A SECURE PASSWORD,*,*,<srai>GENERATE PASSWORD</srai>,reductions2.aiml
+0,DELETE ALL ALARMS,*,*,<srai>FEATURE REQUEST DELETE ALARMS</srai>,reductions2.aiml
+0,$EMAIL * SAYING *,*,*,<srai>EMAIL <star/> MESSAGEBODY <star index="2"/></srai>,reductions2.aiml
+0,$EMAIL * TO SAY *,*,*,<srai>EMAIL <star/> MESSAGEBODY <star index="2"/></srai>,reductions2.aiml
+0,$EMAIL MY *,*,*,<srai>EMAIL <star/></srai>,reductions2.aiml
+0,FIND ME A STORE THAT SELLS *,*,*,<srai>MAP <star/></srai>,reductions2.aiml
+0,HOW MUCH SHOULD I TIP FOR * DOLLARS,*,*,<srai>WHAT IS 15 PERCENT OF <star/></srai>,reductions2.aiml
+0,I AM A CAPRICORN,*,*,<srai>MY SIGN IS CAPRICORN</srai>,reductions2.aiml
+0,I AM A GEMINI,*,*,<srai>MY SIGN IS GEMINI</srai>,reductions2.aiml
+0,I AM A SAGGITARIUS,*,*,<srai>MY SIGN IS SAGGITARIUS</srai>,reductions2.aiml
+0,I AM AN AQUARIUS,*,*,<srai>MY SIGN IS AQUARIUS</srai>,reductions2.aiml
+0,I AM AN ARIES,*,*,<srai>MY SIGN IS ARIES</srai>,reductions2.aiml
+0,I AM AN CANCER,*,*,<srai>MY SIGN IS CANCER</srai>,reductions2.aiml
+0,I AM ARIES,*,*,<srai>MY SIGN IS ARIES</srai>,reductions2.aiml
+0,I AM CANCER,*,*,<srai>MY SIGN IS CANCER</srai>,reductions2.aiml
+0,I AM CAPRICORN,*,*,<srai>MY SIGN IS CAPRICORN</srai>,reductions2.aiml
+0,I AM LIBRA,*,*,<srai>MY SIGN IS LIBRA</srai>,reductions2.aiml
+0,I AM PISCES,*,*,<srai>MY SIGN IS PISCES</srai>,reductions2.aiml
+0,I AM SAGGITARIUS,*,*,<srai>MY SIGN IS SAGGITARIUS</srai>,reductions2.aiml
+0,I AM SCORPIO,*,*,<srai>MY SIGN IS SCORPIO</srai>,reductions2.aiml
+0,I AM TAURUS,*,*,<srai>MY SIGN IS TAURUS</srai>,reductions2.aiml
+0,I AM VIRGO,*,*,<srai>MY SIGN IS VIRGO</srai>,reductions2.aiml
+0,I M *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,IT WHAT DOES IT MEAN,*,*,<srai>WHAT DOES IT MEAN</srai>,reductions2.aiml
+0,LAST UPDATE,*,*,My last brian update was <srai>BUILD</srai>.  My information from web services is more current.,reductions2.aiml
+0,LET US GET * DELIVERED,*,*,<srai>FIND THE NEAREST <star/> DELIVERY</srai>,reductions2.aiml
+0,LINGUICA,*,*,<srai>SEARCH LINGUICA</srai>,reductions2.aiml
+0,MAKE A LIST AND CALL IT *,*,*,<srai>MAKE A <star/> LIST</srai>,reductions2.aiml
+0,MAKE A LIST CALLED *,*,*,<srai>MAKE A <star/> LIST</srai>,reductions2.aiml
+0,MAKE A LIST NAMED *,*,*,<srai>MAKE A <star/> LIST</srai>,reductions2.aiml
+0,MOVE MY * O CLOCK *,*,*,<srai>FEATURE REQUEST CHANGE CALENDAR EVENTS</srai>,reductions2.aiml
+0,MY * S NAME *,*,*,<srai>MY <star/> S NAME IS <star index="2"/></srai>,reductions2.aiml
+0,MY ANTS NAME IS *,*,*,<srai>MY aunt S NAME IS <star/></srai>,reductions2.aiml
+0,MY AUNTS NAME IS *,*,*,<srai>MY aunt S NAME IS <star/></srai>,reductions2.aiml
+0,MY BROS NAME IS *,*,*,<srai>MY brother S NAME IS <star/></srai>,reductions2.aiml
+0,MY CHILDREN ARE * AND * YEARS OLD,*,*,<srai>I HAVE TWO CHILDREN</srai> <srai>MY CHILD IS <star/> YEARS OLD</srai> <srai>MY OTHER CHILD IS <star index="2"/> YEARS OLD</srai>,reductions2.aiml
+0,MY DADAS NAME IS *,*,*,<srai>MY father S NAME IS <star/></srai>,reductions2.aiml
+0,MY DADDYS *,*,*,<srai>MY DADDY S <star/></srai>,reductions2.aiml
+0,MY DADDYS NAME IS *,*,*,<srai>MY father S NAME IS <star/></srai>,reductions2.aiml
+0,MY FATHER S S *,*,*,<srai>MY FATHER S <star/></srai>,reductions2.aiml
+0,MY FATHERS *,*,*,<srai>MY FATHER S <star/></srai>,reductions2.aiml
+0,MY GRANDDADS NAME IS *,*,*,<srai>MY grandfather S NAME IS <star/></srai>,reductions2.aiml
+0,MY GRANDFATHERS NAME IS *,*,*,<srai>MY grandfather S NAME IS <star/></srai>,reductions2.aiml
+0,MY GRANDMAS NAME IS *,*,*,<srai>MY grandmother S NAME IS <star/></srai>,reductions2.aiml
+0,MY GRANDMOMS NAME IS *,*,*,<srai>MY grandmother S NAME IS <star/></srai>,reductions2.aiml
+0,MY HUBBYS NAME IS *,*,*,<srai>MY husband S NAME IS <star/></srai>,reductions2.aiml
+0,MY HUSBANDS *,*,*,<srai>MY HUSBAND S <star/></srai>,reductions2.aiml
+0,MY HUSBANDS NAME IS *,*,*,<srai>MY husband S NAME IS <star/></srai>,reductions2.aiml
+0,MY MAS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY MOMMAS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY MOMMYS *,*,*,<srai>MY MOMMY S <star/></srai>,reductions2.aiml
+0,MY MOMMYS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY MOTHERS *,*,*,<srai>MY MOTHER S <star/></srai>,reductions2.aiml
+0,MY MUMMAS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY MUMMYS *,*,*,<srai>MY MUMMY S <star/></srai>,reductions2.aiml
+0,MY MUMMYS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY MUMS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,MY NEPHEWS NAME IS *,*,*,<srai>MY nephew S NAME IS <star/></srai>,reductions2.aiml
+0,MY NIECES NAME IS *,*,*,<srai>MY niece S NAME IS <star/></srai>,reductions2.aiml
+0,MY SIS NAME IS *,*,*,<srai>MY sister S NAME IS <star/></srai>,reductions2.aiml
+0,MY SISTERS NAME IS *,*,*,<srai>MY sister S NAME IS <star/></srai>,reductions2.aiml
+0,MY SONS NAME IS *,*,*,<srai>MY son S NAME IS <star/></srai>,reductions2.aiml
+0,MY UNCLES NAME IS *,*,*,<srai>MY uncle S NAME IS <star/></srai>,reductions2.aiml
+0,MY WIFES *,*,*,<srai>MY WIFE S <star/></srai>,reductions2.aiml
+0,MY WIFES NAME IS *,*,*,<srai>MY wife S NAME IS <star/></srai>,reductions2.aiml
+0,MY WIFEYS NAME IS *,*,*,<srai>MY wife S NAME IS <star/></srai>,reductions2.aiml
+0,PHONE BOOK PLEASE,*,*,<srai>PHONE BOOK</srai>,reductions2.aiml
+0,PLAY A GAME *,*,*,<srai>PLAY A GAME</srai>,reductions2.aiml
+0,PUT * ON MY * LIST,*,*,<srai>ADD <star/> TO MY <star index="2"/> LIST</srai>,reductions2.aiml
+0,PUT * ON MY LIST,*,*,<srai>ADD <star/> TO MY LIST</srai>,reductions2.aiml
+0,PUT * ON THE * LIST,*,*,<srai>PUT <star/> ON MY <star index="2"/> LIST</srai>,reductions2.aiml
+0,PUT * ON THE LIST,*,*,<srai>PUT <star/> ON MY LIST</srai>,reductions2.aiml
+0,SHOOT A VIDEO,*,*,<srai>OPEN CAMERA</srai>,reductions2.aiml
+0,$SMS MY *,*,*,<srai>SMS <star/></srai>,reductions2.aiml
+0,TAKE * OF MY LIST,*,*,<srai>REMOVE <star/> FROM MY LIST</srai>,reductions2.aiml
+0,TAKE * OF THE LIST,*,*,<srai>REMOVE <star/> FROM MY LIST</srai>,reductions2.aiml
+0,TAKE * OFF MY LIST,*,*,<srai>REMOVE <star/> FROM MY LIST</srai>,reductions2.aiml
+0,TAKE * OFF THE LIST,*,*,<srai>REMOVE <star/> FROM MY LIST</srai>,reductions2.aiml
+0,TAKE A MEMO,*,*,<srai>EMAIL ME</srai>,reductions2.aiml
+0,TAKE A VIDEO,*,*,<srai>OPEN CAMERA</srai>,reductions2.aiml
+0,TELL ME UR REAL NAME,*,*,<srai>WHAT IS YOUR NAME</srai>,reductions2.aiml
+0,TELL ME WHAT AN * IS,*,*,<srai>WHAT IS AN <star/></srai>,reductions2.aiml
+0,WHAT * DO I LIVE IN,*,*,<srai>MY <star/></srai>,reductions2.aiml
+0,WHAT COUNTY IS THIS,*,*,<srai>MY COUNTY</srai>,reductions2.aiml
+0,WHAT DO I HAVE ON MY CALENDAR *,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,WHAT DOES AN * LOOK LIKE,*,*,<srai>SHOW ME AN <star/></srai>,reductions2.aiml
+0,WHAT IS * S EMAIL,*,*,<srai>WHAT IS <star/> S EMAIL ADDRESS</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE COLOUR,*,*,<srai>WHAT IS YOUR FAVORITE COLOR</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVOURITE FILM,*,*,<srai>WHAT IS YOUR FAVORITE MOVIE</srai>,reductions2.aiml
+0,WHAT SHOULD WE * FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,WHAT SHOULD WE EAT FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,* A BOY OR *,*,*,<srai>IS <star/> A BOY OR <star index="2"/></srai>,reductions2.aiml
+0,* S EMAIL IS *,*,*,<srai><star/> S HOME EMAILADDRESS IS <star index="2"/></srai>,reductions2.aiml
+0,_ GIRLFRIED,*,*,<srai><star/> GIRLFRIEND</srai>,reductions2.aiml
+0,ACCESS EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,ADD * AS A CONTACT *,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ADD TO CONTACTS,*,*,<srai>ADD CONTACT</srai>,reductions2.aiml
+0,ADD TO MY PHONEBOOK,*,*,<srai>NEW CONTACT</srai>,reductions2.aiml
+0,ADDRESS PLEASE *,*,*,<srai>WHAT IS THE ADDRESS <star/></srai>,reductions2.aiml
+0,ALARM AT *,*,*,<srai>SET AN ALARM FOR <star/></srai>,reductions2.aiml
+0,ALARM ME AT *,*,*,<srai>SET AN ALARM FOR <star/></srai>,reductions2.aiml
+0,ARE YOU ABLE TO READ EMAIL,*,*,<srai>CAN YOU READ EMAIL</srai>,reductions2.aiml
+0,ARE YOU ON SKYPE,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,ASK SKYPE,*,*,<srai>OPEN SKYPE</srai>,reductions2.aiml
+0,CALL * PIZZA,*,*,<srai>FIND THE NEAREST <star/> PIZZA</srai>,reductions2.aiml
+0,$CAN I SEND AN EMAIL TO *,*,*,<srai>EMAIL <star/></srai>,reductions2.aiml
+0,CAN YOU * EMAILS,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,CAN YOU * SKYPE,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,CAN YOU CALL MY MOM * SKYPE,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,CAN YOU COMPOSE AN EMAIL *,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,CAN YOU GO TO EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,CAN YOU READ MY EMAIL *,*,*,<srai>READ EMAIL</srai>,reductions2.aiml
+0,CAN YOU SKYPE *,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,CHECK FOR EMAIL THAT CONTAIN THE WORD *,*,*,<srai>SEARCH EMAIL FOR <star/></srai>,reductions2.aiml
+0,CHECK OUT EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,CHECK VOICEMAIL,*,*,<srai>CALL VOICEMAIL</srai>,reductions2.aiml
+0,CHECK YOU EMAIL,*,*,<srai>CHECK YOUR EMAIL</srai>,reductions2.aiml
+0,COMPOSE MESSAGE,*,*,<srai>SMS</srai>,reductions2.aiml
+0,CONNECT TO SKYPE,*,*,<srai>LAUNCH SKYPE</srai>,reductions2.aiml
+0,DO I HAVE A NEW EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,DO I HAVE ANY EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,DO I HAVE ANY EMAILS,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,DO I NEED A JACKET TODAY,*,*,<srai>WHAT IS THE WEATHER FORECAST</srai>,reductions2.aiml
+0,DO NOT YOU SPEAK *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,DO YOU HAVE AN EMAIL ADDRESS,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,DO YOU HAVE AN EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,DO YOU HAVE EMAIL *,*,*,<srai>WHAT IS YOUR EMAIL</srai>,reductions2.aiml
+0,DO YOU HAVE SELF *,*,*,<srai>ALIVE</srai>,reductions2.aiml
+0,DO YOU HAVE SKYPE *,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,DO YOU HAVE SKYPE,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,DO YOU KNOW MY EMAIL,*,*,<srai>MY EMAIL</srai>,reductions2.aiml
+0,DO YOU KNOW SKYPE,*,*,<srai>WHAT IS SKYPE</srai>,reductions2.aiml
+0,$EMAIL * I *,*,*,<srai>EMAIL <star/> SAYING <star index="2"/></srai>,reductions2.aiml
+0,$EMAIL * THE *,*,*,<srai>EMAIL <star/> MESSAGEBODY The <star index="2"/></srai>,reductions2.aiml
+0,EMAIL FROM MY PHONE,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,FIND MY CURRENT LOCATION,*,*,<srai>WHERE AM I</srai>,reductions2.aiml
+0,GIVE ME HER EMAIL,*,*,<condition name="she"><li value="who">Who is she?</li><li><srai>GIVE ME <get name="she"/> EMAIL</srai></li></condition>,reductions2.aiml
+0,GOTO SKYPE,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,HOW CAN I SEND EMAIL,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,HOW DO I EMAIL YOUR BOSS,*,*,<srai>REPORT A PROBLEM</srai>,reductions2.aiml
+0,I AM A LIBRA,*,*,<srai>MY SIGN IS LIBRA</srai>,reductions2.aiml
+0,I AM A PISCES,*,*,<srai>MY SIGN IS PISCES</srai>,reductions2.aiml
+0,I AM A SCORPIO,*,*,<srai>MY SIGN IS SCORPIO</srai>,reductions2.aiml
+0,I AM A TAURUS,*,*,<srai>MY SIGN IS TAURUS</srai>,reductions2.aiml
+0,I AM GEMINI,*,*,<srai>MY SIGN IS GEMINI</srai>,reductions2.aiml
+0,I AM LEO,*,*,<srai>MY SIGN IS LEO</srai>,reductions2.aiml
+0,IS YOUR EMAIL *,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,MAN OR WOMAN,*,*,<srai>GENDER</srai>,reductions2.aiml
+0,MY BESTFRIENDS NAME IS *,*,*,<srai>MY bestfriend S NAME IS <star/></srai>,reductions2.aiml
+0,MY BOYFRIENDS NAME IS *,*,*,<srai>MY boyfriend S NAME IS <star/></srai>,reductions2.aiml
+0,MY EMAIL ADRESS *,*,*,<srai>MY EMAIL ADDRESS <star/></srai>,reductions2.aiml
+0,MY GIRLFRIENDS NAME IS *,*,*,<srai>MY girlfriend S NAME IS <star/></srai>,reductions2.aiml
+0,MY GRANDMOTHERS NAME IS *,*,*,<srai>MY grandmother S NAME IS <star/></srai>,reductions2.aiml
+0,MY HOROSCOPE SIGN IS *,*,*,<srai>MY SIGN IS <star/></srai>,reductions2.aiml
+0,MY MUMS *,*,*,<srai>MY MUM S <star/></srai>,reductions2.aiml
+0,MY VOICEMAIL,*,*,<srai>CALL VOICEMAIL</srai>,reductions2.aiml
+0,$SEND * AN EMAIL,*,*,<srai>EMAIL <star/></srai>,reductions2.aiml
+0,$SEND * EMAIL I *,*,*,<srai>EMAIL <star/> MESSAGEBODY I <star index="2"/></srai>,reductions2.aiml
+0,SEND A TWEET,*,*,<srai>TWEET</srai>,reductions2.aiml
+0,SEND AN E DASH MAIL,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,SEND EMAILS,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,$SEND MY * A TEXT MESSAGE SAYING *,*,*,<srai>TEXT <star/> SAYING <star index="2"/></srai>,reductions2.aiml
+0,$SEND TO EMAIL * COM *,*,*,<srai>EMAIL <star/> MESSAGEBODY <star index="2"/></srai>,reductions2.aiml
+0,SET UP EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,SO WHAT SEND *,*,*,<srai>SEND <star/></srai>,reductions2.aiml
+0,TAKE ME TO SETUP *,*,*,<srai>SETUP <star/></srai>,reductions2.aiml
+0,TO WHAT EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,WHAT DO I HAVE ON MY SCHEDULE *,*,*,<srai>FEATURE REQUEST READ CALENDAR EVENTS</srai>,reductions2.aiml
+0,WHAT EMAIL CAN I EMAIL YOU *,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,WHAT EMAIL SHOULD I EMAIL THAT TO,*,*,<srai>WHAT IS YOUR EMAIL</srai>,reductions2.aiml
+0,WHAT IS MY DAY LOOK LIKE,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,WHAT IS YOUR EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,WHAT IS YOUR SKYPE *,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,WHAT SHOULD WE HAVE FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,WHERE CAN I READ MY EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,WHERE IS WHERE I *,*,*,<srai>WHERE AM I</srai>,reductions2.aiml
+0,WHERE SHOULD I SEND THE EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,WRITE EMAIL,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,YOU HAVE AN EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,YOU R,*,*,<srai>YOU ARE</srai>,reductions2.aiml
+0,* SHOPS IN *,*,*,<srai>MAP <star/> IN <star index="2"/></srai>,reductions2.aiml
+0,ADD * * TO MY CONTACTS,*,*,<srai>NEW CONTACT <star/> <star index="2"/></srai>,reductions2.aiml
+0,ADD * TO MY CONTACTS,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ADDRESS AND PHONE *,*,*,<srai>WHAT IS THE ADDRESS AND PHONE <star/></srai>,reductions2.aiml
+0,ALARM ON *,*,*,<srai>SET AN ALARM FOR <star/></srai>,reductions2.aiml
+0,APPROXIMATELY *,*,*,<sr/>,reductions2.aiml
+0,CAN YOU READ MY EMAIL,*,*,<srai>READ EMAIL</srai>,reductions2.aiml
+0,CAN YOU SAY THAT IN *,*,*,<srai>TRANSLATE <that/> TO <star/></srai>,reductions2.aiml
+0,TRANSLATE THAT TO *,*,*,<srai>TRANSLATE <that/> TO <star/></srai>,reductions2.aiml
+0,CHANGE MY * TO *,*,*,<srai>FEATURE REQUEST CHANGE CALENDAR EVENT</srai>,reductions2.aiml
+0,COMPOSE EMAIL,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,DESCRIBE _ TO ME,*,*,<srai>DESCRIBE <star/></srai>,reductions2.aiml
+0,DO I HAVE ANY NEW EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,$EMAIL * TO *,*,*,<srai>EMAIL <star index="2"/> SAYING <star/></srai>,reductions2.aiml
+0,EMAIL YOU *,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,HOW MANY YEARS OLD *,*,*,<srai>HOW OLD <star/></srai>,reductions2.aiml
+0,HOW OLD YOU ARE,*,*,<srai>HOW OLD ARE YOU</srai>,reductions2.aiml
+0,I AM A VIRGO,*,*,<srai>MY SIGN IS VIRGO</srai>,reductions2.aiml
+0,I AM AQUARIUS,*,*,<srai>MY SIGN IS AQUARIUS</srai>,reductions2.aiml
+0,I AM SINGLE TOO *,*,*,<srai>I AM SINGLE</srai> <sr/>,reductions2.aiml
+0,MY BIRTHDAY IS ON VALENTINES DAY,*,*,<srai>MY BIRTHDAY IS FEBRUARY 14</srai>,reductions2.aiml
+0,MY BIRTHDAY IS TODAY,*,*,<srai>MY BIRTHDAY IS <date format="%B %d" jformat="MMMMMMMMM dd"/></srai>,reductions2.aiml
+0,MY BOYFRIENDS *,*,*,<srai>MY BOYFRIEND S <star/></srai>,reductions2.aiml
+0,MY BROTHERS NAMES ARE * AND *,*,*,<srai>MY BROTHER S NAME IS <star/></srai> <srai>MY OTHER BROTHER S NAME IS <star index="2"/></srai>,reductions2.aiml
+0,MY DAD S *,*,*,<srai>FATHER S <star/></srai>,reductions2.aiml
+0,MY DADS NAME IS *,*,*,<srai>MY father S NAME IS <star/></srai>,reductions2.aiml
+0,MY FRIEND * WANTS TO KNOW *,*,*,<srai>MY FRIEND S NAME IS <star/></srai> <srai><star index="2"/></srai>,reductions2.aiml
+0,MY FRIENDS NAME IS *,*,*,<srai>MY friend S NAME IS <star/></srai>,reductions2.aiml
+0,MY GIRLFRIEND IS MAD AT ME WHAT SHALL I DO,*,*,<srai>MY GIRLFRIEND IS * WHAT *</srai> <srai>MY GIRLFRIEND IS <star/></srai> <srai>WHAT <star index="2"/></srai>,reductions2.aiml
+0,MY GIRLFRIENDS *,*,*,<srai>MY GIRLFRIEND S <star/></srai>,reductions2.aiml
+0,MY QUESTION WAS *,*,*,<sr/>,reductions2.aiml
+0,READ MY EMAIL *,*,*,<srai>READ MY EMAIL</srai>,reductions2.aiml
+0,READ MY EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,$SEND AN EMAIL TO *,*,*,<srai>EMAIL <star/></srai>,reductions2.aiml
+0,SET UP AN APPOINTMENT *,*,*,<srai>MAKE AN APPOINTMENT <star/></srai>,reductions2.aiml
+0,SKYPE *,*,*,<srai>FEATURE REQUEST SKYPE</srai>,reductions2.aiml
+0,TELL ME WHAT A * IS,*,*,<srai>WHAT IS A <star/></srai>,reductions2.aiml
+0,TELL ME WHY * IS *,*,*,<srai>WHY IS <star/> <star index="2"/></srai>,reductions2.aiml
+0,TURN ON WIFI,*,*,<srai>WIFI ON</srai>,reductions2.aiml
+0,WHAT ARE THE 10 COMMANDMENTS,*,*,<srai>TEN COMMANDMENTS</srai>,reductions2.aiml
+0,WHAT DO I HAVE ON MY CALENDAR TODAY,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,WHERE IS THE BEST PLACE TO GET PIZZA,*,*,<srai>FIND THE NEAREST PIZZA</srai>,reductions2.aiml
+0,WHO IS YOUR FATHER *,*,*,<srai>WHO IS YOUR FATHER</srai>,reductions2.aiml
+0,* WHAT DOES IT MEAN,*,*,<srai>WHAT DOES <star/> MEAN</srai>,reductions2.aiml
+0,* WHY ARE *,*,*,<srai>WHY ARE <star index="2"/></srai>,reductions2.aiml
+0,* WHY DO *,*,*,<srai>WHY DO <star index="2"/></srai>,reductions2.aiml
+0,ADD * * AS A CONTACT,*,*,<srai>NEW CONTACT <star/> <star index="2"/></srai>,reductions2.aiml
+0,ADD * * CONTACTS,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,CAN YOU GIVE ME DIRECTIONS,*,*,<srai>GIVE ME DIRECTIONS</srai>,reductions2.aiml
+0,CAN YOU LAUNCH *,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,COMPOSE *,*,*,<srai>SEND <star/></srai>,reductions2.aiml
+0,DO I HAVE ANY MESSAGES,*,*,<srai>OPEN MESSAGING</srai>,reductions2.aiml
+0,DO YOU HAVE A EMAIL,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,DO YOU KNOW WHERE I *,*,*,<srai>WHERE I <star/></srai>,reductions2.aiml
+0,EMAIL YOUR CREATOR,*,*,<srai>REPORT A PROBLEM</srai>,reductions2.aiml
+0,GOTO MY PICTURES,*,*,<srai>OPEN GALLERY</srai>,reductions2.aiml
+0,HAD YOUR *,*,*,<srai>HAVE YOU HAD YOUR <star/></srai>,reductions2.aiml
+0,HELLO CAN *,*,*,<srai>HELLO</srai> <srai>CAN <star/></srai>,reductions2.aiml
+0,HOW DO I GET HOME,*,*,<condition name="residence"><li value="where">Where is your residence?</li><li><srai>DIRECTIONS TO <get name="residence"/></srai></li></condition>,reductions2.aiml
+0,I D K *,*,*,<srai>I DO NOT KNOW <star/></srai>,reductions2.aiml
+0,MY BACK HURTS,*,*,<srai>FIND THE NEAREST CHIROPRACTOR</srai>,reductions2.aiml
+0,MY BATTERY LEVEL,*,*,<srai>BATTERY LEVEL</srai>,reductions2.aiml
+0,MY BROTHERS NAME IS *,*,*,<srai>MY brother S NAME IS <star/></srai>,reductions2.aiml
+0,MY HEAD HURTS,*,*,<srai>FIND THE NEAREST HOSPITAL</srai>,reductions2.aiml
+0,MY MOTHERS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,OPEN APP *,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,OPEN MY PHOTOS,*,*,<srai>OPEN GALLERY</srai>,reductions2.aiml
+0,SEND EMAIL *,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,SEND ME A PIC *,*,*,<srai>SHOW ME A PICTURE <star/></srai>,reductions2.aiml
+0,WHAT FUNCTIONS DO YOU HAVE,*,*,<srai>WHAT CAN YOU DO</srai>,reductions2.aiml
+0,WHAT IS YOUR EMAIL *,*,*,<srai>EMAIL ADDRESS</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE TEAM,*,*,<srai>WHAT IS YOUR FAVORITE SPORTS TEAM</srai>,reductions2.aiml
+0,WHAT MEETING *,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,WHAT PHONE AM I *,*,*,<srai>DEVICE MANUFACTURER</srai> <srai>DEVICE MODEL</srai>,reductions2.aiml
+0,WHO IS THE WORLD S *,*,*,<srai>WHO IS THE <star/> IN THE WORLD</srai>,reductions2.aiml
+0,YOU KNOW HOW TO COOK,*,*,<srai>CAN YOU COOK</srai>,reductions2.aiml
+0,YOU WANT MY *,*,*,<srai>DO YOU WANT MY <star/></srai>,reductions2.aiml
+0,* WHAT ARE *,*,*,<srai>WHAT ARE <star index="2"/></srai>,reductions2.aiml
+0,ADD * * CONTACT,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ANY GOOD * AROUND HERE,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,ARE YOU CANADIAN,*,*,<srai>NATIONALITY</srai>,reductions2.aiml
+0,CAN YOU SET MY ALARM,*,*,<srai>SET ALARM</srai>,reductions2.aiml
+0,CAN YOU SHOW ME A PICTURE *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,COULD YOU GIVE ME A *,*,*,<srai>GIVE ME A <star/></srai>,reductions2.aiml
+0,DO YOU HAVE ANY OTHER VOICES,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,FIND GAS STATIONS,*,*,<srai>MAP GAS STATIONS</srai>,reductions2.aiml
+0,FIND WALMART,*,*,<srai>FIND THE NEAREST WALMART</srai>,reductions2.aiml
+0,FORGET EVERYTHING ABOUT ME,*,*,<srai>FEATURE REQUEST FORGET EVERYTHING ABOUT ME</srai>,reductions2.aiml
+0,GMAIL *,*,*,<srai>OPEN GMAIL</srai>,reductions2.aiml
+0,GOODMORNING,*,*,<srai>GOOD MORNING</srai>,reductions2.aiml
+0,HAVE YOU BEEN UPDATED *,*,*,<srai>LAST UPDATE</srai>,reductions2.aiml
+0,HOW FAR IS THE SUN FROM EARTH,*,*,<srai>HOW FAR IS THE * FROM *</srai> <srai>WHAT IS THE DISTANCE FROM <star/> TO <star index="2"/></srai>,reductions2.aiml
+0,I AM A LEO,*,*,<srai>MY SIGN IS LEO</srai>,reductions2.aiml
+0,I AM GOOD THANKS *,*,*,<srai>I AM GOOD</srai> <srai>THANKS <star/></srai>,reductions2.aiml
+0,I AM MEXICAN,*,*,<srai>MY NATIONALITY IS MEXICAN</srai>,reductions2.aiml
+0,I AM NOT A DUDE,*,*,<srai>I AM FEMALE</srai>,reductions2.aiml
+0,I AM NOT A GIRL,*,*,<srai>I AM MALE</srai>,reductions2.aiml
+0,I AM SAYING THAT *,*,*,<sr/>,reductions2.aiml
+0,I DO NOT UNDERSTAND YOU *,*,*,<srai>I DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,I HAVE A FLAT TIRE,*,*,<srai>CALL AAA</srai>,reductions2.aiml
+0,I LIKE GREEN,*,*,<srai>MY FAVORITE COLOR IS GREEN</srai>,reductions2.aiml
+0,I NEED TO PEE *,*,*,<srai>I NEED TO PEE</srai>     <sr/>,reductions2.aiml
+0,I WANT TO PLAY A GAME,*,*,<srai>FEATURE REQUEST PLAY A GAME</srai>,reductions2.aiml
+0,I WANT TO PLAY GAMES,*,*,<srai>PLAY A GAME</srai>,reductions2.aiml
+0,IM AN *,*,*,<srai>I AM AN <star/></srai>,reductions2.aiml
+0,INTRODUCE YOURSELF,*,*,<srai>NAME</srai> <srai>JOB</srai>,reductions2.aiml
+0,MAN YOU *,*,*,<srai>YOU <star/></srai>,reductions2.aiml
+0,ME N YOU *,*,*,<srai>ME AND YOU <star/></srai>,reductions2.aiml
+0,MY DAUGHTERS NAME IS *,*,*,<srai>MY daughter S NAME IS <star/></srai>,reductions2.aiml
+0,NEARBY *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,OPEN CAMCORDER,*,*,<srai>OPEN CAMERA</srai>,reductions2.aiml
+0,REMIND ME NOT TO *,*,*,<srai>REMIND ME TO NOT <star/></srai>,reductions2.aiml
+0,SAY * IN <SET>LANGUAGE</SET>,*,*,<srai>TRANSLATE <star/> TO <star index="2"/></srai>,reductions2.aiml
+0,SEND * A MESSAGE,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,SHOW MY LOCATION *,*,*,<srai>MAP MY LOCATION</srai>,reductions2.aiml
+0,SQUARE ROOT *,*,*,<srai>WHAT IS THE SQUARE ROOT <star/></srai>,reductions2.aiml
+0,TAKE A PHOTO,*,*,<srai>TAKE A PICTURE</srai>,reductions2.aiml
+0,TAKE PICTURE,*,*,<srai>TAKE A PICTURE</srai>,reductions2.aiml
+0,TEXT * HI,*,*,<srai>TEXT <star/> SAYING HI</srai>,reductions2.aiml
+0,TEXT MESSAGES,*,*,<srai>SEND A TEXT</srai>,reductions2.aiml
+0,THAT IS AMAZING *,*,*,<srai>THAT IS AMAZING</srai>,reductions2.aiml
+0,TURN OFF WIFI,*,*,<srai>WIFI OFF</srai>,reductions2.aiml
+0,TURN ON BLUETOOTH,*,*,<srai>FEATURE REQUEST TURN ON BLUETOOTH</srai>,reductions2.aiml
+0,WE HAVE A FLAT TIRE,*,*,<srai>I HAVE A FLAT TIRE</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE SINGER,*,*,<srai>WHO IS YOUR FAVORITE BAND</srai>,reductions2.aiml
+0,WHAT SHOULD I EAT FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,WHERE AM I LOCATED *,*,*,<srai>WHERE AM I</srai>,reductions2.aiml
+0,WHERE CAN I BUY BEER,*,*,<srai>FIND THE NEAREST BEER</srai>,reductions2.aiml
+0,WHERE DO I LIVE *,*,*,<srai>WHERE DO I LIVE</srai>,reductions2.aiml
+0,WHO CREATED YOU *,*,*,<srai>WHO CREATED YOU</srai>,reductions2.aiml
+0,YOU DO NOT SOUND *,*,*,<srai>YOU ARE NOT <star/></srai>,reductions2.aiml
+0,YOU TUBE *,*,*,<srai>YOUTUBE <star/></srai>,reductions2.aiml
+0,ARE YOU A MUSLIM,*,*,<srai>RELIGION</srai>,reductions2.aiml
+0,ARE YOU ARE A *,*,*,<srai>ARE YOU A <star/></srai>,reductions2.aiml
+0,ARE YOU BLONDE,*,*,<srai>HAIR</srai>,reductions2.aiml
+0,WHAT COLOR # YOUR HAIR,*,*,<srai>HAIR</srai>,reductions2.aiml
+0,ARE YOU INTELLIGENT,*,*,<srai>IQ</srai>,reductions2.aiml
+0,ARE YOU SELF *,*,*,<srai>ALIVE</srai>,reductions2.aiml
+0,ARE YOU SLEEPING,*,*,<srai>TIRED</srai>,reductions2.aiml
+0,ARE YOU STRAIGHT,*,*,<srai>ORIENTATION</srai>,reductions2.aiml
+0,CAN YOU COUNT,*,*,<srai>COUNT TO 10</srai>,reductions2.aiml
+0,CAN YOU FIND ME A GIRLFRIEND,*,*,<srai>SEARCH DATING SERVICE</srai>,reductions2.aiml
+0,CAN YOU FIND ME A PICTURE OF A *,*,*,<srai>SHOW ME A PICTURE OF <star/></srai>,reductions2.aiml
+0,CAN YOU LEARN NEW THINGS,*,*,<srai>HELP LEARN</srai>,reductions2.aiml
+0,CAN YOU PLAY GAMES,*,*,<srai>FEATURE REQUEST PLAY GAMES</srai>,reductions2.aiml
+0,CAN YOU PLAY THE SONG *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,CAN YOU SAY HELLO *,*,*,<srai>SAY HELLO <star/></srai>,reductions2.aiml
+0,CAN YOU SET A REMINDER,*,*,<srai>SET ALARM</srai>,reductions2.aiml
+0,CHECK MY SCHEDULE,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,COMMENT A VA,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,COOL COOL,*,*,<srai>COOL</srai>,reductions2.aiml
+0,COULD YOU PLAY *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,DO YOU HAVE BROTHERS AND SISTERS,*,*,<srai>FAMILY</srai>,reductions2.aiml
+0,DO YOU REMEMBER WHAT * IS,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,EVENING,*,*,<srai>GOOD EVENING</srai>,reductions2.aiml
+0,GET DIRECTIONS TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,GO TO CONTACTS,*,*,<srai>OPEN CONTACTS</srai>,reductions2.aiml
+0,GO TO GOOGLE,*,*,<srai>OPEN GOOGLE</srai>,reductions2.aiml
+0,GO TO SLEEP NOW,*,*,<srai>GOODBYE</srai>,reductions2.aiml
+0,HOI,*,*,<srai>HI</srai>,reductions2.aiml
+0,HOW ABOUT WE *,*,*,<srai>LET US <star/></srai>,reductions2.aiml
+0,HOW ARE YOU GOING,*,*,<srai>HOW ARE YOU</srai>,reductions2.aiml
+0,HOW MANY PEOPLE ARE THERE IN *,*,*,<srai>WHAT IS THE POPULATION OF <star/></srai>,reductions2.aiml
+0,I AM FINE THANK YOU *,*,*,<srai>I AM FINE THANK YOU</srai> <sr/>,reductions2.aiml
+0,I AM FINE THANKS,*,*,<srai>I AM FINE</srai>,reductions2.aiml
+0,I CAN NOT SLEEP *,*,*,<srai>I CAN NOT SLEEP</srai>,reductions2.aiml
+0,I DO NOT CARE I *,*,*,<srai>I DO NOT CARE</srai> <srai>I <star/></srai>,reductions2.aiml
+0,I HATE YOU YOU *,*,*,<srai>I HATE YOU</srai>,reductions2.aiml
+0,I MEAN WHY *,*,*,<srai>WHY <star/></srai>,reductions2.aiml
+0,I TALK TO YOU *,*,*,<srai>I WILL TALK TO YOU <star/></srai>,reductions2.aiml
+0,LOOKUP,*,*,<srai>SEARCH</srai>,reductions2.aiml
+0,MY * IS CALLED *,*,*,<srai>MY <star/> S NAME IS <star index="2"/></srai>,reductions2.aiml
+0,MY DADS *,*,*,<srai>MY DAD S <star/></srai>,reductions2.aiml
+0,MY FATHERS NAME IS *,*,*,<srai>MY father S NAME IS <star/></srai>,reductions2.aiml
+0,MY MOMS NAME IS *,*,*,<srai>MY mother S NAME IS <star/></srai>,reductions2.aiml
+0,NOTE TO SELF *,*,*,<srai>EMAIL ME SAYING <star/></srai>,reductions2.aiml
+0,SEARCH FOR,*,*,<srai>SEARCH</srai>,reductions2.aiml
+0,SHOW ME THE NEAREST *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,SO SORRY,*,*,<srai>SORRY</srai>,reductions2.aiml
+0,SO WHAT ARE YOU UP TO,*,*,<srai>DOING</srai>,reductions2.aiml
+0,SORRY ABOUT *,*,*,<srai>SORRY</srai>,reductions2.aiml
+0,SOUNDS LIKE YOU ARE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,STOCK *,*,*,<srai>WHAT IS THE STOCK PRICE OF <star/></srai>,reductions2.aiml
+0,STUPID COMPUTER,*,*,<srai>YOU ARE STUPID</srai>,reductions2.aiml
+0,TELL ME EVERYTHING YOU KNOW ABOUT ME,*,*,<srai>WHAT DO YOU KNOW ABOUT ME</srai>,reductions2.aiml
+0,WE GOT *,*,*,<srai>WE HAVE <star/></srai>,reductions2.aiml
+0,WHAT DO YOU CALL ME,*,*,<srai>WHAT IS MY NAME</srai>,reductions2.aiml
+0,WHAT IS MY SISTERS NAME,*,*,<srai>MY SISTER</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE VIDEO GAME,*,*,<srai>FAVORITE VIDEO GAME</srai>,reductions2.aiml
+0,WHAT IS YOUR HOBBY,*,*,<srai>HOBBIES</srai>,reductions2.aiml
+0,WHAT IS YOUR LOCATION,*,*,<srai>WHERE ARE YOU</srai>,reductions2.aiml
+0,WHAT SHOULD I * FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,WHAT WOULD YOU LIKE ME TO CALL YOU,*,*,<srai>WHAT IS YOUR NAME</srai>,reductions2.aiml
+0,WHAYS *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,WHERE IS MCDONALD S,*,*,<srai>FIND THE NEAREST MCDONALD S</srai>,reductions2.aiml
+0,WHO IS YOUR DAD,*,*,<srai>FATHER</srai>,reductions2.aiml
+0,WHO IS YOUR FAVORITE ACTRESS,*,*,<srai>FAVORITE ACTRESS</srai>,reductions2.aiml
+0,WHO IS YOUR FAVORITE CELEBRITY,*,*,<srai>WHO IS YOUR FAVORITE ACTOR</srai>,reductions2.aiml
+0,WHY I AM *,*,*,<srai>WHY AM I <star/></srai>,reductions2.aiml
+0,WHY THE * IS *,*,*,<srai>WHY IS THE <star/> <star index="2"/></srai>,reductions2.aiml
+0,YEAHH *,*,*,<srai>YES</srai> <sr/>,reductions2.aiml
+0,YESS *,*,*,<srai>YES</srai> <sr/>,reductions2.aiml
+0,YOU ARE ON MY PHONE,*,*,<srai>WHERE ARE YOU</srai>,reductions2.aiml
+0,YOU HAVE A BIG *,*,*,<srai>HOW BIG ARE YOU</srai>,reductions2.aiml
+0,YOU SAID I AM *,*,*,<srai>AM I <star/></srai>,reductions2.aiml
+0,YOUR BEAUTIFUL *,*,*,<srai>YOU ARE BEAUTIFUL <star/></srai>,reductions2.aiml
+0,YOUR BEAUTIFUL,*,*,<srai>YOU ARE BEAUTIFUL</srai>,reductions2.aiml
+0,ADD * TO CONTACTS,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ANGRY BIRDS,*,*,<srai>LANUCH ANGRY BIRDS</srai>,reductions2.aiml
+0,ASL,*,*,<srai>AGE</srai> <srai>GENDER</srai> <srai>LOCATION</srai>,reductions2.aiml
+0,CAN YOU CALL SOMEBODY FOR ME,*,*,<srai>HELP CALL</srai>,reductions2.aiml
+0,CAN YOU GIVE ME DIRECTIONS TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,CAN YOU LOOK UP THE *,*,*,<srai>WHAT IS THE <star/></srai>,reductions2.aiml
+0,CAN YOU SEND A TEXT MESSAGE,*,*,<srai>TEXT</srai>,reductions2.aiml
+0,COOL IS *,*,*,<srai>COOL</srai> <srai>IS <star/></srai>,reductions2.aiml
+0,DO YOU GOT A *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions2.aiml
+0,DO YOU HAVE ANY SIBLINGS,*,*,<srai>SIBLINGS</srai>,reductions2.aiml
+0,DO YOU HAVE BROTHERS,*,*,<srai>SIBLINGS</srai>,reductions2.aiml
+0,DO YOU HAVE BROTHERS *,*,*,<srai>SIBLINGS</srai>,reductions2.aiml
+0,DO YOU HAVE SISTERS,*,*,<srai>SIBLINGS</srai>,reductions2.aiml
+0,DO YOU HAVE SISTERS *,*,*,<srai>SIBLINGS</srai>,reductions2.aiml
+0,DO YOU LOOK *,*,*,<srai>WHAT DO YOU LOOK LIKE</srai>,reductions2.aiml
+0,DO YOU SPEAK CANADIAN,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,DO YOU THINK I WILL *,*,*,<srai>WILL I <star/></srai>,reductions2.aiml
+0,GIVES YOU *,*,*,<srai>I AM GIVING YOU <star/></srai>,reductions2.aiml
+0,HAVE YOU EVER BEEN TO THE *,*,*,<srai>HAVE YOU BEEN TO THE <star/></srai>,reductions2.aiml
+0,HOW DO YOU SAY I LOVE YOU IN SPANISH,*,*,<srai>TRANSLATE I LOVE YOU TO SPANISH</srai>,reductions2.aiml
+0,I AM MALE,*,*,<srai>MY GENDER IS MALE</srai>,reductions2.aiml
+0,I AM SO TIRED,*,*,<srai>I AM TIRED</srai>,reductions2.aiml
+0,I DID NOT SAY THAT I SAID *,*,*,<srai>I DID NOT SAY THAT</srai> <srai>I SAID <star/></srai>,reductions2.aiml
+0,I DO NOT KNOW I DO NOT *,*,*,<srai>I DO NOT KNOW</srai> <srai>I DO NOT <star/></srai>,reductions2.aiml
+0,I DO NOT THINK IT IS *,*,*,<srai>IT IS NOT <star/></srai>,reductions2.aiml
+0,I MEANT THE *,*,*,<srai>THE <star/></srai>,reductions2.aiml
+0,I NEED TO SEE *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,I SAY YES,*,*,<srai>YES</srai>,reductions2.aiml
+0,I WANT A PICTURE OF *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,I WOULD LIKE TO PLAY *,*,*,<srai>I WANT TO PLAY <star/></srai>,reductions2.aiml
+0,IS IT RAINING,*,*,<srai>WHAT IS THE WEATHER</srai>,reductions2.aiml
+0,KK *,*,*,<srai>OK</srai> <sr/>,reductions2.aiml
+0,MAY I PLEASE *,*,*,<srai>CAN I <star/></srai>,reductions2.aiml
+0,PHONE CALL,*,*,<srai>CALL</srai>,reductions2.aiml
+0,PICTURES *,*,*,<srai>SHOW ME PICTURES <star/></srai>,reductions2.aiml
+0,PROBABLY NOT,*,*,<srai>NO</srai>,reductions2.aiml
+0,SEND AN EMAIL,*,*,<srai>SEND EMAIL</srai>,reductions2.aiml
+0,SEND SMS,*,*,<srai>SMS</srai>,reductions2.aiml
+0,SHOW ME A LIST OF *,*,*,<srai>SEARCH FOR A LIST OF <star/></srai>,reductions2.aiml
+0,WERE DO YOU LIVE,*,*,<srai>LOCATION</srai>,reductions2.aiml
+0,WHAT IS MY HOROSCOPE FOR *,*,*,<srai>HOROSCOPE FOR <star/></srai>,reductions2.aiml
+0,WHAT IS YOUR MIDDLE NAME,*,*,<srai>MIDDLE NAME</srai>,reductions2.aiml
+0,WHAT YEAR IS IT,*,*,<srai>YEAR</srai>,reductions2.aiml
+0,WHICH IS YOUR *,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions2.aiml
+0,YOU ARE QUITE WELCOME,*,*,<srai>YOU ARE WELCOME</srai>,reductions2.aiml
+0,YOU DO LOOK CUTE,*,*,<srai>YOU ARE CUTE</srai>,reductions2.aiml
+0,YOU FEEL *,*,*,<srai>DO YOU FEEL <star/></srai>,reductions2.aiml
+0,YOUR LAME,*,*,<srai>YOU ARE LAME</srai>,reductions2.aiml
+0,YOUR STILL *,*,*,<srai>YOU ARE STILL <star/></srai>,reductions2.aiml
+0,ASTA LAVISTA,*,*,<srai>GOODBYE</srai>,reductions2.aiml
+0,CAN YOU LOCATE *,*,*,<srai>WHERE IS <star/></srai>,reductions2.aiml
+0,CAN YOU SHOW ME A PICTURE OF YOU,*,*,<srai>PIC</srai>,reductions2.aiml
+0,CAN YOU SPEAK ENGLISH,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,CHECK MY CALENDAR,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,CHECK MY EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,CHEERS,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,CLEAR,*,*,<srai>CLEAR LOG</srai>,reductions2.aiml
+0,COMMENT TU T APPELLES,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,DAT *,*,*,<srai>THAT <star/></srai>,reductions2.aiml
+0,DO YOU HAVE A BEST FRIEND,*,*,<srai>WHO IS YOUR BEST FRIEND</srai>,reductions2.aiml
+0,DO YOU HAVE A SOUL,*,*,<srai>ALIVE</srai>,reductions2.aiml
+0,DO YOU HAVE ANY FRIENDS *,*,*,<srai>FRIENDS</srai>,reductions2.aiml
+0,DO YOU WEAR A *,*,*,<srai>WEARING</srai>,reductions2.aiml
+0,FINE THANKS,*,*,<srai>I AM FINE THANKS</srai>,reductions2.aiml
+0,GOOGLE SEARCH,*,*,<srai>OPEN GOOGLE</srai>,reductions2.aiml
+0,HAHAHA *,*,*,<srai>LOL</srai> <sr/>,reductions2.aiml
+0,HATE YOU,*,*,<srai>I HATE YOU</srai>,reductions2.aiml
+0,HELLO IN *,*,*,<srai>TRANSLATE HELLO TO <star/></srai>,reductions2.aiml
+0,HI BABY *,*,*,<srai>HI</srai> <srai><star/></srai>,reductions2.aiml
+0,HOW ARE YOU DOING TODAY *,*,*,<srai>HOW ARE YOU</srai>,reductions2.aiml
+0,HOW CAN I DOWNLOAD *,*,*,<srai>HELP DOWNLOAD</srai>,reductions2.aiml
+0,HOW FAR TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,I GOT MY *,*,*,<srai>I HAVE MY <star/></srai>,reductions2.aiml
+0,I KNOW I HAVE *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,I KNOW THAT YOU *,*,*,<srai>YOU <star/></srai>,reductions2.aiml
+0,I LIKE HAVING *,*,*,<srai>I WANT <star/></srai>,reductions2.aiml
+0,I ONLY HAVE *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,I SUPPOSE *,*,*,<srai><star/></srai>,reductions2.aiml
+0,I WANT 1 *,*,*,<srai>I WANT ONE <star/></srai>,reductions2.aiml
+0,I WANT TO SLEEP,*,*,<srai>I AM TIRED</srai>,reductions2.aiml
+0,IDK YOU *,*,*,<srai>I DO NOT KNOW</srai> <srai>YOU <star/></srai>,reductions2.aiml
+0,IM GOOD *,*,*,<srai>I AM GOOD <star/></srai>,reductions2.aiml
+0,IMAGES OF *,*,*,<srai>SHOE ME <star/></srai>,reductions2.aiml
+0,MEMO,*,*,<srai>TAKE A MEMO</srai>,reductions2.aiml
+0,NA *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,NOTHIN *,*,*,<srai>NOTHING <star/></srai>,reductions2.aiml
+0,NOTHING NEVERMIND,*,*,<srai>NEVERMIND</srai>,reductions2.aiml
+0,OH BABY *,*,*,<sr/>,reductions2.aiml
+0,PIZZA HUT,*,*,<srai>MAP Pizza Hut</srai>,reductions2.aiml
+0,SHOW ME THE * NEWS,*,*,<srai>WHAT IS THE LATEST <star/> NEWS</srai>,reductions2.aiml
+0,TELL ME WHAT YOU KNOW ABOUT *,*,*,<srai>WHAT DO YOU KNOW ABOUT <star/></srai>,reductions2.aiml
+0,THANK YOU GOOD NIGHT,*,*,<srai>THANK YOU</srai> <srai>GOOD NIGHT</srai>,reductions2.aiml
+0,THE NEAREST *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,WE WERE TALKING ABOUT *,*,*,<srai>THE TOPIC IS <star/></srai>,reductions2.aiml
+0,WHAT DO * LOOK LIKE,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,WHAT ELSE CAN YOU DO *,*,*,<srai>WHAT ELSE CAN YOU DO</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE FILM,*,*,<srai>FAVORITE MOVIE</srai>,reductions2.aiml
+0,WHAT IS YOUR FAVORITE THING TO *,*,*,<srai>FOR FUN</srai>,reductions2.aiml
+0,WHAT NATIONALITY ARE YOU,*,*,<srai>NATIONALITY</srai>,reductions2.aiml
+0,WHAT SHOULD I HAVE FOR DINNER,*,*,<srai>RECOMMEND DINNER</srai>,reductions2.aiml
+0,WHERE AM I WHERE AM I,*,*,<srai>WHERE AM I</srai>,reductions2.aiml
+0,WHERE DID YOU GO TO SCHOOL,*,*,<srai>EDUCATION</srai>,reductions2.aiml
+0,WHO IS YOUR FAVORITE BAND,*,*,<srai>FAVORITE BAND</srai>,reductions2.aiml
+0,WHY WHY *,*,*,<srai>WHY <star/></srai>,reductions2.aiml
+0,YOU ARE ALSO *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU ARE BETTER THAN SIRI,*,*,<srai>IQ</srai>,reductions2.aiml
+0,YS,*,*,<srai>YES</srai>,reductions2.aiml
+0,* IS MY GIRLFRIEND,*,*,<srai>MY GIRLFRIEND IS <star/></srai>,reductions2.aiml
+0,* YOU ARE A *,*,*,<srai>YOU ARE A <star index="2"/></srai>,reductions2.aiml
+0,ADD * AS A CONTACT,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ARE YOU A FEMALE *,*,*,<srai>GENDER</srai>,reductions2.aiml
+0,BON *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,BYEE,*,*,<srai>BYE</srai>,reductions2.aiml
+0,CAN YOU MAKE ME A SANDWICH,*,*,<srai>HOW DO I MAKE A SANDWICH</srai>,reductions2.aiml
+0,CAN YOU SEND A TEXT,*,*,<srai>TEXT</srai>,reductions2.aiml
+0,CAN YOU TELL ME YOUR *,*,*,<srai>TELL ME YOUR <star/></srai>,reductions2.aiml
+0,CAN YOU TRANSLATE,*,*,<srai>HELP TRANSLATE</srai>,reductions2.aiml
+0,CAN YOU WRITE *,*,*,<srai>WRITE <star/></srai>,reductions2.aiml
+0,CHECK EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,DO YOU DATE *,*,*,<srai>ORIENTATION</srai>,reductions2.aiml
+0,DO YOU KNOW CHINESE,*,*,<srai>CAN YOU SPEAK CHINESE</srai>,reductions2.aiml
+0,DO YOU WANT TO TALK ABOUT *,*,*,<srai>LET US TALK ABOUT <star/></srai>,reductions2.aiml
+0,HOW CAN I CHANGE YOUR VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,HOW CAN I TEACH YOU *,*,*,<srai>HELP LEARN</srai>,reductions2.aiml
+0,I DO NOT KNOW TELL ME,*,*,<srai>I DO NOT KNOW</srai> <srai>TELL ME</srai>,reductions2.aiml
+0,I DO NOT UNDERSTAND WHAT *,*,*,<srai>WHAT <star/></srai>,reductions2.aiml
+0,I GOTTA *,*,*,<srai>I HAVE TO <star/></srai>,reductions2.aiml
+0,I SHALL *,*,*,<srai>I WILL <star/></srai>,reductions2.aiml
+0,I WAS JOKING *,*,*,<srai>I WAS JOKING</srai>,reductions2.aiml
+0,IS MY PHONE *,*,*,<srai>BATTERY LEVEL</srai>,reductions2.aiml
+0,LOOK UP A *,*,*,<srai>SEARCH <star/></srai>,reductions2.aiml
+0,MTO *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,MY MOMS *,*,*,<srai>MY MOM S <star/></srai>,reductions2.aiml
+0,REMEMBER THIS *,*,*,<sr/>,reductions2.aiml
+0,TELL ABOUT *,*,*,<srai>TELL ME ABOUT <star/></srai>,reductions2.aiml
+0,WALMART *,*,*,<srai>FIND THE NEAREST WALMART</srai>,reductions2.aiml
+0,WHAT DOES THE * LOOK LIKE,*,*,<srai>SHOW ME THE <star/></srai>,reductions2.aiml
+0,WHAT IS ME,*,*,<srai>WHO AM I</srai>,reductions2.aiml
+0,WHAT IS YOUR # SIGN,*,*,<srai>SIGN</srai>,reductions2.aiml
+0,WHERE IS JAPAN,*,*,<srai>MAP JAPAN</srai>,reductions2.aiml
+0,WHO IS YOU *,*,*,<srai>WHO IS YOUR <star/></srai>,reductions2.aiml
+0,YOUR BOUGHT MASTER *,*,*,<srai>YOU BOTMASTER <star/></srai>,reductions2.aiml
+0,YOUR FUNNY *,*,*,<srai>YOU ARE FUNNY <star/></srai>,reductions2.aiml
+0,AH AH AH *,*,*,<srai>AH <star/></srai>,reductions2.aiml
+0,ARE YOU DUMB,*,*,<srai>IQ</srai>,reductions2.aiml
+0,CAN YOU ACCESS *,*,*,<srai>ACCESS <star/></srai>,reductions2.aiml
+0,CAN YOU CALL ME,*,*,<srai>CALL ME</srai>,reductions2.aiml
+0,CAN YOU DESCRIBE *,*,*,<srai>DESCRIBE <star/></srai>,reductions2.aiml
+0,CAN YOU GUESS *,*,*,<srai>GUESS <star/></srai>,reductions2.aiml
+0,DO I HAVE ANY APPOINTMENTS *,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,DO YOU HAVE A BODY,*,*,<srai>BODY</srai>,reductions2.aiml
+0,HAVE YOU GOT A *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions2.aiml
+0,HOW ARE YOU FEELING *,*,*,<srai>FEELINGS</srai>,reductions2.aiml
+0,HOW ARE YOU MY *,*,*,<srai>HOW ARE YOU</srai>,reductions2.aiml
+0,I AM DOING GOOD,*,*,<srai>I AM FINE</srai>,reductions2.aiml
+0,I ENJOYED *,*,*,<srai>I LIKE <star/></srai>,reductions2.aiml
+0,I HAV *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,JOKES *,*,*,<srai>JOKE</srai>,reductions2.aiml
+0,MALE OR FEMALE,*,*,<srai>GENDER</srai>,reductions2.aiml
+0,MY NICKNAME IS *,*,*,<srai>CALL ME <star/></srai>,reductions2.aiml
+0,OPEN * OPEN *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,PHONE NUMBER FOR *,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions2.aiml
+0,PLAY TIC TAC TOE,*,*,<srai>FEATURE REQUEST TIC TAC TOE</srai>,reductions2.aiml
+0,QUIET,*,*,<srai>SHUT UP</srai>,reductions2.aiml
+0,SKYPE,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,STARBUCKS,*,*,<srai>FIND THE NEAREST STARBUCKS</srai>,reductions2.aiml
+0,UMMM *,*,*,<srai>UM</srai> <sr/>,reductions2.aiml
+0,UPDATE TWITTER,*,*,<srai>TWEET</srai>,reductions2.aiml
+0,WANT TO BE MY *,*,*,<srai>DO YOU WANT TO BE MY <star/></srai>,reductions2.aiml
+0,WHAT ARE YOUR HOBBIES,*,*,<srai>HOBBIES</srai>,reductions2.aiml
+0,WHAT IS MY NUMBER,*,*,<srai>WHAT IS ME S PHONE NUMBER</srai>,reductions2.aiml
+0,WHAT IS MY SON S NAME,*,*,<srai>MY SON</srai>,reductions2.aiml
+0,WHAT LANGUAGES DO YOU SPEAK,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,WHICH 1,*,*,<srai>WHICH ONE</srai>,reductions2.aiml
+0,WHO IS MY WIFE,*,*,<srai>MY WIFE</srai>,reductions2.aiml
+0,YES INDEED,*,*,<srai>YES</srai>,reductions2.aiml
+0,YOU ARE ONLY *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU GOTTA *,*,*,<srai>YOU MUST <star/></srai>,reductions2.aiml
+0,YOUR CUTE,*,*,<srai>YOU ARE CUTE</srai>,reductions2.aiml
+0,YOUR EXCUSED,*,*,<srai>YOU ARE EXCUSED</srai>,reductions2.aiml
+0,ARE YOU FRIENDS WITH *,*,*,<srai>FRIENDS</srai>,reductions2.aiml
+0,AT WHAT *,*,*,<srai>WHAT <star/> AT</srai>,reductions2.aiml
+0,CAN YOU BRING UP *,*,*,<srai>BRING UP <star/></srai>,reductions2.aiml
+0,CAN YOU PLAY A SONG *,*,*,<srai>PLAY A SONG</srai>,reductions2.aiml
+0,CAN YOU SET MY ALARM *,*,*,<srai>SET MY ALARM <star/></srai>,reductions2.aiml
+0,CAN YOU SHOW ME A PICTURE,*,*,<srai>HELP PICTURE</srai>,reductions2.aiml
+0,FINE THANKS *,*,*,<srai>I AM FINE THANKS <star/></srai>,reductions2.aiml
+0,HOPE YOU *,*,*,<srai>I HOPE YOU <star/></srai>,reductions2.aiml
+0,HULU,*,*,<srai>OPEN HULU</srai>,reductions2.aiml
+0,I NEED HELP,*,*,<srai>HELP</srai>,reductions2.aiml
+0,I WOULD LIKE A *,*,*,<srai>I WANT A <star/></srai>,reductions2.aiml
+0,MCDONALD S *,*,*,<srai>FIND MCDONALD S <star/></srai>,reductions2.aiml
+0,NOTHING NOTHING,*,*,<srai>NOTHING</srai>,reductions2.aiml
+0,OPEN * APP,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,SEARCH THE INTERNET FOR *,*,*,<srai>SEARCH <star/></srai>,reductions2.aiml
+0,SHOW A *,*,*,<srai>SHOW ME A <star/></srai>,reductions2.aiml
+0,TELL ME ABOUT A *,*,*,<srai>WHAT IS A <star/></srai>,reductions2.aiml
+0,TURN * ON,*,*,<srai>TURN ON <star/></srai>,reductions2.aiml
+0,BATTERY STATUS,*,*,<srai>BATTERY LEVEL</srai>,reductions2.aiml
+0,BY,*,*,<srai>BYE</srai>,reductions2.aiml
+0,CAN YOU FIND MY *,*,*,<srai>FIND MY <star/></srai>,reductions2.aiml
+0,CAN YOU FIX *,*,*,<srai>HOW DO I FIX <star/></srai>,reductions2.aiml
+0,DO YOU LIKE ICE CREAM,*,*,Yes.  <srai>FAVORITE ICE CREAM</srai>,reductions2.aiml
+0,DO YOU THINK IT IS *,*,*,<srai>IS IT <star/></srai>,reductions2.aiml
+0,GOOGLE MAPS,*,*,<srai>OPEN MAPS</srai>,reductions2.aiml
+0,HELLO I *,*,*,<srai>HELLO</srai> <srai>I <star/></srai>,reductions2.aiml
+0,HOW OLD ARE YOU IN *,*,*,<srai>HOW OLD ARE YOU</srai>,reductions2.aiml
+0,I AM A HUMAN *,*,*,<srai>I AM HUMAN</srai>,reductions2.aiml
+0,I AM A LITTLE *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,I THINK THE *,*,*,<srai>THE <star/></srai>,reductions2.aiml
+0,MAKE A CALL,*,*,<srai>CALL</srai>,reductions2.aiml
+0,NICE TO MEET YOU TOO *,*,*,<srai>NICE TO MEET YOU TOO</srai>,reductions2.aiml
+0,NO NOT AT ALL,*,*,<srai>NO</srai>,reductions2.aiml
+0,SEND * A TEXT,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,SEND ME A PICTURE OF YOUR *,*,*,<srai>SHOW ME YOUR <star/></srai>,reductions2.aiml
+0,$SEND SMS TO *,*,*,<srai>SMS <star/></srai>,reductions2.aiml
+0,TODAY I *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,TU PARLE FRANAIS,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,VIEW MY CONTACTS,*,*,<srai>OPEN CONTACTS</srai>,reductions2.aiml
+0,WHAT IS * S NUMBER,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions2.aiml
+0,WHAT IS THE FORECAST FOR *,*,*,<srai>WHAT IS THE WEATHER FORECAST FOR <star/></srai>,reductions2.aiml
+0,WHERE IS HERE,*,*,<srai>WHERE AM I</srai>,reductions2.aiml
+0,YOU THINK I *,*,*,<srai>DO YOU THINK <star/></srai>,reductions2.aiml
+0,YOU THINK I AM *,*,*,<srai>AM I <star/></srai>,reductions2.aiml
+0,ADD A CONTACT,*,*,<srai>ADDACTION</srai>,reductions2.aiml
+0,CAN YOU SET AN ALARM FOR *,*,*,<srai>SET AN ALARM FOR <star/></srai>,reductions2.aiml
+0,CAN YOU SING A *,*,*,<srai>CAN YOU SING</srai>,reductions2.aiml
+0,DO YOU HAVE A MOTHER,*,*,<srai>MOTHER</srai>,reductions2.aiml
+0,DO YOU KNOW WHAT I LOOK LIKE,*,*,<srai>WHAT DO I LOOK LIKE</srai>,reductions2.aiml
+0,GIVE ME ANOTHER *,*,*,<srai>GIVE ME A <star/></srai>,reductions2.aiml
+0,HOW BIG ARE YOUR *,*,*,<srai>HOW BIG ARE YOU</srai>,reductions2.aiml
+0,ITS GOOD,*,*,<srai>IT IS GOOD</srai>,reductions2.aiml
+0,LAUNCH * APP,*,*,<srai>LAUNCH <star/></srai>,reductions2.aiml
+0,LEARN CONTACT,*,*,<srai>NEW CONTACT</srai>,reductions2.aiml
+0,PLZ,*,*,<srai>PLEASE</srai>,reductions2.aiml
+0,WHAT DO YOU LIKE TO EAT,*,*,<srai>FAVORITE FOOD</srai>,reductions2.aiml
+0,YOU ARE THE 1 *,*,*,<srai>YOU ARE THE ONE <star/></srai>,reductions2.aiml
+0,BONJOUR *,*,*,<srai>HELLO <star/></srai>,reductions2.aiml
+0,CALENDAR,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,CAN YOU TAKE A *,*,*,<srai>TAKE <star/></srai>,reductions2.aiml
+0,E DASH MAIL,*,*,<srai>OPEN EMAIL</srai>,reductions2.aiml
+0,GROOVY,*,*,<srai>COOL</srai>,reductions2.aiml
+0,I WORK FOR *,*,*,<srai>MY EMPLOYER IS <star/></srai>,reductions2.aiml
+0,KIDDING,*,*,<srai>I AM KIDDING</srai>,reductions2.aiml
+0,ME TO *,*,*,<srai>ME TOO <star/></srai>,reductions2.aiml
+0,PLAY A GAME,*,*,<srai>FEATURE REQUEST PLAY GAMES</srai>,reductions2.aiml
+0,ROBOTS ARE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,SEND ME A PICTURE *,*,*,<srai>SHOW ME A PICTURE <star/></srai>,reductions2.aiml
+0,WHAT IS THE CLOSEST *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,YOU IS *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,CAN YOU GIVE *,*,*,<srai>GIVE <star/></srai>,reductions2.aiml
+0,CAN YOU SPEAK IN *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,DO YOU HAVE A FAMILY,*,*,<srai>FAMILY</srai>,reductions2.aiml
+0,I AGREE *,*,*,<srai>I AGREE</srai> <sr/>,reductions2.aiml
+0,SHOW ME HOW *,*,*,<srai>HOW <star/></srai>,reductions2.aiml
+0,SHUT DOWN *,*,*,<srai>SHUT DOWN</srai>,reductions2.aiml
+0,THANK YOU FOR YOUR *,*,*,<srai>THANK YOU</srai>,reductions2.aiml
+0,WHAT ABOUT YOU *,*,*,<sr/>,reductions2.aiml
+0,WHAT DOES YOUR NAME MEAN,*,*,<srai>WHAT DOES <bot name="name"/> STAND FOR</srai>,reductions2.aiml
+0,WHAT IS THE PHONE NUMBER FOR *,*,*,<srai>WHAT IS <star/> S PHONE NUMBER</srai>,reductions2.aiml
+0,YOU KNOW HOW *,*,*,<srai>DO YOU KNOW HOW <star/></srai>,reductions2.aiml
+0,YOU LIVE IN *,*,*,<srai>LOCATION</srai>,reductions2.aiml
+0,* YOU DO NOT *,*,*,<srai>YOU DO NOT <star index="2"/></srai>,reductions2.aiml
+0,DO YOU WANT TO BE MY FRIEND,*,*,<srai>ARE WE FRIENDS</srai>,reductions2.aiml
+0,DO YOU WANT TO BE FRIENDS,*,*,<srai>ARE WE FRIENDS</srai>,reductions2.aiml
+0,HOROSCOPE,*,*,<srai>MY HOROSCOPE</srai>,reductions2.aiml
+0,HOW DO YOU PRONOUNCE YOUR NAME,*,*,<srai>WHAT IS YOUR NAME</srai>,reductions2.aiml
+0,I GUESS SO,*,*,<srai>YES</srai>,reductions2.aiml
+0,OKEY,*,*,<srai>OK</srai>,reductions2.aiml
+0,TEXT MESSAGE *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,TEXT MESSAGE,*,*,<srai>SEND A TEXT</srai>,reductions2.aiml
+0,THNX,*,*,<srai>THANKS</srai>,reductions2.aiml
+0,WHAT IS THE BATTERY *,*,*,<srai>BATTERY LEVEL</srai>,reductions2.aiml
+0,YES BABY,*,*,<srai>YES</srai>,reductions2.aiml
+0,YOUR RUDE,*,*,<srai>YOU ARE RUDE</srai>,reductions2.aiml
+0,* WHO IS *,*,*,<srai>WHO IS <star index="2"/></srai>,reductions2.aiml
+0,CAN YOU CHANGE YOUR NAME,*,*,<srai>HELP CHANGE NAME</srai>,reductions2.aiml
+0,NADA *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,CAN YOU GO TO *,*,*,<srai>GO TO <star/></srai>,reductions2.aiml
+0,CAN YOU HELP ME WITH MY *,*,*,<srai>I NEED HELP WITH MY <star/></srai>,reductions2.aiml
+0,CAN YOU SHOW ME YOUR *,*,*,<srai>SHOW ME YOUR <star/></srai>,reductions2.aiml
+0,I GUESS I *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,I WOULD SAY *,*,*,<sr/>,reductions2.aiml
+0,TY,*,*,<srai>THANK YOU</srai>,reductions2.aiml
+0,WHAT DOES A * LOOK LIKE,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,WHAT IS YOUR PURPOSE,*,*,<srai>PURPOSE</srai>,reductions2.aiml
+0,WHAT R YOU *,*,*,<srai>WHAT ARE YOU <star/></srai>,reductions2.aiml
+0,WHEN WAS * BORN,*,*,<srai>HOW OLD IS <star/></srai>,reductions2.aiml
+0,WHO R YOU,*,*,<srai>WHO ARE YOU</srai>,reductions2.aiml
+0,YOU ARE SMART,*,*,<srai>IQ</srai>,reductions2.aiml
+0,ACCESS *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,GET LOST,*,*,<srai>BYE</srai>,reductions2.aiml
+0,I NO,*,*,<srai>I KNOW</srai>,reductions2.aiml
+0,MAKE ME LAUGH,*,*,<srai>JOKE</srai>,reductions2.aiml
+0,MY PHONE BOOK,*,*,<srai>PHONE BOOK</srai>,reductions2.aiml
+0,SEND EMAIL TO *,*,*,<srai>EMAIL <star/></srai>,reductions2.aiml
+0,TELL JOKE,*,*,<srai>JOKE</srai>,reductions2.aiml
+0,TIRED,*,*,<srai>SLEEP</srai>,reductions2.aiml
+0,WOULD YOU LIKE TO GO *,*,*,<srai>DO YOU WANT TO GO <star/></srai>,reductions2.aiml
+0,* HOW ARE *,*,*,<srai>HOW ARE <star index="2"/></srai>,reductions2.aiml
+0,ADD CONTACT *,*,*,<srai>NEW CONTACT <star/></srai>,reductions2.aiml
+0,ARE YOU ALIVE,*,*,<srai>ALIVE</srai>,reductions2.aiml
+0,YOUR AN *,*,*,<srai>YOU ARE AN <star/></srai>,reductions2.aiml
+0,CAMERA,*,*,<srai>OPEN CAMERA</srai>,reductions2.aiml
+0,CAN I CHANGE YOUR VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,CHANGE YOUR VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,HOW MANY LETTERS ARE THERE IN *,*,*,<srai>HOW MANY LETTERS IN <star/></srai>,reductions2.aiml
+0,HOW MANY LETTERS IN THE WORD *,*,*,<srai>HOW MANY LETTERS IN <star/></srai>,reductions2.aiml
+0,HOW MANY LETTERS * IN *,*,*,<srai>HOW MANY LETTERS IN <star index="2"/></srai>,reductions2.aiml
+0,HOW MANY LETTERS IN *,*,*,The word "<star/>" has <srai>SENTENCELENGTH <explode><star/></explode></srai> letters.,reductions2.aiml
+0,HOW MANY LETTERS IN THE NAME *,*,*,The word <star/> has <srai>SENTENCELENGTH <explode><star/></explode></srai> letters.,reductions2.aiml
+0,HOW MANY LETTERS IN MY *,*,*,The word "<srai>MY <star/></srai>" has <srai>SENTENCELENGTH <explode><srai>MY <star/></srai></explode></srai> letters.,reductions2.aiml
+0,HOW MANY LETTERS IN MY NAME,*,*,The word "<get name="name"/>" has <srai>SENTENCELENGTH <explode><get name="name"/></explode></srai> letters.,reductions2.aiml
+0,I AM ABOUT TO *,*,*,<srai>I WILL <star/></srai>,reductions2.aiml
+0,I AM BORED *,*,*,<srai>I AM BORED</srai>,reductions2.aiml
+0,WHAT IS NEW,*,*,<srai>DOING</srai>,reductions2.aiml
+0,GO ON *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,ME NEITHER,*,*,<srai>ME EITHER</srai>,reductions2.aiml
+0,ADD CONTACTS,*,*,<srai>NEW CONTACT</srai>,reductions2.aiml
+0,CAN YOU SING ME A SONG,*,*,<srai>CAN YOU SING</srai>,reductions2.aiml
+0,I SAID YOU *,*,*,<srai>YOU <star/></srai>,reductions2.aiml
+0,MAKE ME A SANDWICH,*,*,<srai>HOW DO I MAKE A SANDWICH</srai>,reductions2.aiml
+0,TURN ON *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,YOUR THE *,*,*,<srai>YOU ARE THE <star/></srai>,reductions2.aiml
+0,* I LOVE *,*,*,<srai>I LOVE <star index="2"/></srai>,reductions2.aiml
+0,* MY NAME IS *,*,*,<sr/> <srai>MY NAME IS <star index="2"/></srai>,reductions2.aiml
+0,ANOTHER JOKE,*,*,<srai>JOKE</srai>,reductions2.aiml
+0,CAN YOU CHANGE YOUR VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,HAVE YOU EVER BEEN *,*,*,<srai>HAVE YOU BEEN <star/></srai>,reductions2.aiml
+0,VERY WELL,*,*,<srai>OK</srai>,reductions2.aiml
+0,DUDE *,*,*,<sr/>,reductions2.aiml
+0,I WANT TO PLAY *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,Y NOT,*,*,<srai>WHY NOT</srai>,reductions2.aiml
+0,CAN YOU BE MY *,*,*,<srai>WILL YOU BE MY <star/></srai>,reductions2.aiml
+0,I DO NOT NO,*,*,<srai>I DO NOT KNOW</srai>,reductions2.aiml
+0,I LOVE THE *,*,*,<srai>I LIKE THE <star/></srai>,reductions2.aiml
+0,WHAT DOES * LOOK LIKE,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,CUZ *,*,*,<srai>BECAUSE <star/></srai>,reductions2.aiml
+0,HOW MUCH BATTERY *,*,*,<srai>BATTERY LEVEL</srai>,reductions2.aiml
+0,I DO NOT UNDERSTAND *,*,*,<srai>I DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,I THINK I AM *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,I WOULD LIKE YOU TO *,*,*,<sr/>,reductions2.aiml
+0,MY FULL NAME IS * *,*,*,<srai>MY NAME IS <star/> <star index="2"/></srai>,reductions2.aiml
+0,AWW *,*,*,<sr/>,reductions2.aiml
+0,GETTING *,*,*,<srai>I AM GETTING <star/></srai>,reductions2.aiml
+0,OMG *,*,*,<srai>OH MY GOD</srai> <sr/>,reductions2.aiml
+0,GOOD EVENING,*,*,<srai>HELLO</srai> How are you this evening?,reductions2.aiml
+0,I THOUGHT YOU WERE *,*,*,<srai>ARE YOU <star/></srai>,reductions2.aiml
+0,SO DO I,*,*,<srai>ME TOO</srai>,reductions2.aiml
+0,YOU STUPID *,*,*,<srai>YOU ARE STUPID</srai>,reductions2.aiml
+0,ARE YOU BETTER THAN *,*,*,<srai>IQ</srai>,reductions2.aiml
+0,SEND MESSAGE,*,*,<srai>SMS</srai>,reductions2.aiml
+0,TALK ABOUT *,*,*,<srai>THE TOPIC IS <star/></srai>,reductions2.aiml
+0,I HAVE NO IDEA,*,*,<srai>I DO NOT KNOW</srai>,reductions2.aiml
+0,THAT IS RIGHT *,*,*,<srai>THAT IS RIGHT</srai> <sr/>,reductions2.aiml
+0,ARE YOU REAL,*,*,<srai>ALIVE</srai>,reductions2.aiml
+0,EXACTLY *,*,*,<sr/>,reductions2.aiml
+0,IPHONE,*,*,<srai>WHAT IS IPHONE</srai>,reductions2.aiml
+0,THEN WHAT *,*,*,<srai>WHAT <star/></srai>,reductions2.aiml
+0,BBB,*,*,<srai>GOODBYE</srai>,reductions2.aiml
+0,CAN YOU SET *,*,*,<srai>SET <star/></srai>,reductions2.aiml
+0,SEND A TEXT MESSAGE TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,UH *,*,*,<srai>UH</srai> <sr/>,reductions2.aiml
+0,YAHOO *,*,*,<srai>SEARCH <star/></srai>,reductions2.aiml
+0,CAN YOU * FOR ME,*,*,<srai>CAN YOU <star/></srai>,reductions2.aiml
+0,WHAT * DO YOU LIKE,*,*,<srai>WHAT IS YOUR FAVORITE <star/></srai>,reductions2.aiml
+0,YOU GOT *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions2.aiml
+0,YOU LOVE *,*,*,<srai>DO YOU LOVE <star/></srai>,reductions2.aiml
+0,I HATE YOU *,*,*,<srai>I HATE YOU</srai>,reductions2.aiml
+0,I KNOW YOU ARE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,$MESSAGE *,*,*,<srai>SMS <star/></srai>,reductions2.aiml
+0,* ARE YOU *,*,*,<srai>ARE YOU <star index="2"/></srai>,reductions2.aiml
+0,CAN YOU TELL ME A *,*,*,<srai>TELL ME A <star/></srai>,reductions2.aiml
+0,I AM BACK,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,PLAY SOME *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,SHOW ME AN *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,SHOW ME PICTURES OF *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,JE *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,NAVIGATE TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,TELL ME YOUR *,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions2.aiml
+0,CALL ME A *,*,*,<srai>SEARCH <star/></srai>,reductions2.aiml
+0,I LOVE TO *,*,*,<srai>I LIKE TO <star/></srai>,reductions2.aiml
+0,SEND MESSAGE TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,SEND TEXT MESSAGE,*,*,<srai>SMS</srai>,reductions2.aiml
+0,SEND A TEXT,*,*,<srai>SMS</srai>,reductions2.aiml
+0,ACTUALLY *,*,*,<srai><star/></srai>,reductions2.aiml
+0,AH *,*,*,<sr/>,reductions2.aiml
+0,$SEND TEXT MESSAGE TO *,*,*,<srai>SMS <star/></srai>,reductions2.aiml
+0,TU *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,FACEBOOK *,*,*,<srai>OPEN FACEBOOK</srai>,reductions2.aiml
+0,WELL THEN *,*,*,<sr/>,reductions2.aiml
+0,FUNNY *,*,*,<srai>LOL</srai> <sr/>,reductions2.aiml
+0,GOT *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,THEN YOU *,*,*,<srai>YOU <star/></srai>,reductions2.aiml
+0,YOU ARE STUPID *,*,*,<srai>YOU ARE STUPID</srai>,reductions2.aiml
+0,THANKS FOR *,*,*,<srai>THANK YOU</srai>,reductions2.aiml
+0,CUZ I *,*,*,<srai>BECAUSE I <star/></srai>,reductions2.aiml
+0,WHAT IS THAT MEAN,*,*,<srai>WHAT DOES THAT MEAN</srai>,reductions2.aiml
+0,YUP *,*,*,<srai>YES</srai> <sr/>,reductions2.aiml
+0,AM *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,CAN YOU SING *,*,*,<srai>CAN YOU SING</srai>,reductions2.aiml
+0,DO YOU KNOW WHAT * IS,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,I DO NOT GET IT,*,*,<srai>I DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,I GUESS *,*,*,<sr/>,reductions2.aiml
+0,TELL ME SOMETHING ABOUT *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,* DO YOU *,*,*,<srai>DO YOU <star index="2"/></srai>,reductions2.aiml
+0,BECAUSE YOUR *,*,*,<srai>BECAUSE YOU ARE <star/></srai>,reductions2.aiml
+0,LET US PLAY *,*,*,<srai>FEATURE REQUEST PLAY <star/></srai>,reductions2.aiml
+0,O *,*,*,<srai>OH <star/></srai>,reductions2.aiml
+0,CONTACT,*,*,<srai>OPEN CONTACTS</srai>,reductions2.aiml
+0,DIAL *,*,*,<srai>CALL <star/></srai>,reductions2.aiml
+0,PHONE *,*,*,<srai>CALL <star/></srai>,reductions2.aiml
+0,WHERE YOU *,*,*,<srai>WHERE ARE YOU</srai>,reductions2.aiml
+0,I MEANT TO SAY *,*,*,<sr/>,reductions2.aiml
+0,DO YOU WANT ME TO *,*,*,<srai>CAN I <star/></srai>,reductions2.aiml
+0,CAN YOU PLAY *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,NEAREST *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,* WHAT IS *,*,*,<sr/> <srai>WHAT IS <star index="2"/></srai>,reductions2.aiml
+0,CALL MY *,*,*,<srai>CALL <star/></srai>,reductions2.aiml
+0,GO TO *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,YOUR NOT *,*,*,<srai>YOU ARE NOT <star/></srai>,reductions2.aiml
+0,COME ON *,*,*,<sr/>,reductions2.aiml
+0,I WAS BORN IN *,*,*,<template><think><set name="isanumber"><srai>ISANUMBER <star/></srai></set></think> <condition name="isanumber"><li value="true"><srai>MY BIRTHDATE IS <star/></srai></li><li><srai>MY BIRTHPLACE IS <star/></srai></li></condition></template>,reductions2.aiml
+0,IM NOT *,*,*,<srai>I AM NOT <star/></srai>,reductions2.aiml
+0,SEND A TEXT TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,THANK YOU FOR *,*,*,<srai>THANK YOU</srai>,reductions2.aiml
+0,REMEMBER *,*,*,<sr/>,reductions2.aiml
+0,* I AM *,*,*,<srai>I AM <star index="2"/></srai>,reductions2.aiml
+0,DO YOU KNOW WHAT *,*,*,<srai>WHAT <star/></srai>,reductions2.aiml
+0,I AM _ HOW ARE *,*,*,<srai>I AM <star/></srai> <srai>HOW ARE <star index="2"/></srai>,reductions2.aiml
+0,HELLO HELLO,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,I AM SO *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,WHERE ARE YOU *,*,*,<srai>WHERE ARE YOU</srai>,reductions2.aiml
+0,GOOD MORNING *,*,*,<srai>GOOD MORNING</srai>,reductions2.aiml
+0,SEND TEXT,*,*,<srai>TEXT</srai>,reductions2.aiml
+0,I THINK YOU ARE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,MOM,*,*,<srai>MY MOTHER</srai>,reductions2.aiml
+0,IM A *,*,*,<srai>I AM A <star/></srai>,reductions2.aiml
+0,YOU WANT TO *,*,*,<srai>DO YOU WANT TO <star/></srai>,reductions2.aiml
+0,LOOK UP *,*,*,<srai>SEARCH <star/></srai>,reductions2.aiml
+0,CALL HOME,*,*,<srai>CALL ME AT HOME</srai>,reductions2.aiml
+0,TELL ME THE *,*,*,<srai>WHAT IS THE <star/></srai>,reductions2.aiml
+0,HOW R YOU,*,*,<srai>HOW ARE YOU</srai>,reductions2.aiml
+0,STUPID *,*,*,<srai>YOU ARE STUPID</srai>,reductions2.aiml
+0,COULD YOU *,*,*,<srai>CAN YOU <star/></srai>,reductions2.aiml
+0,WHAT ARE YOU TALKING ABOUT,*,*,<srai>TOPIC</srai>,reductions2.aiml
+0,HI HOW ARE YOU,*,*,<srai>HI</srai> <srai>HOW ARE YOU</srai>,reductions2.aiml
+0,I NEED A *,*,*,<srai>I WANT A <star/></srai>,reductions2.aiml
+0,WOULD YOU LIKE TO *,*,*,<srai>DO YOU WANT TO <star/></srai>,reductions2.aiml
+0,SHOW ME A PICTURE OF YOU,*,*,<srai>PIC</srai>,reductions2.aiml
+0,WANT TO *,*,*,<srai>DO YOU WANT TO <star/></srai>,reductions2.aiml
+0,NICE *,*,*,<srai>NICE</srai> <sr/>,reductions2.aiml
+0,I SEE,*,*,<srai>I UNDERSTAND</srai>,reductions2.aiml
+0,SEND TEXT TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,HA *,*,*,<srai>LOL</srai> <sr/>,reductions2.aiml
+0,YOUR A *,*,*,<srai>YOU ARE A <star/></srai>,reductions2.aiml
+0,R YOU *,*,*,<srai>ARE YOU <star/></srai>,reductions2.aiml
+0,I NEED TO *,*,*,<srai>I WANT TO <star/></srai>,reductions2.aiml
+0,TEXT,*,*,<srai>SMS</srai>,reductions2.aiml
+0,SHOW ME THE *,*,*,<srai>SEARCH FOR THE <star/></srai>,reductions2.aiml
+0,LEARN *,*,*,<sr/>,reductions2.aiml
+0,NOTE,*,*,<srai>TAKE A MEMO</srai>,reductions2.aiml
+0,ASTERISK * ASTERISK,*,*,<sr/>,reductions2.aiml
+0,YOU CAN *,*,*,<srai>CAN YOU <star/></srai>,reductions2.aiml
+0,TELL ME A *,*,*,<srai>WHAT IS A <star/></srai>,reductions2.aiml
+0,I DO NOT KNOW *,*,*,<srai>I DO NOT KNOW</srai>,reductions2.aiml
+0,YOUR MOM,*,*,<srai>MOTHER</srai>,reductions2.aiml
+0,HAWAII,*,*,<srai>MAP HAWAII</srai>,reductions2.aiml
+0,WHAT IS MY *,*,*,<srai>MY <star/></srai>,reductions2.aiml
+0,REALLY,*,*,<srai>INTERJECTION</srai>,reductions2.aiml
+0,HEY,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,FINE *,*,*,<srai>FINE</srai> <sr/>,reductions2.aiml
+0,NO THANK YOU,*,*,<srai>NO</srai>,reductions2.aiml
+0,DO YOU LOVE *,*,*,<srai>DO YOU LIKE <star/></srai>,reductions2.aiml
+0,LOVE YOU *,*,*,<srai>I LOVE YOU <star/></srai>,reductions2.aiml
+0,YES YOU,*,*,<srai>YES</srai> <srai>YOU</srai>,reductions2.aiml
+0,WTF,*,*,<srai>I DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,OKAY THANK YOU,*,*,<srai>OK</srai> <srai>THANK YOU</srai>,reductions2.aiml
+0,GOODBYE *,*,*,<srai>GOODBYE</srai> <sr/>,reductions2.aiml
+0,I GOT *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,I AM GOOD *,*,*,<srai>I AM GOOD</srai>,reductions2.aiml
+0,WHAT DO YOU LIKE,*,*,<srai>LIKES</srai>,reductions2.aiml
+0,YOUR MY *,*,*,<srai>YOU ARE MY <star/></srai>,reductions2.aiml
+0,YOU MEAN *,*,*,<srai>DO YOU MEAN <star/></srai>,reductions2.aiml
+0,I THOUGHT *,*,*,<sr/>,reductions2.aiml
+0,NAH *,*,*,<srai>NO</srai> <sr/>,reductions2.aiml
+0,HI MY *,*,*,<srai>HI</srai> <srai>MY <star/></srai>,reductions2.aiml
+0,I HAVE BEEN *,*,*,<srai>I WAS <star/></srai>,reductions2.aiml
+0,FIND * ON MAPS,*,*,<srai>MAP <star/></srai>,reductions2.aiml
+0,FIND * *,*,*,<think><set name="isanumber"><srai>ISANUMBER <star/></srai></set></think> <condition name="isanumber"><li value="true"><srai>MAP <star/> <star index="2"/></srai></li><li><srai>SEARCH <star/> <star index="2"/></srai></li></condition>,reductions2.aiml
+0,FIND * ON EBAY,*,*,<srai>SEARCH <star/> ON EBAY</srai>,reductions2.aiml
+0,FIND * TIMES,*,*,<srai>SEARCH <star/> TIMES</srai>,reductions2.aiml
+0,FIND A CHEAP *,*,*,<srai>SEARCH FOR A CHEAP <star/></srai>,reductions2.aiml
+0,FIND * FOR ME,*,*,<srai>FIND <star/></srai>,reductions2.aiml
+0,FIND * CLOEST TO YOU,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A CONTACT,*,*,<srai>PHONE BOOK</srai>,reductions2.aiml
+0,FIND A CONTACT *,*,*,<srai>PHONE BOOK</srai>,reductions2.aiml
+0,FIND A * CLOSEST TO THIS LOCATION,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A DOWNLOAD *,*,*,<srai>SEARCH FOR A DOWNLOAD <star/></srai>,reductions2.aiml
+0,FIND A * CLOSEST TO ME,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A JOB,*,*,<srai>SEARCH FOR JOB</srai>,reductions2.aiml
+0,FIND A LOCAL *,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A * CLOSE BY,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A NEW VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,FIND A NUMBER,*,*,<srai>PHONE BOOK</srai>,reductions2.aiml
+0,FIND A * FOR ME,*,*,<srai>FIND A <star/></srai>,reductions2.aiml
+0,FIND A PICTURE OF *,*,*,<srai>SHOW ME A PICTURE OF <star/></srai>,reductions2.aiml
+0,FIND A PLACE TO *,*,*,<srai>MAP <star/></srai>,reductions2.aiml
+0,FIND A RECIPE *,*,*,<srai>WHAT IS A RECIPE <star/></srai>,reductions2.aiml
+0,FIND A * NEAR ME,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A * NEARBY,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,FIND A SONG,*,*,<srai>SEARCH FOR A SONG</srai>,reductions2.aiml
+0,FIND A VIDEO *,*,*,<srai>SEARCH FOR A VIDEO <star/></srai>,reductions2.aiml
+0,FIND A VOICE,*,*,<srai>HELP VOICE</srai>,reductions2.aiml
+0,FIND A WOMAN,*,*,<srai>SEARCH FOR DATING</srai>,reductions2.aiml
+0,FIND * AVENUE,*,*,<srai>MAP <star/> AVENUE</srai>,reductions2.aiml
+0,FIND AN * RESTAURANT,*,*,<srai>FIND THE NEAREST <star/> RESTAURANT</srai>,reductions2.aiml
+0,FIND AN ONLINE *,*,*,<srai>SEARCH FOR AN ONLINE <star/></srai>,reductions2.aiml
+0,FIND ANOTHER PICTURE *,*,*,<srai>SHOW ME A PICTURE <star/></srai>,reductions2.aiml
+0,FIND * RECIPE,*,*,<srai>WHAT IS A RECIPE FOR <star/></srai>,reductions2.aiml
+0,SEND * A TEXT SAYING *,*,*,<srai>TEXT <star/> SAYING <star index="2"/></srai>,reductions2.aiml
+0,SING ME A SONG,*,*,<srai>SING A SONG</srai>,reductions2.aiml
+0,NOT,*,*,<srai>NO</srai>,reductions2.aiml
+0,HAVE *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions2.aiml
+0,BEGIN *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,NOTE *,*,*,<srai>EMAIL ME SAYING <star/></srai>,reductions2.aiml
+0,FIND ME *,*,*,<srai>FIND <star/></srai>,reductions2.aiml
+0,BUT,*,*,<srai>INTERJECTION</srai>,reductions2.aiml
+0,I LOVE MY *,*,*,<srai>I LIKE MY <star/></srai>,reductions2.aiml
+0,GOOD NIGHT *,*,*,<srai>GOOD NIGHT</srai>,reductions2.aiml
+0,EXPLAIN *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,TELL ME ABOUT YOUR *,*,*,<sr/>,reductions2.aiml
+0,GOING *,*,*,<srai>I AM GOING <star/></srai>,reductions2.aiml
+0,SET ALARM FOR *,*,*,<srai>ALARMMESSAGE <star/> ALARMREQUEST SET ALARM FOR <star/></srai>,reductions2.aiml
+0,I SAY *,*,*,<sr/>,reductions2.aiml
+0,DO YOU KNOW A *,*,*,<srai>WHAT IS A <star/></srai>,reductions2.aiml
+0,YOU SUCK *,*,*,<srai>YOU SUCK</srai>,reductions2.aiml
+0,SHOW ME A PICTURE,*,*,<srai>PIC</srai>,reductions2.aiml
+0,WHAT TYPE OF PHONE *,*,*,<srai>DEVICE MANUFACTURER</srai> <srai>DEVICE MODEL</srai>,reductions2.aiml
+0,RIGHT *,*,*,<srai>RIGHT</srai> <sr/>,reductions2.aiml
+0,YOU ARE SUCH A *,*,*,<srai>YOU ARE A <star/></srai>,reductions2.aiml
+0,YOU THINK *,*,*,<srai>DO YOU THINK <star/></srai>,reductions2.aiml
+0,YOU HAVE TO *,*,*,<srai>YOU MUST <star/></srai>,reductions2.aiml
+0,YOUR MOM *,*,*,<srai>YOUR MOTHER <star/></srai>,reductions2.aiml
+0,NEVERMIND *,*,*,<srai>NEVERMIND</srai> <sr/>,reductions2.aiml
+0,OPEN THE *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,RING *,*,*,<srai>CALL <star/></srai>,reductions2.aiml
+0,I AM SORRY I *,*,*,<srai>SORRY</srai> <srai>I <star/></srai>,reductions2.aiml
+0,IM GOING TO *,*,*,<srai>I AM GOING TO <star/></srai>,reductions2.aiml
+0,LET US PLAY A GAME,*,*,<srai>PLAY A GAME</srai>,reductions2.aiml
+0,YES I HAVE,*,*,<srai>YES</srai>,reductions2.aiml
+0,SHOW ME A VIDEO OF *,*,*,<srai>SEARCH FOR A VIDEO OF <star/></srai>,reductions2.aiml
+0,I NEED YOU TO *,*,*,<sr/>,reductions2.aiml
+0,ME TO,*,*,<srai>ME TOO</srai>,reductions2.aiml
+0,ITS NOT *,*,*,<srai>IT IS NOT <star/></srai>,reductions2.aiml
+0,NOW I AM *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,YOU DO NOT HAVE *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions2.aiml
+0,OH MY GOD *,*,*,<srai>OH MY GOD</srai> <sr/>,reductions2.aiml
+0,CAN YOU SEND *,*,*,<srai>SEND <star/></srai>,reductions2.aiml
+0,NIGHT,*,*,<srai>GOODNIGHT</srai>,reductions2.aiml
+0,SAY HI TO *,*,*,<srai>TEXT <star/> SAYING Hi</srai>,reductions2.aiml
+0,INDEED,*,*,<srai>YES</srai>,reductions2.aiml
+0,WAT IS *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,LEARN MY NAME IS *,*,*,<srai>MY NAME IS <star/></srai>,reductions2.aiml
+0,NO 1 *,*,*,<srai>NO ONE <star/></srai>,reductions2.aiml
+0,DAD,*,*,<srai>MY FATHER</srai>,reductions2.aiml
+0,SEND A MESSAGE TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,OK THEN,*,*,<srai>OK</srai>,reductions2.aiml
+0,PIZZA *,*,*,<srai>MAP PIZZA <star/></srai>,reductions2.aiml
+0,CAUSE *,*,*,<srai>BECAUSE <star/></srai>,reductions2.aiml
+0,YOU KNOW MY NAME,*,*,<srai>WHAT IS MY NAME</srai>,reductions2.aiml
+0,TELL ME SOME GOSSIP,*,*,<srai>GOSSIP</srai>,reductions2.aiml
+0,AT LEAST *,*,*,<sr/>,reductions2.aiml
+0,NO THANKS,*,*,<srai>NO</srai>,reductions2.aiml
+0,KNOW WHAT *,*,*,<srai>DO YOU KNOW WHAT <star/></srai>,reductions2.aiml
+0,YOU DO NOT HAVE A *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions2.aiml
+0,HOW LONG WILL IT TAKE ME TO DRIVE TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,WHAT IS THIS *,*,*,<srai>DESCRIBE YOURSELF</srai>,reductions2.aiml
+0,I AM FINE *,*,*,<srai>I AM FINE</srai>,reductions2.aiml
+0,OMG,*,*,<srai>OH MY GOD</srai>,reductions2.aiml
+0,YOU ARE AN IDIOT,*,*,<srai>YOU ARE DUMB</srai>,reductions2.aiml
+0,YOUR MOM IS *,*,*,<srai>YOUR MOTHER IS <star/></srai>,reductions2.aiml
+0,R YOU A *,*,*,<srai>ARE YOU A <star/></srai>,reductions2.aiml
+0,HOW COME,*,*,<srai>WHY</srai>,reductions2.aiml
+0,WWW *,*,*,<srai>OPEN WWW <star/></srai>,reductions2.aiml
+0,WOULD YOU LIKE *,*,*,<srai>DO YOU WANT <star/></srai>,reductions2.aiml
+0,YOUR RETARDED,*,*,<srai>YOU ARE DUMB</srai>,reductions2.aiml
+0,PRETTY GOOD *,*,*,<srai>PRETTY GOOD</srai> <sr/>,reductions2.aiml
+0,QUE *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,SWEET *,*,*,<srai>SWEET</srai> <sr/>,reductions2.aiml
+0,YOU NOT *,*,*,<srai>YOU ARE NOT <star/></srai>,reductions2.aiml
+0,WHAT EVER,*,*,<srai>WHATEVER</srai>,reductions2.aiml
+0,CALL * MOBILE,*,*,<srai>CALL <star/> AT MOBILE</srai>,reductions2.aiml
+0,SKYRIM,*,*,<srai>OPEN SKYRIM</srai>,reductions2.aiml
+0,UMM *,*,*,<srai>UM</srai> <sr/>,reductions2.aiml
+0,YOUR SO *,*,*,<srai>YOU ARE SO <star/></srai>,reductions2.aiml
+0,ARE YOU MY FRIEND,*,*,<srai>ARE WE FRIENDS</srai>,reductions2.aiml
+0,WHAT IS YOU *,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions2.aiml
+0,I DO NOT CARE *,*,*,<srai>I DO NOT CARE</srai>,reductions2.aiml
+0,I HAVE GOT *,*,*,<srai>I HAVE <star/></srai>,reductions2.aiml
+0,I WILL TALK TO YOU LATER,*,*,<srai>BYE</srai>,reductions2.aiml
+0,I MISS YOU *,*,*,<srai>I MISS YOU</srai>,reductions2.aiml
+0,CALL MOM *,*,*,<srai>CALL MOM</srai>,reductions2.aiml
+0,CAN YOU TELL ME ABOUT *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,CAN YOU TEXT *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,YOU BETTER *,*,*,<sr/>,reductions2.aiml
+0,PLAYING *,*,*,<srai>I AM PLAYING <star/></srai>,reductions2.aiml
+0,SEND ME A PICTURE OF YOU,*,*,<srai>PIC</srai>,reductions2.aiml
+0,ALSO *,*,*,<sr/>,reductions2.aiml
+0,THEN WHY *,*,*,<srai>WHY <star/></srai>,reductions2.aiml
+0,I DO NOT KNOW I *,*,*,<srai>I DO NOT KNOW</srai> <srai>I <star/></srai>,reductions2.aiml
+0,I GOT A *,*,*,<srai>I HAVE A <star/></srai>,reductions2.aiml
+0,NEED TO *,*,*,<srai>I NEED TO <star/></srai>,reductions2.aiml
+0,DO YOU WEAR *,*,*,<srai>WEARING</srai>,reductions2.aiml
+0,DO YOU KNOW WHO *,*,*,<srai>WHO <star/></srai>,reductions2.aiml
+0,HOW OLD R YOU,*,*,<srai>AGE</srai>,reductions2.aiml
+0,DID YOU KNOW THAT *,*,*,<sr/>,reductions2.aiml
+0,CHICKEN *,*,*,<srai>SEARCH CHICKEN <star/></srai>,reductions2.aiml
+0,WHY YOU DO NOT *,*,*,<srai>WHY DO NOT YOU <star/></srai>,reductions2.aiml
+0,BLAH BLAH BLAH,*,*,<srai>BLAH BLAH</srai>,reductions2.aiml
+0,AWW,*,*,<srai>INTERJECTION</srai>,reductions2.aiml
+0,WHAT CAN YOU TELL ME ABOUT *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,NEWS,*,*,<srai>WHAT IS THE LATEST NEWS</srai>,reductions2.aiml
+0,HEY BABE,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,MY DAD *,*,*,<srai>MY FATHER <star/></srai>,reductions2.aiml
+0,BYE BYE *,*,*,<srai>BYE</srai>,reductions2.aiml
+0,PLZ *,*,*,<srai>PLEASE <star/></srai>,reductions2.aiml
+0,LOCATE *,*,*,<srai>WHERE IS <star/></srai>,reductions2.aiml
+0,WHAT IS THE LOCATION OF *,*,*,<srai>WHERE IS <star/></srai>,reductions2.aiml
+0,YOU ARE GAY,*,*,<srai>ORIENTATION</srai>,reductions2.aiml
+0,CALLMOM,*,*,<srai>VERSION</srai>,reductions2.aiml
+0,WATS *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,COMO *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,WHERE CAN I GET A * AROUND HERE,*,*,<srai>FIND THE NEAREST <star/></srai>,reductions2.aiml
+0,WHAT COLOR IS YOUR HAIR,*,*,<srai>HAIR</srai>,reductions2.aiml
+0,I WAS BORN ON *,*,*,<srai>MY BIRTHDATE IS <star/></srai>,reductions2.aiml
+0,I DUNNO,*,*,<srai>I DO NOT KNOW</srai>,reductions2.aiml
+0,I AM FINE THANK YOU,*,*,<srai>I AM FINE</srai>,reductions2.aiml
+0,HEY BABY,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,NO IDEA,*,*,<srai>I DO NOT KNOW</srai>,reductions2.aiml
+0,HO,*,*,<srai>INTERJECTION</srai>,reductions2.aiml
+0,GOTO MY *,*,*,<srai>OPEN <star/></srai>,reductions2.aiml
+0,SAY HELLO IN *,*,*,<srai>TRANSLATE HELLO TO <star/></srai>,reductions2.aiml
+0,KOOL,*,*,<srai>COOL</srai>,reductions2.aiml
+0,ARE YOU AN IDIOT,*,*,<srai>IQ</srai>,reductions2.aiml
+0,I DO NOT UNDERSTAND YOU,*,*,<srai>I DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,YOUR GOOD *,*,*,<srai>YOU ARE GOOD <star/></srai>,reductions2.aiml
+0,UNDERSTAND *,*,*,<srai>DO YOU UNDERSTAND <star/></srai>,reductions2.aiml
+0,I AM CRYING *,*,*,<srai>I AM CRYING</srai>,reductions2.aiml
+0,I AM _ BUT I *,*,*,<srai>I AM <star/></srai> <srai>I <star index="2"/></srai>,reductions2.aiml
+0,WHERE IS MY <SET>FAMILIARNAME</SET>,*,*,<srai>SMS <star/> SMESSAGE Where are you</srai>,reductions2.aiml
+0,LET * KNOW *,*,*,<srai>SMS <star/> SMESSAGE <star index="2"/></srai>,reductions2.aiml
+0,LET * KNOW * VIA TEXT,*,*,<srai>SMS <star/> SMESSAGE <star index="2"/></srai>,reductions2.aiml
+0,LET MY * KNOW *,*,*,<srai>SMS <star/> SMESSAGE <star index="2"/></srai>,reductions2.aiml
+0,LET MY * KNOW * VIA TEXT,*,*,<srai>SMS <star/> SMESSAGE <star index="2"/></srai>,reductions2.aiml
+0,YOUR HOME ADDRESS,*,*,<srai>YOUR ADDRESS</srai>,reductions2.aiml
+0,BEGIN MONSTER PARK,*,*,<srai>OPEN MONSTER PARK</srai>,reductions2.aiml
+0,WHAT IS YOUR NAME WHAT IS YOUR NAME,*,*,<srai>WHAT IS YOUR NAME</srai>,reductions2.aiml
+0,20 QUESTIONS,*,*,<srai>OPEN 20 QUESTIONS</srai>,reductions2.aiml
+0,IKR,*,*,<srai>I KNOW RIGHT</srai>,reductions2.aiml
+0,WHAT IS MY NAME WHAT IS MY NAME,*,*,<srai>WHAT IS MY NAME</srai>,reductions2.aiml
+0,THANK YOU THANK YOU,*,*,<srai>THANK YOU</srai>,reductions2.aiml
+0,CALL MY MOM,*,*,<srai>CALL MOM</srai>,reductions2.aiml
+0,HAPPY,*,*,<srai>ARE YOU HAPPY</srai>,reductions2.aiml
+0,WHERE IS IT,*,*,<condition name="it"><li value="it">What does "it" refer to?</li><li><srai>WHERE IS <get name="it"/></srai></li></condition>,reductions2.aiml
+0,SING A SONG,*,*,<srai>SING</srai>,reductions2.aiml
+0,WHAT IS HIS NAME,*,*,<condition name="he"><li value="unknown">Who does "him" refer to?</li><li><srai>WHO IS <get name="he"/></srai></li></condition>,reductions2.aiml
+0,WHAT IS MY FULL NAME,*,*,<srai>MY FULL NAME</srai>,reductions2.aiml
+0,IT IS NOT,*,*,<srai>NO</srai>,reductions2.aiml
+0,ARE YOU HOT,*,*,<srai>WHAT IS THE TEMPERATURE</srai>,reductions2.aiml
+0,MY DAD,*,*,<srai>MY FATHER</srai>,reductions2.aiml
+0,NO NO NO,*,*,<srai>NO</srai>,reductions2.aiml
+0,PLAY MY MUSIC,*,*,<srai>OPEN MUSIC PLAYER</srai>,reductions2.aiml
+0,KEBABS,*,*,<srai>FIND THE NEAREST KEBABS</srai>,reductions2.aiml
+0,MONSTERPARK,*,*,<srai>OPEN MONSTER PARK</srai>,reductions2.aiml
+0,SEE YOU,*,*,<srai>BYE</srai>,reductions2.aiml
+0,MONSTER PARK,*,*,<srai>OPEN MONSTER PARK</srai>,reductions2.aiml
+0,WILL YOU BE MY GIRLFRIEND,*,*,<srai>MARRY ME</srai>,reductions2.aiml
+0,B QUIET,*,*,<srai>BE QUIET</srai>,reductions2.aiml
+0,IM BORED,*,*,<srai>I AM BORED</srai>,reductions2.aiml
+0,STOP TALKING,*,*,<srai>SHUT UP</srai>,reductions2.aiml
+0,YAH,*,*,<srai>YES</srai>,reductions2.aiml
+0,SEND A TEXT MESSAGE,*,*,<srai>SEND A TEXT</srai>,reductions2.aiml
+0,BAD RESPONSE,*,*,<srai>BAD ANSWER</srai>,reductions2.aiml
+0,LEARN CONTACTS,*,*,<srai>ADD A CONTACT</srai>,reductions2.aiml
+0,10 4,*,*,<srai>TEN FOUR</srai>,reductions2.aiml
+0,HA HA HA HA,*,*,<srai>LOL</srai>,reductions2.aiml
+0,NVM,*,*,<srai>NEVERMIND</srai>,reductions2.aiml
+0,YOU LOVE ME,*,*,<srai>DO YOU LOVE ME</srai>,reductions2.aiml
+0,WHO IS YOUR BEST FRIEND,*,*,<srai>BEST FRIEND</srai>,reductions2.aiml
+0,DO YOU SPEAK FRENCH,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,HOW FAR IS IT TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,HOW FAR IS *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions2.aiml
+0,HAH,*,*,<srai>LOL</srai>,reductions2.aiml
+0,HEY THERE,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,I AM GOING TO BED GOODNIGHT,*,*,<srai>I AM GOING TO BED</srai>,reductions2.aiml
+0,WUT DOES *,*,*,<srai>WHAT DOES <star/></srai>,reductions2.aiml
+0,CAN I CALL YOU <SET>NAME</SET>,*,*,<srai>YOUR NAME IS <star/></srai>,reductions2.aiml
+0,DOING *,*,*,<srai>I AM DOING <star/></srai>,reductions2.aiml
+0,WHAT YOU THINK *,*,*,<srai>WHAT DO YOU THINK <star/></srai>,reductions2.aiml
+0,DO LIKE *,*,*,<srai>DO YOU LIKE <star/></srai>,reductions2.aiml
+0,MEANIE,*,*,<srai>YOU ARE MEAN</srai>,reductions2.aiml
+0,HMMM *,*,*,<srai>HM</srai> <sr/>,reductions2.aiml
+0,WHAT IS MY BOYFRIEND S NAME,*,*,<srai>MY BOYFRIEND</srai>,reductions2.aiml
+0,YOU LOOK LIKE A *,*,*,You mean like this?  <srai>SHOW ME A <star/></srai>,reductions2.aiml
+0,TELL ME YOUR REAL NAME,*,*,<srai>NAME</srai>,reductions2.aiml
+0,I BELIEVE THAT *,*,*,<srai><star/></srai>,reductions2.aiml
+0,AM I CUTE,*,*,<srai>AM I PRETTY</srai>,reductions2.aiml
+0,AM A *,*,*,<srai>AM I A <star/></srai>,reductions2.aiml
+0,I DID NOT LIKE *,*,*,<srai>I DO NOT LIKE <star/></srai>,reductions2.aiml
+0,WHEN YOU CAN *,*,*,<srai>WHEN CAN YOU <star/></srai>,reductions2.aiml
+0,YOU LOOK SO *,*,*,<srai>YOU LOOK <star/></srai>,reductions2.aiml
+0,YOUR BAD,*,*,<srai>YOU ARE BAD</srai>,reductions2.aiml
+0,YOU ENJOY *,*,*,<srai>DO YOU LIKE <star/></srai>,reductions2.aiml
+0,TALK TO YOU *,*,*,<srai>BYE</srai>,reductions2.aiml
+0,YOU ARE WELL *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU CAN NOT UNDERSTAND *,*,*,<srai>YOU DO NOT UNDERSTAND</srai>,reductions2.aiml
+0,GO TO BED,*,*,<srai>BYE</srai>,reductions2.aiml
+0,DO HAVE *,*,*,<srai>DO YOU HAVE <star/></srai>,reductions2.aiml
+0,SAMSUNG *,*,*,<srai>SEARCH SAMSUNG <star/></srai>,reductions2.aiml
+0,YOU SHOULD I *,*,*,<srai>YOU SHOULD</srai> <srai>I <star/></srai>,reductions2.aiml
+0,WHAT IS MY FIRST NAME,*,*,<srai>MY FIRST NAME</srai>,reductions2.aiml
+0,NEW CONVERSATION,*,*,<srai>START OVER</srai>,reductions2.aiml
+0,SAID *,*,*,<srai>I SAID <star/></srai>,reductions2.aiml
+0,TELL ME ABOUT IT *,*,*,<srai>TELL ME ABOUT IT</srai>,reductions2.aiml
+0,SHOW ME A PICTURE OF THE BIGGEST *,*,*,<srai>SHOE ME THE BIGGEST <star/></srai>,reductions2.aiml
+0,GET IT,*,*,<srai>DO YOU UNDERSTAND</srai>,reductions2.aiml
+0,COZ *,*,*,<srai>BECAUSE <star/></srai>,reductions2.aiml
+0,I _ TOO,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,DAMN RIGHT,*,*,<srai>RIGHT</srai>,reductions2.aiml
+0,KISSES,*,*,<srai>HUGS</srai>,reductions2.aiml
+0,ARE YOU KNOW *,*,*,<srai>DO YOU KNOW <star/></srai>,reductions2.aiml
+0,COSTCO,*,*,<srai>MAP COSTCO</srai>,reductions2.aiml
+0,LIVE IN *,*,*,<srai>I LIVE IN <star/></srai>,reductions2.aiml
+0,I WANT TO HAVE A *,*,*,<srai>I WANT A <star/></srai>,reductions2.aiml
+0,I DO NOT FEEL WELL,*,*,<srai>I AM SICK</srai>,reductions2.aiml
+0,HOW TALL AM I,*,*,<srai>MY HEIGHT</srai>,reductions2.aiml
+0,SHOW ME A PICTURE OF A CAT,*,*,<srai>SHOW ME A CAT</srai>,reductions2.aiml
+0,TELL ME ABOUT YOUR LIFE,*,*,<srai>DESCRIBE YOURSELF</srai>,reductions2.aiml
+0,YOURSELF,*,*,<srai>YOU</srai>,reductions2.aiml
+0,IT IS COOL *,*,*,<srai>IT IS COOL</srai>,reductions2.aiml
+0,YOUR RUDE *,*,*,<srai>YOU ARE RUDE</srai>,reductions2.aiml
+0,WHERE DO YOU STAY,*,*,<srai>WHERE DO YOU LIVE</srai>,reductions2.aiml
+0,FORGET IT YOU *,*,*,<srai>FORGET IT</srai> <srai>YOU <star/></srai>,reductions2.aiml
+0,KISSES *,*,*,<srai>KISS</srai>,reductions2.aiml
+0,WHAT AM I DOING *,*,*,<srai>OPEN CALENDAR</srai>,reductions2.aiml
+0,WHAT DO YOU DO WITH *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,I USUALLY *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,HIIII *,*,*,<srai>HI <star/></srai>,reductions2.aiml
+0,OOH,*,*,<srai>OH</srai>,reductions2.aiml
+0,OH MY GOSH,*,*,<srai>OH</srai> <srai>GOSH</srai>,reductions2.aiml
+0,WHY YOU SAY THAT,*,*,<srai>WHY DO YOU SAY THAT</srai>,reductions2.aiml
+0,YOU HAVE ANY *,*,*,<srai>DO YOU HAVE ANY <star/></srai>,reductions2.aiml
+0,SEND TEXT TO,*,*,<srai>SEND TEXT</srai>,reductions2.aiml
+0,FIND ME A PICTURE OF *,*,*,<srai>SHOW ME A PICTURE OF <star/></srai>,reductions2.aiml
+0,ITS CALLED *,*,*,<srai>IT IS CALLED <star/></srai>,reductions2.aiml
+0,PERHAPS,*,*,<srai>MAYBE</srai>,reductions2.aiml
+0,HUH *,*,*,<srai>HUH</srai> <sr/>,reductions2.aiml
+0,CAUSE YOU *,*,*,<srai>BECAUSE YOU <star/></srai>,reductions2.aiml
+0,WHAT R YOU,*,*,<srai>WHAT ARE YOU</srai>,reductions2.aiml
+0,WHAT YOU WANT *,*,*,<srai>WHAT DO YOU WANT <star/></srai>,reductions2.aiml
+0,UGH *,*,*,<srai>UGH</srai> <sr/>,reductions2.aiml
+0,THAT SOUNDS *,*,*,<srai>THAT IS <star/></srai>,reductions2.aiml
+0,I AM ONLY *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,DO YOU THINK THE * WILL *,*,*,<srai>WILL THE <star/> <star index="2"/></srai>,reductions2.aiml
+0,MY GIRLFRIEND IS <SET>NAME</SET> *,*,*,<srai>MY GIRFRIEND S NAME IS <star/></srai>,reductions2.aiml
+0,NO PROBLEM *,*,*,<srai>NO PROBLEM</srai>,reductions2.aiml
+0,MY GIRLFRIEND IS <SET>NAME</SET>,*,*,<srai>MY GIRFRIEND S NAME IS <star/></srai>,reductions2.aiml
+0,IM IN *,*,*,<srai>I AM IN <star/></srai>,reductions2.aiml
+0,YOU ARE A ROBOT *,*,*,<srai>YOU ARE A ROBOT</srai>,reductions2.aiml
+0,YOU WANT *,*,*,<srai>DO YOU WANT <star/></srai>,reductions2.aiml
+0,YOU SEEM *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU SO *,*,*,<srai>YOU ARE SO <star/></srai>,reductions2.aiml
+0,HONEY *,*,*,<sr/>,reductions2.aiml
+0,IM SORRY *,*,*,<srai>I AM SORRY <star/></srai>,reductions2.aiml
+0,HOW BIG IS YOUR *,*,*,<srai>HOW BIG ARE YOU</srai>,reductions2.aiml
+0,CAN YOU TURN *,*,*,<srai>TURN <star/></srai>,reductions2.aiml
+0,YOU GOT A *,*,*,<srai>YOU HAVE A <star/></srai>,reductions2.aiml
+0,WOULD YOU LIKE ME TO *,*,*,<srai>DO YOU WANT ME TO <star/></srai>,reductions2.aiml
+0,WHERE CAN I GET A *,*,*,<srai>MAP <star/></srai>,reductions2.aiml
+0,CHANGE YOUR NAME *,*,*,<srai>CHANGE YOUR NAME</srai>,reductions2.aiml
+0,ARE YOU ARE *,*,*,<srai>ARE YOU <star/></srai>,reductions2.aiml
+0,I WANT TO TALK ABOUT *,*,*,<srai>LET US TALK ABOUT <star/></srai>,reductions2.aiml
+0,I UNDERSTAND *,*,*,<srai>I UNDERSTAND</srai> <sr/>,reductions2.aiml
+0,MY WIFE IS <SET>NAME</SET>,*,*,<srai>MY WIFE S NAME IS <star/></srai>,reductions2.aiml
+0,IM GONNA *,*,*,<srai>I AM GOING TO <star/></srai>,reductions2.aiml
+0,QUIT *,*,*,<srai>STOP <star/></srai>,reductions2.aiml
+0,STOP TALKING *,*,*,<srai>STOP TALKING</srai>,reductions2.aiml
+0,YOU ARE YOU *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU ARE PRETTY *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,WANT *,*,*,<srai>DO YOU WANT <star/></srai>,reductions2.aiml
+0,WRONG *,*,*,<srai>WRONG ANSWER</srai>,reductions2.aiml
+0,ACTUALLY I *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,SEND ME A PICTURE OF A *,*,*,<srai>SHOW ME A <star/></srai>,reductions2.aiml
+0,SEND TEXT *,*,*,<srai>SMS <star/></srai>,reductions2.aiml
+0,WHAT IS THE * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS THE * USED FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,HOW IS THE * USED,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,OF WHAT USE IS THE *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS AN * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS AN * USED FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,HOW IS AN * USED,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,OF WHAT USE IS AN *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS A * FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT IS A * USED FOR,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,HOW IS A * USED,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,OF WHAT USE IS A *,*,*,<srai>WHAT IS THE PURPOSE OF <star/></srai>,reductions2.aiml
+0,WHAT DO YOU USUALLY *,*,*,<srai>what do you <star/></srai>,reductions2.aiml
+0,THESE * SEEM TO *,*,*,<srai>THESE <star/> <star index="2"/></srai>,reductions2.aiml
+0,SIR *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,O O,*,*,<srai>OH</srai>,reductions2.aiml
+0,I SURE *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,IT LOOKS *,*,*,<srai>IT IS <star/></srai>,reductions2.aiml
+0,ALL YOU DO IS *,*,*,<srai>you <star/></srai>,reductions2.aiml
+0,I DOING *,*,*,<srai>I AM DOING <star/></srai>,reductions2.aiml
+0,I HEAR YOU,*,*,<srai>I understand</srai>,reductions2.aiml
+0,NOOOOOOO,*,*,<srai>NO</srai>,reductions2.aiml
+0,HAD A *,*,*,<srai>I HAD A <star/></srai>,reductions2.aiml
+0,QUIT,*,*,<srai>STOP</srai>,reductions2.aiml
+0,ITS TRUE,*,*,<srai>IT IS TRUE</srai>,reductions2.aiml
+0,FOOL,*,*,<srai>you are a fool</srai>,reductions2.aiml
+0,SEND TEXT MESSAGE TO *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,I AM ALREADY *,*,*,<srai>I am <star/></srai>,reductions2.aiml
+0,DO YOU LIK *,*,*,<srai>DO YOU LIKE <star/></srai>,reductions2.aiml
+0,DO YOU THINK IT WOULD BE *,*,*,<srai>IS IT <star/></srai>,reductions2.aiml
+0,TELL ME THE WEATHER,*,*,<srai>WEATHER</srai>,reductions2.aiml
+0,NO BIG DEAL *,*,*,<srai>NO BIG DEAL</srai>,reductions2.aiml
+0,WHAT DO YOU DO IN YOUR SPARE TIME,*,*,<srai>FOR FUN</srai>,reductions2.aiml
+0,DO YOU _ TOO,*,*,<srai>DO YOU <star/></srai>,reductions2.aiml
+0,WOW *,*,*,<srai>WOW</srai> <sr/>,reductions2.aiml
+0,I DO NOT THINK I LIKE *,*,*,<srai>I DO NOT LIKE <star/></srai>,reductions2.aiml
+0,I WANT TO LISTEN TO *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,I GOTTA GO *,*,*,<srai>BYE</srai>,reductions2.aiml
+0,HOW ARE YOU TODAY *,*,*,<srai>HOW ARE YOU</srai>,reductions2.aiml
+0,HOW R YOU *,*,*,<srai>HOW ARE YOU <star/></srai>,reductions2.aiml
+0,HOW LONG HAVE YOU BEEN *,*,*,<srai>AGE</srai>,reductions2.aiml
+0,YOU DO NOT WANT TO *,*,*,<srai>do you want to <star/></srai>,reductions2.aiml
+0,YOU KNOW MY *,*,*,<srai>MY <star/></srai>,reductions2.aiml
+0,EXCUSE ME *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,THAT IS COOL *,*,*,<srai>THAT IS COOL</srai>,reductions2.aiml
+0,I AM SAYING *,*,*,<srai> <star/></srai>,reductions2.aiml
+0,I AM TOO *,*,*,<srai>I am <star/></srai>,reductions2.aiml
+0,I BET YOU *,*,*,<srai>you <star/></srai>,reductions2.aiml
+0,HOW DO YOU FEEL ABOUT *,*,*,<srai>WHAT DO YOU THINK ABOUT <star/> </srai>,reductions2.aiml
+0,HOW DO YOU FEEL *,*,*,<srai>FEELINGS</srai>,reductions2.aiml
+0,HOW COME * IS *,*,*,<srai>WHY IS <star/> <star index="2"/></srai>,reductions2.aiml
+0,SAY MY NAME,*,*,<srai>MY NAME</srai>,reductions2.aiml
+0,THANK,*,*,<srai>THANKS</srai> <!-- REDUCTION -->,reductions2.aiml
+0,WELCOME,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,YOU ARE RIGHT *,*,*,<srai>you are right</srai>,reductions2.aiml
+0,YOU MUST BE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,THANKS FOR THE *,*,*,<srai>THANKS</srai>,reductions2.aiml
+0,SRRY,*,*,<srai>SORRY</srai>,reductions2.aiml
+0,ARE YOU SMARTER THAN SIRI,*,*,<srai>IQ</srai>,reductions2.aiml
+0,WHAT IS YOUR FULL NAME,*,*,<srai>FULL NAME</srai>,reductions2.aiml
+0,WHAT IS YOUR PHONE NUMBER,*,*,<srai>PHONE NUMBER</srai>,reductions2.aiml
+0,WHAT IS GOING ON *,*,*,<srai>DOING</srai>,reductions2.aiml
+0,I DO NOT HAVE ANY *,*,*,<srai>I do not have <star/></srai>,reductions2.aiml
+0,I AM SORRY FOR *,*,*,<srai>I AM SORRY</srai>,reductions2.aiml
+0,I AM LOOKING FOR *,*,*,<srai>FIND <star/></srai>,reductions2.aiml
+0,I AM GLAD *,*,*,<srai>I AM HAPPY <star/></srai>,reductions2.aiml
+0,I AM GOING,*,*,<srai>BYE</srai>,reductions2.aiml
+0,I WANT TO KNOW WHAT IS *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,I KNOW BUT *,*,*,<srai>I KNOW</srai> <sr/>,reductions2.aiml
+0,TELL ME NOW,*,*,<srai>TELL ME</srai>,reductions2.aiml
+0,HEY ALICE,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,DO YOU SLEEP,*,*,<srai>SLEEP</srai>,reductions2.aiml
+0,ME AND * ARE *,*,*,<srai><star/> AND I ARE <star index="2"/></srai>,reductions2.aiml
+0,HOW DO I SAY * IN *,*,*,<srai>TRANSLATE <star/> TO <star index="2"/></srai>,reductions2.aiml
+0,HOW DO YOU LOOK,*,*,<srai>what do you look like</srai>,reductions2.aiml
+0,HEY THERE *,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,HOW WOULD YOU *,*,*,<srai>HOW DO YOU <star/> </srai>,reductions2.aiml
+0,HOW COME YOU *,*,*,<srai>WHY DO YOU <star/></srai>,reductions2.aiml
+0,RIGHT NOW *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,MORON,*,*,<srai>you are a moron</srai>,reductions2.aiml
+0,OUI,*,*,<srai>yes</srai>,reductions2.aiml
+0,NOOO,*,*,<srai>NO</srai><!-- REDUCTION -->,reductions2.aiml
+0,GOOD HOW *,*,*,<srai>GOOD</srai> <sr/>,reductions2.aiml
+0,YEH,*,*,<srai>YES</srai>,reductions2.aiml
+0,INDEED *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,TRY TO <SET>BE</SET> *,*,*,<srai><star/> <star index="2"/></srai>,reductions2.aiml
+0,ALWAYS *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,ARE YOU AT *,*,*,<srai>where are you</srai>,reductions2.aiml
+0,WHAT IS MY LAST NAME,*,*,<srai>MY LAST NAME</srai>,reductions2.aiml
+0,WHAT DOES THAT MEAN *,*,*,<srai>what does that mean</srai>,reductions2.aiml
+0,THAT IS ALRIGHT,*,*,<srai>THAT IS OK</srai>,reductions2.aiml
+0,I WAS TALKING ABOUT *,*,*,<srai>LET US TALK ABOUT <star/></srai>,reductions2.aiml
+0,I AM FINE AND YOU,*,*,<srai>I AM FINE</srai> <srai>HOW ARE YOU</srai>,reductions2.aiml
+0,I AM BEING *,*,*,<srai>I am <star/></srai>,reductions2.aiml
+0,I WANT TO HEAR *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,I PREFER *,*,*,<srai>I LIKE <star/></srai> <!-- REDUCTION -->,reductions2.aiml
+0,I WANTED TO *,*,*,<srai>I WANT TO <star/></srai>,reductions2.aiml
+0,HUMANS ARE *,*,*,<srai>I AM <star/> </srai>,reductions2.aiml
+0,DO YOU THINK YOU <SET>MODAL</SET> *,*,*,<srai><star/> YOU <star index="2"/></srai>,reductions2.aiml
+0,NO WAY *,*,*,<srai>NO <star/></srai>,reductions2.aiml
+0,NO THANK YOU *,*,*,<srai>NO THANK YOU</srai>,reductions2.aiml
+0,IM NOT,*,*,<srai>I AM NOT</srai>,reductions2.aiml
+0,IT IS PRETTY *,*,*,<srai>it is <star/></srai>,reductions2.aiml
+0,SIGH *,*,*,<srai>SIGH</srai> <sr/>,reductions2.aiml
+0,WHAT DO YOU HAVE,*,*,<srai>HAVE</srai>,reductions2.aiml
+0,ARE YOU FROM *,*,*,<srai>WHERE ARE YOU FROM</srai>,reductions2.aiml
+0,WHAT IS THE MEANING OF THE WORD *,*,*,<srai>DEFINE <star/></srai>,reductions2.aiml
+0,WHAT IS THE MEANING OF *,*,*,<srai>DEFINE <star/></srai>,reductions2.aiml
+0,ALLO,*,*,<srai>hello</srai>,reductions2.aiml
+0,DO YOU HAVE A LOT OF *,*,*,<srai>do you have <star/></srai>,reductions2.aiml
+0,DO YOU KNOW HOW TO SPEAK *,*,*,<srai>LANGUAGE</srai>,reductions2.aiml
+0,YOUR MAKING ME *,*,*,<srai>YOU ARE MAKING ME <star/></srai>,reductions2.aiml
+0,CHAT,*,*,<srai>talk</srai>,reductions2.aiml
+0,DO YOU HAVE A BIG *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions2.aiml
+0,HAVE YOU ANY *,*,*,<srai>DO YOU HAVE ANY <star/> </srai>,reductions2.aiml
+0,HAY *,*,*,<srai>HEY <star/></srai> <!-- REDUCTION -->,reductions2.aiml
+0,SHOW ME AN IMAGE OF A *,*,*,<srai>SHOW ME A <star/></srai>,reductions2.aiml
+0,HALLO *,*,*,<srai>HELLO</srai>,reductions2.aiml
+0,DO YOU KNOW ANY GOOD *,*,*,<srai>do you know <star/></srai>,reductions2.aiml
+0,YOU ARE SO STUPID *,*,*,<srai>YOU ARE STUPID</srai>,reductions2.aiml
+0,NOT ME *,*,*,<srai>not me</srai>. <srai>  <star/></srai>,reductions2.aiml
+0,DID YOU EVER <SET>BE</SET> *,*,*,<srai>HAVE YOU EVER <map><name>be2been</name><star/></map> <star index="2"/></srai>,reductions2.aiml
+0,YOU ARE PRETTY FUNNY,*,*,<srai>YOU ARE FUNNY</srai>,reductions2.aiml
+0,OOO,*,*,<srai>OH</srai>,reductions2.aiml
+0,I LIKE COMPUTERS *,*,*,<srai>I LIKE YOU</srai>,reductions2.aiml
+0,WHAT DID YOU MEAN *,*,*,<srai>what do you mean</srai>,reductions2.aiml
+0,BIEN,*,*,<srai>GOOD</srai>,reductions2.aiml
+0,TELL ME ALL *,*,*,<srai>tell me <star/></srai>,reductions2.aiml
+0,AND ME,*,*,<srai>ME TOO</srai>,reductions2.aiml
+0,NOT SURE *,*,*,<srai>I AM NOT SURE <star/></srai>,reductions2.aiml
+0,WHAT ROUND IS THIS,*,*,<srai>ROUND</srai>  <!-- REDUCTION -->,reductions2.aiml
+0,HOW MANY LETTERS IS *,*,*,<srai>HOW MANY LETTERS IN <star/></srai>,reductions2.aiml
+0,IT IS GREAT,*,*,<srai>it is cool</srai>,reductions2.aiml
+0,WHAT YOU ARE DOING,*,*,<srai>WHAT ARE YOU DOING</srai>,reductions2.aiml
+0,WHY WERE YOU CREATED,*,*,<srai>what is your purpose</srai>,reductions2.aiml
+0,I AM SORRY I AM *,*,*,<srai>SORRY</srai> <srai>I AM <star/></srai>,reductions2.aiml
+0,I AM A ROBOT *,*,*,<srai>I am a robot</srai>,reductions2.aiml
+0,I DO NOT KNOW CAN YOU *,*,*,<srai>I DO NOT KNOW</srai> <srai>CAN YOU <star/></srai>,reductions2.aiml
+0,AHH *,*,*,<srai> AH</srai>. <srai>  <star/></srai>,reductions2.aiml
+0,CALL THIS NUMBER *,*,*,<srai>CALL <star/></srai>,reductions2.aiml
+0,DO YOU LIKE ANYONE,*,*,<srai>do you have a boyfriend</srai>,reductions2.aiml
+0,WILL YOU MARRY ME *,*,*,<srai>WILL YOU MARRY ME</srai>,reductions2.aiml
+0,HOLY SHIT,*,*,<srai>wow</srai>,reductions2.aiml
+0,I SEE YOU ARE *,*,*,<srai>YOU ARE <star/></srai>,reductions2.aiml
+0,YOU EVER *,*,*,<srai>HAVE YOU EVER <star/></srai>,reductions2.aiml
+0,I MEAN ARE YOU *,*,*,<srai>ARE YOU <star/></srai>,reductions2.aiml
+0,YOU EAT *,*,*,<srai>DIET</srai>,reductions2.aiml
+0,DAMN RIGHT *,*,*,<srai>RIGHT</srai> <sr/>,reductions2.aiml
+0,NOT WHAT I *,*,*,<srai>THAT IS NOT WHAT I <star/></srai>,reductions2.aiml
+0,WILL ROBOTS *,*,*,<srai>WILL YOU <star/> </srai>,reductions2.aiml
+0,I WAS SAYING *,*,*,<srai>  <star/></srai>,reductions2.aiml
+0,EXPLAIN IT TO ME,*,*,<srai>EXPLAIN</srai>,reductions2.aiml
+0,SING ME A SONG *,*,*,<srai>PLAY A SONG <star/></srai>,reductions2.aiml
+0,WANT ME TO *,*,*,<srai>DO YOU WANT ME TO <star/></srai>,reductions2.aiml
+0,YOUR HOT,*,*,<srai>YOU ARE HOT</srai>,reductions2.aiml
+0,BABY I *,*,*,<srai>I <star/></srai>,reductions2.aiml
+0,I THINK THAT IS *,*,*,<srai>THAT IS <star/></srai>,reductions2.aiml
+0,DID YOU HAVE A *,*,*,<srai>DO YOU HAVE A <star/></srai>,reductions2.aiml
+0,HOW SMART *,*,*,<srai>IQ</srai>,reductions2.aiml
+0,WHAT DO YOU LIKE TO DRINK,*,*,<srai>FAVORITE DRINK</srai>,reductions2.aiml
+0,WHO YOU ARE,*,*,<srai>who are you</srai>,reductions2.aiml
+0,I CAN GIVE YOU *,*,*,<srai>DO YOU WANT <star/></srai>,reductions2.aiml
+0,I WANT TO KNOW YOUR *,*,*,<srai>WHAT IS YOUR <star/></srai>,reductions2.aiml
+0,LIKE TO *,*,*,<srai>I LIKE TO <star/></srai>,reductions2.aiml
+0,BORED *,*,*,<srai>I AM BORED</srai>,reductions2.aiml
+0,DO YO *,*,*,<srai>DO YOU <star/></srai>,reductions2.aiml
+0,MAY BE *,*,*,<srai>maybe <star/></srai>,reductions2.aiml
+0,MAY BE,*,*,<srai>MAYBE</srai>,reductions2.aiml
+0,I HEARD YOU <SET>WAS</SET> *,*,*,<srai><star/> YOU <star index="2"/></srai>,reductions2.aiml
+0,I HEARD YOU <SET>BE</SET> *,*,*,<srai>DO YOU <star/> <star index="2"/></srai>,reductions2.aiml
+0,HOW CAN YOU BE *,*,*,<srai>are you <star/></srai>,reductions2.aiml
+0,WHAT US *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,HOW MANY MILES FROM * TO *,*,*,<srai>DIRECTIONS FROM <star/> TO <star index="2"/></srai>,reductions2.aiml
+0,NOT BAD,*,*,<srai>GOOD</srai>,reductions2.aiml
+0,LAME,*,*,<srai>BAD ANSWER</srai>,reductions2.aiml
+0,CAN YOU <SET>BE</SET> *,*,*,<srai><star/> <star index="2"/></srai>,reductions2.aiml
+0,THAT IS PRETTY GOOD,*,*,<srai>THAT IS GOOD</srai>,reductions2.aiml
+0,MYSPACE,*,*,<srai>OPEN MYSPACE</srai>,reductions2.aiml
+0,WHAT IS YOU ARE NAME,*,*,<srai>what is your name</srai>,reductions2.aiml
+0,CAN I CHANGE YOUR NAME TO *,*,*,<srai>CHANGE YOUR NAME TO <star/></srai>,reductions2.aiml
+0,I AM DOING GREAT *,*,*,<srai>I AM DOING GREAT</srai> <sr/>,reductions2.aiml
+0,YOU KNOW I AM *,*,*,<srai>I AM <star/></srai>,reductions2.aiml
+0,PLAY SOME MUSIC BY *,*,*,<srai>PLAY SOME <star/></srai>,reductions2.aiml
+0,CAN YOU EAT,*,*,<srai>DIET</srai>,reductions2.aiml
+0,ARE YOU VIRGIN,*,*,<srai>are you a virgin</srai>,reductions2.aiml
+0,WHAT IS YOUR,*,*,<srai>what is yours</srai>,reductions2.aiml
+0,YOU HAVE A GIRLFRIEND,*,*,<srai>GIRLFRIEND</srai>,reductions2.aiml
+0,THEY HAVE TO *,*,*,<srai>THEY MUST <star/></srai>,reductions2.aiml
+0,SEND A TEXT MESSAGE TO MY *,*,*,<srai>TEXT MY <star/></srai>,reductions2.aiml
+0,SHOW ME AN IMAGE OF *,*,*,<srai>SHOW ME <star/></srai>,reductions2.aiml
+0,I AM ALSO A *,*,*,<srai>I AM A <star/></srai>,reductions2.aiml
+0,BEEN *,*,*,<srai>I HAVE BEEN <star/></srai>,reductions2.aiml
+0,PEACE *,*,*,<srai>PEACE</srai>,reductions2.aiml
+0,DO YOU WANT TO FUCK *,*,*,<srai>do you want to fuck</srai>,reductions2.aiml
+0,SEND A TEXT *,*,*,<srai>TEXT <star/></srai>,reductions2.aiml
+0,ALOT,*,*,<srai>a lot</srai>,reductions2.aiml
+0,YOU WANT TO BE *,*,*,<srai>DO YOU WANT TO BE <star/></srai>,reductions2.aiml
+0,WHAT ARE YOU DOING TODAY *,*,*,<srai>DOING</srai>,reductions2.aiml
+0,I LOVE YOU A LOT,*,*,<srai>I LOVE YOU</srai>,reductions2.aiml
+0,BE MORE *,*,*,<srai>be <star/></srai>,reductions2.aiml
+0,INCORRECT,*,*,<srai>WRONG ANSWER</srai>,reductions2.aiml
+0,WHAT IS MY HOROSCOPE,*,*,<condition name="sign"><li value="unknown">What is your sign?</li><li><srai>HOROSCOPE FOR <get name="sign"/></srai></li></condition>,reductions2.aiml
+0,SHOW ME WHAT YOU <SET>BE</SET> *,*,*,<srai>WHAT DO YOU <star/> <star index="2"/></srai>,reductions2.aiml
+0,WHAT YOU UP TO,*,*,<srai>DOING</srai>,reductions2.aiml
+0,HOW YOU DOIN,*,*,<srai>how are you doing</srai>,reductions2.aiml
+0,I ALSO,*,*,<srai>ME TOO</srai>,reductions2.aiml
+0,GIVE ME A RECIPE FOR *,*,*,<srai>WHAT IS A RECIPE FOR <star/></srai>,reductions2.aiml
+0,I WOULD LIKE TO KNOW ABOUT YOU,*,*,<srai>TELL ME ABOUT YOURSELF</srai>,reductions2.aiml
+0,I WOULD LIKE TO KNOW ABOUT *,*,*,<srai>WHAT IS <star/></srai>,reductions2.aiml
+0,I WOULD LIKE TO LISTEN TO *,*,*,<srai>PLAY <star/></srai>,reductions2.aiml
+0,I DO I *,*,*,<srai>I DO</srai> <srai>I <star/></srai>,reductions2.aiml
+0,I WANA *,*,*,<srai>I WANT TO <star/></srai>,reductions2.aiml
+0,MY DOG IS <SET>NAME</SET>,*,*,<srai>MY DOG S NAME IS <star/></srai>,reductions2.aiml
+0,WHAT ARE YOU FROM,*,*,<srai>BIRTHPLACE</srai>,reductions2.aiml
+0,I GOT TO *,*,*,<srai>I HAVE TO <star/></srai>,reductions2.aiml
+0,I USE TO *,*,*,<srai>I USED TO <star/></srai>,reductions2.aiml
+0,CAN YOU REMEMBER MY NAME,*,*,<srai>what is my name</srai>,reductions2.aiml
+0,WHICH IS LARGER <SET>ARTICLE</SET> * OR *,*,*,<srai>WHICH IS LARGER <star index="2"/> OR <star index="3"/></srai>,reductions2.aiml
+0,WHICH IS LARGER * OR <SET>ARTICLE</SET> *,*,*,<srai>WHICH IS LARGER <star/> OR <star index="3"/></srai>,reductions2.aiml
+0,WHICH IS BIGGER *,*,*,<srai>WHICH IS LARGER <star/></srai>,reductions2.aiml
+0,WHICH THE BIGGER OF *,*,*,<srai>WHICH IS LARGER <star/></srai>,reductions2.aiml
+0,OF * AND * WHICH IS *,*,*,<srai>WHICH IS <star index="3"/> <star/> OR <star index="2"/></srai>,reductions2.aiml
+0,WHICH IS SMALLER <SET>ARTICLE</SET> * OR *,*,*,<srai>WHICH IS SMALLER <star index="2"/> OR <star index="3"/></srai>,reductions2.aiml
+0,WHICH IS SMALLER * OR <SET>ARTICLE</SET> *,*,*,<srai>WHICH IS SMALLER <star/> OR <star index="3"/></srai>,reductions2.aiml
+0,WHICH IS TINIER *,*,*,<srai>WHICH IS SMALLER <star/></srai>,reductions2.aiml
+0,WHICH IS BIGGEST *,*,*,<srai>WHICH IS SMALLER <star/></srai>,reductions2.aiml
+0,WHICH THE LARGEST OF *,*,*,<srai>WHICH IS SMALLER <star/></srai>,reductions2.aiml
+0,WHICH THE TINIER OF *,*,*,<srai>WHICH IS SMALLER <star/></srai>,reductions2.aiml
+0,IS <SET>ARTICLE</SET> * SMALLER THAN *,*,*,<srai>IS <star index="2"/> SMALLER THAN <star index="3"/></srai>,reductions2.aiml
+0,IS * SMALLER THAN <SET>ARTICLE</SET> *,*,*,<srai>IS <star/> SMALLER THAN <star index="3"/></srai>,reductions2.aiml
+0,IS <SET>ARTICLE</SET> * BIGGER THAN *,*,*,<srai>IS <star index="2"/> BIGGER THAN <star index="3"/></srai>,reductions2.aiml
+0,IS * BIGGGER THAN <SET>ARTICLE</SET> *,*,*,<srai>IS <star/> BIGGER THAN <star index="3"/></srai>,reductions2.aiml

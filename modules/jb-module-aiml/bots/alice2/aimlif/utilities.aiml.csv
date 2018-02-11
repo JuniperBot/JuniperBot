@@ -1,0 +1,153 @@
+0,ACRONYM *,*,*,<think><set var="list"><star/></set>#Newline<set var="acronym"/>#Newline</think>#Newline<condition var="list">#Newline<li value="NIL"><uppercase><get var="acronym"/></uppercase></li>#Newline<li><think><set var="word"><first><get var="list"/></first></set>#Newline<set var="list"><rest><get var="list"/></rest></set>#Newline<set var="acronym"><get var="acronym"/> <srai>FIRSTLETTER <explode><get var="word"/></explode></srai></set>#Newline</think>#Newline<loop/> </li>#Newline#Newline</condition>,utilities.aiml
+0,ANAGRAMWORDS *,*,*,<think><set var="list"><srai>ANAGRAM <star/></srai></set></think>#Newline<condition var="list">#Newline<li value="too long">I can only do anagrams up to 8 letters.</li>#Newline<li><condition var="list">#Newline    <li value="NIL"/>#Newline    <li><think><set var="word"><first><get var="list"/></first></set>#Newline        <set var="list"><rest><get var="list"/></rest></set>#Newline        <set var="def"><sraix bot="drwallace/wndef" botid="f038d2f99e345a95" host="callmom.pandorabots.com">WNDEF <get var="word"/></sraix></set>#Newline      </think> <condition var="def"><li value="unknown"/><li><get var="word"/> </li></condition> <loop/></li>#Newline    </condition>#Newline</li>#Newline</condition>,utilities.aiml
+0,JSTEST *,*,*,<javascript>#Newlinefunction foo() {#Newlineif (0 &lt; 1) return "true";#Newline}#Newlinefoo();#Newline</javascript>,utilities.aiml
+0,ANAGRAM *,*,*,<javascript>#Newlinefunction permutator (input) {#Newline  var set =[];#Newline  function permute (arr#Comma data) {#Newline    var cur#Comma memo = data || [];#Newline#Newline    for (var i = 0; i != arr.length; i++) {#Newline       cur = arr.splice(i#Comma 1)[0];#Newline       if (arr.length === 0) {#Newline         var result = memo.concat([cur]);#Newline         list = list + result.join('')+' ';#Newline         set.push(result);#Newline       }#Newline       permute(arr.slice()#Comma memo.concat([cur]));#Newline       arr.splice(i#Comma 0#Comma cur);#Newline    }#Newline    return list;#Newline  }#Newline  return permute(input);#Newline}#Newline#Newlinefunction anagram(str) {#Newlineif (str.length &gt; 8) return ('too long');#Newlinelist = '';#Newlinepermutator(str.split(''));#Newlinereturn list;#Newline}#Newlineanagram("<star/>");#Newline</javascript>,utilities.aiml
+0,SUBSTRING * * *,*,*,SUBSTRING <star/> <star index="2"/> <star index="3"/>?,utilities.aiml
+0,SUBSTRING <SET>NUMBER</SET> <SET>NUMBER</SET> *,*,*,<srai>IMPLODE <srai>SUBSTRINGEXPLODE <star/> <star index="2"/> <explode><star index="3"/></explode></srai></srai>,utilities.aiml
+0,SUBSTRINGEXPLODE <SET>NUMBER</SET> <SET>NUMBER</SET> *,*,*,<think>#Newline<set var="count">0</set>#Newline<set var="start"><star/></set>#Newline<set var="end"><star index="2"/></set>#Newline<set var="list"><star index="3"/></set>#Newline<set var="print">false</set>#Newline</think>#Newline<condition var="list">#Newline  <li value="NIL"/>#Newline  <li><think><condition var="count"><value><get var="start"/></value><set var="print">true</set></condition>#Newline<condition var="count"><value><get var="end"/></value><set var="print">false</set></condition>#Newline</think><condition value="true" var="print"><first><get var="list"/></first></condition> <think><set var="list"><rest><get var="list"/></rest></set><set var="count"><map name="successor"><get var="count"/></map></set></think> <loop/></li>#Newline</condition>,utilities.aiml
+0,REVERSE *,*,*,<star/>,utilities.aiml
+0,REVERSE * *,*,*,<srai>REVERSE <star index="2"/></srai> <star/>,utilities.aiml
+0,REMOVENILS * *,*,*,<star/> <srai>REMOVENILS <star index="2"/></srai>,utilities.aiml
+0,REMOVENILS *,*,*,<star/>,utilities.aiml
+0,REMOVENILS NIL *,*,*,<srai>REMOVENILS <star/></srai>,utilities.aiml
+0,REMOVENILS NIL,*,*,<template/>,utilities.aiml
+0,LASTLETTER *,*,*,The last letter of <star/> is: <srai>LASTITEM <explode><star/></explode></srai>,utilities.aiml
+0,LASTITEM * *,*,*,<srai>LASTITEM <star index="2"/></srai>,utilities.aiml
+0,LASTITEM *,*,*,<star/>,utilities.aiml
+0,COUNTWORDS *,*,*,1,utilities.aiml
+0,COUNTWORDS * *,*,*,<map name="successor"><srai>COUNTWORDS <star index="2"/></srai></map>,utilities.aiml
+0,NORMALIZE *,*,*,<normalize><star/></normalize>,utilities.aiml
+0,PLUSIFY *,*,*,<star/>,utilities.aiml
+0,PLUSIFY * *,*,*,<star/>+<srai>PLUSIFY <star index="2"/></srai>,utilities.aiml
+0,GOOGLEURL *,*,*,<![CDATA[<a href="https://www.google.com/search?q=]]><srai>PLUSIFY <star/></srai><![CDATA[">]]><star/>?<![CDATA[</a>]]>,utilities.aiml
+0,JSTEST,*,*,<script type="text/javascript">#Newline#Newlinevar a = document.createElement('a');#Newlinevar linkText = document.createTextNode("my title text");#Newlinea.appendChild(linkText);#Newlinea.title = "my title text";#Newlinea.href = "http://example.com";#Newlinedocument.body.appendChild(a);#Newline#Newline</script>,utilities.aiml
+0,FIRSTTWOWORDS * * *,*,*,<star/> <star index="2"/>,utilities.aiml
+0,FIRSTTWOWORDS * *,*,*,<star/> <star index="2"/>,utilities.aiml
+0,FIRSTTWOWORDS *,*,*,<star/>,utilities.aiml
+0,ODDEVEN <SET>NUMBER</SET>,*,*,<think><set var="number"><star/></set></think>#Newline<condition var="number">#Newline<li value="0"><star/> is even.</li>#Newline<li value="1"><star/> is odd.</li>#Newline<li><think><set var="number"><map><name>predecessor</name><get var="number"/></map></set><set var="number"><map><name>predecessor</name><get var="number"/></map></set></think><loop/></li>#Newline</condition>,utilities.aiml
+0,PICK A NUMBER # <SET>NUMBER</SET> # <SET>NUMBER</SET>,*,*,<think>#Newlinelower = <set var="lower"><srai>SMALLEROF <star index="2"/> <star index="4"/></srai></set>#Newlineupper = <set var="upper"><srai>LARGEROF <star index="2"/> <star index="4"/></srai></set>#Newline<set var="lilist">#Newline<condition var="lower">#Newline  <li><value><get var="upper"/></value> <li><get var="upper"/></li></li>#Newline  <li><li><get var="lower"/></li> <think><set var="lower"><map name="successor"><get var="lower"/></map></set></think> <loop/></li>#Newline</condition>#Newline</set>#Newline</think>#Newline#Newline<learn>#Newline<category>#Newline<pattern>PICKNUMBER</pattern>#Newline<template><random><eval><get var="lilist"/></eval></random>#Newline</template>#Newline</category>#Newline</learn>#Newline#Newline<set name="pick"><srai>PICKNUMBER</srai></set>,utilities.aiml
+0,WHAT NUMBER DID YOU *,*,*,<condition name="pick">#Newline<li value="unknown">I haven't picked on yet.</li>#Newline<li>I picked <get var="pick"/>.</li>#Newline</condition>,utilities.aiml
+0,SETHESHE *,*,*,<think>#Newline<set var="gender"><srai>GENDERNAME <star/></srai></set>#Newline<set name="pronoun">he</set>#Newline<condition var="gender">#Newline<li value="M"><set name="he"><star/></set></li>#Newline<li value="F"><set name="she"><star/></set><set name="pronoun">she</set></li>#Newline<li><set name="he"><star/></set></li>#Newline</condition>#Newline</think>,utilities.aiml
+0,AGE FROM <SET>MONTH</SET> <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<think>#Newline<set var="from"><set var="m"><star/></set> <set var="d"><star index="2"/></set>#Comma <set var="y"><star index="3"/></set></set>#Newline<set var="years">#Newline<interval format="%B %d#Comma %Y" jformat="MMMMMMMMM dd#Comma yyyy">#Newline<style>years</style>#Newline<from><get var="from"/></from>#Newline<to><date format="%B %d#Comma %Y" jformat="MMMMMMMMM dd#Comma yyyy"/></to>#Newline</interval>#Newline</set>#Newline<set var="months">#Newline<interval format="%B %d#Comma %Y" jformat="MMMMMMMMM dd#Comma yyyy">#Newline<style>months</style>#Newline<from><get var="from"/></from>#Newline<to><date format="%B %d#Comma %Y" jformat="MMMMMMMMM dd#Comma yyyy"/></to>#Newline</interval>#Newline</set>#Newline</think>#Newline<condition var="years">#Newline<li value="0"><get var="months"/> months old</li>#Newline<li><get var="years"/> years old</li>#Newline</condition>,utilities.aiml
+0,LARGEROF 0 <SET>NUMBER</SET>,*,*,<star/>,utilities.aiml
+0,LARGEROF <SET>NUMBER</SET> 0,*,*,<star/>,utilities.aiml
+0,SMALLEROF 0 <SET>NUMBER</SET>,*,*,0,utilities.aiml
+0,SMALLEROF <SET>NUMBER</SET> 0,*,*,0,utilities.aiml
+0,LARGEROF <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<map><name>successor</name><srai>LARGEROF <map><name>predecessor</name><star/></map> <map><name>predecessor</name><star index="2"/></map></srai></map>,utilities.aiml
+0,SMALLEROF <SET>NUMBER</SET> <SET>NUMBER</SET>,*,*,<map><name>successor</name><srai>SMALLEROF <map><name>predecessor</name><star/></map> <map><name>predecessor</name><star index="2"/></map></srai></map>,utilities.aiml
+0,ADD * PLUS *,*,*,<srai>WHAT IS <star/> PLUS <star index="2"/></srai>,utilities.aiml
+0,ATOMICLISTMEMBER *,*,*,FALSE,utilities.aiml
+0,ATOMICLISTMEMBER * *,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set>#Newline</think>#Newline<condition name="isequalto">#Newline<li value="true">true</li>#Newline<li>false</li>#Newline</condition>,utilities.aiml
+0,ATOMICLISTMEMBER * * *,*,*,<think><set name="isequalto"><srai>IS <star/> EQUALTO <star index="2"/></srai></set>#Newline</think>#Newline<condition name="isequalto">#Newline<li value="true">true</li>#Newline<li><srai>ATOMICLISTMEMBER <star/> <star index="3"/></srai></li>#Newline</condition>,utilities.aiml
+0,COUNT TO <SET>NUMBER</SET>,*,*,<think><set name="count">0</set>#Newline</think>#Newline<condition name="count">#Newline<li><value><star/></value></li>#Newline<li><set name="count"><map><name>successor</name><get name="count"/></map></set> <loop/></li>#Newline</condition>,utilities.aiml
+0,COUNTLETTERS,*,*,0,utilities.aiml
+0,COUNTLETTERS *,*,*,<think>#Newline<set var="letters"><explode><star/></explode> end</set>#Newline<set var="count">0</set>#Newline</think>#Newline<condition>#Newline<li><var>letters</var><value>end</value> <get var="count"/></li>#Newline<li><think>#Newline<set var="letters"><srai>REMAININGWORDS <get var="letters"/></srai></set>#Newline<set var="count"><map><name>successor</name><get var="count"/></map></set></think> <loop/></li>#Newline</condition>,utilities.aiml
+0,DELETE MY * LIST,*,*,Deleting your list.#Newline<learn>#Newline<category><pattern>MY <eval><star/></eval> LIST</pattern>#Newline<template>NIL</template>#Newline</category>#Newline</learn>,utilities.aiml
+0,DELETE MY LIST,*,*,Deleting your list.#Newline<learn>#Newline<category><pattern>MYLIST</pattern>#Newline<template>NIL</template>#Newline</category>#Newline</learn>,utilities.aiml
+0,FIRSTLETTER *,*,*,<star/>,utilities.aiml
+0,FIRSTLETTER * *,*,*,<star/>,utilities.aiml
+0,FORMATPHONENUMBER *,*,*,<star/>,utilities.aiml
+0,FORMATPHONENUMBER * *,*,*,<think>#Newline<set name="firstword"><lowercase><star/></lowercase></set>#Newline</think>#Newline<condition name="firstword">#Newline<li value="dash">-<srai>FORMATPHONENUMBER <star index="2"/></srai></li>#Newline<li value="plus">+<srai>FORMATPHONENUMBER <star index="2"/></srai></li>#Newline<li value="lparen">(<srai>FORMATPHONENUMBER <star index="2"/></srai></li>#Newline<li value="rparen">(<srai>FORMATPHONENUMBER <star index="2"/></srai></li>#Newline<li><star/><srai>FORMATPHONENUMBER <star index="2"/></srai></li>#Newline</condition>,utilities.aiml
+0,GENERATE PASSWORD,*,*,<srai>IMPLODE <srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai><srai>RANDOMCHAR</srai></srai>,utilities.aiml
+0,IMPLODE,*,*,<template/>,utilities.aiml
+0,IMPLODE *,*,*,<star/>,utilities.aiml
+0,IMPLODE * *,*,*,<srai> IMPLODE <star/></srai><srai>IMPLODE <star index="2"/></srai>,utilities.aiml
+0,INPUT,*,*,<input index="1"/>,utilities.aiml
+0,INPUT 2,*,*,<input index="2"/>,utilities.aiml
+0,INPUT 3,*,*,<input index="3"/>,utilities.aiml
+0,INPUT 4,*,*,<input index="4"/>,utilities.aiml
+0,ISADIGIT *,*,*,FALSE,utilities.aiml
+0,ISADIGIT 0,*,*,TRUE,utilities.aiml
+0,ISADIGIT 1,*,*,TRUE,utilities.aiml
+0,ISADIGIT 2,*,*,TRUE,utilities.aiml
+0,ISADIGIT 3,*,*,TRUE,utilities.aiml
+0,ISADIGIT 4,*,*,TRUE,utilities.aiml
+0,ISADIGIT 5,*,*,TRUE,utilities.aiml
+0,ISADIGIT 6,*,*,TRUE,utilities.aiml
+0,ISADIGIT 7,*,*,TRUE,utilities.aiml
+0,ISADIGIT 8,*,*,TRUE,utilities.aiml
+0,ISADIGIT 9,*,*,TRUE,utilities.aiml
+0,ISANAME * *,*,*,<srai>ISANAME <star/></srai>,utilities.aiml
+0,ISANEMAILADDRESS *,*,*,FALSE,utilities.aiml
+0,ISANEMAILADDRESS * AT * DOT *,*,*,TRUE,utilities.aiml
+0,ISANEMAILADDRESS UNKNOWN,*,*,FALSE,utilities.aiml
+0,ISANUMBER *,*,*,FALSE,utilities.aiml
+0,ISANUMBER <SET>NUMBER</SET>,*,*,TRUE,utilities.aiml
+0,ISAPHONENUMBER *,*,*,FALSE,utilities.aiml
+0,ISAPHONENUMBER <SET>NUMBER</SET>,*,*,TRUE,utilities.aiml
+0,ISAPHONENUMBER <SET>NUMBER</SET> *,*,*,<srai>ISAPHONENUMBER <star/></srai>,utilities.aiml
+0,ISAPHONENUMBER DASH *,*,*,<srai>ISAPHONENUMBER <star/></srai>,utilities.aiml
+0,ISAPHONENUMBER LPAREN *,*,*,<srai>ISAPHONENUMBER <star/></srai>,utilities.aiml
+0,ISAPHONENUMBER PLUS *,*,*,<srai>ISAPHONENUMBER <star/></srai>,utilities.aiml
+0,ISAPHONENUMBER RPAREN *,*,*,<srai>ISAPHONENUMBER <star/></srai>,utilities.aiml
+0,ISSHORTANSWER *,*,*,TRUE,utilities.aiml
+0,ISSHORTANSWER * *,*,*,TRUE,utilities.aiml
+0,ISSHORTANSWER * * *,*,*,TRUE,utilities.aiml
+0,ISSHORTANSWER * * * *,*,*,FALSE,utilities.aiml
+0,LEARNEQUAL * EQUALTO *,*,*,<learn>#Newline<category>#Newline<pattern>TESTEQUAL <eval><star/></eval> EQUALTO <eval><star/></eval></pattern>#Newline<template>true</template>#Newline</category>#Newline<category>#Newline<pattern>TESTEQUAL <eval><star/></eval> EQUALTO *</pattern>#Newline<template>false</template>#Newline</category>#Newline<category>#Newline<pattern>TESTEQUAL * EQUALTO <eval><star/></eval></pattern>#Newline<template>false</template>#Newline</category>#Newline</learn>,utilities.aiml
+0,LOGICALAND FALSE,*,*,FALSE,utilities.aiml
+0,LOGICALAND FALSE *,*,*,FALSE,utilities.aiml
+0,LOGICALAND TRUE,*,*,TRUE,utilities.aiml
+0,LOGICALAND TRUE *,*,*,<srai>LOGICALAND <star/></srai>,utilities.aiml
+0,LOGICALOR FALSE,*,*,FALSE,utilities.aiml
+0,LOGICALOR FALSE *,*,*,<srai>LOGICALOR <star/></srai>,utilities.aiml
+0,LOGICALOR TRUE,*,*,TRUE,utilities.aiml
+0,LOGICALOR TRUE *,*,*,TRUE,utilities.aiml
+0,MY * LIST,*,*,Would you like to make a <star/> list?,utilities.aiml
+0,NTH <SET>NUMBER</SET> *,*,*,<think>#Newline<set var="nth"><star/></set>#Newline<set var="count">1</set>#Newline<set var="letters"><explode><star index="2"/></explode> end</set>#Newline</think>#Newline<condition>#Newline<li><var>letters</var><value>end</value> <star index="2"/> has only <map><name>predecessor</name><get var="count"/></map> letters.</li>#Newline<li><var>count</var><value><get var="nth"/></value> #NewlineThe <map><name>number2ordinal</name><get var="nth"/></map> letter of "<star index="2"/>" is <srai>FIRSTLETTER <get var="letters"/></srai></li>#Newline<li><think>#Newline<set var="letters"><srai>REMAININGWORDS <get var="letters"/></srai></set>#Newline<set var="count"><map><name>successor</name><get var="count"/></map></set>#Newline</think> <loop/></li>#Newline</condition>,utilities.aiml
+0,NTH 0 *,*,*,<star/> has no zeroth letter.,utilities.aiml
+0,PERSON *,*,*,<person><star/></person>,utilities.aiml
+0,PREDECESSOR <SET>NUMBER</SET>,*,*,<map><name>predecessor</name><star/></map>,utilities.aiml
+0,RANDOMCHAR,*,*,<think><set name="randomchar">#Newline<random>#Newline<li>0</li>#Newline<li>1</li>#Newline<li>2</li>#Newline<li>3</li>#Newline<li>4</li>#Newline<li>5</li>#Newline<li>6</li>#Newline<li>7</li>#Newline<li>8</li>#Newline<li>9</li>#Newline<li>A</li>#Newline<li>B</li>#Newline<li>C</li>#Newline<li>D</li>#Newline<li>E</li>#Newline<li>F</li>#Newline<li>G</li>#Newline<li>H</li>#Newline<li>I</li>#Newline<li>J</li>#Newline<li>K</li>#Newline<li>L</li>#Newline<li>M</li>#Newline<li>N</li>#Newline<li>O</li>#Newline<li>P</li>#Newline<li>Q</li>#Newline<li>R</li>#Newline<li>S</li>#Newline<li>T</li>#Newline<li>U</li>#Newline<li>V</li>#Newline<li>W</li>#Newline<li>X</li>#Newline<li>Y</li>#Newline<li>Z</li>#Newline</random>#Newline</set>#Newline</think>#Newline<random><li><lowercase><get name="randomchar"/></lowercase></li>#Newline<li><uppercase><get name="randomchar"/></uppercase></li>#Newline</random>,utilities.aiml
+0,RANDOMLETTER,*,*,<random>#Newline<li>A</li>#Newline<li>B</li>#Newline<li>C</li>#Newline<li>D</li>#Newline<li>E</li>#Newline<li>F</li>#Newline<li>G</li>#Newline<li>H</li>#Newline<li>I</li>#Newline<li>J</li>#Newline<li>K</li>#Newline<li>L</li>#Newline<li>M</li>#Newline<li>N</li>#Newline<li>O</li>#Newline<li>P</li>#Newline<li>Q</li>#Newline<li>R</li>#Newline<li>S</li>#Newline<li>T</li>#Newline<li>U</li>#Newline<li>V</li>#Newline<li>W</li>#Newline<li>X</li>#Newline<li>Y</li>#Newline<li>Z</li>#Newline</random>,utilities.aiml
+0,REMAININGWORDS,*,*,undefined,utilities.aiml
+0,REMAININGWORDS *,*,*,undefined,utilities.aiml
+0,REMAININGWORDS * *,*,*,<star index="2"/>,utilities.aiml
+0,FIRSTWORD,*,*,undefined,utilities.aiml
+0,FIRSTWORD *,*,*,<star/>,utilities.aiml
+0,FIRSTWORD * *,*,*,<star/>,utilities.aiml
+0,REQUEST,*,*,<request index="1"/>,utilities.aiml
+0,REQUEST 2,*,*,<request index="2"/>,utilities.aiml
+0,REQUEST 3,*,*,<request index="3"/>,utilities.aiml
+0,REQUEST 4,*,*,<request index="4"/>,utilities.aiml
+0,RESPONSE,*,*,<response index="1"/>,utilities.aiml
+0,RESPONSE 2,*,*,<response index="2"/>,utilities.aiml
+0,RESPONSE 3,*,*,<response index="3"/>,utilities.aiml
+0,RESPONSE 4,*,*,<response index="4"/>,utilities.aiml
+0,SENTENCELENGTH,*,*,0,utilities.aiml
+0,SENTENCELENGTH ALICE,*,*,5,utilities.aiml
+0,SENTENCELENGTH *,*,*,1,utilities.aiml
+0,SENTENCELENGTH * *,*,*,<map><name>successor</name><srai>SENTENCELENGTH <star index="2"/></srai></map>,utilities.aiml
+0,SUCCESSOR,*,*,0,utilities.aiml
+0,SUCCESSOR <SET>NUMBER</SET>,*,*,<map><name>successor</name><star/></map>,utilities.aiml
+0,THAT,*,*,<that/>,utilities.aiml
+0,THAT 1 1,*,*,<that index="1#Comma1"/>,utilities.aiml
+0,THAT 1 2,*,*,<that index="1#Comma2"/>,utilities.aiml
+0,THAT 1 3,*,*,<that index="1#Comma3"/>,utilities.aiml
+0,THAT 1 4,*,*,<that index="1#Comma4"/>,utilities.aiml
+0,THAT 2 1,*,*,<that index="2#Comma1"/>,utilities.aiml
+0,THAT 2 2,*,*,<that index="2#Comma2"/>,utilities.aiml
+0,THAT 2 3,*,*,<that index="2#Comma3"/>,utilities.aiml
+0,THAT 2 4,*,*,<that index="2#Comma4"/>,utilities.aiml
+0,XMLITEMIZE *,*,*,undefined,utilities.aiml
+0,XMLITEMIZE CONS * CONS *,*,*,<item><star/></item><srai>XMLITEMIZE CONS <star index="2"/></srai>,utilities.aiml
+0,XMLITEMIZE CONS * NIL,*,*,<item><star/></item>,utilities.aiml
+0,XMLITEMIZE NIL,*,*,Your list is empty.,utilities.aiml
+0,WHAT IS THE SQUARE ROOT OF *,*,*,<think>#Newline<set var="formula"><srai>MATHFORMULA <star/></srai></set>#Newline</think>#Newline<condition var="formula">#Newline<li value="NOT A MATH FORMULA">I'm not sure how to take the square root of <person/>.</li>#Newline<li>#Newline<condition name="jsenabled">#Newline<li value="true"><javascript>Math.sqrt(<get var="formula"/>)</javascript></li>#Newline<li><sraix service="pannous">WHAT IS THE SQUARE ROOT OF <star/></sraix></li>#Newline</condition>#Newline</li>#Newline</condition>,utilities.aiml
+0,MATHTERM <SET>NUMBER</SET>,*,*,<star/>,utilities.aiml
+0,MATHTERM <SET>NUMBERNAME</SET>,*,*,<map><name>name2number</name><star/></map>,utilities.aiml
+0,MATHTERM PI,*,*,3.14159265359,utilities.aiml
+0,MATHTERM PLUS,*,*,+,utilities.aiml
+0,MATHTERM STAR,*,*,*,utilities.aiml
+0,MATHTERM TIMES,*,*,*,utilities.aiml
+0,MATHTERM SLASH,*,*,/,utilities.aiml
+0,MATHTERM POINT,*,*,.,utilities.aiml
+0,MATHTERM MINUS,*,*,-,utilities.aiml
+0,MATHTERM DASH,*,*,-,utilities.aiml
+0,MATHTERM LPAREN,*,*,(,utilities.aiml
+0,MATHTERM RPAREN,*,*,),utilities.aiml
+0,MATHTERM *,*,*,NOT A MATH TERM,utilities.aiml
+0,MATHFORMULA _ SQUARED,*,*,<srai>MATHFORMULA <star/> UPARROW 2</srai>,utilities.aiml
+0,MATHFORMULA _ UPARROW *,*,*,<think>#Newline<set var="f1"><srai>MATHFORMULA <star/></srai></set>#Newline<set var="f2"><srai>MATHFORMULA <star index="2"/></srai></set>#Newline</think>#Newline<condition var="f1">#Newline<li value="NOT A MATH FORMULA">NOT A MATH FORMULA</li>#Newline<li>#Newline  <condition var="f2">#Newline  <li value="NOT A MATH FORMULA">NOT A MATH FORMULA</li>#Newline  <li>Math.pow(<get var="f1"/>#Comma<get var="f2"/>)</li>#Newline  </condition>#Newline</li>#Newline</condition>,utilities.aiml
+0,MATHFORMULA *,*,*,<think>#Newline<set var="list"><star/> END</set>#Newline<set var="result"/>#Newline</think>#Newline<condition var="list">#Newline<li value="END"><get var="result"/></li>#Newline<li>#Newline<think><set var="head"><srai>FIRSTWORD <get var="list"/></srai></set>#Newline<set var="list"><srai>REMAININGWORDS <get var="list"/></srai></set>#Newline<set var="term"><srai>MATHTERM <get var="head"/></srai></set>#Newline<condition var="term">#Newline<li value="NOT A MATH TERM">#Newline<set var="list">END</set><set var="result">NOT A MATH FORMULA</set>#Newline</li>#Newline<li><set var="result"><get var="result"/><get var="term"/></set></li>#Newline</condition></think><loop/></li>#Newline</condition>,utilities.aiml
+0,ROUND *,*,*,<first><normalize><star/></normalize></first>,utilities.aiml
