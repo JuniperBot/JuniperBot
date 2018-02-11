@@ -70,6 +70,11 @@ public class AimlService implements CommandHandler {
         return null;
     }
 
+    public void clear() {
+        bots.clear();
+        sessions.invalidateAll();
+    }
+
     @Override
     public boolean handleMessage(MessageReceivedEvent event) {
         JDA jda = event.getJDA();
