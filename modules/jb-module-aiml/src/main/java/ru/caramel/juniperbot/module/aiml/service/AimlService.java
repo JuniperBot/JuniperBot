@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.aiml.service;
 
 import net.dv8tion.jda.core.entities.User;
-import org.alicebot.ab.Chat;
+import org.goldrenard.jb.core.Chat;
 
 import java.util.Set;
 

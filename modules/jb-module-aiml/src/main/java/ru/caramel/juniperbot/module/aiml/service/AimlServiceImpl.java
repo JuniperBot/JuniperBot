@@ -21,13 +21,13 @@ import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.alicebot.ab.Bot;
-import org.alicebot.ab.Chat;
-import org.alicebot.ab.configuration.BotConfiguration;
+import org.goldrenard.jb.core.Bot;
+import org.goldrenard.jb.core.Chat;
+import org.goldrenard.jb.configuration.BotConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.goldrenard.jb.model.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +110,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Override
     public boolean handleMessage(MessageReceivedEvent event) {
-        if (!enabled) {
+        if (!enabled || event.getAuthor() == null) {
             return false;
         }
         JDA jda = event.getJDA();
@@ -141,14 +141,45 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
                     event.getChannel().sendTyping().complete();
                     Chat chatSession = getSession("juniper_en", event.getAuthor());
                     if (chatSession != null) {
-                        String respond = chatSession.multisentenceRespond(input);
-                        event.getChannel().sendMessage(respond).queue();
+                        String respond = chatSession.multisentenceRespond(createRequest(event, input));
+                        if (StringUtils.isNotBlank(respond)) {
+                            event.getChannel().sendMessage(respond).queue();
+                        }
                     }
                 });
                 return true;
             }
         }
         return false;
+    }
+
+    private Request createRequest(MessageReceivedEvent event, String input) {
+        Request.RequestBuilder builder = Request.builder()
+                .input(input)
+                .attribute("dMessageEvent", event)
+                .attribute("dAuthorName", event.getAuthor().getName())
+                .attribute("dAuthorMention", event.getAuthor().getAsMention())
+                .attribute("dAuthorAvatarUrl", event.getAuthor().getEffectiveAvatarUrl());
+
+        if (event.getMember() != null) {
+            Member member = event.getMember();
+            builder
+                    .attribute("dAuthorName", member.getEffectiveName())
+                    .attribute("dAuthorMention", member.getAsMention());
+        }
+
+        if (event.getGuild() != null) {
+            Guild guild = event.getGuild();
+            builder
+                    .attribute("dGuildName", guild.getName())
+                    .attribute("dGuildOwnerName", guild.getOwner().getEffectiveName());
+        }
+
+        if (event.getTextChannel() != null) {
+            TextChannel channel = event.getTextChannel();
+            builder.attribute("dChannelName", channel.getName());
+        }
+        return builder.build();
     }
 
     @Override
