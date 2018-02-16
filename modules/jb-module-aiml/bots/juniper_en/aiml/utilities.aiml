@@ -30,59 +30,7 @@
 
 </condition></template>
 </category>
-<category><pattern>ANAGRAMWORDS *</pattern>
-<template><think><set var="list"><srai>ANAGRAM <star/></srai></set></think>
-<condition var="list">
-<li value="too long">I can only do anagrams up to 8 letters.</li>
-<li><condition var="list">
-    <li value="NIL"/>
-    <li><think><set var="word"><first><get var="list"/></first></set>
-        <set var="list"><rest><get var="list"/></rest></set>
-        <set var="def"><sraix bot="drwallace/wndef" botid="f038d2f99e345a95" host="callmom.pandorabots.com">WNDEF <get var="word"/></sraix></set>
-      </think> <condition var="def"><li value="unknown"/><li><get var="word"/> </li></condition> <loop/></li>
-    </condition>
-</li>
-</condition></template>
-</category>
-<category><pattern>JSTEST *</pattern>
-<template><javascript>
-function foo() {
-if (0 &lt; 1) return "true";
-}
-foo();
-</javascript></template>
-</category>
-<category><pattern>ANAGRAM *</pattern>
-<template><javascript>
-function permutator (input) {
-  var set =[];
-  function permute (arr, data) {
-    var cur, memo = data || [];
 
-    for (var i = 0; i != arr.length; i++) {
-       cur = arr.splice(i, 1)[0];
-       if (arr.length === 0) {
-         var result = memo.concat([cur]);
-         list = list + result.join('')+' ';
-         set.push(result);
-       }
-       permute(arr.slice(), memo.concat([cur]));
-       arr.splice(i, 0, cur);
-    }
-    return list;
-  }
-  return permute(input);
-}
-
-function anagram(str) {
-if (str.length &gt; 8) return ('too long');
-list = '';
-permutator(str.split(''));
-return list;
-}
-anagram("<star/>");
-</javascript></template>
-</category>
 <category><pattern>SUBSTRING * * *</pattern>
 <template>SUBSTRING <star/> <star index="2"/> <star index="3"/>?</template>
 </category>
@@ -147,19 +95,7 @@ anagram("<star/>");
 <template><star/>+<srai>PLUSIFY <star index="2"/></srai></template>
 </category>
 <category><pattern>GOOGLEURL *</pattern>
-<template><![CDATA[<a href="https://www.google.com/search?q=]]><srai>PLUSIFY <star/></srai><![CDATA[">]]><star/>?<![CDATA[</a>]]></template>
-</category>
-<category><pattern>JSTEST</pattern>
-<template><script type="text/javascript">
-
-var a = document.createElement('a');
-var linkText = document.createTextNode("my title text");
-a.appendChild(linkText);
-a.title = "my title text";
-a.href = "http://example.com";
-document.body.appendChild(a);
-
-</script></template>
+<template>https://www.google.com/search?q=<srai>PLUSIFY <star/></srai></template>
 </category>
 <category><pattern>FIRSTTWOWORDS * * *</pattern>
 <template><star/> <star index="2"/></template>

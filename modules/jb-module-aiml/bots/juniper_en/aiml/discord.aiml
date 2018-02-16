@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+    <category>
+        <pattern>CHANNELNAME</pattern>
+        <template><bot name="dChannelName"/></template>
+    </category>
+    <category>
+        <pattern>GUILDNAME</pattern>
+        <template><bot name="dGuildName"/></template>
+    </category>
+    <category>
+        <pattern>GUILDOWNERNAME</pattern>
+        <template><bot name="dGuildOwnerName"/></template>
+    </category>
+    <category>
+        <pattern>AUTHORMENTION</pattern>
+        <template><bot name="dAuthorMention"/></template>
+    </category>
+    <category>
+        <pattern>AUTHORNAME</pattern>
+        <template><bot name="dAuthorName"/></template>
+    </category>
+
+    <!-- Channel -->
+    <category>
+        <pattern>WHAT IS CURRENT CHANNEL ^</pattern>
+        <template>It is `<srai>CHANNELNAME</srai>`</template>
+    </category>
+    <category>
+        <pattern>WHAT IS THIS CHANNEL ^</pattern>
+        <template>I'm sure it is `<srai>CHANNELNAME</srai>`</template>
+    </category>
+
+    <!-- Guild -->
+    <category>
+        <pattern>WHAT IS CURRENT GUILD ^</pattern>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
+    </category>
+    <category>
+        <pattern>WHAT IS CURRENT SERVER ^</pattern>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
+    </category>
+    <category>
+        <pattern>WHAT IS THIS GUILD ^</pattern>
+        <template><srai>AUTHORMENTION</srai> it is `<srai>GUILDNAME</srai>`</template>
+    </category>
+    <category>
+        <pattern>WHAT IS THIS SERVER ^</pattern>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
+    </category>
+
+    <!-- Guild Owner -->
+    <category>
+        <pattern>WHO CREATED GUILD ^</pattern>
+        <template>I think it is `<srai>GUILDOWNERNAME</srai>`</template>
+    </category>
+    <category>
+        <pattern>WHO CREATED SERVER ^</pattern>
+        <template>I think it is `<srai>GUILDOWNERNAME</srai>`</template>
+    </category>
+
+</aiml>

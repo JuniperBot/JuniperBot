@@ -173,11 +173,6 @@ List value=<srai><get name="listname"/></srai>.
 </learn>
 </li>
 <li>
-<oob><dialog>
-<title>Which item?</title>
-<list><srai>XMLITEMIZE <srai><get name="listname"/></srai></srai>
-</list>
-</dialog></oob>  
 <think><set name="topic">REMOVE LIST ITEM</set></think> 
 I couldn't find <star/> on your list.  
 Which item would you like to remove?

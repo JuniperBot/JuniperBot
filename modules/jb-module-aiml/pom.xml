@@ -41,8 +41,8 @@
 
         <dependency>
             <groupId>org.goldrenard</groupId>
-            <artifactId>ab</artifactId>
-            <version>${program-ab.version}</version>
+            <artifactId>jb</artifactId>
+            <version>${program-jb.version}</version>
         </dependency>
 
         <dependency>
