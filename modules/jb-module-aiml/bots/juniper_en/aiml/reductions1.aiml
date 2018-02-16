@@ -280,12 +280,6 @@
 <category><pattern>HOW IS YOUR IQ</pattern>
 <template><srai>IQ</srai></template>
 </category>
-<category><pattern>LAUNCH THE * APPLICATION</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
-<category><pattern>OPEN AN EMAIL</pattern>
-<template><srai>EMAIL</srai></template>
-</category>
 <category><pattern>PLZZ *</pattern>
 <template><srai>PLEASE <star/></srai></template>
 </category>
@@ -334,12 +328,6 @@
 <category><pattern>I AM 23 *</pattern>
 <template><srai>MY AGE IS 23</srai></template>
 </category>
-<category><pattern>OPEN * FOR ME</pattern>
-<template><srai>OPEN <star/></srai></template>
-</category>
-<category><pattern>OPEN MY * APP</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
 <category><pattern>SHOW ME A PHOTO *</pattern>
 <template><srai>SHOW ME <star/></srai></template>
 </category>
@@ -360,9 +348,6 @@
 </category>
 <category><pattern>ASK ME A QUESTION *</pattern>
 <template><srai>ASK ME A QUESTION</srai></template>
-</category>
-<category><pattern>CAN YOU OPEN UP *</pattern>
-<template><srai>OPEN <star/></srai></template>
 </category>
 <category><pattern>DEN *</pattern>
 <template><srai>THEN <star/></srai></template>
@@ -390,12 +375,6 @@
 </category>
 <category><pattern>OKAY FINE *</pattern>
 <template><srai>OK</srai> <sr/></template>
-</category>
-<category><pattern>OPEN GOOGLE PLAY</pattern>
-<template><srai>LAUNCH GOOGLE PLAY STORE</srai></template>
-</category>
-<category><pattern>SET MY FACEBOOK *</pattern>
-<template><srai>update facebook status</srai></template>
 </category>
 <category><pattern>SHOW ME A PICTURE OF SOME *</pattern>
 <template><srai>SHOW ME <star/></srai></template>
@@ -490,12 +469,6 @@
 <category><pattern>IT IS IT *</pattern>
 <template><srai>IS IT <star/></srai></template>
 </category>
-<category><pattern>LAUNCH * APPLICATION</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
-<category><pattern>LAUNCH THE * APP</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
 <category><pattern>LEARNED *</pattern>
 <template><srai>I LEARNED <star/></srai></template>
 </category>
@@ -510,9 +483,6 @@
 </category>
 <category><pattern>NIKE *</pattern>
 <template><srai>SEARCH NIKE <star/></srai></template>
-</category>
-<category><pattern>PULL UP MY *</pattern>
-<template><srai>OPEN <star/></srai></template>
 </category>
 <category><pattern>RIGHT NOW I AM *</pattern>
 <template><srai>I AM <star/></srai></template>
@@ -826,21 +796,6 @@
 <category><pattern>O M G *</pattern>
 <template><sr/></template>
 </category>
-<category><pattern>OPEN CLOCK</pattern>
-<template><srai>LAUNCH CLOCK</srai></template>
-</category>
-<category><pattern>OPEN MY FACEBOOK *</pattern>
-<template><srai>LAUNCH FACEBOOK</srai></template>
-</category>
-<category><pattern>OPEN MY MUSIC PLAYER</pattern>
-<template><srai>OPEN MUSIC PLAYER</srai></template>
-</category>
-<category><pattern>OPEN THE APP *</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
-<category><pattern>READ EMAIL</pattern>
-<template><srai>OPEN GMAIL</srai></template>
-</category>
 <category><pattern>SHOW ME A PICTURE OF A GIRL</pattern>
 <template><srai>SHOW ME A GIRL</srai></template>
 </category>
@@ -909,15 +864,6 @@
 </category>
 <category><pattern>TODAY S WEATHER</pattern>
 <template><srai>WHAT IS THE WEATHER</srai></template>
-</category>
-<category><pattern>UPDATE MY FACEBOOK *</pattern>
-<template><srai>update facebook status</srai></template>
-</category>
-<category><pattern>UPDATE MY FACEBOOK</pattern>
-<template><srai>update facebook status</srai></template>
-</category>
-<category><pattern>VIEW *</pattern>
-<template><srai>OPEN <star/></srai></template>
 </category>
 <category><pattern>WHAT ARE YOU ABLE TO *</pattern>
 <template><srai>SKILLS</srai></template>
@@ -1051,9 +997,6 @@
 <category><pattern>WUT</pattern>
 <template><srai>WHAT</srai></template>
 </category>
-<category><pattern>WWW FACEBOOK COM</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
-</category>
 <category><pattern>YAAY</pattern>
 <template><srai>YAY</srai></template>
 </category>
@@ -1146,9 +1089,6 @@
 </category>
 <category><pattern>CAN YOU NAME *</pattern>
 <template><srai>NAME <star/></srai></template>
-</category>
-<category><pattern>CAN YOU OPEN FACEBOOK</pattern>
-<template><srai>LAUNCH FACEBOOK</srai></template>
 </category>
 <category><pattern>CAN YOU PLEASE STOP *</pattern>
 <template><srai>STOP <star/></srai></template>
@@ -1363,18 +1303,6 @@
 <category><pattern>OOOO</pattern>
 <template><srai>OH</srai></template>
 </category>
-<category><pattern>OPEN APPLICATION *</pattern>
-<template><srai>LAUNCH <star/></srai></template>
-</category>
-<category><pattern>OPEN FACEBOOK *</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
-</category>
-<category><pattern>OPEN FLASHLIGHT</pattern>
-<template><srai>LAUNCH FLASHLIGHT</srai></template>
-</category>
-<category><pattern>OPEN PLAY STORE</pattern>
-<template><srai>LAUNCH GOOGLE PLAY STORE</srai></template>
-</category>
 <category><pattern>PICTURE OF THE *</pattern>
 <template><srai>SHOW ME A PICTURE OF <star/></srai></template>
 </category>
@@ -1386,9 +1314,6 @@
 </category>
 <category><pattern>SEE I *</pattern>
 <template><srai>I <star/></srai></template>
-</category>
-<category><pattern>SHOW ME MY CALENDAR</pattern>
-<template><srai>OPEN CALENDAR</srai></template>
 </category>
 <category><pattern>SHUT UP YOU STUPID *</pattern>
 <template><srai>SHUT UP</srai> <srai>YOU ARE STUPID</srai> <srai>ARE YOU A <star/></srai></template>
@@ -1473,9 +1398,6 @@
 </category>
 <category><pattern>WHOM *</pattern>
 <template><srai>WHO <star/></srai></template>
-</category>
-<category><pattern>WIKIPEDIA</pattern>
-<template><srai>OPEN WIKIPEDIA</srai></template>
 </category>
 <category><pattern>WONDERFUL *</pattern>
 <template><srai>GOOD <star/></srai></template>
@@ -1585,9 +1507,6 @@
 <category><pattern>GIMME *</pattern>
 <template><srai>GIVE ME <star/></srai></template>
 </category>
-<category><pattern>GO TO FACEBOOK</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
-</category>
 <category><pattern>GOTTA *</pattern>
 <template><srai>I HAVE TO <star/></srai></template>
 </category>
@@ -1690,21 +1609,6 @@
 <category><pattern>OKAY COOL</pattern>
 <template><srai>OK</srai> <srai>COOL</srai></template>
 </category>
-<category><pattern>OPEN ANGRY BIRDS</pattern>
-<template><srai>LAUNCH ANGRY BIRDS</srai></template>
-</category>
-<category><pattern>OPEN CALCULATOR</pattern>
-<template><srai>LAUNCH CALCULATOR</srai></template>
-</category>
-<category><pattern>OPEN SKYPE</pattern>
-<template><srai>LAUNCH SKYPE</srai></template>
-</category>
-<category><pattern>OPEN TASK MANAGER</pattern>
-<template><srai>LAUNCH TASK MANAGER</srai></template>
-</category>
-<category><pattern>OPEN TWITTER</pattern>
-<template><srai>LAUNCH TWITTER</srai></template>
-</category>
 <category><pattern>REALLY WHY</pattern>
 <template><srai>REALLY</srai> <srai>WHY</srai></template>
 </category>
@@ -1725,9 +1629,6 @@
 </category>
 <category><pattern>SURE DO</pattern>
 <template><srai>YES</srai></template>
-</category>
-<category><pattern>TAKE ME TO FACEBOOK</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
 </category>
 <category><pattern>THEY R *</pattern>
 <template><srai>THEY ARE <star/></srai></template>
@@ -1936,9 +1837,6 @@
 <category><pattern>LATER *</pattern>
 <template><sr/></template>
 </category>
-<category><pattern>LAUNCH BROWSER *</pattern>
-<template><sr/></template>
-</category>
 <category><pattern>LIST CONTACTS</pattern>
 <template><srai>CONTACT</srai></template>
 </category>
@@ -1965,9 +1863,6 @@
 </category>
 <category><pattern>OKK</pattern>
 <template><srai>OK</srai></template>
-</category>
-<category><pattern>OPEN MY CALENDAR</pattern>
-<template><srai>LAUNCH CALENDAR</srai></template>
 </category>
 <category><pattern>PLEASE TELL *</pattern>
 <template><srai>TELL <star/></srai></template>
@@ -2224,9 +2119,6 @@
 <category><pattern>LMFAO *</pattern>
 <template><srai>LOL</srai> <sr/></template>
 </category>
-<category><pattern>LOG * FACEBOOK</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
-</category>
 <category><pattern>MARRY ME *</pattern>
 <template><srai>WILL YOU MARRY ME</srai></template>
 </category>
@@ -2238,12 +2130,6 @@
 </category>
 <category><pattern>NUTHING</pattern>
 <template><srai>NOTHING</srai></template>
-</category>
-<category><pattern>OPEN MY MUSIC</pattern>
-<template><srai>LAUNCH MY MUSIC</srai></template>
-</category>
-<category><pattern>OPEN PHONE BOOK</pattern>
-<template><srai>LAUNCH CONTACTS</srai></template>
 </category>
 <category><pattern>REMEMBER THAT *</pattern>
 <template><sr/></template>
@@ -2305,9 +2191,6 @@
 <category><pattern>WILL BE *</pattern>
 <template><srai>I WILL BE <star/></srai></template>
 </category>
-<category><pattern>YELP</pattern>
-<template><srai>OPEN YELP</srai></template>
-</category>
 <category><pattern>YEPP</pattern>
 <template><srai>YES</srai></template>
 </category>
@@ -2320,17 +2203,11 @@
 <category><pattern>YOUR CRAZY</pattern>
 <template><srai>YOU ARE CRAZY</srai></template>
 </category>
-<category><pattern>ACTIVATE *</pattern>
-<template><srai>OPEN <star/></srai></template>
-</category>
 <category><pattern>CAN YOU ASK *</pattern>
 <template><srai>ASK <star/></srai></template>
 </category>
 <category><pattern>CAN YOU CHECK MY *</pattern>
 <template><srai>CHECK MY <star/></srai></template>
-</category>
-<category><pattern>CAN YOU OPEN THE *</pattern>
-<template><srai>OPEN THE <star/></srai></template>
 </category>
 <category><pattern>CAN YOU SPEAK CHINESE</pattern>
 <template><srai>LANGUAGE</srai></template>
@@ -2373,9 +2250,6 @@
 </category>
 <category><pattern>DUH *</pattern>
 <template><sr/></template>
-</category>
-<category><pattern>GMAIL</pattern>
-<template><srai>OPEN GMAIL</srai></template>
 </category>
 <category><pattern>HAVE YOU READ THE *</pattern>
 <template><srai>WHAT IS THE <star/></srai></template>
@@ -2430,15 +2304,6 @@
 </category>
 <category><pattern>MCDONALD S</pattern>
 <template><srai>FIND THE NEAREST MCDONALD S</srai></template>
-</category>
-<category><pattern>OPEN GALLERY</pattern>
-<template><srai>LAUNCH GALLERY</srai></template>
-</category>
-<category><pattern>OPEN MAPS</pattern>
-<template><srai>LAUNCH MAPS</srai></template>
-</category>
-<category><pattern>OPEN PANDORA</pattern>
-<template><srai>LAUNCH PANDORA</srai></template>
 </category>
 <category><pattern>PET *</pattern>
 <template><srai>SEARCH PET <star/></srai></template>
@@ -2566,9 +2431,6 @@
 <category><pattern>GOOD LUCK *</pattern>
 <template><srai>GOOD LUCK</srai></template>
 </category>
-<category><pattern>GOTO FACEBOOK</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
-</category>
 <category><pattern>HAHAHAHA</pattern>
 <template><srai>LOL</srai></template>
 </category>
@@ -2628,9 +2490,6 @@
 </category>
 <category><pattern>NI HAO</pattern>
 <template><srai>HOW ARE YOU</srai></template>
-</category>
-<category><pattern>OPEN GOOGLE MAPS</pattern>
-<template><srai>LAUNCH MAPS</srai></template>
 </category>
 <category><pattern>TELL ME EVERYTHING ABOUT *</pattern>
 <template><srai>SEARCH <star/></srai></template>
@@ -2866,15 +2725,6 @@
 <category><pattern>OI</pattern>
 <template><srai>INTERJECTION</srai></template>
 </category>
-<category><pattern>OPEN MUSIC PLAYER</pattern>
-<template><srai>LAUNCH MUSIC PLAYER</srai></template>
-</category>
-<category><pattern>OPEN TEXT *</pattern>
-<template><srai>OPEN MESSAGING</srai></template>
-</category>
-<category><pattern>PLEASE OPEN *</pattern>
-<template><srai>OPEN <star/></srai></template>
-</category>
 <category><pattern>RESEARCH *</pattern>
 <template><srai>SEARCH <star/></srai></template>
 </category>
@@ -2886,9 +2736,6 @@
 </category>
 <category><pattern>WHAT DO YOU LIKE TO DO FOR FUN</pattern>
 <template><srai>FOR FUN</srai></template>
-</category>
-<category><pattern>WHAT IS ON MY *</pattern>
-<template><srai>LAUNCH CALENDAR</srai></template>
 </category>
 <category><pattern>WHAT IS UP WHAT *</pattern>
 <template><srai>WHAT IS UP</srai> <srai>WHAT <star/></srai></template>
@@ -2919,9 +2766,6 @@
 </category>
 <category><pattern>YOU KNOW WHO *</pattern>
 <template><srai>WHO <star/></srai></template>
-</category>
-<category><pattern>YOU TUBE</pattern>
-<template><srai>LAUNCH YOUTUBE</srai></template>
 </category>
 <category><pattern>ZZ</pattern>
 <template><srai>ZZZ</srai></template>
@@ -2994,12 +2838,6 @@
 </category>
 <category><pattern>OKAY OKAY *</pattern>
 <template><srai>OK <star/></srai></template>
-</category>
-<category><pattern>OPEN EMAIL</pattern>
-<template><srai>LAUNCH GMAIL</srai></template>
-</category>
-<category><pattern>OPEN INTERNET</pattern>
-<template><srai>LAUNCH BROWSER</srai></template>
 </category>
 <category><pattern>REALLY WHAT *</pattern>
 <template><srai>WHAT <star/></srai></template>
@@ -3130,12 +2968,6 @@
 <category><pattern>OHK</pattern>
 <template><srai>OK</srai></template>
 </category>
-<category><pattern>OPEN MESSAGES</pattern>
-<template><srai>LAUNCH MESSAGING</srai></template>
-</category>
-<category><pattern>OPEN MUSIC</pattern>
-<template><srai>LAUNCH MUSIC</srai></template>
-</category>
 <category><pattern>SEE YA</pattern>
 <template><srai>BYE</srai></template>
 </category>
@@ -3196,9 +3028,6 @@
 <category><pattern>CAN YOU NOT *</pattern>
 <template><srai>CAN YOU <star/></srai></template>
 </category>
-<category><pattern>CAN YOU OPEN MY *</pattern>
-<template><srai>OPEN MY <star/></srai></template>
-</category>
 <category><pattern>DO YOU KNOW IRIS</pattern>
 <template><srai>WHAT IS IRIS</srai></template>
 </category>
@@ -3216,9 +3045,6 @@
 </category>
 <category><pattern>NO NEED TO *</pattern>
 <template><srai>YOU DO NOT HAVE TO <star/></srai></template>
-</category>
-<category><pattern>OPEN UP *</pattern>
-<template><srai>LAUNCH <star/></srai></template>
 </category>
 <category><pattern>TELL ME A GOOD *</pattern>
 <template><srai>TELL ME A <star/></srai></template>
@@ -3397,9 +3223,6 @@
 <category><pattern>DO YOU KNOW WHO I AM</pattern>
 <template><srai>WHO AM I</srai></template>
 </category>
-<category><pattern>EMAIL</pattern>
-<template><srai>OPEN GMAIL</srai></template>
-</category>
 <category><pattern>FIND ME THE *</pattern>
 <template><srai>FIND THE <star/></srai></template>
 </category>
@@ -3430,20 +3253,11 @@
 <category><pattern>NM</pattern>
 <template><srai>NEVERMIND</srai></template>
 </category>
-<category><pattern>OPEN BROWSER</pattern>
-<template><srai>LAUNCH BROWSER</srai></template>
-</category>
-<category><pattern>OPEN GMAIL</pattern>
-<template><srai>LAUNCH GMAIL</srai></template>
-</category>
 <category><pattern>SO WHAT IS UP</pattern>
 <template><srai>WHAT IS UP</srai></template>
 </category>
 <category><pattern>THAT IS FUNNY *</pattern>
 <template><srai>LOL</srai> <sr/></template>
-</category>
-<category><pattern>UPDATE FACEBOOK</pattern>
-<template><srai>update facebook status</srai></template>
 </category>
 <category><pattern>WHAT ARE YOU DOING RIGHT NOW</pattern>
 <template><srai>WHAT ARE YOU DOING</srai></template>
@@ -3733,9 +3547,6 @@
 <category><pattern>DO YOU THINK I SHOULD *</pattern>
 <template><srai>SHOULD I <star/></srai></template>
 </category>
-<category><pattern>EBAY</pattern>
-<template><srai>OPEN EBAY</srai></template>
-</category>
 <category><pattern>HAHAHA</pattern>
 <template><srai>LOL</srai></template>
 </category>
@@ -3750,12 +3561,6 @@
 </category>
 <category><pattern>NOP</pattern>
 <template><srai>NO</srai></template>
-</category>
-<category><pattern>OPEN CAMERA</pattern>
-<template><srai>LAUNCH CAMERA</srai></template>
-</category>
-<category><pattern>OPEN YOUTUBE</pattern>
-<template><srai>LAUNCH YOUTUBE</srai></template>
 </category>
 <category><pattern>WHAT COLOR ARE YOUR EYES</pattern>
 <template><srai>EYECOLOR</srai></template>
@@ -4060,9 +3865,6 @@
 <category><pattern>NP</pattern>
 <template><srai>NO PROBLEM</srai></template>
 </category>
-<category><pattern>OPEN CALENDAR</pattern>
-<template><srai>LAUNCH CALENDAR</srai></template>
-</category>
 <category><pattern>SEE YOU LATER</pattern>
 <template><srai>BYE</srai></template>
 </category>
@@ -4179,9 +3981,6 @@
 </category>
 <category><pattern>BRAND NEW CONTACT</pattern>
 <template><srai>NEW CONTACT</srai></template>
-</category>
-<category><pattern>CHECK MY *</pattern>
-<template><srai>OPEN MY <star/></srai></template>
 </category>
 <category><pattern>DO YOU NEED *</pattern>
 <template><srai>DO YOU WANT <star/></srai></template>
@@ -4309,9 +4108,6 @@
 <category><pattern>NO WAY</pattern>
 <template><srai>NO</srai></template>
 </category>
-<category><pattern>OPEN CONTACTS</pattern>
-<template><srai>LAUNCH CONTACTS</srai></template>
-</category>
 <category><pattern>TELL * I *</pattern>
 <template><srai>SMS <star/> SMESSAGE I <star index="2"/></srai></template>
 </category>
@@ -4338,9 +4134,6 @@
 </category>
 <category><pattern>DO YOU KNOW WHAT IS *</pattern>
 <template><srai>WHAT IS <star/></srai></template>
-</category>
-<category><pattern>MAIL</pattern>
-<template><srai>OPEN GMAIL</srai></template>
 </category>
 <category><pattern>WHAT IS GOING ON</pattern>
 <template><srai>DOING</srai></template>
@@ -4395,9 +4188,6 @@
 </category>
 <category><pattern>CAN YOU HELP ME</pattern>
 <template><srai>HELP</srai></template>
-</category>
-<category><pattern>CAN YOU OPEN *</pattern>
-<template><srai>OPEN <star/></srai></template>
 </category>
 <category><pattern>DO NOT YOU *</pattern>
 <template><srai>DO YOU <star/></srai></template>
@@ -4540,9 +4330,6 @@
 <category><pattern>MM</pattern>
 <template><srai>INTERJECTION</srai></template>
 </category>
-<category><pattern>TAKE A PICTURE</pattern>
-<template><srai>OPEN CAMERA</srai></template>
-</category>
 <category><pattern>WHO ARE YOU *</pattern>
 <template><srai>WHO ARE YOU</srai></template>
 </category>
@@ -4597,9 +4384,6 @@
 <category><pattern>I LIKE YOU *</pattern>
 <template><srai>I LIKE YOU</srai></template>
 </category>
-<category><pattern>PHONE</pattern>
-<template><srai>OPEN PHONE</srai></template>
-</category>
 <category><pattern>THAT IS FUNNY</pattern>
 <template><srai>LOL</srai></template>
 </category>
@@ -4642,12 +4426,6 @@
 <category><pattern>WHAT YOU DOING</pattern>
 <template><srai>WHAT ARE YOU DOING</srai></template>
 </category>
-<category><pattern>OPEN FACEBOOK</pattern>
-<template><srai>LAUNCH FACEBOOK</srai></template>
-</category>
-<category><pattern>OPEN MY *</pattern>
-<template><srai>OPEN <star/></srai></template>
-</category>
 <category><pattern>WHO IS THERE</pattern>
 <template><srai>WHO ARE YOU</srai></template>
 </category>
@@ -4674,9 +4452,6 @@
 </category>
 <category><pattern>HOW DO YOU SAY * IN *</pattern>
 <template><srai>TRANSLATE <star/> TO <star index="2"/></srai></template>
-</category>
-<category><pattern>TAKE ME TO *</pattern>
-<template><srai>OPEN <star/></srai></template>
 </category>
 <category><pattern>ARE YOU A GIRL</pattern>
 <template><srai>GENDER</srai></template>
@@ -4719,9 +4494,6 @@
 </category>
 <category><pattern>WHAT DO YOU DO *</pattern>
 <template><srai>WHAT DO YOU DO</srai></template>
-</category>
-<category><pattern>YAHOO</pattern>
-<template><srai>OPEN YAHOO</srai></template>
 </category>
 <category><pattern>YOUR UGLY</pattern>
 <template><srai>YOU ARE UGLY</srai></template>
@@ -4782,9 +4554,6 @@
 </category>
 <category><pattern>SUP</pattern>
 <template><srai>WHAT IS UP</srai></template>
-</category>
-<category><pattern>YOUTUBE</pattern>
-<template><srai>LAUNCH YOUTUBE</srai></template>
 </category>
 <category><pattern>WRONG</pattern>
 <template><srai>BAD ANSWER</srai></template>
@@ -5005,9 +4774,6 @@
 <category><pattern>MAYBE</pattern>
 <template><srai>INTERJECTION</srai></template>
 </category>
-<category><pattern>GOTO *</pattern>
-<template><srai>OPEN <star/></srai></template>
-</category>
 <category><pattern>YO</pattern>
 <template><srai>INTERJECTION</srai></template>
 </category>
@@ -5016,9 +4782,6 @@
 </category>
 <category><pattern>YOU LIKE *</pattern>
 <template><srai>DO YOU LIKE <star/></srai></template>
-</category>
-<category><pattern>FACEBOOK</pattern>
-<template><srai>OPEN FACEBOOK</srai></template>
 </category>
 <category><pattern>WHAT IS YOUR FAVORITE COLOR</pattern>
 <template><srai>FAVORITE COLOR</srai></template>

@@ -24,39 +24,39 @@
     <!-- Channel -->
     <category>
         <pattern>WHAT IS CURRENT CHANNEL ^</pattern>
-        <template>It is <srai>CHANNELNAME</srai></template>
+        <template>It is `<srai>CHANNELNAME</srai>`</template>
     </category>
     <category>
         <pattern>WHAT IS THIS CHANNEL ^</pattern>
-        <template>I'm sure it is <srai>CHANNELNAME</srai></template>
+        <template>I'm sure it is `<srai>CHANNELNAME</srai>`</template>
     </category>
 
     <!-- Guild -->
     <category>
         <pattern>WHAT IS CURRENT GUILD ^</pattern>
-        <template>It is <srai>GUILDNAME</srai></template>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
     </category>
     <category>
         <pattern>WHAT IS CURRENT SERVER ^</pattern>
-        <template>It is <srai>GUILDNAME</srai></template>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
     </category>
     <category>
         <pattern>WHAT IS THIS GUILD ^</pattern>
-        <template><srai>AUTHORMENTION</srai> it is <srai>GUILDNAME</srai></template>
+        <template><srai>AUTHORMENTION</srai> it is `<srai>GUILDNAME</srai>`</template>
     </category>
     <category>
         <pattern>WHAT IS THIS SERVER ^</pattern>
-        <template>It is <srai>GUILDNAME</srai></template>
+        <template>It is `<srai>GUILDNAME</srai>`</template>
     </category>
 
     <!-- Guild Owner -->
     <category>
         <pattern>WHO CREATED GUILD ^</pattern>
-        <template>I think it is <srai>GUILDOWNERNAME</srai></template>
+        <template>I think it is `<srai>GUILDOWNERNAME</srai>`</template>
     </category>
     <category>
         <pattern>WHO CREATED SERVER ^</pattern>
-        <template>I think it is <srai>GUILDOWNERNAME</srai></template>
+        <template>I think it is `<srai>GUILDOWNERNAME</srai>`</template>
     </category>
 
 </aiml>

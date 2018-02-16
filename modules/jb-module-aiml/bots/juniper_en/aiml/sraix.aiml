@@ -19,12 +19,6 @@
 <category><pattern>WHAT DO YOU KNOW ABOUT *</pattern>
 <template><sraix service="pannous">WHAT IS <star/></sraix></template>
 </category>
-<category><pattern>DISCONNECT</pattern>
-<template><sraix service="pannous">DISCONNECT</sraix></template>
-</category>
-<category><pattern>RELEASE</pattern>
-<template><sraix service="pannous">RELEASE</sraix></template>
-</category>
 <category><pattern>HOW MUCH IS *</pattern>
 <template><think>
 <set var="formula"><srai>MATHFORMULA <star/></srai></set>
@@ -70,16 +64,14 @@
 <template><think><set name="sraix"><sraix default="SCHEDULEFAILED" hint="event" service="pannous"><star index="2"/></sraix></set></think>
 <condition name="sraix">
 <li value="SCHEDULEFAILED">I'm unable to schedule that event from this device.</li>
-<li>I'll put that event on your calendar.
-<oob><schedule><title><star/></title><description><lowercase><star index="2"/></lowercase></description><get name="sraix"/></schedule></oob></li>
+<li>I'll put that event on your calendar.</li>
 </condition></template>
 </category>
 <category><pattern>ALARMMESSAGE * ALARMREQUEST *</pattern>
 <template><think><set name="sraix"><sraix default="ALARMFAILED" hint="event" service="pannous"><star index="2"/></sraix></set></think>
 <condition name="sraix">
 <li value="ALARMFAILED">I'm unable to set an alarm on this device.</li>
-<li>I'll <lowercase><person><star index="2"/></person></lowercase>.
-<oob><alarm><message><star/></message><get name="sraix"/></alarm></oob></li>
+<li>I'll <lowercase><person><star index="2"/></person></lowercase>.</li>
 </condition></template>
 </category>
 <category><pattern>DO *</pattern>

@@ -44,6 +44,7 @@
         <webjars.adminLTE.version>2.4.0</webjars.adminLTE.version>
         <webjars.html5shiv.version>3.7.3-1</webjars.html5shiv.version>
         <webjars.respond.version>1.4.2-1</webjars.respond.version>
+        <acme4j.version>0.14</acme4j.version>
     </properties>
 
     <repositories>
@@ -149,6 +150,16 @@
             <groupId>org.apache.tiles</groupId>
             <artifactId>tiles-el</artifactId>
             <version>${tiles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.shredzone.acme4j</groupId>
+            <artifactId>acme4j-client</artifactId>
+            <version>${acme4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.shredzone.acme4j</groupId>
+            <artifactId>acme4j-utils</artifactId>
+            <version>${acme4j.version}</version>
         </dependency>
 
         <!-- WEBJARs DEPENDENCIES -->

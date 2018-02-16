@@ -16,41 +16,27 @@
  */
 package ru.caramel.juniperbot.web.controller.api;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import ru.caramel.juniperbot.web.service.AcmeService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 @Controller
 public class LetsEncryptController {
 
-    @Value("${letsencrypt.secret:}")
-    private String secret;
-
-    private String content;
-
-    @RequestMapping("/.well-known/acme-challenge/set/{content}")
-    @ResponseBody
-    public String set(@PathVariable("content") String content, @RequestParam("secret") String secret) {
-        if (StringUtils.isEmpty(this.secret) || !Objects.equals(this.secret, secret)) {
-            return "FAIL!";
-        }
-        this.content = content;
-        return "OK! " + content;
-    }
+    @Autowired
+    private AcmeService acmeService;
 
     @RequestMapping(value = "/.well-known/acme-challenge/{token}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String message(HttpServletResponse response, @PathVariable("token") String token) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-        return content;
+        return acmeService.getTokens().get(token);
     }
 }

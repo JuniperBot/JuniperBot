@@ -5548,7 +5548,7 @@ fox:femaleName:vixen
 fox:youngName:cub
 fox:collective:a troop of foxes or  an earth of foxes
 fox:legs:4
-fox:sound:grrrrr
+fox:sound:ring-ding-ding-ding-dingeringeding
 frog:hasPlural:frogs
 frog:maleName:male
 frog:femaleName:female

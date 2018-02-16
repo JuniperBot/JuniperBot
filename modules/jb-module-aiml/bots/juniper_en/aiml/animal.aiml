@@ -26,7 +26,7 @@
 <template><star/> is the plural of <uniq><subj>?subj</subj><pred>hasPlural</pred><obj><star/></obj></uniq>.</template>
 </category>
 <category><pattern>SOUND <set>animal</set></pattern>
-<template><star/> says <uniq><subj><star/></subj><pred>sound</pred><obj>?sound</obj></uniq>.</template>
+<template><sentence><star/> says <uniq><subj><star/></subj><pred>sound</pred><obj>?sound</obj></uniq>!</sentence></template>
 </category>
 <category><pattern>COLLECTIVE <set>animal</set></pattern>
 <template>A group of <star/> is called <uniq><subj><star/></subj><pred>collective</pred><obj>?collective</obj></uniq>.</template>
@@ -35,6 +35,9 @@
 <template>A <star/> has <uniq><subj><star/></subj><pred>legs</pred><obj>?sound</obj></uniq> legs.</template>
 </category>
 <category><pattern>WHAT DOES A <set>animal</set> SAY ^</pattern>
+<template><srai>SOUND <star/></srai></template>
+</category>
+<category><pattern>WHAT DOES THE <set>animal</set> SAY ^</pattern>
 <template><srai>SOUND <star/></srai></template>
 </category>
 <category><pattern>WHAT DO <set>animals</set> SAY ^</pattern>
