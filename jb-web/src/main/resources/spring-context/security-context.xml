@@ -45,8 +45,10 @@
         <security:intercept-url pattern="/favicon.ico" access="permitAll"/>
         <security:intercept-url pattern="/.well-known/**" access="permitAll"/>
         <security:intercept-url pattern="/ranking/**" access="permitAll"/>
+        <security:intercept-url pattern="/status/**" access="permitAll"/>
         <security:intercept-url pattern="/apidocs" access="permitAll"/>
         <security:intercept-url pattern="/api/blur" access="permitAll"/>
+        <security:intercept-url pattern="/api/ping" access="permitAll"/>
         <security:intercept-url pattern="/api/ranking/list/**" access="permitAll"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>

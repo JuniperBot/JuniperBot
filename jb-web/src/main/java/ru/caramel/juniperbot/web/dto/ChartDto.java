@@ -14,21 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.dto;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-import ru.caramel.juniperbot.web.common.navigation.Navigation;
-import ru.caramel.juniperbot.web.common.navigation.PageElement;
-import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Controller
-@Navigation(PageElement.APIDOCS)
-public class DocumentationController extends AbstractController {
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class ChartDto {
 
-    @RequestMapping("/apidocs")
-    public ModelAndView apidocs() {
-        return new ModelAndView("apidocs");
-    }
+    private final String label;
+
+    private int color;
+
+    private Object[][] data;
 }

@@ -29,6 +29,23 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 <span class="sr-only"><spring:message code="global.header.toggle-menu"/></span>
             </a>
         </c:if>
+
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+            <i class="fa fa-bars"></i>
+        </button>
+
+        <div class="navbar-collapse pull-left collapse" id="navbar-collapse" aria-expanded="false" style="height: 1px;">
+            <ul class="nav navbar-nav">
+                <c:forEach items="${navigationMenu}" var="item">
+                    <c:if test="${item.navbar}">
+                        <tiles:insertDefinition name="menu.item">
+                            <tiles:putAttribute name="item" value="${item}" />
+                        </tiles:insertDefinition>
+                    </c:if>
+                </c:forEach>
+            </ul>
+        </div>
+
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
