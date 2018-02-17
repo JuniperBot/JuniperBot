@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.web.common.navigation;
 
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,15 @@ public class MenuBuilder {
 
     public List<MenuItem> build() {
         List<MenuItem> items = new ArrayList<>();
-        //items.add(new MenuItem(DASHBOARD));
-        items.add(new MenuItem(CONFIG_COMMON));
-        items.add(new MenuItem(RANKING));
-        items.add(new MenuItem(WELCOME_MESSAGES));
-        items.add(new MenuItem(CONFIG_COMMANDS));
-        items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
-        items.add(new MenuItem(APIDOCS, true));
+        if (SecurityUtils.isAuthenticated()) {
+            items.add(new MenuItem(CONFIG_COMMON));
+            items.add(new MenuItem(RANKING));
+            items.add(new MenuItem(WELCOME_MESSAGES));
+            items.add(new MenuItem(CONFIG_COMMANDS));
+            items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
+        }
+        items.add(new MenuItem(STATUS, false, true));
+        items.add(new MenuItem(APIDOCS, false, true));
         return items;
     }
 }

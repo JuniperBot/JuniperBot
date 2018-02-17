@@ -71,6 +71,12 @@
         <put-attribute name="breadcrumbTitleVisible" value="false" />
     </definition>
 
+    <definition name="status" extends="baseLayout">
+        <put-attribute name="content" value="/WEB-INF/jsp/status/status.jsp"/>
+        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.STATUS" />
+        <put-attribute name="sidebarVisible" value="false" />
+    </definition>
+
     <definition name="config" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/config/config.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.CONFIG" />

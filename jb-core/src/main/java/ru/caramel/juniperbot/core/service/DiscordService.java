@@ -21,8 +21,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.webhook.WebhookMessage;
+import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface DiscordService {
@@ -32,6 +34,10 @@ public interface DiscordService {
     String GAUGE_USERS = "discord.users";
 
     String GAUGE_CHANNELS = "discord.channels";
+
+    String GAUGE_TEXT_CHANNELS = "discord.textChannels";
+
+    String GAUGE_VOICE_CHANNELS = "discord.voiceChannels";
 
     String GAUGE_PING = "discord.ping";
 
@@ -59,5 +65,11 @@ public interface DiscordService {
 
     long getChannelCount();
 
+    long getTextChannelCount();
+
+    long getVoiceChannelCount();
+
     double getAveragePing();
+
+    Map<JDA, TimeWindowChart> getPingCharts();
 }

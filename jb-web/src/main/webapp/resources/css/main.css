@@ -256,6 +256,10 @@ body.landing-mode h4 {
     .user-menu > a > .caret {
         margin-top: -5px;
     }
+
+    .navbar-collapse {
+        margin-top: 50px;
+    }
 }
 
 /* Extra Small Devices, Phones */
@@ -497,6 +501,10 @@ table.command-table td {
         width: 110%;
         padding: 5px 0 !important;
     }
+
+    body.landing-mode .navbar-collapse {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
 }
 
 .widget-user-2.widget-member {
@@ -718,4 +726,13 @@ h6.hyperlink:hover > a {
 }
 .list-group.vk-attachments div.toggle  {
     min-width: 60px;
+}
+
+.sharp-icon {
+    font-size: 45pt;
+    font-weight: bold;
+}
+
+.common-stats .info-box-number {
+    font-size: 28px;
 }

@@ -29,6 +29,7 @@ public enum PageElement {
     WELCOME_MESSAGES("fa fa-user-plus", "/welcome/${serverId}"),
     RANKING("fa fa-bar-chart", "/ranking/${serverId}"),
     APIDOCS("fa fa-book", "/apidocs"),
+    STATUS("fa fa-area-chart", "/status"),
     ;
 
     @Getter

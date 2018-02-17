@@ -35,12 +35,15 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -49,8 +52,7 @@ import ru.caramel.juniperbot.core.support.ModuleListener;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -92,6 +94,8 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private List<ModuleListener> moduleListeners;
 
+    private Map<JDA, TimeWindowChart> pingCharts = new HashMap<>();
+
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
@@ -131,6 +135,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         if (StringUtils.isNotEmpty(playingStatus)) {
             shardManager.setGame(Game.playing(playingStatus));
         }
+        pingCharts.put(event.getJDA(), new TimeWindowChart(1, TimeUnit.HOURS));
     }
 
     @Override
@@ -205,6 +210,19 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         return guild.getVoiceChannels().stream().findAny().orElse(null);
     }
 
+    @Scheduled(fixedDelay = 5000)
+    public void tickPing() {
+        if (MapUtils.isEmpty(pingCharts)) {
+            return;
+        }
+        shardManager.getShards().forEach(e -> {
+            TimeWindowChart reservoir = pingCharts.get(e);
+            if (reservoir != null) {
+                reservoir.update(JDA.Status.CONNECTED.equals(e.getStatus()) ? e.getPing() : -1);
+            }
+        });
+    }
+
     @Override
     @CachedGauge(name = GAUGE_GUILDS, absolute = true, timeout = 1, timeoutUnit = TimeUnit.MINUTES)
     public long getGuildCount() {
@@ -220,12 +238,29 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     @CachedGauge(name = GAUGE_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
     public long getChannelCount() {
+        return getTextChannelCount() + getVoiceChannelCount();
+    }
+
+    @Override
+    @CachedGauge(name = GAUGE_TEXT_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
+    public long getTextChannelCount() {
         return shardManager != null ? shardManager.getTextChannelCache().size() : 0;
+    }
+
+    @Override
+    @CachedGauge(name = GAUGE_VOICE_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
+    public long getVoiceChannelCount() {
+        return shardManager != null ? shardManager.getVoiceChannelCache().size() : 0;
     }
 
     @Override
     @Gauge(name = GAUGE_PING, absolute = true)
     public double getAveragePing() {
         return shardManager != null ? shardManager.getAveragePing() : 0;
+    }
+
+    @Override
+    public Map<JDA, TimeWindowChart> getPingCharts() {
+        return Collections.unmodifiableMap(pingCharts);
     }
 }

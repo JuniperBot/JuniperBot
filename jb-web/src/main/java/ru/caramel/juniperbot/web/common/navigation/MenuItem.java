@@ -59,6 +59,10 @@ public class MenuItem implements Serializable {
 
     @Getter
     @Setter
+    private boolean navbar;
+
+    @Getter
+    @Setter
     private boolean current;
 
     public MenuItem(PageElement element) {
@@ -66,15 +70,20 @@ public class MenuItem implements Serializable {
     }
 
     public MenuItem(PageElement element, boolean blank) {
-        this(element.getUrl(), element.toString(), element.getIcon(), blank);
+        this(element, blank, false);
+    }
+
+    public MenuItem(PageElement element, boolean blank, boolean navbar) {
+        this(element.getUrl(), element.toString(), element.getIcon(), blank, navbar);
         this.element = element;
     }
 
-    public MenuItem(String url, String name, String icon, boolean blank) {
+    public MenuItem(String url, String name, String icon, boolean blank, boolean navbar) {
         this.url = url;
         this.name = name;
         this.icon = icon;
         this.blank = blank;
+        this.navbar = navbar;
     }
 
     public boolean addChild(MenuItem child) {

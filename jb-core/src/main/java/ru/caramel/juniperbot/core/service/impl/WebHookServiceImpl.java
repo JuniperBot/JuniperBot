@@ -103,7 +103,8 @@ public class WebHookServiceImpl implements WebHookService {
 
     @Override
     public Webhook getWebHook(Guild guild, WebHook webHook) {
-        if (webHook.getHookId() != null && webHook.getToken() != null) {
+        if (webHook.getHookId() != null && webHook.getToken() != null
+                && guild.getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
             try {
                 return webHooks.get(guild).stream()
                         .filter(e -> webHook.getHookId().equals(e.getIdLong())

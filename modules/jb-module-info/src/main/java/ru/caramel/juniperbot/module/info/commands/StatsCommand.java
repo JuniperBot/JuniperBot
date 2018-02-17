@@ -26,6 +26,7 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.Date;
@@ -58,10 +59,10 @@ public class StatsCommand extends AbstractInfoCommand {
 
     private MessageEmbed.Field getCommonStats(Map<String, Metric> metricMap) {
         String value =
-                getGaugeValue(metricMap, "discord.guilds") + "\n" +
-                getGaugeValue(metricMap, "discord.users") + "\n" +
-                getGaugeValue(metricMap, "discord.channels") + "\n" +
-                getGaugeValue(metricMap, "discord.ping") + "\n" +
+                getGaugeValue(metricMap, DiscordService.GAUGE_GUILDS) + "\n" +
+                getGaugeValue(metricMap, DiscordService.GAUGE_USERS) + "\n" +
+                getGaugeValue(metricMap, DiscordService.GAUGE_TEXT_CHANNELS) + "\n" +
+                getGaugeValue(metricMap, DiscordService.GAUGE_PING) + "\n" +
                 getGaugeValue(metricMap, "player.activeConnections") + "\n";
         return new MessageEmbed.Field(messageService.getMessage("discord.command.stats.common"), value, true);
     }
@@ -115,7 +116,7 @@ public class StatsCommand extends AbstractInfoCommand {
                     messageService.getMessage("discord.command.stats.values." + name + ".mean", meter.getMeanRate()),
                     messageService.getMessage("discord.command.stats.values." + name + ".1m", meter.getOneMinuteRate()),
                     messageService.getMessage("discord.command.stats.values." + name + ".5m", meter.getFiveMinuteRate()),
-                    messageService.getMessage("discord.command.stats.values." + name + ".15m", meter.getFiveMinuteRate()));
+                    messageService.getMessage("discord.command.stats.values." + name + ".15m", meter.getFifteenMinuteRate()));
         }
         return null;
     }

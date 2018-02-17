@@ -18,9 +18,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <%@include file="/WEB-INF/template/include.jsp" %>
 
 <section class="content-header">
-    <c:if test="${breadcrumbTitleVisible}">
-        <h1><spring:message code="${pageTitle}"/>&nbsp;</h1>
-    </c:if>
+    <h1><c:if test="${breadcrumbTitleVisible}"><spring:message code="${pageTitle}"/></c:if>&nbsp;</h1>
     <ol class="breadcrumb">
         <c:forEach var="entry" items="${breadCrumb}">
             <c:choose>

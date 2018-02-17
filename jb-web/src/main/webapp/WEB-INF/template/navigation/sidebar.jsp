@@ -21,9 +21,11 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <section class="sidebar">
         <ul class="sidebar-menu" data-widget="tree">
             <c:forEach items="${navigationMenu}" var="item">
-                <tiles:insertDefinition name="menu.item">
-                    <tiles:putAttribute name="item" value="${item}" />
-                </tiles:insertDefinition>
+                <c:if test="${not item.navbar}">
+                    <tiles:insertDefinition name="menu.item">
+                        <tiles:putAttribute name="item" value="${item}" />
+                    </tiles:insertDefinition>
+                </c:if>
             </c:forEach>
         </ul>
     </section>

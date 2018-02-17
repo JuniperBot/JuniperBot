@@ -44,6 +44,8 @@
         <webjars.adminLTE.version>2.4.0</webjars.adminLTE.version>
         <webjars.html5shiv.version>3.7.3-1</webjars.html5shiv.version>
         <webjars.respond.version>1.4.2-1</webjars.respond.version>
+        <webjars.flot.version>0.8.3-1</webjars.flot.version>
+        <webjars.flot-axislabels.version>1.0.0</webjars.flot-axislabels.version>
         <acme4j.version>0.14</acme4j.version>
     </properties>
 
@@ -260,6 +262,24 @@
             <groupId>org.webjars</groupId>
             <artifactId>respond</artifactId>
             <version>${webjars.respond.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>flot</artifactId>
+            <version>${webjars.flot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>flot-axislabels</artifactId>
+            <version>${webjars.flot-axislabels.version}</version>
         </dependency>
 
         <!-- SECURITY DEPENDENCIES -->
