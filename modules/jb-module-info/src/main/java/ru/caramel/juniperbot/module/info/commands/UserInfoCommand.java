@@ -143,7 +143,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
     private StringBuilder appendEntry(StringBuilder commonBuilder, Enum<?> enumName, String value) {
         return commonBuilder
                 .append("**")
-                .append(enumName)
+                .append(messageService.getEnumTitle(enumName))
                 .append(":** ")
                 .append(value)
                 .append("\n");
