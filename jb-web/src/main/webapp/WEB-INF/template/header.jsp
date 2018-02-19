@@ -37,7 +37,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <div class="navbar-collapse pull-left collapse" id="navbar-collapse" aria-expanded="false" style="height: 1px;">
             <ul class="nav navbar-nav">
                 <c:forEach items="${navigationMenu}" var="item">
-                    <c:if test="${item.navbar}">
+                    <c:if test="${not sidebarVisible and item.navbar}">
                         <tiles:insertDefinition name="menu.item">
                             <tiles:putAttribute name="item" value="${item}" />
                         </tiles:insertDefinition>

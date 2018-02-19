@@ -84,6 +84,7 @@ public class ModerationServiceImpl implements ModerationService {
                 && member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
 
+    @Override
     public Role getMutedRole(Guild guild) {
         List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
         Role role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
@@ -96,27 +97,21 @@ public class ModerationServiceImpl implements ModerationService {
                     .complete();
         }
         for (TextChannel channel : guild.getTextChannels()) {
-            PermissionOverride override = channel.getPermissionOverride(role);
-            if (override == null) {
-                channel.createPermissionOverride(role)
-                        .setDeny(Permission.MESSAGE_WRITE)
-                        .queue();
-            } else if (!override.getDenied().contains(Permission.MESSAGE_WRITE)) {
-                override.getManagerUpdatable().deny(Permission.MESSAGE_WRITE).update().queue();
-            }
+            checkDeny(channel, role, Permission.MESSAGE_WRITE);
         }
-
         for (VoiceChannel channel : guild.getVoiceChannels()) {
-            PermissionOverride override = channel.getPermissionOverride(role);
-            if (override == null) {
-                channel.createPermissionOverride(role)
-                        .setDeny(Permission.VOICE_SPEAK)
-                        .queue();
-            } else if (!override.getDenied().contains(Permission.VOICE_SPEAK)) {
-                override.getManagerUpdatable().deny(Permission.VOICE_SPEAK).update().queue();
-            }
+            checkDeny(channel, role, Permission.VOICE_SPEAK);
         }
         return role;
+    }
+
+    private static void checkDeny(Channel channel, Role role, Permission permission) {
+        PermissionOverride override = channel.getPermissionOverride(role);
+        if (override == null) {
+            channel.createPermissionOverride(role).setDeny(permission).queue();
+        } else if (!override.getDenied().contains(permission)) {
+            override.getManagerUpdatable().deny(permission).update().queue();
+        }
     }
 
     @Override
