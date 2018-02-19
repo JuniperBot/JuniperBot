@@ -37,4 +37,20 @@
         <addNotNullConstraint tableName="mod_config" columnName="public_colors" />
     </changeSet>
 
+    <changeSet id="4.0-19022018-4" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="voice_volume" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-5" author="caramel">
+        <sql>
+            UPDATE music_config SET voice_volume = 100
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-6" author="caramel">
+        <addNotNullConstraint tableName="music_config" columnName="voice_volume" />
+    </changeSet>
+
 </databaseChangeLog>

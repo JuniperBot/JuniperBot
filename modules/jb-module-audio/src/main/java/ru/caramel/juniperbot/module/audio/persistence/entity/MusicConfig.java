@@ -54,4 +54,7 @@ public class MusicConfig extends GuildOwnedEntity {
     @Column(name = "duplicate_limit")
     private Long duplicateLimit;
 
+    @Column(name = "voice_volume")
+    private int voiceVolume;
+
 }

@@ -121,9 +121,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     @Override
     public PlaybackInstance getInstance(Guild guild) {
+        MusicConfig config = getConfig(guild);
         return instances.computeIfAbsent(guild.getIdLong(), e -> {
             AudioPlayer player = playerManager.createPlayer();
             player.addListener(this);
+            player.setVolume(config.getVoiceVolume());
             return new PlaybackInstance(e, player);
         });
     }
@@ -294,6 +296,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         taskExecutor.execute(() -> {
             instance.reset();
             instances.remove(instance.getGuildId());
+            MusicConfig config = getConfig(instance.getGuildId());
+            config.setVoiceVolume(instance.getPlayer().getVolume());
+            musicConfigRepository.save(config);
         });
     }
 
@@ -337,7 +342,6 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     public void stop(Guild guild) {
         instances.computeIfPresent(guild.getIdLong(), (g, e) -> {
             e.stop();
-            e.reset();
             return null;
         });
         instances.remove(guild.getIdLong());
