@@ -170,20 +170,47 @@ public class ModerationServiceImpl implements ModerationService {
                     .complete();
         }
         for (TextChannel channel : guild.getTextChannels()) {
-            checkDeny(channel, role, Permission.MESSAGE_WRITE);
+            checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
         }
         for (VoiceChannel channel : guild.getVoiceChannels()) {
-            checkDeny(channel, role, Permission.VOICE_SPEAK);
+            // remove muted state for existing roles
+            checkPermission(channel, role, PermissionMode.UNCHECKED, Permission.VOICE_SPEAK);
         }
         return role;
     }
 
-    private static void checkDeny(Channel channel, Role role, Permission permission) {
+    private enum PermissionMode {
+        DENY, ALLOW, UNCHECKED
+    }
+
+    private static void checkPermission(Channel channel, Role role, PermissionMode mode, Permission permission) {
         PermissionOverride override = channel.getPermissionOverride(role);
         if (override == null) {
-            channel.createPermissionOverride(role).setDeny(permission).queue();
-        } else if (!override.getDenied().contains(permission)) {
-            override.getManagerUpdatable().deny(permission).update().queue();
+            switch (mode) {
+                case DENY:
+                    channel.createPermissionOverride(role).setDeny(permission).queue();
+                    break;
+                case ALLOW:
+                    channel.createPermissionOverride(role).setAllow(permission).queue();
+                    break;
+                case UNCHECKED:
+                    // do nothing
+                    break;
+            }
+        } else {
+            switch (mode) {
+                case DENY:
+                    if (!override.getDenied().contains(permission)) {
+                        override.getManagerUpdatable().deny(permission).update().queue();
+                    }
+                    break;
+                case UNCHECKED:
+                case ALLOW:
+                    if (!override.getAllowed().contains(permission)) {
+                        override.getManagerUpdatable().clear(permission).update().queue();
+                    }
+                    break;
+            }
         }
     }
 
@@ -196,6 +223,7 @@ public class ModerationServiceImpl implements ModerationService {
                         .getController()
                         .addRolesToMember(member, mutedRole)
                         .queue();
+                member.getGuild().getController().setMute(member, true).queue();
                 return true;
             }
         } else {
@@ -223,6 +251,7 @@ public class ModerationServiceImpl implements ModerationService {
                     .getController()
                     .removeRolesFromMember(member, mutedRole)
                     .queue();
+            member.getGuild().getController().setMute(member, false).queue();
             result = true;
         }
         PermissionOverride override = channel.getPermissionOverride(member);

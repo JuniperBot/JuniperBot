@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.module.moderation.commands;
 
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -28,7 +27,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         description = "discord.command.mod.unmute.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
         priority = 10)
 public class UnMuteCommand extends ModeratorCommandAsync {
 
