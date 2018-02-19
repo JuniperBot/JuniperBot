@@ -223,17 +223,36 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         <h3 class="box-title"><spring:message code="page.config.mod.title"/></h3>
                     </div>
                     <div class="box-body">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <label for="modRoles" class="col-sm-5 control-label">
-                                <spring:message code="page.config.mod.roles"/>
-                            </label>
-                            <div class="col-sm-7">
-                                <form:select id="modRoles" path="modConfig.roles" disabled="${not serverAdded}"
-                                             cssClass="form-control select2" cssStyle="width: 100%;"
-                                             items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple" />
-                                <form:errors path="modConfig.roles" class="help-block" />
+
+                        <spring:bind path="modConfig.roles">
+                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                <label for="modRoles" class="col-sm-5 control-label">
+                                    <spring:message code="page.config.mod.roles"/>
+                                </label>
+                                <div class="col-sm-7">
+                                    <form:select id="modRoles" path="modConfig.roles" disabled="${not serverAdded}"
+                                                 cssClass="form-control select2" cssStyle="width: 100%;"
+                                                 items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple" />
+                                    <form:errors path="modConfig.roles" class="help-block" />
+                                </div>
                             </div>
-                        </div>
+                        </spring:bind>
+                        <spring:bind path="modConfig.roles">
+                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                <label for="publicColors" class="col-sm-5 control-label">
+                                    <spring:message code="page.config.publicColor.title"/>
+                                </label>
+                                <div class="col-sm-7">
+                                    <form:checkbox id="publicColors" path="modConfig.publicColors"
+                                                   data-toggle="toggle"
+                                                   data-onstyle="warning"
+                                                   data-size="small"
+                                                   data-on="${switchOn}"
+                                                   data-off="${switchOff}" />
+                                    <form:errors path="modConfig.publicColors" class="help-block" />
+                                </div>
+                            </div>
+                        </spring:bind>
                     </div>
                 </div>
             </div>

@@ -29,4 +29,6 @@ public class ModerationConfigDto implements Serializable {
     private static final long serialVersionUID = 2373520739258476656L;
 
     private List<Long> roles;
+
+    private boolean publicColors;
 }

@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.utils;
 
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -189,5 +192,25 @@ public final class CommonUtils {
             arrayList.removeAll(part);
         }
         return arrayList;
+    }
+
+    /**
+     * @param colorStr e.g. "FFFFFF"
+     * @return
+     */
+    public static Color hex2Rgb(String colorStr) {
+        return new Color(
+                Integer.valueOf(colorStr.substring(0, 2), 16),
+                Integer.valueOf(colorStr.substring(2, 4), 16),
+                Integer.valueOf(colorStr.substring(4, 6), 16));
+    }
+
+    public static Role getHighestRole(Member member) {
+        if (member == null || CollectionUtils.isEmpty(member.getRoles())) {
+            return null;
+        }
+        List<Role> roles = new ArrayList<>(member.getRoles());
+        roles.sort(Comparator.comparingInt(Role::getPosition));
+        return roles.get(0);
     }
 }

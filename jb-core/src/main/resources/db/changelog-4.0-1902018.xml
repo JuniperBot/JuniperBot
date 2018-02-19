@@ -21,23 +21,20 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog-19082017-1.xml"/>
-    <include file="db/changelog-20082017-1.xml"/>
-    <include file="db/changelog-23082017-1.xml"/>
-    <include file="db/changelog-25082017-1.xml"/>
-    <include file="db/changelog-29082017-1.xml"/>
-    <include file="db/changelog-30082017-1.xml"/>
-    <include file="db/changelog-1.9-01092017.xml"/>
-    <include file="db/changelog-2.0-06092017.xml"/>
-    <include file="db/changelog-2.9-12122017.xml"/>
-    <include file="db/changelog-3.1-29122017.xml"/>
-    <include file="db/changelog-3.2-09012018.xml"/>
-    <include file="db/changelog-3.3-09022018.xml"/>
-    <include file="db/changelog-3.4-12012018.xml"/>
-    <include file="db/changelog-3.5-17012018.xml"/>
-    <include file="db/changelog-3.6-20012018.xml"/>
-    <include file="db/changelog-3.8-26012018.xml"/>
-    <include file="db/changelog-3.9-29012018.xml"/>
-    <include file="db/changelog-4.0-1902018.xml"/>
+    <changeSet id="4.0-19022018-1" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="public_colors" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-2" author="caramel">
+        <sql>
+            UPDATE mod_config SET public_colors = false
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-3" author="caramel">
+        <addNotNullConstraint tableName="mod_config" columnName="public_colors" />
+    </changeSet>
 
 </databaseChangeLog>

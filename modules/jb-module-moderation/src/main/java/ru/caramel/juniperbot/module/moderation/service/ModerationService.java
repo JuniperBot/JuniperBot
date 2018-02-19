@@ -32,6 +32,10 @@ public interface ModerationService {
 
     boolean isModerator(Member member);
 
+    boolean isPublicColor(long serverId);
+
+    boolean setColor(Member member, String color);
+
     Role getMutedRole(Guild guild);
 
     boolean mute(TextChannel channel, Member member, boolean global);

@@ -39,4 +39,7 @@ public class ModerationConfig extends GuildOwnedEntity {
     @Column(columnDefinition = "json")
     private List<Long> roles;
 
+    @Column(name = "public_colors")
+    private boolean publicColors;
+
 }
