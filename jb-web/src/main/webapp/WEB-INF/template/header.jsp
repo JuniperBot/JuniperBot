@@ -48,19 +48,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-                <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="<spring:message code="about.support.server"/>" target="_blank">
-                        <div class="discord-header-icon-wrapper">
-                            <div class="discord-header-icon"></div>
-                        </div>
-                    </a>
-                </li>
-                <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="<spring:message code="about.support.github"/>" target="_blank"><i class="fa fa-github"></i></a>
-                </li>
-                <li class="dropdown tasks-menu" title="<spring:message code="global.header.language"/>" data-toggle="tooltip" data-container="body" data-placement="left">
+                <li class="dropdown tasks-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-language"></i>
+                        <i class="fa fa-globe"></i> ${jb:getDisplayLanguage()} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu language-menu">
                         <li>
@@ -83,6 +73,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </ul>
                         </li>
                     </ul>
+                </li>
+                <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
+                    <a href="<spring:message code="about.support.server"/>" target="_blank">
+                        <div class="discord-header-icon-wrapper">
+                            <div class="discord-header-icon"></div>
+                        </div>
+                    </a>
+                </li>
+                <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
+                    <a href="<spring:message code="about.support.github"/>" target="_blank"><i class="fa fa-github"></i></a>
                 </li>
                 <sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
                     <li><a href="<c:url value="/login"/>"><i class="fa fa-sign-in"></i> <spring:message code="global.header.login"/></a></li>

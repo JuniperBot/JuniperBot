@@ -17,9 +17,12 @@
 package ru.caramel.juniperbot.web.common.tags;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.web.dto.RankingConfigDto;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public final class TagFunctions {
@@ -32,5 +35,14 @@ public final class TagFunctions {
         return CollectionUtils.isNotEmpty(dto.getRewards()) ? dto.getRewards().stream()
                 .filter(e -> Objects.equals(roleString, e.getRoleId()))
                 .map(Reward::getLevel).findFirst().orElse(null) : null;
+    }
+
+    public static String getDisplayLanguage() {
+        Locale locale = LocaleContextHolder.getLocale();
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        String name = locale.getDisplayLanguage(locale);
+        return StringUtils.capitalize(name);
     }
 }
