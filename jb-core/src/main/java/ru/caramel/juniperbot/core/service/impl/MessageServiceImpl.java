@@ -36,6 +36,7 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.PluralUtils;
 
 import java.awt.*;
+import java.time.Year;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,7 +76,7 @@ public class MessageServiceImpl implements MessageService {
     public EmbedBuilder getBaseEmbed(boolean copyright) {
         EmbedBuilder builder = new EmbedBuilder().setColor(accentColor);
         if (copyright) {
-            builder.setFooter(getMessage("about.copy.content"), copyImageUrl);
+            builder.setFooter(getMessage("about.copy.content", Year.now()), copyImageUrl);
         }
         return builder;
     }
