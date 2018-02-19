@@ -252,9 +252,11 @@ public class VkServiceImpl implements VkService {
     private void addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
         EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
         if (prevBuilder == null || prevBuilder.getFields().size() == 24) { // do not add last empty fields
-            initBuilder(message, builders);
+            prevBuilder = initBuilder(message, builders);
         }
-        addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
+        if (prevBuilder.getFields().size() > 0) {
+            addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
+        }
     }
 
     private boolean hasImage(List<EmbedBuilder> builders) {
