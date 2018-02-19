@@ -97,20 +97,23 @@ public class ModerationServiceImpl implements ModerationService {
         }
         for (TextChannel channel : guild.getTextChannels()) {
             PermissionOverride override = channel.getPermissionOverride(role);
-            if (override == null
-                    || !override.getDenied().contains(Permission.MESSAGE_WRITE)) {
+            if (override == null) {
                 channel.createPermissionOverride(role)
                         .setDeny(Permission.MESSAGE_WRITE)
                         .queue();
+            } else if (!override.getDenied().contains(Permission.MESSAGE_WRITE)) {
+                override.getManagerUpdatable().deny(Permission.MESSAGE_WRITE).update().queue();
             }
         }
 
         for (VoiceChannel channel : guild.getVoiceChannels()) {
             PermissionOverride override = channel.getPermissionOverride(role);
-            if (override == null || !override.getDenied().contains(Permission.VOICE_SPEAK)) {
+            if (override == null) {
                 channel.createPermissionOverride(role)
                         .setDeny(Permission.VOICE_SPEAK)
                         .queue();
+            } else if (!override.getDenied().contains(Permission.VOICE_SPEAK)) {
+                override.getManagerUpdatable().deny(Permission.VOICE_SPEAK).update().queue();
             }
         }
         return role;
