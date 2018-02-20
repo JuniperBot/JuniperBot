@@ -237,7 +237,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </div>
                         </spring:bind>
-                        <spring:bind path="modConfig.roles">
+                        <spring:bind path="modConfig.publicColors">
                             <div class="form-group ${status.error ? 'has-error' : ''}">
                                 <label for="publicColors" class="col-sm-5 control-label">
                                     <spring:message code="page.config.publicColor.title"/>
@@ -250,6 +250,18 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                                    data-on="${switchOn}"
                                                    data-off="${switchOff}" />
                                     <form:errors path="modConfig.publicColors" class="help-block" />
+                                </div>
+                            </div>
+                        </spring:bind>
+                        <spring:bind path="modConfig.maxWarnings">
+                            <div class="${status.error ? 'has-error' : ''}">
+                                <label for="maxWarnings" class="col-sm-5 control-label">
+                                    <spring:message code="page.config.maxWarnings.title"/>
+                                </label>
+                                <div class="col-sm-2">
+                                    <form:input id="maxWarnings" type="number" min="3" max="20"
+                                                path="modConfig.maxWarnings" cssClass="form-control" />
+                                    <form:errors path="modConfig.maxWarnings" class="help-block" />
                                 </div>
                             </div>
                         </spring:bind>
