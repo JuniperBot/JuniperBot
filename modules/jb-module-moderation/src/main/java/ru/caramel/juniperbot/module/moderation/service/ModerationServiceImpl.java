@@ -287,9 +287,31 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
+    public void kick(Member member) {
+        kick(member, null);
+    }
+
+    @Override
     public void kick(Member member, String reason) {
         if (member.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
             member.getGuild().getController().kick(member, reason).queue();
+        }
+    }
+
+    @Override
+    public void ban(Member member) {
+        ban(member, null);
+    }
+
+    @Override
+    public void ban(Member member, String reason) {
+        ban(member, 0, reason);
+    }
+
+    @Override
+    public void ban(Member member, int delDays, String reason) {
+        if (member.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
+            member.getGuild().getController().ban(member, delDays, reason).queue();
         }
     }
 }

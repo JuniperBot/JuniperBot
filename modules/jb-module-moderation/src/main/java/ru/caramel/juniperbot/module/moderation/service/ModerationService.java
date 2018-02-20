@@ -48,5 +48,13 @@ public interface ModerationService {
 
     boolean slowOff(TextChannel channel);
 
+    void kick(Member member);
+
     void kick(Member member, String reason);
+
+    void ban(Member member);
+
+    void ban(Member member, String reason);
+
+    void ban(Member member, int dayDel, String reason);
 }
