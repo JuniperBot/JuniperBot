@@ -69,4 +69,6 @@ public interface ModerationService {
 
     boolean warn(Member author, Member member, String reason);
 
+    void removeWarn(MemberWarning warning);
+
 }

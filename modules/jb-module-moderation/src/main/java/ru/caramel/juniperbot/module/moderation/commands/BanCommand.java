@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
-        priority = 15)
+        priority = 25)
 public class BanCommand extends ModeratorCommand {
 
     private final static Pattern BAN_PATTERN = Pattern.compile("([0-9]*)\\s*(.*)");

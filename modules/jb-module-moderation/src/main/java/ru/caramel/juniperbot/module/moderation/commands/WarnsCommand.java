@@ -36,7 +36,7 @@ import java.util.List;
         description = "discord.command.mod.warns.desc",
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
         source = ChannelType.TEXT,
-        priority = 10)
+        priority = 15)
 public class WarnsCommand extends ModeratorCommandAsync {
 
     @Override

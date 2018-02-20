@@ -373,4 +373,12 @@ public class ModerationServiceImpl implements ModerationService {
         warningRepository.save(warning);
         return exceed;
     }
+
+    @Override
+    @Transactional
+    public void removeWarn(MemberWarning warning) {
+        Objects.requireNonNull(warning, "No warning specified to remove");
+        warning.setActive(false);
+        warningRepository.save(warning);
+    }
 }

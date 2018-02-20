@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 @DiscordCommand(key = "discord.command.mod.color.key",
         description = "discord.command.mod.color.desc",
-        group = "discord.command.group.utility",
+        group = {"discord.command.group.moderation", "discord.command.group.utility"},
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES},
         priority = 5)

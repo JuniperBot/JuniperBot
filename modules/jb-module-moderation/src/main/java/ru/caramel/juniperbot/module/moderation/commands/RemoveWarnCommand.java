@@ -16,42 +16,53 @@
  */
 package ru.caramel.juniperbot.module.moderation.commands;
 
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 
+import java.util.List;
 import java.util.Objects;
 
-@DiscordCommand(key = "discord.command.mod.warn.key",
-        description = "discord.command.mod.warn.desc",
+@DiscordCommand(key = "discord.command.mod.removeWarm.key",
+        description = "discord.command.mod.removeWarm.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
-        priority = 5)
-public class WarnCommand extends ModeratorCommandAsync {
+        priority = 10)
+public class RemoveWarnCommand extends ModeratorCommandAsync {
 
     @Override
     public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
-        if (mentioned == null) {
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.help",
+        query = removeMention(query);
+        if (mentioned == null || !StringUtils.isNumeric(query)) {
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.help",
                     context.getConfig().getPrefix());
             return;
         }
-        if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
-            fail(event); // do not allow ban members or yourself
+        if (Objects.equals(mentioned, event.getMember())) {
+            fail(event); // do not allow remove warns from yourself
             return;
         }
-        if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.ban.message", mentioned.getEffectiveName());
+
+        int index;
+        try {
+            index = Integer.parseInt(query) - 1;
+        } catch (NumberFormatException e) {
+            fail(event);
             return;
         }
-        ModerationConfig config = moderationService.getConfig(event.getGuild());
-        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.message",
-                mentioned.getEffectiveName(), moderationService.warnCount(mentioned), config.getMaxWarnings());
+
+        List<MemberWarning> warningList = moderationService.getWarnings(mentioned);
+        if (index < 0 || warningList.size() <= index) {
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.empty", index + 1);
+            return;
+        }
+        MemberWarning warning = warningList.get(index);
+        moderationService.removeWarn(warning);
+        ok(event);
     }
 }

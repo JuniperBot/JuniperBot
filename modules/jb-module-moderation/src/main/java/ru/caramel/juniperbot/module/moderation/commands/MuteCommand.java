@@ -31,7 +31,7 @@ import java.util.Objects;
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
-        priority = 20)
+        priority = 30)
 public class MuteCommand extends ModeratorCommandAsync {
 
     @Override

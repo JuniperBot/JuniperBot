@@ -30,7 +30,7 @@ import java.util.Objects;
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.KICK_MEMBERS},
-        priority = 5)
+        priority = 20)
 public class KickCommand extends ModeratorCommand {
 
     @Override
