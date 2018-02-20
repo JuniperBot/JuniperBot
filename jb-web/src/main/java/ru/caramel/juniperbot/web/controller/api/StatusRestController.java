@@ -51,7 +51,7 @@ public class StatusRestController extends BaseRestController {
         shards.sort(Comparator.comparingInt(e -> e.getShardInfo().getShardId()));
         List<ChartDto> result = new ArrayList<>(shards.size());
         shards.forEach(jda -> {
-            ChartDto dto = new ChartDto(String.format(" Shard %s", jda.getShardInfo().getShardId()));
+            ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId(), jda.getPing()));
             dto.setColor(jda.getShardInfo().getShardId());
             Map<Long, Long> measurements = chartMap.get(jda).getMeasurements();
             if (measurements != null) {

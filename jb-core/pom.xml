@@ -28,7 +28,7 @@
     <parent>
         <groupId>ru.caramel</groupId>
         <artifactId>juniperbot</artifactId>
-        <version>3.3.x-SNAPSHOT</version>
+        <version>4.x-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 

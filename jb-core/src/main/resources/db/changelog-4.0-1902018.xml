@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBotJ.
+
+ JuniperBotJ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBotJ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="4.0-19022018-1" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="public_colors" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-2" author="caramel">
+        <sql>
+            UPDATE mod_config SET public_colors = false
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-3" author="caramel">
+        <addNotNullConstraint tableName="mod_config" columnName="public_colors" />
+    </changeSet>
+
+    <changeSet id="4.0-19022018-4" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="voice_volume" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-5" author="caramel">
+        <sql>
+            UPDATE music_config SET voice_volume = 100
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-6" author="caramel">
+        <addNotNullConstraint tableName="music_config" columnName="voice_volume" />
+    </changeSet>
+
+    <changeSet id="4.0-19022018-7" author="caramel">
+        <createTable tableName="member_warning">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_member_warning"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="moderator_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_moderator_id"
+                             references="member(id)"/>
+            </column>
+            <column name="violator_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_violator_id"
+                             references="member(id)"/>
+            </column>
+            <column name="reason" type="VARCHAR(1000)"/>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-8" author="caramel">
+        <createIndex tableName="member_warning" indexName="idx_member_warning_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_moderator_id">
+            <column name="moderator_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_violator_id">
+            <column name="violator_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_active_guild_violator">
+            <column name="guild_config_id"/>
+            <column name="violator_id"/>
+            <column name="active"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-9" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="max_warnings" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-10" author="caramel">
+        <sql>
+            UPDATE mod_config SET max_warnings = 3
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-11" author="caramel">
+        <addNotNullConstraint tableName="mod_config" columnName="max_warnings" />
+    </changeSet>
+
+</databaseChangeLog>

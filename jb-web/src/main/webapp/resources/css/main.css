@@ -736,3 +736,13 @@ h6.hyperlink:hover > a {
 .common-stats .info-box-number {
     font-size: 28px;
 }
+
+.navbar-toggle {
+    float: left !important;
+}
+
+@media (max-width: 991px) {
+    .navbar-collapse.pull-left+.navbar-custom-menu {
+        right: 0px !important;
+    }
+}

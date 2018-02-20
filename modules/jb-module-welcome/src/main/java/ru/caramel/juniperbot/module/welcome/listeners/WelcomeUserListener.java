@@ -55,6 +55,9 @@ public class WelcomeUserListener extends DiscordEventListener {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        if (event.getUser().isBot()) {
+            return;
+        }
         WelcomeMessage message = welcomeMessageRepository.findByGuild(event.getGuild());
         if (message == null || !message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
             return;
@@ -63,9 +66,8 @@ public class WelcomeUserListener extends DiscordEventListener {
         if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
             User user = event.getUser();
             try {
-                contextService.queue(event.getGuild(), user.openPrivateChannel(), c -> {
-                    send(event, c, message.getJoinMessage(), message.isJoinRichEnabled());
-                });
+                contextService.queue(event.getGuild(), user.openPrivateChannel(),
+                        c -> send(event, c, message.getJoinMessage(), message.isJoinRichEnabled()));
             } catch (Exception e) {
                 LOGGER.error("Could not open private channel for user {}", user, e);
             }
@@ -77,6 +79,9 @@ public class WelcomeUserListener extends DiscordEventListener {
 
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+        if (event.getUser().isBot()) {
+            return;
+        }
         WelcomeMessage message = welcomeMessageRepository.findByGuildId(event.getGuild().getIdLong());
         if (message == null || !message.isLeaveEnabled() || message.getLeaveChannelId() == null) {
             return;

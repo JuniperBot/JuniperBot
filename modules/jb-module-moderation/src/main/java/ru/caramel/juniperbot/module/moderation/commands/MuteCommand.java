@@ -24,18 +24,20 @@ import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 
+import java.util.Objects;
+
 @DiscordCommand(key = "discord.command.mod.mute.key",
         description = "discord.command.mod.mute.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS},
-        priority = 5)
+        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
+        priority = 30)
 public class MuteCommand extends ModeratorCommandAsync {
 
     @Override
     protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
-        if (moderationService.isModerator(mentioned)) {
+        if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
             return; // do not allow to mute moderators
         }
         if (mentioned == null) {

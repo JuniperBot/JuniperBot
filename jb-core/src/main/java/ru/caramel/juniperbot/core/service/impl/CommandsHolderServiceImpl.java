@@ -110,7 +110,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
                     .collect(Collectors.toList());
             discordCommands.sort(Comparator.comparingInt(DiscordCommand::priority));
             descriptors = discordCommands
-                    .stream().collect(Collectors.groupingBy(DiscordCommand::group, LinkedHashMap::new, Collectors.toList()));
+                    .stream().collect(Collectors.groupingBy(e -> e.group()[0], LinkedHashMap::new, Collectors.toList()));
         }
         return descriptors;
     }

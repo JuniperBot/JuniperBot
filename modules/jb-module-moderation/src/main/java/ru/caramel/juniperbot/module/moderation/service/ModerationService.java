@@ -20,7 +20,10 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+
+import java.util.List;
 
 public interface ModerationService {
 
@@ -31,6 +34,10 @@ public interface ModerationService {
     ModerationConfig save(ModerationConfig config);
 
     boolean isModerator(Member member);
+
+    boolean isPublicColor(long serverId);
+
+    boolean setColor(Member member, String color);
 
     Role getMutedRole(Guild guild);
 
@@ -43,4 +50,25 @@ public interface ModerationService {
     boolean isRestricted(TextChannel channel, Member member);
 
     boolean slowOff(TextChannel channel);
+
+    void kick(Member author, Member member);
+
+    void kick(Member author, Member member, String reason);
+
+    void ban(Member author, Member member);
+
+    void ban(Member author, Member member, String reason);
+
+    void ban(Member author, Member member, int dayDel, String reason);
+
+    List<MemberWarning> getWarnings(Member member);
+
+    long warnCount(Member member);
+
+    boolean warn(Member author, Member member);
+
+    boolean warn(Member author, Member member, String reason);
+
+    void removeWarn(MemberWarning warning);
+
 }

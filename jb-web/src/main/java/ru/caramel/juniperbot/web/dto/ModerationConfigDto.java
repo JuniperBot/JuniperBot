@@ -18,7 +18,10 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,4 +32,10 @@ public class ModerationConfigDto implements Serializable {
     private static final long serialVersionUID = 2373520739258476656L;
 
     private List<Long> roles;
+
+    private boolean publicColors;
+
+    @Min(ModerationConfig.DEFAULT_MAX_WARNINGS)
+    @Max(20)
+    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
 }

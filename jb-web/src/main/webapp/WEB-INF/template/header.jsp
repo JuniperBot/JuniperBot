@@ -30,14 +30,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
             </a>
         </c:if>
 
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-            <i class="fa fa-bars"></i>
-        </button>
+        <c:if test="${not sidebarVisible}">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                <i class="fa fa-bars"></i>
+            </button>
+        </c:if>
 
         <div class="navbar-collapse pull-left collapse" id="navbar-collapse" aria-expanded="false" style="height: 1px;">
             <ul class="nav navbar-nav">
                 <c:forEach items="${navigationMenu}" var="item">
-                    <c:if test="${item.navbar}">
+                    <c:if test="${not sidebarVisible and item.navbar}">
                         <tiles:insertDefinition name="menu.item">
                             <tiles:putAttribute name="item" value="${item}" />
                         </tiles:insertDefinition>
@@ -48,19 +50,9 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-                <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="<spring:message code="about.support.server"/>" target="_blank">
-                        <div class="discord-header-icon-wrapper">
-                            <div class="discord-header-icon"></div>
-                        </div>
-                    </a>
-                </li>
-                <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
-                    <a href="<spring:message code="about.support.github"/>" target="_blank"><i class="fa fa-github"></i></a>
-                </li>
-                <li class="dropdown tasks-menu" title="<spring:message code="global.header.language"/>" data-toggle="tooltip" data-container="body" data-placement="left">
+                <li class="dropdown tasks-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-language"></i>
+                        <i class="fa fa-globe"></i> ${jb:getDisplayLanguage()} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu language-menu">
                         <li>
@@ -83,6 +75,16 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </ul>
                         </li>
                     </ul>
+                </li>
+                <li title="<spring:message code="global.header.discord"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
+                    <a href="<spring:message code="about.support.server"/>" target="_blank">
+                        <div class="discord-header-icon-wrapper">
+                            <div class="discord-header-icon"></div>
+                        </div>
+                    </a>
+                </li>
+                <li title="<spring:message code="global.header.github"/>" data-toggle="tooltip" data-container="body" data-placement="bottom">
+                    <a href="<spring:message code="about.support.github"/>" target="_blank"><i class="fa fa-github"></i></a>
                 </li>
                 <sec:authorize access="hasAnyRole('ROLE_ANONYMOUS')">
                     <li><a href="<c:url value="/login"/>"><i class="fa fa-sign-in"></i> <spring:message code="global.header.login"/></a></li>

@@ -83,4 +83,10 @@
         <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
         <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.web.dto.RankingConfigDto,java.lang.Long)</function-signature>
     </function>
+
+    <function>
+        <name>getDisplayLanguage</name>
+        <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
+        <function-signature>java.lang.String getDisplayLanguage()</function-signature>
+    </function>
 </taglib>
