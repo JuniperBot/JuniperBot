@@ -30,9 +30,11 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
             </a>
         </c:if>
 
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-            <i class="fa fa-bars"></i>
-        </button>
+        <c:if test="${not sidebarVisible}">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                <i class="fa fa-bars"></i>
+            </button>
+        </c:if>
 
         <div class="navbar-collapse pull-left collapse" id="navbar-collapse" aria-expanded="false" style="height: 1px;">
             <ul class="nav navbar-nav">
