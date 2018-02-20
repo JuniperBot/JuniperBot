@@ -25,10 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.MemberService;
+import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.model.SlowMode;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.module.moderation.persistence.repository.MemberWarningRepository;
 import ru.caramel.juniperbot.module.moderation.persistence.repository.ModerationConfigRepository;
 
 import java.awt.*;
@@ -48,7 +53,16 @@ public class ModerationServiceImpl implements ModerationService {
     private ModerationConfigRepository configRepository;
 
     @Autowired
+    private MemberWarningRepository warningRepository;
+
+    @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private MessageService messageService;
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
@@ -287,31 +301,69 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public void kick(Member member) {
-        kick(member, null);
+    public void kick(Member author, Member member) {
+        kick(author, member, null);
     }
 
     @Override
-    public void kick(Member member, String reason) {
+    public void kick(Member author, Member member, String reason) {
         if (member.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
+            reason = StringUtils.isNotEmpty(reason)
+                    ? String.format("%s: %s", author.getEffectiveName(), reason)
+                    : author.getEffectiveName();
             member.getGuild().getController().kick(member, reason).queue();
         }
     }
 
     @Override
-    public void ban(Member member) {
-        ban(member, null);
+    public void ban(Member author, Member member) {
+        ban(author, member, null);
     }
 
     @Override
-    public void ban(Member member, String reason) {
-        ban(member, 0, reason);
+    public void ban(Member author, Member member, String reason) {
+        ban(author, member, 0, reason);
     }
 
     @Override
-    public void ban(Member member, int delDays, String reason) {
+    public void ban(Member author, Member member, int delDays, String reason) {
         if (member.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
+            reason = StringUtils.isNotEmpty(reason)
+                    ? String.format("%s: %s", author.getEffectiveName(), reason)
+                    : author.getEffectiveName();
             member.getGuild().getController().ban(member, delDays, reason).queue();
         }
+    }
+
+    @Override
+    public boolean warn(Member author, Member member) {
+        return warn(author, member, null);
+    }
+
+    @Override
+    @Transactional
+    public long warnCount(Member member) {
+        GuildConfig config = configService.getOrCreate(member.getGuild());
+        LocalMember memberLocal = memberService.getOrCreate(member);
+        return warningRepository.countActiveByViolator(config, memberLocal);
+    }
+
+    @Override
+    @Transactional
+    public boolean warn(Member author, Member member, String reason) {
+        GuildConfig config = configService.getOrCreate(member.getGuild());
+        ModerationConfig moderationConfig = getConfig(member.getGuild());
+        LocalMember authorLocal = memberService.getOrCreate(author);
+        LocalMember memberLocal = memberService.getOrCreate(member);
+
+        boolean exceed = warningRepository.countActiveByViolator(config, memberLocal) >= moderationConfig.getMaxWarnings() - 1;
+        MemberWarning warning = new MemberWarning(config, authorLocal, memberLocal, reason);
+        if (exceed) {
+            warningRepository.flushWarnings(config, memberLocal);
+            warning.setActive(false);
+            ban(author, member, messageService.getMessage("discord.command.mod.warn.ban.reason"));
+        }
+        warningRepository.save(warning);
+        return exceed;
     }
 }

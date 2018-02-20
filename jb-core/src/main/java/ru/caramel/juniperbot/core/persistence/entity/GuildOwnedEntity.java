@@ -29,6 +29,6 @@ public abstract class GuildOwnedEntity extends BaseEntity {
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "guild_config_id")
-    private GuildConfig guildConfig;
+    protected GuildConfig guildConfig;
 
 }

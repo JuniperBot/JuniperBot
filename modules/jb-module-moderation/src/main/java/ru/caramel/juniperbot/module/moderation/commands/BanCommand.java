@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
-        priority = 10)
+        priority = 15)
 public class BanCommand extends ModeratorCommand {
 
     private final static Pattern BAN_PATTERN = Pattern.compile("([0-9]*)\\s*(.*)");
@@ -54,11 +54,11 @@ public class BanCommand extends ModeratorCommand {
                     if (StringUtils.isNotEmpty(matcher.group(1))) {
                         delDays = Integer.parseInt(matcher.group(1));
                     }
-                    moderationService.ban(mentioned, delDays, matcher.group(2));
+                    moderationService.ban(event.getMember(), mentioned, delDays, matcher.group(2));
                     return ok(event);
                 }
             } else {
-                moderationService.ban(mentioned);
+                moderationService.ban(event.getMember(), mentioned);
                 return ok(event);
             }
         }

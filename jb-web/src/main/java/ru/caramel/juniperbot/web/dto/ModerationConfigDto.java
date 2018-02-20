@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,4 +32,6 @@ public class ModerationConfigDto implements Serializable {
     private List<Long> roles;
 
     private boolean publicColors;
+
+    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
 }

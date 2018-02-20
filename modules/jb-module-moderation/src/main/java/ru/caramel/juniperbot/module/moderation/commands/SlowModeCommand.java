@@ -28,7 +28,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE},
-        priority = 25)
+        priority = 30)
 public class SlowModeCommand extends ModeratorCommand {
 
     @Override

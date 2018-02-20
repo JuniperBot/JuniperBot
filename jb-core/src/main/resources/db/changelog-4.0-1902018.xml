@@ -53,4 +53,65 @@
         <addNotNullConstraint tableName="music_config" columnName="voice_volume" />
     </changeSet>
 
+    <changeSet id="4.0-19022018-7" author="caramel">
+        <createTable tableName="member_warning">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_member_warning"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="moderator_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_moderator_id"
+                             references="member(id)"/>
+            </column>
+            <column name="violator_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_member_warning_violator_id"
+                             references="member(id)"/>
+            </column>
+            <column name="reason" type="VARCHAR(1000)"/>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-8" author="caramel">
+        <createIndex tableName="member_warning" indexName="idx_member_warning_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_moderator_id">
+            <column name="moderator_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_violator_id">
+            <column name="violator_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_active_guild_violator">
+            <column name="guild_config_id"/>
+            <column name="violator_id"/>
+            <column name="active"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-9" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="max_warnings" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-10" author="caramel">
+        <sql>
+            UPDATE mod_config SET max_warnings = 3
+        </sql>
+    </changeSet>
+
+    <changeSet id="4.0-19022018-11" author="caramel">
+        <addNotNullConstraint tableName="mod_config" columnName="max_warnings" />
+    </changeSet>
+
 </databaseChangeLog>

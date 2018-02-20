@@ -48,13 +48,20 @@ public interface ModerationService {
 
     boolean slowOff(TextChannel channel);
 
-    void kick(Member member);
+    void kick(Member author, Member member);
 
-    void kick(Member member, String reason);
+    void kick(Member author, Member member, String reason);
 
-    void ban(Member member);
+    void ban(Member author, Member member);
 
-    void ban(Member member, String reason);
+    void ban(Member author, Member member, String reason);
 
-    void ban(Member member, int dayDel, String reason);
+    void ban(Member author, Member member, int dayDel, String reason);
+
+    long warnCount(Member member);
+
+    boolean warn(Member author, Member member);
+
+    boolean warn(Member author, Member member, String reason);
+
 }

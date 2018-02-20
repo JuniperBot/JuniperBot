@@ -33,6 +33,9 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "mod_config")
 public class ModerationConfig extends GuildOwnedEntity {
+
+    public static final int DEFAULT_MAX_WARNINGS = 3;
+
     private static final long serialVersionUID = 7052650749958531237L;
 
     @Type(type = "jsonb")
@@ -42,4 +45,6 @@ public class ModerationConfig extends GuildOwnedEntity {
     @Column(name = "public_colors")
     private boolean publicColors;
 
+    @Column(name = "max_warnings")
+    private int maxWarnings = DEFAULT_MAX_WARNINGS;
 }

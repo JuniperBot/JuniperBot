@@ -22,29 +22,36 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 import java.util.Objects;
 
-@DiscordCommand(key = "discord.command.mod.kick.key",
-        description = "discord.command.mod.kick.desc",
+@DiscordCommand(key = "discord.command.mod.warn.key",
+        description = "discord.command.mod.warn.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.KICK_MEMBERS},
-        priority = 5)
-public class KickCommand extends ModeratorCommand {
+        permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
+        priority = 10)
+public class WarnCommand extends ModeratorCommandAsync {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
+    public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.kick.help",
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.help",
                     context.getConfig().getPrefix());
-            return false;
+            return;
         }
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
-            return fail(event); // do not allow kick members or yourself
+            fail(event); // do not allow ban members or yourself
+            return;
         }
-        moderationService.kick(event.getMember(), mentioned, removeMention(query));
-        return ok(event);
+        if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.ban.message", mentioned.getEffectiveName());
+            return;
+        }
+        ModerationConfig config = moderationService.getConfig(event.getGuild());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.message",
+                mentioned.getEffectiveName(), moderationService.warnCount(mentioned), config.getMaxWarnings());
     }
 }
