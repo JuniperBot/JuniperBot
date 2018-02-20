@@ -47,4 +47,6 @@ public interface ModerationService {
     boolean isRestricted(TextChannel channel, Member member);
 
     boolean slowOff(TextChannel channel);
+
+    void kick(Member member, String reason);
 }

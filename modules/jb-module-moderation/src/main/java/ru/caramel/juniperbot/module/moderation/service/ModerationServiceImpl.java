@@ -285,4 +285,11 @@ public class ModerationServiceImpl implements ModerationService {
     public boolean slowOff(TextChannel channel) {
         return slowModeMap.remove(channel.getIdLong()) != null;
     }
+
+    @Override
+    public void kick(Member member, String reason) {
+        if (member.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
+            member.getGuild().getController().kick(member, reason).queue();
+        }
+    }
 }

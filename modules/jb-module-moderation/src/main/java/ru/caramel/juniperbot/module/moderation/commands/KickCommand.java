@@ -23,23 +23,28 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 
-@DiscordCommand(key = "discord.command.mod.unmute.key",
-        description = "discord.command.mod.unmute.desc",
+import java.util.Objects;
+
+@DiscordCommand(key = "discord.command.mod.kick.key",
+        description = "discord.command.mod.kick.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
-        priority = 20)
-public class UnMuteCommand extends ModeratorCommandAsync {
+        permissions = {Permission.MESSAGE_WRITE, Permission.KICK_MEMBERS},
+        priority = 5)
+public class KickCommand extends ModeratorCommand {
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
-            messageService.onError(event.getChannel(), "discord.command.mod.mute.mention");
-            return;
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.kick.help",
+                    context.getConfig().getPrefix());
+            return false;
         }
-        boolean unmuted = moderationService.unmute(event.getTextChannel(), mentioned);
-        messageService.onEmbedMessage(event.getChannel(), unmuted
-                ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
+        if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
+            return fail(event); // do not allow kick members or yourself
+        }
+        moderationService.kick(mentioned, removeMention(query));
+        return ok(event);
     }
 }

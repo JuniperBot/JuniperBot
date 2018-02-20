@@ -28,9 +28,14 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public abstract class AbstractCommand implements Command {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
+
+    private static final Pattern MENTION_PATTERN = Pattern.compile("<@!?[0-9]+>\\s*(.*)");
 
     @Autowired
     protected MessageService messageService;
@@ -80,5 +85,16 @@ public abstract class AbstractCommand implements Command {
     protected Member getMentioned(MessageReceivedEvent event) {
         return event.getGuild() != null && CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 ? event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0)) : null;
+    }
+
+    protected String removeMention(String input) {
+        if (StringUtils.isEmpty(input)) {
+            return input;
+        }
+        Matcher matcher = MENTION_PATTERN.matcher(input);
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+        return input;
     }
 }
