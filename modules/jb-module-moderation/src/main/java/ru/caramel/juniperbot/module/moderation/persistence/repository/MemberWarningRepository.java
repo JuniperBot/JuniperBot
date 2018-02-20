@@ -30,14 +30,17 @@ import java.util.List;
 @Repository
 public interface MemberWarningRepository extends GuildOwnedRepository<MemberWarning> {
 
-    @Query("SELECT e FROM MemberWarning e WHERE e.guildConfig = :guildConfig AND violator = :violator")
+    @Query("SELECT e FROM MemberWarning e WHERE e.active = true AND e.guildConfig = :guildConfig AND e.violator = :violator ORDER BY e.date")
     List<MemberWarning> findActiveByViolator(@Param("guildConfig") GuildConfig config, @Param("violator") LocalMember violator);
 
-    @Query("SELECT count(e) FROM MemberWarning e WHERE e.guildConfig = :guildConfig AND violator = :violator")
+    @Query("SELECT e FROM MemberWarning e WHERE e.active = true AND e.guildConfig.guildId = :guildId AND e.violator = :violator ORDER BY e.date")
+    List<MemberWarning> findActiveByViolator(@Param("guildId") long guildId, @Param("violator") LocalMember violator);
+
+    @Query("SELECT count(e) FROM MemberWarning e WHERE e.active = true AND e.guildConfig = :guildConfig AND e.violator = :violator")
     long countActiveByViolator(@Param("guildConfig") GuildConfig config, @Param("violator") LocalMember violator);
 
     @Modifying
-    @Query("UPDATE MemberWarning e SET e.active = false WHERE e.guildConfig = :guildConfig AND violator = :violator")
+    @Query("UPDATE MemberWarning e SET e.active = false WHERE e.active = true AND e.guildConfig = :guildConfig AND e.violator = :violator")
     int flushWarnings(@Param("guildConfig") GuildConfig config, @Param("violator") LocalMember violator);
 
 }

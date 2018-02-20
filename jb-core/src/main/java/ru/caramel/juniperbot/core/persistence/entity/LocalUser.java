@@ -23,6 +23,7 @@ import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Getter
 @Setter
@@ -39,4 +40,9 @@ public class LocalUser extends UserEntity {
 
     @Column(name = "avatar_url")
     private String avatarUrl;
+
+    @Transient
+    public String getAsMention() {
+        return "<@" + userId + '>';
+    }
 }

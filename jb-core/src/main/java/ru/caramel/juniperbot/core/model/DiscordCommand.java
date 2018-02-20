@@ -36,7 +36,7 @@ public @interface DiscordCommand {
 
     Permission[] permissions() default {Permission.MESSAGE_WRITE};
 
-    String group() default "discord.command.group.common";
+    String[] group() default {"discord.command.group.common"};
 
     int priority() default 1;
 

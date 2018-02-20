@@ -60,8 +60,13 @@ public class HelpCommand extends AbstractCommand {
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());
 
-        Map<String, List<DiscordCommand>> groupedCommands = discordCommands
-                .stream().collect(Collectors.groupingBy(DiscordCommand::group, TreeMap::new, Collectors.toList()));
+        Map<String, List<DiscordCommand>> groupedCommands = new TreeMap<>();
+        for (DiscordCommand command : discordCommands) {
+            for (String group: command.group()) {
+                List<DiscordCommand> groupList = groupedCommands.computeIfAbsent(group, e -> new ArrayList<>());
+                groupList.add(command);
+            }
+        }
         groupedCommands.forEach((k, v) -> v.sort(Comparator.comparingInt(DiscordCommand::priority)));
 
         Map<String, String> localizedGroups = groupedCommands.keySet().stream()

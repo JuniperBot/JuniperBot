@@ -336,6 +336,13 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
+    @Transactional
+    public List<MemberWarning> getWarnings(Member member) {
+        LocalMember localMember = memberService.getOrCreate(member);
+        return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
+    }
+
+    @Override
     public boolean warn(Member author, Member member) {
         return warn(author, member, null);
     }

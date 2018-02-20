@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
@@ -36,4 +37,8 @@ public class LocalMember extends GuildEntity {
     @Column(name = "effective_name")
     private String effectiveName;
 
+    @Transient
+    public String getAsMention() {
+        return StringUtils.isEmpty(effectiveName) ? user.getAsMention() : "<@!" + user.getUserId() + '>';
+    }
 }

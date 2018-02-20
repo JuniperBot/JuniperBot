@@ -20,7 +20,10 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+
+import java.util.List;
 
 public interface ModerationService {
 
@@ -57,6 +60,8 @@ public interface ModerationService {
     void ban(Member author, Member member, String reason);
 
     void ban(Member author, Member member, int dayDel, String reason);
+
+    List<MemberWarning> getWarnings(Member member);
 
     long warnCount(Member member);
 
