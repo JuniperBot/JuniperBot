@@ -51,20 +51,23 @@ public class StatusRestController extends BaseRestController {
         shards.sort(Comparator.comparingInt(e -> e.getShardInfo().getShardId()));
         List<ChartDto> result = new ArrayList<>(shards.size());
         shards.forEach(jda -> {
-            ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId(), jda.getPing()));
-            dto.setColor(jda.getShardInfo().getShardId());
-            Map<Long, Long> measurements = chartMap.get(jda).getMeasurements();
-            if (measurements != null) {
-                Object[][] data = new Object[measurements.size()][2];
-                int i = 0;
-                for (Map.Entry<Long, Long> entry : measurements.entrySet()) {
-                    Object[] part = data[i++];
-                    part[0] = entry.getKey();
-                    part[1] = entry.getValue();
+            TimeWindowChart chart = chartMap.get(jda);
+            if (chart != null) {
+                ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId(), jda.getPing()));
+                dto.setColor(jda.getShardInfo().getShardId());
+                Map<Long, Long> measurements = chart.getMeasurements();
+                if (measurements != null) {
+                    Object[][] data = new Object[measurements.size()][2];
+                    int i = 0;
+                    for (Map.Entry<Long, Long> entry : measurements.entrySet()) {
+                        Object[] part = data[i++];
+                        part[0] = entry.getKey();
+                        part[1] = entry.getValue();
+                    }
+                    dto.setData(data);
                 }
-                dto.setData(data);
+                result.add(dto);
             }
-            result.add(dto);
         });
         return result;
     }
