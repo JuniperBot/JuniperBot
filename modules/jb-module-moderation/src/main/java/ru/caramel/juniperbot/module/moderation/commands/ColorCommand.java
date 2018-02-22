@@ -87,6 +87,7 @@ public class ColorCommand extends ModeratorCommandAsync {
 
     @Override
     public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
-        return super.isAvailable(event, config) || moderationService.isPublicColor(event.getGuild().getIdLong());
+        return super.isAvailable(event, config) || (event.getGuild() != null &&
+                moderationService.isPublicColor(event.getGuild().getIdLong()));
     }
 }
