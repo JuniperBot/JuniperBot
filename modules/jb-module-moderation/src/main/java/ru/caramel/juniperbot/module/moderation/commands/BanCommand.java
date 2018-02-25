@@ -50,6 +50,11 @@ public class BanCommand extends ModeratorCommand {
                 return fail(event); // do not allow ban members or yourself
             }
 
+            if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
+                messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
+                return false;
+            }
+
             query = removeMention(query);
             if (StringUtils.isNotEmpty(query)) {
                 Matcher matcher = BAN_PATTERN.matcher(query);
