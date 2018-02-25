@@ -32,7 +32,11 @@ import java.util.regex.Pattern;
         description = "discord.command.mod.ban.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
+        permissions = {
+                Permission.MESSAGE_WRITE,
+                Permission.MESSAGE_EMBED_LINKS,
+                Permission.BAN_MEMBERS
+        },
         priority = 25)
 public class BanCommand extends ModeratorCommand {
 

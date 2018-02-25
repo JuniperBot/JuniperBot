@@ -43,8 +43,6 @@ import java.util.Map;
 @RestController
 public class VkCallbackController extends AbstractController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VkCallbackController.class);
-
     private final Gson gson = GsonUtils.create();
 
     private final static Map<String, Type> CALLBACK_TYPES;

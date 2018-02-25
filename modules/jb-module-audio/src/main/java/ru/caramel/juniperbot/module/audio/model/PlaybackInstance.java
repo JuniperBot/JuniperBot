@@ -207,7 +207,9 @@ public class PlaybackInstance extends FeatureInstance {
         if (isActive() && !player.getPlayingTrack().isSeekable()) {
             return false;
         }
-        player.getPlayingTrack().setPosition(position);
+        if (player.getPlayingTrack() != null) {
+            player.getPlayingTrack().setPosition(position);
+        }
         return true;
     }
 

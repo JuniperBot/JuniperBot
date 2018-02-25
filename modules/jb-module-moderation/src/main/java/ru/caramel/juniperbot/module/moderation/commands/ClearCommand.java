@@ -40,7 +40,13 @@ import java.util.regex.Pattern;
         description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY})
+        permissions = {
+                Permission.MESSAGE_WRITE,
+                Permission.MESSAGE_EMBED_LINKS,
+                Permission.MESSAGE_MANAGE,
+                Permission.MESSAGE_HISTORY
+        }
+)
 public class ClearCommand extends ModeratorCommandAsync {
 
     private static final int MAX_MESSAGES = 1000;

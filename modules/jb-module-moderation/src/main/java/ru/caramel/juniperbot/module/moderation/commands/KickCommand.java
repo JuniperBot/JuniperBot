@@ -29,7 +29,7 @@ import java.util.Objects;
         description = "discord.command.mod.kick.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.KICK_MEMBERS},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.KICK_MEMBERS},
         priority = 20)
 public class KickCommand extends ModeratorCommand {
 
