@@ -46,7 +46,7 @@ public class StatsCommand extends AbstractInfoCommand {
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setTitle(messageService.getMessage("discord.command.stats.title"));
-        builder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
+        builder.setThumbnail(brandingService.getSmallAvatarUrl());
 
         Map<String, Metric> metricMap = metricRegistry.getMetrics();
         builder.addField(getCommonStats(metricMap));
