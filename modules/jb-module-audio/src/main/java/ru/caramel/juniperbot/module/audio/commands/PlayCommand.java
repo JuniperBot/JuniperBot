@@ -48,7 +48,12 @@ import java.util.stream.Collectors;
         description = "discord.command.play.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK},
+        permissions = {
+                Permission.MESSAGE_WRITE,
+                Permission.MESSAGE_EMBED_LINKS,
+                Permission.VOICE_CONNECT,
+                Permission.VOICE_SPEAK
+        },
         priority = 100)
 public class PlayCommand extends AudioCommand {
 

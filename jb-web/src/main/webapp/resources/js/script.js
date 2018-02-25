@@ -25,6 +25,7 @@ BootstrapDialog.DEFAULT_TEXTS['CANCEL'] = 'Отмена';
 BootstrapDialog.DEFAULT_TEXTS['CONFIRM'] = 'Подтверждение';
 
 $(document).ready(function () {
+    initParticles();
     $('[data-toggle="tooltip"]').tooltip();
     $('.select2').select2();
     setTimeout(function () {
@@ -39,3 +40,13 @@ $.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {
         return $('input', td).val() * 1;
     });
 };
+
+function initParticles() {
+    var $particles = $('#particles');
+    if ($particles.length) {
+        /* particlesJS.load(@dom-id, @path-json, @callback (optional)); */
+        particlesJS.load('particles', contextPath + 'resources/particles.json', function() {
+            console.log('callback - particles.js config loaded');
+        });
+    }
+}

@@ -43,8 +43,6 @@ import java.util.Map;
 @RestController
 public class VkCallbackController extends AbstractController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VkCallbackController.class);
-
     private final Gson gson = GsonUtils.create();
 
     private final static Map<String, Type> CALLBACK_TYPES;
@@ -94,11 +92,10 @@ public class VkCallbackController extends AbstractController {
                     return vkService.confirm(connection, message);
                 case WALL_POST_NEW:
                     vkService.post(connection, message);
-                    return "ok";
+                    break;
             }
         }
-        LOG.warn("Unsupported callback event", type);
-        return null;
+        return "ok";
     }
 
     @RequestMapping(value = "/vk/create/{serverId}", method = RequestMethod.POST)

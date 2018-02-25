@@ -29,7 +29,7 @@ import java.util.Objects;
         description = "discord.command.mod.kick.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.KICK_MEMBERS},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.KICK_MEMBERS},
         priority = 20)
 public class KickCommand extends ModeratorCommand {
 
@@ -43,6 +43,11 @@ public class KickCommand extends ModeratorCommand {
         }
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
             return fail(event); // do not allow kick members or yourself
+        }
+
+        if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
+            messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
+            return false;
         }
         moderationService.kick(event.getMember(), mentioned, removeMention(query));
         return ok(event);

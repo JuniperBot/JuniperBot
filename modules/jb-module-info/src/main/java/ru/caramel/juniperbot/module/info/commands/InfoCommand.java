@@ -57,7 +57,7 @@ public class InfoCommand extends AbstractInfoCommand {
 
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
-        builder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
+        builder.setImage(brandingService.getAvatarUrl());
         builder.setDescription(messageService.getMessage("discord.command.info.description", prefix));
 
         builder.addField(

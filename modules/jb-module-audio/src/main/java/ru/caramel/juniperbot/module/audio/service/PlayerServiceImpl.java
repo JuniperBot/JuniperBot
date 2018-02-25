@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,7 +171,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
             throw new DiscordException("discord.global.voice.noAccess");
         }
-        instance.openAudioConnection(channel);
+        try {
+            instance.openAudioConnection(channel);
+        } catch (InsufficientPermissionException e) {
+            throw new DiscordException("discord.global.voice.noAccess", e);
+        }
         return channel;
     }
 

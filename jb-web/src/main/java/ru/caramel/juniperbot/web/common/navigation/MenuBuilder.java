@@ -37,7 +37,8 @@ public class MenuBuilder {
             items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
         }
         items.add(new MenuItem(STATUS, false, true));
-        items.add(new MenuItem(APIDOCS, false, true));
+        items.add(new MenuItem(APIDOCS, false));
+        items.add(new MenuItem(PATREON, true, true));
         return items;
     }
 }

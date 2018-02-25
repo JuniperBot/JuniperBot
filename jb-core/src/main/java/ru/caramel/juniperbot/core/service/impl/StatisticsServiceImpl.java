@@ -105,7 +105,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                         response.getStatusCode());
             }
         } catch (Exception e) {
-            LOGGER.warn("Could not report stats {} to endpoint {}", stats, endPoint, e);
+            LOGGER.warn("Could not report stats {} to endpoint {}: {}", stats, endPoint, e.getMessage());
         }
     }
 

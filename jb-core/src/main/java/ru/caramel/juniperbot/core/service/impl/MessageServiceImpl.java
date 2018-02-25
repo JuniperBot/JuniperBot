@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.PluralUtils;
@@ -55,8 +56,8 @@ public class MessageServiceImpl implements MessageService {
     @Getter
     private Color accentColor;
 
-    @Value("${message.copy.imageUrl}")
-    private String copyImageUrl;
+    @Autowired
+    private BrandingService brandingService;
 
     @Autowired
     private ApplicationContext context;
@@ -76,7 +77,7 @@ public class MessageServiceImpl implements MessageService {
     public EmbedBuilder getBaseEmbed(boolean copyright) {
         EmbedBuilder builder = new EmbedBuilder().setColor(accentColor);
         if (copyright) {
-            builder.setFooter(getMessage("about.copy.content", Year.now()), copyImageUrl);
+            builder.setFooter(getMessage("about.copy.content", Year.now()), brandingService.getCopyImageUrl());
         }
         return builder;
     }

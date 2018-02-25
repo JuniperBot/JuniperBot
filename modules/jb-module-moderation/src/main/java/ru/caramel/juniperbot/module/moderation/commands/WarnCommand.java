@@ -30,7 +30,7 @@ import java.util.Objects;
         description = "discord.command.mod.warn.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.BAN_MEMBERS},
         priority = 5)
 public class WarnCommand extends ModeratorCommandAsync {
 

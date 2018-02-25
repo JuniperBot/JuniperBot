@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
         description = "discord.command.mod.color.desc",
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.MANAGE_ROLES},
+        permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES},
         priority = 5)
 public class ColorCommand extends ModeratorCommandAsync {
 

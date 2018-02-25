@@ -32,7 +32,11 @@ import java.util.regex.Pattern;
         description = "discord.command.mod.ban.desc",
         group = "discord.command.group.moderation",
         source = ChannelType.TEXT,
-        permissions = {Permission.MESSAGE_WRITE, Permission.BAN_MEMBERS},
+        permissions = {
+                Permission.MESSAGE_WRITE,
+                Permission.MESSAGE_EMBED_LINKS,
+                Permission.BAN_MEMBERS
+        },
         priority = 25)
 public class BanCommand extends ModeratorCommand {
 
@@ -44,6 +48,11 @@ public class BanCommand extends ModeratorCommand {
         if (mentioned != null) {
             if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
                 return fail(event); // do not allow ban members or yourself
+            }
+
+            if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
+                messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
+                return false;
             }
 
             query = removeMention(query);

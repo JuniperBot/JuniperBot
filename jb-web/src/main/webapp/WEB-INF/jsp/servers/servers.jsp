@@ -19,6 +19,8 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <c:url value="/" var="rootUrl" />
 
+<div id="particles"></div>
+
 <div class="container">
     <div class="row server-select">
         <div class="col-md-8 col-md-offset-2 text-center">

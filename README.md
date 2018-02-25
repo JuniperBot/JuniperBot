@@ -7,6 +7,8 @@
 
 <div align="center">
 
+![JuniperBot](jb-web/src/main/webapp/resources/img/icon_512.png)
+
 [![Discord Bots](https://discordbots.org/api/widget/310848622642069504.png)](https://discordbots.org/bot/310848622642069504?utm_source=widget)
 
 </div>

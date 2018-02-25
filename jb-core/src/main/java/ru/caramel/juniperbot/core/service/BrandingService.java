@@ -14,31 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.model;
+package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
-import org.springframework.stereotype.Component;
+public interface BrandingService {
 
-import java.lang.annotation.*;
+    String getAvatarUrl();
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Component
-@Inherited
-public @interface DiscordCommand {
+    String getSmallAvatarUrl();
 
-    String key();
-
-    String description();
-
-    ChannelType[] source() default {};
-
-    Permission[] permissions() default {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
-
-    String[] group() default {"discord.command.group.common"};
-
-    int priority() default 1;
-
-    boolean hidden() default false;
+    String getCopyImageUrl();
 }

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
@@ -42,6 +43,9 @@ public abstract class AbstractCommand implements Command {
 
     @Autowired
     protected ContextService contextService;
+
+    @Autowired
+    protected BrandingService brandingService;
 
     @Override
     public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
