@@ -22,7 +22,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <div class="error-page text-white">
     <h2 class="headline">404</h2>
     <div class="error-content">
-        <h3><i class="fa fa-search"></i> <spring:message code="page.errors.404.title"/></h3>
+        <h3 class="shadow"><i class="fa fa-search"></i> <spring:message code="page.errors.404.title"/></h3>
         <p><spring:message code="page.errors.404.description" arguments="${rootUrl}"/></p>
     </div>
 </div>

@@ -20,7 +20,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <header class="main-header">
     <a href="<c:url value="/" />" class="logo">
         <span class="logo-mini"><i class="fa fa-paw"></i></span>
-        <span class="logo-lg"><i class="fa fa-paw"></i> <b>Juniper</b>BOT</span>
+        <span class="logo-lg"><i class="fa fa-paw"></i> <b>Juniper</b>Bot</span>
     </a>
 
     <nav class="navbar navbar-static-top">

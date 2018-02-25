@@ -17,11 +17,9 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.BrandingService;
-import ru.caramel.juniperbot.core.service.DiscordService;
 
 @Service
 public class BrandingServiceImpl implements BrandingService {
@@ -34,9 +32,6 @@ public class BrandingServiceImpl implements BrandingService {
 
     @Value("${branding.copy.imageUrl:}")
     private String copyImageUrl;
-
-    @Autowired
-    private DiscordService discordService;
 
     @Override
     public String getAvatarUrl() {
@@ -54,6 +49,6 @@ public class BrandingServiceImpl implements BrandingService {
     }
 
     private String getOrDefault(String url) {
-        return StringUtils.isNotEmpty(url) ? url : discordService.getJda().getSelfUser().getAvatarUrl();
+        return StringUtils.isNotEmpty(url) ? url : null;
     }
 }

@@ -38,7 +38,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="theme-color" content="#f39c12" />
 
-    <meta property="og:site_name" content="JuniperBOT" />
+    <meta property="og:site_name" content="JuniperBot" />
     <meta property="og:title" content="<c:if test="${not empty serverName}"><c:out value="${serverName}"/> — </c:if><spring:message code="${pageTitle}"/>" />
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Fluffy Discord Bot (Music, Ranking, Reminder, Vk Community bridge, JuniperFoxx blog posts, WikiFur)" />
@@ -79,6 +79,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/dataTables.bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/select2.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/i18n/${pageContext.response.locale}.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/particles.min.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/dynamic-list.js?v=${buildTimestamp}"/>"></script>
