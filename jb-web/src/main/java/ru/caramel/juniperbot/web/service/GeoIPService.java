@@ -42,6 +42,12 @@ public class GeoIPService {
 
     private static Set<String> RU_COUNTRIES = new HashSet<>(Arrays.asList("ru", "by", "kg", "kz", "md", "ua"));
 
+    private static final String ATTR_X_FORWARDED_FOR = "X-FORWARDED-FOR";
+
+    private static final String ATTR_CF_IP = "CF-Connecting-IP";
+
+    private static final String ATTR_CF_GEO = "CF-IPCountry";
+
     @Value("${geoip2.mmdb.location:}")
     private String mmdbPath;
 
@@ -59,17 +65,25 @@ public class GeoIPService {
 
     private static String getClientIp(HttpServletRequest request) {
         String remoteAddr = "";
-        if (request != null) {
-            remoteAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteAddr == null || "".equals(remoteAddr)) {
-                remoteAddr = request.getRemoteAddr();
-            }
+        if (StringUtils.isNotEmpty(remoteAddr = request.getHeader(ATTR_X_FORWARDED_FOR))) {
+            return remoteAddr;
         }
-        return remoteAddr;
+        if (StringUtils.isNotEmpty(remoteAddr = request.getHeader(ATTR_CF_IP))) {
+            return remoteAddr;
+        }
+        return request.getRemoteAddr();
     }
 
     public String getLocale(HttpServletRequest request) throws IOException {
-        return getLocale(getClientIp(request));
+        String locale = null;
+        String cdLocale = request.getHeader(ATTR_CF_GEO);
+        if (StringUtils.isNotEmpty(cdLocale)) {
+            locale = getMatchingLocale(cdLocale.toLowerCase());
+        }
+        if (StringUtils.isEmpty(locale)) {
+            locale = getLocale(getClientIp(request));
+        }
+        return locale;
     }
 
     public String getLocale(String ip) throws IOException {
@@ -83,16 +97,20 @@ public class GeoIPService {
                 if (countryResponse != null &&
                         countryResponse.getCountry() != null &&
                         countryResponse.getCountry().getIsoCode() != null) {
-                    if (RU_COUNTRIES.stream()
-                            .anyMatch(e -> e.equals(countryResponse.getCountry().getIsoCode().toLowerCase()))) {
-                        return "ru";
-                    }
+                    return getMatchingLocale(countryResponse.getCountry().getIsoCode().toLowerCase());
                 }
             } catch (AddressNotFoundException e) {
                 // ignore
             } catch (GeoIp2Exception e) {
                 LOGGER.error("GeoIP2 getCountry error", e);
             }
+        }
+        return null;
+    }
+
+    private String getMatchingLocale(String isoCode) {
+        if (RU_COUNTRIES.stream().anyMatch(e -> e.equals(isoCode))) {
+            return "ru";
         }
         return null;
     }

@@ -67,7 +67,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         <c:set var="uri" value="${req.requestURI}" />
         var contextPath = '${fn:substring(url, 0, fn:length(url) - fn:length(uri))}${req.contextPath}/';
         var serverId = '${serverId}';
-        var locale = '${pageContext.response.locale}';
+        var locale = '${pageContext.response.locale.language}';
     </script>
 
     <script type="text/javascript" src="<c:url value="/resources/webjars/jquery/3.2.1/jquery.min.js"/>"></script>
@@ -78,7 +78,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/jquery.dataTables.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/datatables/1.10.16/js/dataTables.bootstrap.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/select2.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/i18n/${pageContext.response.locale}.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/webjars/select2/4.0.3/js/i18n/${pageContext.response.locale.language}.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/particles.min.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/utils.js?v=${buildTimestamp}"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/script.js?v=${buildTimestamp}"/>"></script>
