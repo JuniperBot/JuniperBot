@@ -53,7 +53,6 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -297,13 +296,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 }
                 break;
         }
+        musicConfigRepository.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
         // execute instance reset out of current thread
         taskExecutor.execute(() -> {
             instance.reset();
             instances.remove(instance.getGuildId());
-            MusicConfig config = getConfig(instance.getGuildId());
-            config.setVoiceVolume(instance.getPlayer().getVolume());
-            musicConfigRepository.save(config);
         });
     }
 

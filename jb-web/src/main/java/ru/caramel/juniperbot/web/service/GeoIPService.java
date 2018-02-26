@@ -66,7 +66,10 @@ public class GeoIPService {
     private static String getClientIp(HttpServletRequest request) {
         String remoteAddr = "";
         if (StringUtils.isNotEmpty(remoteAddr = request.getHeader(ATTR_X_FORWARDED_FOR))) {
-            return remoteAddr;
+            String[] addresses = remoteAddr.split(",");
+            if (addresses.length > 0) {
+                return addresses[0];
+            }
         }
         if (StringUtils.isNotEmpty(remoteAddr = request.getHeader(ATTR_CF_IP))) {
             return remoteAddr;
