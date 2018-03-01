@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 
 import javax.annotation.PostConstruct;
+import java.util.regex.Pattern;
 
 @Component
 public class CustomCommandsListener implements CommandSender, CommandHandler {
@@ -68,7 +69,7 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         if (!input.startsWith(prefix)) {
             return false;
         }
-        String key = input.replaceFirst("^" + prefix, "");
+        String key = input.replaceFirst("^" + Pattern.quote(prefix), "");
         return commandRepository.existsByKeyAndConfigGuildId(key, event.getGuild().getIdLong());
     }
 
