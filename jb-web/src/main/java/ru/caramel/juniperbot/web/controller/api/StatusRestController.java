@@ -57,7 +57,7 @@ public class StatusRestController extends BaseRestController {
                 dto.setColor(jda.getShardInfo().getShardId());
                 Map<Long, Long> measurements = chart.getMeasurements();
                 if (measurements != null) {
-                    measurements = new HashMap<>(measurements);
+                    measurements = new LinkedHashMap<>(measurements);
                     Object[][] data = new Object[measurements.size()][2];
                     int i = 0;
                     for (Map.Entry<Long, Long> entry : measurements.entrySet()) {
