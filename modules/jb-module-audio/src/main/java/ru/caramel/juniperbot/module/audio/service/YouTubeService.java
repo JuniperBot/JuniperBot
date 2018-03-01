@@ -90,7 +90,8 @@ public class YouTubeService {
     }
 
     public String getUrl(SearchResult result) {
-        return String.format("https://www.youtube.com/watch?v=%s", result.getId().getVideoId());
+        return result != null && result.getId() != null
+                ? String.format("https://www.youtube.com/watch?v=%s", result.getId().getVideoId()) : null;
     }
 
     public String getUrl(Video result) {
