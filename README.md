@@ -1,4 +1,4 @@
-# JuniperBotJ
+# JuniperBot
 [![Build status](https://ci.appveyor.com/api/projects/status/ps9kfhaxomrt4l75/branch/master?svg=true)](https://ci.appveyor.com/project/GoldRenard/juniperbotj/branch/master)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](LICENSE)
 [![Official Discord Server](https://discordapp.com/api/guilds/350338493588963328/embed.png)](https://discord.gg/EdWspu3)
