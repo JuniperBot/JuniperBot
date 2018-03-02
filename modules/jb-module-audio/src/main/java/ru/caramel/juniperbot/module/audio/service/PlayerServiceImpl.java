@@ -108,6 +108,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             GuildConfig guildConfig = configService.getOrCreate(serverId);
             config = new MusicConfig();
             config.setGuildConfig(guildConfig);
+            config.setVoiceVolume(100);
             musicConfigRepository.save(config);
         }
         return config;

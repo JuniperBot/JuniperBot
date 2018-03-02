@@ -17,6 +17,8 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,12 +59,12 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     }
 
     private Map<String, Command> getLocalizedMap() {
-        return localizedCommands.get(contextService.getLocale());
+        return MapUtils.isNotEmpty(localizedCommands) ? localizedCommands.get(contextService.getLocale()) : Collections.emptyMap();
     }
 
     @Override
     public Command getByLocale(String localizedKey, boolean anyLocale) {
-        if (anyLocale) {
+        if (MapUtils.isNotEmpty(localizedCommands) && anyLocale) {
             for (Map<String, Command> commandMap : localizedCommands.values()) {
                 if (commandMap.containsKey(localizedKey)) {
                     return commandMap.get(localizedKey);
@@ -75,7 +77,8 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Override
     public boolean isAnyCommand(String key) {
         String reverseKey = StringUtils.reverse(key);
-        return reverseCommandKeys.stream().anyMatch(reverseKey::startsWith);
+        return CollectionUtils.isNotEmpty(reverseCommandKeys)
+                && reverseCommandKeys.stream().anyMatch(reverseKey::startsWith);
     }
 
     @Autowired

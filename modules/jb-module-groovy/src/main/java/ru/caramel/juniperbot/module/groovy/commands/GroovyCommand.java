@@ -45,7 +45,7 @@ public class GroovyCommand extends AbstractCommand {
         if (!discordService.isSuperUser(message.getAuthor()) || StringUtils.isEmpty(query)) {
             return false;
         }
-        message.getChannel().sendTyping();
+        message.getChannel().sendTyping().queue();
         String script = CommonUtils.unwrapCode(query);
         try {
             Object result = getShell(message).evaluate(script);
