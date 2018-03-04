@@ -44,7 +44,6 @@ public class KickCommand extends ModeratorCommand {
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
             return fail(event); // do not allow kick members or yourself
         }
-
         if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
             messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
             return false;
