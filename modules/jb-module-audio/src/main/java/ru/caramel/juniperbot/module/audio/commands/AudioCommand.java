@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,15 @@ public abstract class AudioCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (isChannelRestricted() && !playerService.isInChannel(message.getMember())) {
-            VoiceChannel channel = playerService.getChannel(message.getMember());
-            fail(message);
+        Member member = message.getMember();
+        if (member == null) {
+            return false;
+        }
+        if (!playerService.hasAccess(member)) {
+            throw new ValidationException("discord.command.audio.missingAccess");
+        }
+        if (isChannelRestricted() && !playerService.isInChannel(member)) {
+            VoiceChannel channel = playerService.getChannel(member);
             throw new ValidationException("discord.command.audio.joinChannel", channel.getName());
         }
         doInternal(message, context, content);

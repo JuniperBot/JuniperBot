@@ -99,7 +99,9 @@ public class MessageController {
                 if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
-                    if (action != null && playerService.isInChannel(event.getMember())) {
+                    if (action != null
+                            && playerService.hasAccess(event.getMember())
+                            && playerService.isInChannel(event.getMember())) {
                         contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
                     if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),

@@ -209,6 +209,16 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         return channel != null && channel.getMembers().contains(member);
     }
 
+    @Override
+    public boolean hasAccess(Member member) {
+        MusicConfig config = getConfig(member.getGuild());
+        return config == null
+                || CollectionUtils.isEmpty(config.getRoles())
+                || member.isOwner()
+                || member.hasPermission(Permission.ADMINISTRATOR)
+                || member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
+    }
+
     private VoiceChannel getDesiredChannel(Member member) {
         MusicConfig musicConfig = getConfig(member.getGuild());
         VoiceChannel channel = null;

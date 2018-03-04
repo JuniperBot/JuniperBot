@@ -19,11 +19,13 @@ package ru.caramel.juniperbot.module.audio.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Setter
@@ -57,4 +59,7 @@ public class MusicConfig extends GuildOwnedEntity {
     @Column(name = "voice_volume")
     private int voiceVolume;
 
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    private List<Long> roles;
 }
