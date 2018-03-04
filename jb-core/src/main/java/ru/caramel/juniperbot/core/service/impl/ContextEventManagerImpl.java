@@ -23,10 +23,12 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
 
@@ -43,6 +45,10 @@ public class ContextEventManagerImpl implements IEventManager {
     @Autowired
     private CommandsService commandsService;
 
+    @Autowired
+    @Qualifier(RequestScopedCacheManager.NAME)
+    private RequestScopedCacheManager cacheManager;
+
     @Override
     public void register(Object listener) {
         if (!(listener instanceof EventListener)) {
@@ -58,26 +64,33 @@ public class ContextEventManagerImpl implements IEventManager {
 
     @Override
     public void handle(Event event) {
-        contextService.initContext(event);
-        if (event instanceof MessageReceivedEvent) {
-            try {
-                commandsService.onMessageReceived((MessageReceivedEvent) event);
-            } catch (Exception e) {
-                LOGGER.error("Could not process command", e);
+        try {
+            cacheManager.clear();
+            contextService.initContext(event);
+            if (event instanceof MessageReceivedEvent) {
+                try {
+                    commandsService.onMessageReceived((MessageReceivedEvent) event);
+                } catch (Exception e) {
+                    LOGGER.error("Could not process command", e);
+                }
             }
-        }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Handle event: " + event);
-        }
-        for (EventListener listener : listeners) {
-            try {
-                listener.onEvent(event);
-            } catch (Throwable throwable) {
-                LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Handle event: " + event);
             }
+            for (EventListener listener : listeners) {
+                try {
+                    listener.onEvent(event);
+                } catch (Throwable throwable) {
+                    LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
+                }
+            }
+            contextService.resetContext();
+        } catch (Exception e) {
+            LOGGER.error("Event manager caused an uncaught exception", e);
+        } finally {
+            cacheManager.clear();
         }
-        contextService.resetContext();
     }
 
     @Autowired

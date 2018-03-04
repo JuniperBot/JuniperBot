@@ -108,6 +108,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             GuildConfig guildConfig = configService.getOrCreate(serverId);
             config = new MusicConfig();
             config.setGuildConfig(guildConfig);
+            config.setVoiceVolume(100);
             musicConfigRepository.save(config);
         }
         return config;
@@ -206,6 +207,16 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         PlaybackInstance instance = getInstance(member.getGuild());
         VoiceChannel channel = getChannel(member, instance);
         return channel != null && channel.getMembers().contains(member);
+    }
+
+    @Override
+    public boolean hasAccess(Member member) {
+        MusicConfig config = getConfig(member.getGuild());
+        return config == null
+                || CollectionUtils.isEmpty(config.getRoles())
+                || member.isOwner()
+                || member.hasPermission(Permission.ADMINISTRATOR)
+                || member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
 
     private VoiceChannel getDesiredChannel(Member member) {

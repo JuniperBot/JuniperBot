@@ -27,7 +27,11 @@ BootstrapDialog.DEFAULT_TEXTS['CONFIRM'] = 'Подтверждение';
 $(document).ready(function () {
     initParticles();
     $('[data-toggle="tooltip"]').tooltip();
-    $('.select2').select2();
+    $('.select2').select2({
+        placeholder: function(){
+            $(this).data('placeholder');
+        }
+    });
     setTimeout(function () {
         $('.alert-success.flash-message').slideUp(400, function () {
             $(this).remove();

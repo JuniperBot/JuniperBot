@@ -36,6 +36,8 @@ public interface PlayerService {
 
     boolean isInChannel(Member member);
 
+    boolean hasAccess(Member member);
+
     VoiceChannel getChannel(Member member);
 
     void reconnectAll();

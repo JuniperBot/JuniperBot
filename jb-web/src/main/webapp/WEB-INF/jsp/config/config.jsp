@@ -146,6 +146,25 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </spring:bind>
 
+                    <spring:bind path="musicConfig.roles">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="music-roles" class="col-sm-4 control-label">
+                                <spring:message code="page.config.music.roles.title"/>
+                                <i class="fa fa-fw fa-question-circle" data-toggle="tooltip"
+                                   title="<spring:message code="page.config.music.roles.help"/>"
+                                   data-container="body"></i>
+                            </label>
+                            <div class="col-sm-8">
+                                <spring:message code="page.config.music.roles.placeholder" var="musicRolesPlaceholder"/>
+                                <form:select id="music-roles" path="musicConfig.roles" disabled="${not serverAdded}"
+                                             cssClass="form-control select2" cssStyle="width: 100%;"
+                                             items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple"
+                                             data-placeholder="${musicRolesPlaceholder}" />
+                                <form:errors path="musicConfig.roles" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
                     <div class="form-group">
                         <label class="col-sm-4 control-label combo-control">
                             <spring:message code="page.config.music.limits"/>
@@ -218,169 +237,172 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         </div>
         <div class="col-lg2-6">
             <div class="row">
-                <div class="box box-warning">
-                    <div class="box-header with-border">
-                        <h3 class="box-title"><spring:message code="page.config.mod.title"/></h3>
-                    </div>
-                    <div class="box-body">
+                <div class="col-md-12">
+                    <div class="box box-warning">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><spring:message code="page.config.mod.title"/></h3>
+                        </div>
+                        <div class="box-body">
 
-                        <spring:bind path="modConfig.roles">
-                            <div class="form-group ${status.error ? 'has-error' : ''}">
-                                <label for="modRoles" class="col-sm-5 control-label">
-                                    <spring:message code="page.config.mod.roles"/>
-                                </label>
-                                <div class="col-sm-7">
-                                    <form:select id="modRoles" path="modConfig.roles" disabled="${not serverAdded}"
-                                                 cssClass="form-control select2" cssStyle="width: 100%;"
-                                                 items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple" />
-                                    <form:errors path="modConfig.roles" class="help-block" />
+                            <spring:bind path="modConfig.roles">
+                                <div class="form-group ${status.error ? 'has-error' : ''}">
+                                    <label for="modRoles" class="col-sm-5 control-label">
+                                        <spring:message code="page.config.mod.roles"/>
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <form:select id="modRoles" path="modConfig.roles" disabled="${not serverAdded}"
+                                                     cssClass="form-control select2" cssStyle="width: 100%;"
+                                                     items="${roles}" itemValue="idLong" itemLabel="name" multiple="multiple" />
+                                        <form:errors path="modConfig.roles" class="help-block" />
+                                    </div>
                                 </div>
-                            </div>
-                        </spring:bind>
-                        <spring:bind path="modConfig.publicColors">
-                            <div class="form-group ${status.error ? 'has-error' : ''}">
-                                <label for="publicColors" class="col-sm-5 control-label">
-                                    <spring:message code="page.config.publicColor.title"/>
-                                </label>
-                                <div class="col-sm-7">
-                                    <form:checkbox id="publicColors" path="modConfig.publicColors"
-                                                   data-toggle="toggle"
-                                                   data-onstyle="warning"
-                                                   data-size="small"
-                                                   data-on="${switchOn}"
-                                                   data-off="${switchOff}" />
-                                    <form:errors path="modConfig.publicColors" class="help-block" />
+                            </spring:bind>
+                            <spring:bind path="modConfig.publicColors">
+                                <div class="form-group ${status.error ? 'has-error' : ''}">
+                                    <label for="publicColors" class="col-sm-5 control-label">
+                                        <spring:message code="page.config.publicColor.title"/>
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <form:checkbox id="publicColors" path="modConfig.publicColors"
+                                                       data-toggle="toggle"
+                                                       data-onstyle="warning"
+                                                       data-size="small"
+                                                       data-on="${switchOn}"
+                                                       data-off="${switchOff}" />
+                                        <form:errors path="modConfig.publicColors" class="help-block" />
+                                    </div>
                                 </div>
-                            </div>
-                        </spring:bind>
-                        <spring:bind path="modConfig.maxWarnings">
-                            <div class="${status.error ? 'has-error' : ''}">
-                                <label for="maxWarnings" class="col-sm-5 control-label">
-                                    <spring:message code="page.config.maxWarnings.title"/>
-                                </label>
-                                <div class="col-sm-2">
-                                    <form:input id="maxWarnings" type="number" min="3" max="20"
-                                                path="modConfig.maxWarnings" cssClass="form-control" />
-                                    <form:errors path="modConfig.maxWarnings" class="help-block" />
+                            </spring:bind>
+                            <spring:bind path="modConfig.maxWarnings">
+                                <div class="${status.error ? 'has-error' : ''}">
+                                    <label for="maxWarnings" class="col-sm-5 control-label">
+                                        <spring:message code="page.config.maxWarnings.title"/>
+                                    </label>
+                                    <div class="col-sm-2">
+                                        <form:input id="maxWarnings" type="number" min="3" max="20"
+                                                    path="modConfig.maxWarnings" cssClass="form-control" />
+                                        <form:errors path="modConfig.maxWarnings" class="help-block" />
+                                    </div>
                                 </div>
-                            </div>
-                        </spring:bind>
+                            </spring:bind>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="box box-warning">
-                    <div class="box-header with-border">
-                        <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>
-                    </div>
+                <div class="col-md-12">
+                    <div class="box box-warning">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><spring:message code="page.config.publish.title"/></h3>
+                        </div>
 
-                    <div class="box-body">
-                        <form:hidden path="webHook.available" />
-                        <spring:bind path="privateHelp">
-                            <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
-                                <label for="input-help" class="col-sm-4 control-label">
-                                    <jb:command code="discord.command.help.key" var="helpCommand"/>
-                                    <spring:message code="page.config.publish.privateHelp" arguments="${helpCommand}"/>
-                                </label>
-                                <div class="col-sm-8">
-                                    <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
-                                    <p class="help-block"><spring:message code="page.config.publish.privateHelp.note"/></p>
-                                    <form:errors path="privateHelp" class="help-block" />
+                        <div class="box-body">
+                            <form:hidden path="webHook.available" />
+                            <spring:bind path="privateHelp">
+                                <div class="form-group checkbox-group ${status.error ? 'has-error' : ''}">
+                                    <label for="input-help" class="col-sm-4 control-label">
+                                        <jb:command code="discord.command.help.key" var="helpCommand"/>
+                                        <spring:message code="page.config.publish.privateHelp" arguments="${helpCommand}"/>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <form:checkbox id="input-help" path="privateHelp" cssClass="pull-left" cssStyle="margin-right: 5px;" />
+                                        <p class="help-block"><spring:message code="page.config.publish.privateHelp.note"/></p>
+                                        <form:errors path="privateHelp" class="help-block" />
+                                    </div>
                                 </div>
-                            </div>
-                        </spring:bind>
+                            </spring:bind>
 
-                        <spring:bind path="webHook.channelId">
-                            <div class="form-group ${status.error ? 'has-error' : ''}">
-                                <label for="publish-channel" class="col-sm-4 control-label">
-                                    <spring:message code="page.config.publish.juni"/>
-                                </label>
-                                <div class="col-sm-8">
-                                    <div class="input-group">
+                            <spring:bind path="webHook.channelId">
+                                <div class="form-group ${status.error ? 'has-error' : ''}">
+                                    <label for="publish-channel" class="col-sm-4 control-label">
+                                        <spring:message code="page.config.publish.juni"/>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
                                     <span class="input-group-addon">
                                         <form:checkbox disabled="${not config.webHook.available}" path="webHook.enabled" />
                                     </span>
-                                        <form:select id="publish-channel" path="webHook.channelId" disabled="${not config.webHook.available}" cssClass="form-control select2" cssStyle="width: 100%;"
-                                                     items="${textChannels}" itemValue="idLong" itemLabel="name" />
-                                        <form:errors path="webHook.channelId" class="help-block" />
-                                    </div>
-                                </div>
-                            </div>
-                        </spring:bind>
-
-                        <div id="vk-connection-list">
-                            <c:forEach items="${config.vkConnections}" var="vkConnection" varStatus="status">
-                                <div id="vk_edit_${status.index}" class="modal bootstrap-dialog type-warning fade size-normal" role="dialog">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <div class="bootstrap-dialog-header">
-                                                    <div class="bootstrap-dialog-close-button">
-                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                    </div>
-                                                    <div class="bootstrap-dialog-title">
-                                                        <spring:message code="page.config.vk.modal.edit.title"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="bootstrap-dialog-body">
-                                                    <div class="bootstrap-dialog-message">
-                                                        <p><spring:message code="page.config.vk.modal.edit.content"/></p>
-                                                        <ul class="list-group vk-attachments">
-                                                            <c:forEach items="${vkAttachmentTypes}" var="attachmentType">
-                                                                <li class="list-group-item">
-                                                                    <label class="pull-left">
-                                                                        <spring:message code="com.vk.api.sdk.objects.wall.WallpostAttachmentType.${attachmentType}"/>
-                                                                    </label>
-                                                                    <div class="pull-right">
-                                                                        <form:checkbox id="vk_cb_${status.index}_${attachmentType}"
-                                                                                       path="vkConnections[${status.index}].attachments"
-                                                                                       value="${attachmentType}"
-                                                                                       data-toggle="toggle"
-                                                                                       data-onstyle="warning"
-                                                                                       data-size="small"
-                                                                                       data-on="${switchOn}"
-                                                                                       data-off="${switchOff}"/>
-                                                                    </div>
-                                                                    <div class="clearfix"></div>
-                                                                </li>
-                                                            </c:forEach>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-warning">
-                                                    <spring:message code="global.button.save" />
-                                                </button>
-                                            </div>
+                                            <form:select id="publish-channel" path="webHook.channelId" disabled="${not config.webHook.available}" cssClass="form-control select2" cssStyle="width: 100%;"
+                                                         items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                            <form:errors path="webHook.channelId" class="help-block" />
                                         </div>
                                     </div>
                                 </div>
+                            </spring:bind>
 
-                                <form:hidden path="vkConnections[${status.index}].id" />
-                                <form:hidden path="vkConnections[${status.index}].webHook.available" />
-                                <div class="form-group">
-                                    <label for="vk-connection-${status.index}" class="col-sm-4 control-label"><i class="fa fa-vk"></i> <c:out value="${vkConnection.name}"/></label>
-                                    <div class="col-sm-8">
-                                        <div class="input-group">
-                                            <c:if test="${config.vkConnections[status.index].status == 'CONNECTED'}">
+                            <div id="vk-connection-list">
+                                <c:forEach items="${config.vkConnections}" var="vkConnection" varStatus="status">
+                                    <div id="vk_edit_${status.index}" class="modal bootstrap-dialog type-warning fade size-normal" role="dialog">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <div class="bootstrap-dialog-header">
+                                                        <div class="bootstrap-dialog-close-button">
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        </div>
+                                                        <div class="bootstrap-dialog-title">
+                                                            <spring:message code="page.config.vk.modal.edit.title"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="bootstrap-dialog-body">
+                                                        <div class="bootstrap-dialog-message">
+                                                            <p><spring:message code="page.config.vk.modal.edit.content"/></p>
+                                                            <ul class="list-group vk-attachments">
+                                                                <c:forEach items="${vkAttachmentTypes}" var="attachmentType">
+                                                                    <li class="list-group-item">
+                                                                        <label class="pull-left">
+                                                                            <spring:message code="com.vk.api.sdk.objects.wall.WallpostAttachmentType.${attachmentType}"/>
+                                                                        </label>
+                                                                        <div class="pull-right">
+                                                                            <form:checkbox id="vk_cb_${status.index}_${attachmentType}"
+                                                                                           path="vkConnections[${status.index}].attachments"
+                                                                                           value="${attachmentType}"
+                                                                                           data-toggle="toggle"
+                                                                                           data-onstyle="warning"
+                                                                                           data-size="small"
+                                                                                           data-on="${switchOn}"
+                                                                                           data-off="${switchOff}"/>
+                                                                        </div>
+                                                                        <div class="clearfix"></div>
+                                                                    </li>
+                                                                </c:forEach>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-warning">
+                                                        <spring:message code="global.button.save" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form:hidden path="vkConnections[${status.index}].id" />
+                                    <form:hidden path="vkConnections[${status.index}].webHook.available" />
+                                    <div class="form-group">
+                                        <label for="vk-connection-${status.index}" class="col-sm-4 control-label"><i class="fa fa-vk"></i> <c:out value="${vkConnection.name}"/></label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <c:if test="${config.vkConnections[status.index].status == 'CONNECTED'}">
                                                 <span class="input-group-addon">
                                                     <form:checkbox path="vkConnections[${status.index}].webHook.enabled"
                                                                    disabled="${not config.vkConnections[status.index].webHook.available}" />
                                                 </span>
-                                                <form:select id="vk-connection-${status.index}"
-                                                             path="vkConnections[${status.index}].webHook.channelId" disabled="${not config.vkConnections[status.index].webHook.available}"
-                                                             cssClass="form-control select2" cssStyle="width: 100%;"
-                                                             items="${textChannels}" itemValue="idLong" itemLabel="name" />
-                                                <form:errors path="vkConnections[${status.index}].webHook.channelId" class="help-block" />
-                                            </c:if>
-                                            <c:if test="${config.vkConnections[status.index].status == 'CONFIRMATION'}">
-                                                <input id="vk-connection-${status.index}" type="text" class="form-control" disabled
-                                                       value="<spring:message code="page.config.vk.awaiting"/>">
-                                            </c:if>
-                                            <span class="input-group-btn">
+                                                    <form:select id="vk-connection-${status.index}"
+                                                                 path="vkConnections[${status.index}].webHook.channelId" disabled="${not config.vkConnections[status.index].webHook.available}"
+                                                                 cssClass="form-control select2" cssStyle="width: 100%;"
+                                                                 items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                                    <form:errors path="vkConnections[${status.index}].webHook.channelId" class="help-block" />
+                                                </c:if>
+                                                <c:if test="${config.vkConnections[status.index].status == 'CONFIRMATION'}">
+                                                    <input id="vk-connection-${status.index}" type="text" class="form-control" disabled
+                                                           value="<spring:message code="page.config.vk.awaiting"/>">
+                                                </c:if>
+                                                <span class="input-group-btn">
                                                 <span data-toggle="modal" data-target="#vk_edit_${status.index}">
                                                     <button type="button" class="btn vk-attachments-btn"
                                                             title="<spring:message code="page.config.vk.modal.edit.title"/>"
@@ -402,21 +424,22 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                                     <i class="fa fa-remove"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </c:forEach>
-                        </div>
-
-                        <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
-                            <i class="fa fa-vk" style="margin-top: -2px;"></i> <spring:message code="page.config.vk.connectButton"/>
-                        </a>
-
-                        <c:if test="${not config.webHook.available}">
-                            <div class="callout callout-warning">
-                                <p><spring:message code="page.config.webHook.unavailable"/></p>
+                                </c:forEach>
                             </div>
-                        </c:if>
+
+                            <a id="vk-connect-button" class="btn btn-block btn-social btn-vk" ${config.webHook.available ? '' : 'disabled'}>
+                                <i class="fa fa-vk" style="margin-top: -2px;"></i> <spring:message code="page.config.vk.connectButton"/>
+                            </a>
+
+                            <c:if test="${not config.webHook.available}">
+                                <div class="callout callout-warning">
+                                    <p><spring:message code="page.config.webHook.unavailable"/></p>
+                                </div>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
             </div>

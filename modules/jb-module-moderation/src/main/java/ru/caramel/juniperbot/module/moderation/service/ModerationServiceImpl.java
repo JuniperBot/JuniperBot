@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
@@ -29,6 +30,7 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.model.SlowMode;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
@@ -92,6 +94,7 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
+    @Cacheable(value = "ModerationServiceImpl.isModerator", cacheManager = RequestScopedCacheManager.NAME)
     public boolean isModerator(Member member) {
         if (member == null) {
             return false;
