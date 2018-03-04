@@ -454,7 +454,7 @@ public class VkServiceImpl implements VkService {
                 if (album.getThumb() != null) {
                     setPhoto(images, builder, message, album.getThumb(), false);
                 }
-                builder.setDescription(HtmlUtils.htmlUnescape(album.getDescription()));
+                builder.setDescription(trimTo(HtmlUtils.htmlUnescape(album.getDescription()), MessageEmbed.TEXT_MAX_LENGTH));
 
                 addBlankField(message, builders, false);
                 addField(message, builders, messageService.getMessage("vk.message.album"),
@@ -500,7 +500,7 @@ public class VkServiceImpl implements VkService {
     private void setText(EmbedBuilder builder, String text, String url) {
         if (StringUtils.isNotEmpty(text)) {
             builder.setTitle(messageService.getMessage("vk.message.open"), url);
-            builder.setDescription(CommonUtils.parseVkLinks(trimTo(HtmlUtils.htmlUnescape(text), MessageEmbed.TEXT_MAX_LENGTH)));
+            builder.setDescription(trimTo(CommonUtils.parseVkLinks(HtmlUtils.htmlUnescape(text)), MessageEmbed.TEXT_MAX_LENGTH));
         }
     }
 }
