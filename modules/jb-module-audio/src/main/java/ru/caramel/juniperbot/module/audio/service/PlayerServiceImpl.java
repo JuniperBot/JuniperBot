@@ -56,6 +56,7 @@ import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepo
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PlayerServiceImpl extends AudioEventAdapter implements PlayerService, ModuleListener {
@@ -92,7 +93,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     public void init() {
         playerManager = new DefaultAudioPlayerManager();
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
-        playerManager.setFrameBufferDuration(1000);
+        playerManager.setFrameBufferDuration((int) TimeUnit.SECONDS.toMillis(2));
         playerManager.setItemLoaderThreadPoolSize(500);
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
@@ -276,6 +277,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                     contextService.withContext(current.getGuild(), () -> messageManager.onIdle(current.getChannel()));
                 }
                 v.stop();
+                v.getPlayer().removeListener(this);
                 inactiveIds.add(k);
             }
         });
@@ -315,6 +317,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         // execute instance reset out of current thread
         taskExecutor.execute(() -> {
             instance.reset();
+            instance.getPlayer().removeListener(this);
             instances.remove(instance.getGuildId());
         });
     }
@@ -358,6 +361,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @Override
     public void stop(Guild guild) {
         instances.computeIfPresent(guild.getIdLong(), (g, e) -> {
+            e.getPlayer().removeListener(this);
             e.stop();
             return null;
         });
