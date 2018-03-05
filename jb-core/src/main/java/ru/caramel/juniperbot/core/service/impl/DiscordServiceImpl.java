@@ -18,12 +18,12 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Gauge;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import lombok.Getter;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -82,9 +82,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private MessageService messageService;
 
-    @Autowired(required = false)
-    private IAudioSendFactory audioSendFactory;
-
     @Autowired
     private IEventManager eventManager;
 
@@ -107,10 +104,8 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                     .setCorePoolSize(corePoolSize)
                     .setShardsTotal(shards)
                     .setShards(0, shards - 1)
-                    .setEnableShutdownHook(false);
-            if (audioSendFactory != null) {
-                builder.setAudioSendFactory(audioSendFactory);
-            }
+                    .setEnableShutdownHook(false)
+                    .setAudioSendFactory(new NativeAudioSendFactory());
             shardManager = builder.build();
         } catch (LoginException e) {
             LOGGER.error("Could not login user with specified token", e);

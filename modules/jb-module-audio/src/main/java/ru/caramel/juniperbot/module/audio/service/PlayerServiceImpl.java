@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.audio.service;
 
 import com.codahale.metrics.annotation.Gauge;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -90,6 +91,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @PostConstruct
     public void init() {
         playerManager = new DefaultAudioPlayerManager();
+        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
+        playerManager.setFrameBufferDuration(1000);
+        playerManager.setItemLoaderThreadPoolSize(500);
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
     }
