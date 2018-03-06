@@ -107,6 +107,7 @@ body.landing-mode .main-header > a.logo:hover {
 body.landing-mode .main-footer {
     color: white;
     border: 0;
+    position: relative;
 }
 
 body.landing-mode a {

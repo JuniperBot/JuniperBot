@@ -168,6 +168,7 @@ public class VkServiceImpl implements VkService {
     public String confirm(VkConnection connection, CallbackMessage message) {
         connection.setGroupId(message.getGroupId());
         connection.setStatus(VkConnectionStatus.CONNECTED);
+        connection.getWebHook().setEnabled(true);
         return repository.save(connection).getConfirmCode();
     }
 
