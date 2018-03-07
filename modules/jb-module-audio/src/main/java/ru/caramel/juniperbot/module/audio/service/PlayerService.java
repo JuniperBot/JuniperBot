@@ -33,6 +33,8 @@ public interface PlayerService {
 
     void skipTrack(Member member, Guild guild);
 
+    TrackRequest removeByIndex(Guild guild, int index);
+
     boolean shuffle(Guild guild);
 
     boolean isInChannel(Member member);

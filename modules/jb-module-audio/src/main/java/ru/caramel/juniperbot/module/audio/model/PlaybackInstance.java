@@ -105,6 +105,17 @@ public class PlaybackInstance extends FeatureInstance {
         return active;
     }
 
+    public synchronized TrackRequest removeByIndex(int index) {
+        if (index >= playlist.size() || index == cursor) {
+            return null;
+        }
+        TrackRequest request = playlist.remove(index);
+        if (index < cursor) {
+            cursor--;
+        }
+        return request;
+    }
+
     public synchronized boolean pauseTrack() {
         boolean playing = isActive() && !player.isPaused();
         if (playing) {

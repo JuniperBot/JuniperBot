@@ -58,6 +58,7 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
+import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistItemRepository;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
 
 import javax.annotation.PostConstruct;
@@ -86,6 +87,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     @Autowired
     private PlaylistRepository playlistRepository;
+
+    @Autowired
+    private PlaylistItemRepository playlistItemRepository;
 
     @Autowired
     private ContextService contextService;
@@ -271,29 +275,51 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     @Override
     @Transactional
+    public TrackRequest removeByIndex(Guild guild, int index) {
+        PlaybackInstance instance = getInstance(guild);
+        TrackRequest result = instance.removeByIndex(index);
+        if (result != null && instance.getPersistentPlaylistId() != null) {
+            refreshStoredPlaylist(instance);
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
     public boolean shuffle(Guild guild) {
         PlaybackInstance instance = getInstance(guild);
         boolean result;
         synchronized (instance) {
             result = instance.shuffle();
             if (result) {
-                try {
-                    Playlist playlist = getPlaylist(instance);
-                    List<PlaylistItem> newOrder = new ArrayList<>(playlist.getItems().size());
-                    instance.getPlaylist().forEach(e -> {
-                        PlaylistItem item = find(playlist, e.getTrack().getInfo());
-                        if (item != null) {
-                            newOrder.add(item);
-                        }
-                    });
-                    playlist.setItems(newOrder);
-                    playlistRepository.save(playlist);
-                } catch (Exception e) {
-                    LOGGER.warn("[shuffle] Could not update playlist", e);
-                }
+                refreshStoredPlaylist(instance);
             }
         }
         return result;
+    }
+
+    private void refreshStoredPlaylist(PlaybackInstance instance) {
+        try {
+            Playlist playlist = getPlaylist(instance);
+            List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
+            List<PlaylistItem> newItems = new ArrayList<>(playlist.getItems().size());
+            instance.getPlaylist().forEach(e -> {
+                PlaylistItem item = find(playlist, e.getTrack().getInfo());
+                if (item == null) {
+                    LocalMember member = memberService.getOrCreate(e.getMember());
+                    item = new PlaylistItem(e.getTrack().getInfo(), member);
+                }
+                newItems.add(item);
+            });
+            toRemove.removeAll(newItems);
+            playlist.setItems(newItems);
+            playlistRepository.save(playlist);
+            if (!toRemove.isEmpty()) {
+                playlistItemRepository.delete(toRemove);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("[shuffle] Could not update playlist", e);
+        }
     }
 
     @Override
