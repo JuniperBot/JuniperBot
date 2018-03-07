@@ -33,7 +33,7 @@ public class SkipCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        playerService.skipTrack(message.getGuild());
+        playerService.skipTrack(message.getMember(), message.getGuild());
         return true;
     }
 }

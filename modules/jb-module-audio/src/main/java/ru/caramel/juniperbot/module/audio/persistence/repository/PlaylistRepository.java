@@ -14,22 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.listeners;
+package ru.caramel.juniperbot.module.audio.persistence.repository;
 
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 
-@Component
-public class GuildListener extends DiscordEventListener {
+@Repository
+public interface PlaylistRepository extends GuildOwnedRepository<Playlist> {
 
-    @Autowired
-    private PlayerService playerService;
-
-    @Override
-    public void onGuildLeave(GuildLeaveEvent event) {
-        playerService.stop(null, event.getGuild());
-    }
 }

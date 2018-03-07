@@ -33,7 +33,7 @@ public class StopCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (playerService.getInstance(message.getGuild()).stop()) {
+        if (playerService.stop(message.getMember(), message.getGuild())) {
             return ok(message, "discord.command.audio.stop.member", message.getMember().getEffectiveName());
         }
         fail(message);

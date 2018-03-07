@@ -38,10 +38,6 @@
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
     <task:scheduler id="scheduler" pool-size="10"/>
 
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
-          p:defaultEncoding="UTF-8"
-          p:basenames="/core-messages"/>
-
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource"
           p:overwriteExistingJobs="true">
         <property name="jobFactory">

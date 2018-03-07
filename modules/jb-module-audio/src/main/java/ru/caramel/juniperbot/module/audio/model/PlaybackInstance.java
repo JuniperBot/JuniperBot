@@ -46,6 +46,8 @@ public class PlaybackInstance extends FeatureInstance {
 
     private long guildId;
 
+    private Long persistentPlaylistId;
+
     public PlaybackInstance(long guildId, AudioPlayer player) {
         this.guildId = guildId;
         this.player = player;

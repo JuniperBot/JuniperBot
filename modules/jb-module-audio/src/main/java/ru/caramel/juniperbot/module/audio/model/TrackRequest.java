@@ -37,6 +37,10 @@ public class TrackRequest {
 
     private boolean resetOnResume;
 
+    private EndReason endReason;
+
+    private Member endMember;
+
     public TrackRequest(AudioTrack track, Member member, TextChannel channel) {
         this.track = track;
         this.member = member;

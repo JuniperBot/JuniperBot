@@ -129,10 +129,10 @@ public class MessageController {
                 instance.pauseTrack();
                 break;
             case NEXT:
-                playerService.skipTrack(message.getGuild());
+                playerService.skipTrack(member, message.getGuild());
                 break;
             case STOP:
-                if (instance.stop()) {
+                if (playerService.stop(member, message.getGuild())) {
                     if (member != null) {
                         messageManager.onMessage(message.getChannel(), "discord.command.audio.stop.member", member.getEffectiveName());
                     } else {

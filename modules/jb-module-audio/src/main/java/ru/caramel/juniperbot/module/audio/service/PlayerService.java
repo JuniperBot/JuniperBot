@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
@@ -30,9 +31,9 @@ public interface PlayerService {
 
     void play(TrackRequest request) throws DiscordException;
 
-    void play(TrackRequest request, PlaybackInstance instance) throws DiscordException;
+    void skipTrack(Member member, Guild guild);
 
-    void skipTrack(Guild guild);
+    boolean shuffle(Guild guild);
 
     boolean isInChannel(Member member);
 
@@ -48,5 +49,5 @@ public interface PlayerService {
 
     long getActiveCount();
 
-    void stop(Guild guild);
+    boolean stop(Member member, Guild guild);
 }

@@ -116,7 +116,7 @@ public class AudioMessageManager {
             controller.remove(soft);
             if (soft) {
                 try {
-                    controller.getMessage().editMessage(getPlayMessage(request, true).build()).queue();
+                    controller.getMessage().editMessage(getPlayMessage(request).build()).queue();
                 } catch (Exception e) {
                     // fall down and skip
                 }
@@ -211,11 +211,17 @@ public class AudioMessageManager {
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
+    public void onQueue(PlaybackInstance instance, MessageChannel sourceChannel, BotContext context, int pageNum) {
+        List<TrackRequest> requests = instance.getQueue();
+        if (requests.isEmpty()) {
+            onEmptyQueue(sourceChannel);
+            return;
+        }
+
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
         final int totalPages = parts.size();
-        final int offset = (pageNum - 1) * pageSize + 1;
+        final int offset = (pageNum - 1) * pageSize + 1 + instance.getCursor();
 
         final long totalDuration = requests.stream()
                 .filter(Objects::nonNull)
@@ -230,6 +236,14 @@ public class AudioMessageManager {
         List<TrackRequest> pageRequests = parts.get(pageNum - 1);
 
         EmbedBuilder builder = getQueueMessage();
+        String webPage = messageService.getMessage("about.support.page");
+        if (instance.getCursor() > 0) {
+            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist.played",
+                    instance.getCursor(), webPage, instance.getPersistentPlaylistId()));
+        } else {
+            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist", webPage,
+                    instance.getPersistentPlaylistId()));
+        }
         for (int i = 0; i < pageRequests.size(); i++) {
             TrackRequest request = pageRequests.get(i);
             AudioTrack track = request.getTrack();
@@ -307,18 +321,41 @@ public class AudioMessageManager {
         return messageService.getBaseEmbed().setTitle(messageService.getMessage("discord.command.audio.queue.title"), null);
     }
 
-    private EmbedBuilder getPlayMessage(TrackRequest request, boolean passed) {
+    private EmbedBuilder getPlayMessage(TrackRequest request) {
         EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
 
+        AudioTrackInfo info = request.getTrack().getInfo();
+
         String durationText;
-        if (passed) {
-            durationText = request.getTrack().getInfo().isStream
-                    ? messageService.getMessage("discord.command.audio.panel.duration.passedStream")
-                    : messageService.getMessage("discord.command.audio.panel.duration.passed",
-                    CommonUtils.formatDuration(request.getTrack().getDuration()));
+        if (request.getEndReason() != null) {
+            StringBuilder reasonBuilder = new StringBuilder();
+
+            boolean hasDuration = !info.isStream && info.length > 0;
+            if (hasDuration) {
+                reasonBuilder.append(CommonUtils.formatDuration(request.getTrack().getDuration())).append(" (");
+            }
+            reasonBuilder.append(messageService.getEnumTitle(request.getEndReason()));
+            if (request.getEndMember() != null) {
+                reasonBuilder
+                        .append(" - **")
+                        .append(request.getEndMember().getEffectiveName())
+                        .append("**");
+            }
+            if (hasDuration) {
+                reasonBuilder.append(")");
+            }
+            reasonBuilder.append(CommonUtils.EMPTY_SYMBOL);
+            durationText = reasonBuilder.toString();
         } else {
             durationText = getTextProgress(request.getTrack());
+        }
+
+        PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
+        if (instance != null && instance.getPersistentPlaylistId() != null) {
+            String webPage = messageService.getMessage("about.support.page");
+            builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist", webPage,
+                    instance.getPersistentPlaylistId()));
         }
 
         builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
@@ -326,27 +363,22 @@ public class AudioMessageManager {
         builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
                 request.getMember().getEffectiveName(), true);
 
-        PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
-        if (!passed && handler != null) {
-            if (handler.getPlayer().getVolume() != 100) {
-                int volume = handler.getPlayer().getVolume();
+        if (request.getEndReason() == null && instance != null) {
+            if (instance.getPlayer().getVolume() != 100) {
+                int volume = instance.getPlayer().getVolume();
                 builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
                         String.format("%d%% %s", volume, CommonUtils.getVolumeIcon(volume)), true);
             }
-            if (!RepeatMode.NONE.equals(handler.getMode())) {
+            if (!RepeatMode.NONE.equals(instance.getMode())) {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.repeatMode"),
-                        handler.getMode().getEmoji(), true);
+                        instance.getMode().getEmoji(), true);
             }
-            if (handler.getPlayer().isPaused()) {
+            if (instance.getPlayer().isPaused()) {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.paused"),
                         "\u23F8", true);
             }
         }
         return builder;
-    }
-
-    private EmbedBuilder getPlayMessage(TrackRequest request) {
-        return getPlayMessage(request, false);
     }
 
     private EmbedBuilder getBasicMessage(TrackRequest request) {
