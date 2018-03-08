@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
+import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -64,6 +65,9 @@ public class AudioMessageManager {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private BrandingService brandingService;
 
     @Autowired
     private ApplicationContext context;
@@ -236,13 +240,12 @@ public class AudioMessageManager {
         List<TrackRequest> pageRequests = parts.get(pageNum - 1);
 
         EmbedBuilder builder = getQueueMessage();
-        String webPage = messageService.getMessage("about.support.page");
         if (instance.getCursor() > 0) {
             builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist.played",
-                    instance.getCursor(), webPage, instance.getPersistentPlaylistId()));
+                    instance.getCursor(), brandingService.getWebHost(), instance.getPlaylistUuid()));
         } else {
-            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist", webPage,
-                    instance.getPersistentPlaylistId()));
+            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist",
+                    brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
         for (int i = 0; i < pageRequests.size(); i++) {
             TrackRequest request = pageRequests.get(i);
@@ -352,10 +355,9 @@ public class AudioMessageManager {
         }
 
         PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
-        if (instance != null && instance.getPersistentPlaylistId() != null) {
-            String webPage = messageService.getMessage("about.support.page");
-            builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist", webPage,
-                    instance.getPersistentPlaylistId()));
+        if (instance != null && instance.getPlaylistUuid() != null) {
+            builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist",
+                    brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
 
         builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),

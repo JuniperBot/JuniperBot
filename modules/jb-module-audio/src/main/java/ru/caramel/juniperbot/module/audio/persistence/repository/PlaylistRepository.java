@@ -23,4 +23,6 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 @Repository
 public interface PlaylistRepository extends GuildOwnedRepository<Playlist> {
 
+    Playlist findByUuid(String uuid);
+
 }

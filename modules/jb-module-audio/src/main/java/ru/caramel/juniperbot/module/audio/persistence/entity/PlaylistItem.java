@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.persistence.entity;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,8 +65,13 @@ public class PlaylistItem extends BaseEntity {
     @Column
     public int index;
 
-    public PlaylistItem(AudioTrackInfo info, LocalMember requestedBy) {
+    @Column
+    public String type;
+
+    public PlaylistItem(AudioTrack track, LocalMember requestedBy) {
         this.requestedBy = requestedBy;
+        type = track.getClass().getSimpleName();
+        AudioTrackInfo info = track.getInfo();
         this.title = CommonUtils.trimTo(info.title, 255);
         this.author = CommonUtils.trimTo(info.author, 255);
         this.identifier = CommonUtils.trimTo(info.identifier, 1000);

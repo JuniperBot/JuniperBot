@@ -94,4 +94,23 @@
         <renameColumn tableName="playlist_item" oldColumnName="stream" newColumnName="is_stream"/>
     </changeSet>
 
+    <changeSet id="4.4-07032018-6" author="caramel">
+        <addColumn tableName="playlist">
+            <column name="uuid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="playlist" indexName="idx_playlist_uuid">
+            <column name="uuid"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-7" author="caramel">
+        <addColumn tableName="playlist_item">
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

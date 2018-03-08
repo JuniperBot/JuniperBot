@@ -34,13 +34,16 @@ public class Playlist extends GuildOwnedEntity {
 
     private static final long serialVersionUID = -6922210268108996339L;
 
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderColumn(name="index")
     private List<PlaylistItem> items;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
+
+    @Column
+    private String uuid;
 
     @PreUpdate
     @PrePersist

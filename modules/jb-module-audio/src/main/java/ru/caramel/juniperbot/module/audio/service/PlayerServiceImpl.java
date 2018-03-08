@@ -22,6 +22,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -98,6 +99,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     private MemberService memberService;
 
     @Autowired
+    private List<AudioSourceManager> audioSourceManagers;
+
+    @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
 
@@ -109,6 +113,9 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @PostConstruct
     public void init() {
         playerManager = new DefaultAudioPlayerManager();
+        if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
+            audioSourceManagers.forEach(playerManager::registerSourceManager);
+        }
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
         playerManager.setFrameBufferDuration((int) TimeUnit.SECONDS.toMillis(2));
         playerManager.setItemLoaderThreadPoolSize(500);
@@ -196,7 +203,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             try {
                 Playlist playlist = getPlaylist(instance);
                 for (TrackRequest request : requests) {
-                    PlaylistItem item = new PlaylistItem(request.getTrack().getInfo(), localMember);
+                    PlaylistItem item = new PlaylistItem(request.getTrack(), localMember);
                     item.setPlaylist(playlist);
                     playlist.getItems().add(item);
                 }
@@ -209,17 +216,19 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
 
     private Playlist getPlaylist(PlaybackInstance instance) {
         Playlist playlist = null;
-        if (instance.getPersistentPlaylistId() != null) {
-            playlist = playlistRepository.findOne(instance.getPersistentPlaylistId());
+        if (instance.getPlaylistId() != null) {
+            playlist = playlistRepository.findOne(instance.getPlaylistId());
         }
         if (playlist == null) {
             playlist = new Playlist();
+            playlist.setUuid(String.valueOf(UUID.randomUUID()).toLowerCase());
             playlist.setItems(new ArrayList<>());
             playlist.setDate(new Date());
             playlist.setGuildConfig(configService.getOrCreate(instance.getGuildId()));
+            playlistRepository.save(playlist);
+            instance.setPlaylistId(playlist.getId());
+            instance.setPlaylistUuid(playlist.getUuid());
         }
-        playlistRepository.save(playlist);
-        instance.setPersistentPlaylistId(playlist.getId());
         return playlist;
     }
 
@@ -278,7 +287,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     public TrackRequest removeByIndex(Guild guild, int index) {
         PlaybackInstance instance = getInstance(guild);
         TrackRequest result = instance.removeByIndex(index);
-        if (result != null && instance.getPersistentPlaylistId() != null) {
+        if (result != null && instance.getPlaylistId() != null) {
             refreshStoredPlaylist(instance);
         }
         return result;
@@ -307,7 +316,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 PlaylistItem item = find(playlist, e.getTrack().getInfo());
                 if (item == null) {
                     LocalMember member = memberService.getOrCreate(e.getMember());
-                    item = new PlaylistItem(e.getTrack().getInfo(), member);
+                    item = new PlaylistItem(e.getTrack(), member);
                 }
                 newItems.add(item);
             });

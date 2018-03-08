@@ -23,4 +23,6 @@ public interface BrandingService {
     String getSmallAvatarUrl();
 
     String getCopyImageUrl();
+
+    String getWebHost();
 }
