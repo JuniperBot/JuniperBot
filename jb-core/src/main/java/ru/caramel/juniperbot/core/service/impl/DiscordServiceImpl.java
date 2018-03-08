@@ -24,6 +24,7 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -67,6 +68,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Value("${discord.engine.corePoolSize:5}")
     private Integer corePoolSize;
 
+    @Value("${discord.engine.jdaNAS:true}")
+    private boolean jdaNAS;
+
     @Value("${discord.client.token}")
     private String token;
 
@@ -91,6 +95,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private List<ModuleListener> moduleListeners;
 
+    @Autowired
+    private IAudioSendFactory audioSendFactory;
+
     private Map<JDA, TimeWindowChart> pingCharts = new HashMap<>();
 
     @PostConstruct
@@ -104,8 +111,12 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                     .setCorePoolSize(corePoolSize)
                     .setShardsTotal(shards)
                     .setShards(0, shards - 1)
-                    .setEnableShutdownHook(false)
-                    .setAudioSendFactory(new NativeAudioSendFactory());
+                    .setEnableShutdownHook(false);
+            if (jdaNAS) {
+                builder.setAudioSendFactory(new NativeAudioSendFactory());
+            } else if (audioSendFactory != null) {
+                builder.setAudioSendFactory(audioSendFactory);
+            }
             shardManager = builder.build();
         } catch (LoginException e) {
             LOGGER.error("Could not login user with specified token", e);
