@@ -32,7 +32,7 @@
         <constructor-arg value="/login"/>
     </bean>
 
-    <!-- make ALL other requests go thru the Oauth security filters -->
+    <!-- make ALL other requests go thru the Oauth security filters  -->
     <security:http pattern="/**"
                    create-session="always"
                    entry-point-ref="oauthAuthenticationEntryPoint"

@@ -122,6 +122,6 @@
 
     <definition name="ranking.list" template="/WEB-INF/jsp/ranking/list.jsp" />
 
-    <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp" />
+    <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp"/>
 
 </tiles-definitions>
