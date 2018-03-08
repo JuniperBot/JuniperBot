@@ -357,7 +357,7 @@ public class RankingServiceImpl implements RankingService {
                 .map(Reward::getRoleId)                                          // map by id
                 .filter(roleId -> member.getRoles().stream().noneMatch(role -> roleId.equals(role.getId()))) // filter by non-existent
                 .map(roleId -> member.getGuild().getRoleById(roleId))            // find actual role object
-                .filter(role -> role != null && self.canInteract(role))          // check that we can assign that role
+                .filter(role -> role != null && self.canInteract(role) && !role.isManaged())          // check that we can assign that role
                 .collect(Collectors.toSet());
 
         if (!rolesToGive.isEmpty()) {

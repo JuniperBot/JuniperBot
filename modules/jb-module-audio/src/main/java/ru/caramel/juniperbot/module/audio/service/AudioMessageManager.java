@@ -298,23 +298,31 @@ public class AudioMessageManager {
             if (controller != null) {
                 Message message = controller.getMessage();
                 if (message != null) {
-                    message.editMessage(getPlayMessage(request).build()).queue();
+                    message.editMessage(getPlayMessage(request).build()).queue(m -> {}, t -> {
+                        if (t instanceof ErrorResponseException) {
+                            handleUpdateError(request, (ErrorResponseException) t);
+                        }
+                    });
                 }
             }
         } catch (PermissionException e) {
             LOGGER.warn("No permission to update", e);
             cancelUpdate(request);
         } catch (ErrorResponseException e) {
-            switch (e.getErrorResponse()) {
-                case UNKNOWN_MESSAGE:
-                case MISSING_ACCESS:
-                    cancelUpdate(request);
-                    break;
-                default:
-                    LOGGER.error("Update message error", e);
-                    break;
+            handleUpdateError(request, e);
+        }
+    }
 
-            }
+    private void handleUpdateError(TrackRequest request, ErrorResponseException e) {
+        switch (e.getErrorResponse()) {
+            case UNKNOWN_MESSAGE:
+            case MISSING_ACCESS:
+                cancelUpdate(request);
+                break;
+            default:
+                LOGGER.error("Update message error", e);
+                break;
+
         }
     }
 

@@ -142,7 +142,7 @@ public abstract class AbstractController {
         Guild guild = getGuild(guildId);
         return guild != null
                 ? guild.getRoles().stream()
-                .filter(e -> !"@everyone".equals(e.getName()) && (!onlyInteract || guild.getSelfMember().canInteract(e)))
+                .filter(e -> !"@everyone".equals(e.getName()) && (!onlyInteract || (guild.getSelfMember().canInteract(e) && !e.isManaged())))
                 .collect(Collectors.toList()) : Collections.emptyList();
     }
 }

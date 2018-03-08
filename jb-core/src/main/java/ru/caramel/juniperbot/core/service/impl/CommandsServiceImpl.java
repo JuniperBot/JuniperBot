@@ -162,7 +162,12 @@ public class CommandsServiceImpl implements CommandsService {
                             .map(e -> messageService.getEnumTitle(e))
                             .collect(Collectors.joining("\n"));
                     if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
-                        messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
+                        if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
+                            messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
+                        } else {
+                            String message = messageService.getMessage("discord.command.insufficient.permissions");
+                            messageService.sendMessageSilent(event.getChannel()::sendMessage, message + "\n\n" + list);
+                        }
                     }
                     return true;
                 }
