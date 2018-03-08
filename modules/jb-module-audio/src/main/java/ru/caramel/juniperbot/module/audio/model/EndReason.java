@@ -20,7 +20,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import org.apache.commons.lang3.ArrayUtils;
 
 public enum EndReason {
-    LISTENED(AudioTrackEndReason.FINISHED, AudioTrackEndReason.REPLACED),
+    LISTENED(AudioTrackEndReason.FINISHED),
     SKIPPED,
     STOPPED(AudioTrackEndReason.STOPPED),
     SHUTDOWN,
