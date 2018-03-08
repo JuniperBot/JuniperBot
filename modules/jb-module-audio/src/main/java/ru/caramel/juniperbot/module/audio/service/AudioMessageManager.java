@@ -42,7 +42,6 @@ import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
-import ru.caramel.juniperbot.module.audio.utils.ThumbnailUtils;
 
 import java.awt.*;
 import java.util.List;
@@ -384,12 +383,10 @@ public class AudioMessageManager {
 
     private EmbedBuilder getBasicMessage(TrackRequest request) {
         AudioTrackInfo info = request.getTrack().getInfo();
-        String thumbUrl = ThumbnailUtils.getThumbnail(info);
-
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), info.uri);
-        builder.setAuthor(getArtist(info), info.uri, thumbUrl);
-        builder.setThumbnail(thumbUrl);
+        builder.setAuthor(getArtist(info), info.uri, info.artworkUri);
+        builder.setThumbnail(info.artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
         return builder;
     }

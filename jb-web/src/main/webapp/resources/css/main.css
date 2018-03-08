@@ -827,15 +827,11 @@ h6.hyperlink:hover > a {
 
 .widget-user-image .widget-img {
     background-position: center;
-    background-size: 150px;
+    background-size: cover;
     border-radius: 50%;
     width: 65px;
     height: 65px;
     float: left;
-}
-
-.widget-user-image .widget-img-cover {
-    background-size: cover !important;
 }
 
 .list-group.list-group-stripped .list-group-item:nth-of-type(odd) {

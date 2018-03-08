@@ -68,6 +68,9 @@ public class PlaylistItem extends BaseEntity {
     @Column
     private String type;
 
+    @Column(name = "artwork_url")
+    private String artworkUri;
+
     public PlaylistItem(AudioTrack track, LocalMember requestedBy) {
         this.requestedBy = requestedBy;
         type = track.getClass().getSimpleName();
@@ -78,5 +81,6 @@ public class PlaylistItem extends BaseEntity {
         this.uri = CommonUtils.trimTo(info.uri, 1000);
         this.length = info.length;
         this.stream = info.isStream;
+        this.artworkUri = info.artworkUri;
     }
 }

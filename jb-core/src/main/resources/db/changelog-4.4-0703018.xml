@@ -113,4 +113,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="4.4-07032018-8" author="caramel">
+        <addColumn tableName="playlist_item">
+            <column name="artwork_url" type="VARCHAR(1000)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

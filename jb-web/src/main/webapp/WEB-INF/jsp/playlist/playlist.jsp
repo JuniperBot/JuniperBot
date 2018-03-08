@@ -48,6 +48,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <div class="box-footer">
         <div class="widget-server-container">
             <c:if test="${not empty playlist.items}">
+                <c:url value="/resources/img/noavatar.png" var="noThumbnailUrl"/>
                 <div class="list-group list-group-stripped list-group-hover">
                     <c:forEach items="${playlist.items}" var="item">
                         <div class="list-group-item">
@@ -59,12 +60,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                     <div class="widget-user-2 widget-member widget-compact">
                                         <div class="widget-user-header">
                                             <div class="widget-user-image">
-                                                <c:set value="${jb:thumbnail(item)}" var="thumbnailUrl" />
-                                                <c:if test="${empty thumbnailUrl}">
-                                                    <c:set value="/resources/img/noavatar.png" var="thumbnailUrl" />
-                                                    <c:set value="widget-img-cover" var="widgetImgStyle" />
-                                                </c:if>
-                                                <div class="widget-img ${widgetImgStyle}" style="background-image: url('<c:url value="${thumbnailUrl}"/>');"></div>
+                                                <div class="widget-img" style="background-image: url('${not empty item.artworkUri ? item.artworkUri : noThumbnailUrl}');"></div>
                                             </div>
                                             <h3 class="widget-user-username">
                                                 <span>
