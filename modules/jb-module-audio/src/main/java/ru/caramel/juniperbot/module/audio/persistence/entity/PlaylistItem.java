@@ -45,28 +45,28 @@ public class PlaylistItem extends BaseEntity {
     private LocalMember requestedBy;
 
     @Column
-    public String title;
+    private String title;
 
     @Column
-    public String author;
+    private String author;
 
     @Column(length = 1000)
-    public String identifier;
+    private String identifier;
 
     @Column(length = 1000)
-    public String uri;
+    private String uri;
 
     @Column
-    public long length;
+    private long length;
 
     @Column(name = "is_stream")
-    public boolean stream;
+    private boolean stream;
 
     @Column
-    public int index;
+    private int index;
 
     @Column
-    public String type;
+    private String type;
 
     public PlaylistItem(AudioTrack track, LocalMember requestedBy) {
         this.requestedBy = requestedBy;

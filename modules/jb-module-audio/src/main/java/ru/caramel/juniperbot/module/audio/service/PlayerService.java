@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ public interface PlayerService {
     MusicConfig getConfig(Guild guild);
 
     PlaybackInstance getInstance(Guild guild);
+
+    PlaybackInstance getInstance(long guildId, boolean create);
 
     Map<Long, PlaybackInstance> getInstances();
 
@@ -67,4 +70,6 @@ public interface PlayerService {
     long getActiveCount();
 
     boolean stop(Member member, Guild guild);
+
+    Playlist getPlaylist(String uuid);
 }

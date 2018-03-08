@@ -42,10 +42,9 @@ import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
+import ru.caramel.juniperbot.module.audio.utils.ThumbnailUtils;
 
 import java.awt.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -385,7 +384,7 @@ public class AudioMessageManager {
 
     private EmbedBuilder getBasicMessage(TrackRequest request) {
         AudioTrackInfo info = request.getTrack().getInfo();
-        String thumbUrl = getThumbnail(info);
+        String thumbUrl = ThumbnailUtils.getThumbnail(info);
 
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), info.uri);
@@ -405,18 +404,6 @@ public class AudioMessageManager {
                     .append(")");
         }
         return builder.toString();
-    }
-
-    private String getThumbnail(AudioTrackInfo info) {
-        try {
-            URI uri = new URI(info.uri);
-            if (uri.getHost().contains("youtube.com") || uri.getHost().contains("youtu.be")) {
-                return String.format("https://img.youtube.com/vi/%s/0.jpg", info.identifier);
-            }
-        } catch (URISyntaxException e) {
-            // fall down
-        }
-        return null;
     }
 
     public String getTitle(AudioTrackInfo info) {

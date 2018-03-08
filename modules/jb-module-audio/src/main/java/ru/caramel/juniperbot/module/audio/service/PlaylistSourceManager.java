@@ -32,7 +32,6 @@ import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
-import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.DataInput;
@@ -61,7 +60,7 @@ public class PlaylistSourceManager implements AudioSourceManager {
     private MessageService messageService;
 
     @Autowired
-    private PlaylistRepository playlistRepository;
+    private PlayerService playerService;
 
     @Autowired
     private ContextService contextService;
@@ -86,7 +85,7 @@ public class PlaylistSourceManager implements AudioSourceManager {
         Matcher matcher = pattern.matcher(reference.identifier);
         if (matcher.find()) {
             String uuid = matcher.group(1);
-            Playlist playlist = playlistRepository.findByUuid(uuid.toLowerCase());
+            Playlist playlist = playerService.getPlaylist(uuid);
             if (playlist != null && CollectionUtils.isNotEmpty(playlist.getItems())) {
                 List<AudioTrack> tracks = new ArrayList<>(playlist.getItems().size());
                 playlist.getItems().forEach(e -> {
@@ -100,14 +99,18 @@ public class PlaylistSourceManager implements AudioSourceManager {
                     }
                 });
                 if (!tracks.isEmpty()) {
-                    return new BasicAudioPlaylist("uuid", tracks, null, false);
+                    return new BasicAudioPlaylist(uuid, tracks, null, false);
                 }
             }
-            contextService.withContext(playlist.getGuildConfig().getGuildId(), () -> {
-                throw new FriendlyException(messageService.getMessage("discord.command.audio.playlist.notFound"), COMMON, null);
-            });
+            onError(playlist, "discord.command.audio.playlist.notFound");
         }
         return null;
+    }
+
+    private void onError(Playlist playlist, String messageCode) throws FriendlyException {
+        contextService.withContext(playlist.getGuildConfig().getGuildId(), () -> {
+            throw new FriendlyException(messageService.getMessage(messageCode), COMMON, null);
+        });
     }
 
     private List<AudioTrack> getTracksFor(DefaultAudioPlayerManager manager, PlaylistItem item) {
@@ -140,8 +143,8 @@ public class PlaylistSourceManager implements AudioSourceManager {
             }
         };
 
-        if (!checkSourcesForItem(manager, new AudioReference(item.getUri(), item.title), handler)) {
-            checkSourcesForItem(manager, new AudioReference(item.getIdentifier(), item.title), handler);
+        if (!checkSourcesForItem(manager, new AudioReference(item.getUri(), item.getTitle()), handler)) {
+            checkSourcesForItem(manager, new AudioReference(item.getIdentifier(), item.getTitle()), handler);
         }
         return items;
     }

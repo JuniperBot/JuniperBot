@@ -300,14 +300,6 @@ function Ranking(lang) {
         }
     });
 
-    function updateBackgroundImage() {
-        var $bg = $('.widget-server-background');
-        $bg.height($bg.parent().height());
-    }
-
-    $(window).resize(updateBackgroundImage);
-    updateBackgroundImage();
-
     $searchInput.on('keypress', function (e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13) {
