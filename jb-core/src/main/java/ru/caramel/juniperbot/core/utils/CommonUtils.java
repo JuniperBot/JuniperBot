@@ -41,6 +41,8 @@ import java.util.stream.Stream;
 
 public final class CommonUtils {
 
+    public final static String EMPTY_SYMBOL = "\u2800";
+
     private final static DateTimeFormatter HOURS_FORMAT = DateTimeFormat.forPattern("HH:mm:ss").withZone(DateTimeZone.UTC);
 
     private final static DateTimeFormatter MINUTES_FORMAT = DateTimeFormat.forPattern("mm:ss").withZone(DateTimeZone.UTC);

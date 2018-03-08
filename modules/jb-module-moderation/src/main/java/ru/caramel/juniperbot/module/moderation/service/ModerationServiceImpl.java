@@ -21,8 +21,11 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
@@ -32,6 +35,7 @@ import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
 import ru.caramel.juniperbot.module.moderation.model.SlowMode;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
@@ -65,6 +69,9 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
@@ -232,7 +239,8 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public boolean mute(TextChannel channel, Member member, boolean global) {
+    public boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason) {
+        // TODO reason will be implemented in audit
         if (global) {
             Role mutedRole = getMutedRole(channel.getGuild());
             if (!member.getRoles().contains(mutedRole)) {
@@ -240,7 +248,11 @@ public class ModerationServiceImpl implements ModerationService {
                         .getController()
                         .addRolesToMember(member, mutedRole)
                         .queue();
-                member.getGuild().getController().setMute(member, true).queue();
+                member.getGuild().getController().setMute(member, true).queue(e -> {
+                    if (duration != null) {
+                        scheduleUnMute(channel, member, duration);
+                    }
+                });
                 return true;
             }
         } else {
@@ -252,7 +264,11 @@ public class ModerationServiceImpl implements ModerationService {
             if (override == null) {
                 channel.createPermissionOverride(member)
                         .setDeny(Permission.MESSAGE_WRITE)
-                        .queue();
+                        .queue(e -> {
+                            if (duration != null) {
+                                scheduleUnMute(channel, member, duration);
+                            }
+                        });
                 return true;
             }
         }
@@ -262,21 +278,51 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     public boolean unmute(TextChannel channel, Member member) {
         boolean result = false;
-        Role mutedRole = getMutedRole(channel.getGuild());
+        Role mutedRole = getMutedRole(member.getGuild());
         if (member.getRoles().contains(mutedRole)) {
-            channel.getGuild()
+            member.getGuild()
                     .getController()
                     .removeRolesFromMember(member, mutedRole)
                     .queue();
             member.getGuild().getController().setMute(member, false).queue();
             result = true;
         }
-        PermissionOverride override = channel.getPermissionOverride(member);
-        if (override != null) {
-            override.delete().queue();
-            result |= true;
+        if (channel != null) {
+            PermissionOverride override = channel.getPermissionOverride(member);
+            if (override != null) {
+                override.delete().queue();
+                result |= true;
+            }
         }
+        removeUnMuteSchedule(member);
         return result;
+    }
+
+    private void scheduleUnMute(TextChannel channel, Member member, int duration) {
+        try {
+            removeUnMuteSchedule(member);
+            JobDetail job = UnMuteJob.createDetails(channel, member);
+            Trigger trigger = TriggerBuilder
+                    .newTrigger()
+                    .startAt(DateTime.now().plusMinutes(duration).toDate())
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                    .build();
+            schedulerFactoryBean.getScheduler().scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void removeUnMuteSchedule(Member member) {
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        try {
+            JobKey key = UnMuteJob.getKey(member);
+            if (scheduler.checkExists(key)) {
+                scheduler.deleteJob(key);
+            }
+        } catch (SchedulerException e) {
+            // fall down, we don't care
+        }
     }
 
     @Override

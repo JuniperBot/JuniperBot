@@ -41,7 +41,7 @@ public interface ModerationService {
 
     Role getMutedRole(Guild guild);
 
-    boolean mute(TextChannel channel, Member member, boolean global);
+    boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason);
 
     boolean unmute(TextChannel channel, Member member);
 

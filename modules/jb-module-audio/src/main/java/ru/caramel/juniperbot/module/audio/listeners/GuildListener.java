@@ -30,6 +30,6 @@ public class GuildListener extends DiscordEventListener {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        playerService.stop(event.getGuild());
+        playerService.stop(null, event.getGuild());
     }
 }

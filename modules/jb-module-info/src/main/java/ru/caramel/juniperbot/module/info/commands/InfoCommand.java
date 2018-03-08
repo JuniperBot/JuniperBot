@@ -43,6 +43,9 @@ public class InfoCommand extends AbstractInfoCommand {
     @Value("${jda.version}")
     private String jdaVersion;
 
+    @Value("${lavaPlayer.version}")
+    private String lavaPlayerVersion;
+
     @Value("${spring.version}")
     private String springVersion;
 
@@ -69,13 +72,16 @@ public class InfoCommand extends AbstractInfoCommand {
                 messageService.getMessage("discord.command.info.version.title"),
                 String.format("%s (%s)", appVersion, formatter.print(buildTimestamp)), true);
 
+        builder.addBlankField(true);
+
         builder.addField(
                 messageService.getMessage("discord.command.info.links.title"),
                 messageService.getMessage("discord.command.info.links.content"), true);
 
         builder.addField(
                 messageService.getMessage("discord.command.info.framework.title"),
-                messageService.getMessage("discord.command.info.framework.content", jdaVersion, springVersion),
+                messageService.getMessage("discord.command.info.framework.content",
+                        jdaVersion, lavaPlayerVersion, springVersion),
                 true);
 
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());

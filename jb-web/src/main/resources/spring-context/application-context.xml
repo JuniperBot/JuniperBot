@@ -40,7 +40,8 @@
         /pages/welcome-jbmessages,
         /pages/ranking-jbmessages,
         /pages/apidocs-jbmessages,
-        /pages/status-jbmessages"/>
+        /pages/status-jbmessages,
+        /pages/playlist-jbmessages"/>
     <bean id="messageSource" class="ru.caramel.juniperbot.core.support.JbMessageSource" />
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"

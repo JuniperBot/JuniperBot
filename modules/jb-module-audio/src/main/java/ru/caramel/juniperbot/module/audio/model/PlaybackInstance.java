@@ -46,6 +46,10 @@ public class PlaybackInstance extends FeatureInstance {
 
     private long guildId;
 
+    private Long playlistId;
+
+    private String playlistUuid;
+
     public PlaybackInstance(long guildId, AudioPlayer player) {
         this.guildId = guildId;
         this.player = player;
@@ -101,6 +105,17 @@ public class PlaybackInstance extends FeatureInstance {
         }
         reset();
         return active;
+    }
+
+    public synchronized TrackRequest removeByIndex(int index) {
+        if (index >= playlist.size() || index == cursor) {
+            return null;
+        }
+        TrackRequest request = playlist.remove(index);
+        if (index < cursor) {
+            cursor--;
+        }
+        return request;
     }
 
     public synchronized boolean pauseTrack() {

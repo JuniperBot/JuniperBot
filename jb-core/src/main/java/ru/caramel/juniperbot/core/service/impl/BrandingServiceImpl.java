@@ -33,6 +33,9 @@ public class BrandingServiceImpl implements BrandingService {
     @Value("${branding.copy.imageUrl:}")
     private String copyImageUrl;
 
+    @Value("${branding.web.host:juniperbot.ru}")
+    private String wehHost;
+
     @Override
     public String getAvatarUrl() {
         return getOrDefault(avatarUrl);
@@ -46,6 +49,11 @@ public class BrandingServiceImpl implements BrandingService {
     @Override
     public String getCopyImageUrl() {
         return getOrDefault(copyImageUrl);
+    }
+
+    @Override
+    public String getWebHost() {
+        return wehHost;
     }
 
     private String getOrDefault(String url) {

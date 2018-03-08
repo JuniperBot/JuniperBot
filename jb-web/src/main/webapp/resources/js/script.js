@@ -37,6 +37,14 @@ $(document).ready(function () {
             $(this).remove();
         });
     }, 5000);
+
+    function updateBackgroundImage() {
+        var $bg = $('.widget-server-background');
+        $bg.height($bg.parent().height());
+    }
+
+    $(window).resize(updateBackgroundImage);
+    updateBackgroundImage();
 });
 
 $.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {

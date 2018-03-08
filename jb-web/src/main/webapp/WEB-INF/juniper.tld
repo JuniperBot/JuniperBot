@@ -79,6 +79,12 @@
     </function>
 
     <function>
+        <name>formatDuration</name>
+        <function-class>ru.caramel.juniperbot.core.utils.CommonUtils</function-class>
+        <function-signature>java.lang.String formatDuration(long)</function-signature>
+    </function>
+
+    <function>
         <name>getLevelForRole</name>
         <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
         <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.web.dto.RankingConfigDto,java.lang.Long)</function-signature>

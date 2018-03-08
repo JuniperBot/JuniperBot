@@ -32,6 +32,14 @@
         <relativePath>../../</relativePath>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>data-local</id>
+            <name>data</name>
+            <url>file://${project.basedir}/../../local</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>ru.caramel</groupId>

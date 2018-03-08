@@ -17,16 +17,13 @@
 package ru.caramel.juniperbot.module.audio.commands.queue;
 
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
-import ru.caramel.juniperbot.module.audio.model.TrackRequest;
-
-import java.util.List;
+import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 
 @DiscordCommand(
         key = "discord.command.queue.key",
@@ -50,16 +47,9 @@ public class QueueCommand extends AudioCommand {
             messageManager.onQueueError(message.getTextChannel(), "discord.command.audio.queue.list.selectPage");
             return fail(message);
         }
-        return print(message.getTextChannel(), context, playerService.getInstance(message.getGuild()).getQueue(), pageNum);
-    }
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
 
-    private boolean print(TextChannel channel, BotContext context, List<TrackRequest> requests, int pageNum) {
-        if (requests.isEmpty()) {
-            messageManager.onEmptyQueue(channel);
-            return true;
-        }
-
-        messageManager.onQueue(channel, context, requests, pageNum);
+        messageManager.onQueue(instance, message.getTextChannel(), context, pageNum);
         return true;
     }
 

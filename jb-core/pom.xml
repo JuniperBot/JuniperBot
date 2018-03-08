@@ -139,6 +139,12 @@
             <version>${JDA.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>jda-nas</artifactId>
+            <version>${jda-nas.version}</version>
+        </dependency>
+
         <!-- DATABASE DEPENDENCIES -->
 
         <dependency>

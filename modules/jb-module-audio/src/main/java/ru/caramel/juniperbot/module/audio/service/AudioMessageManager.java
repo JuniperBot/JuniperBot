@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
+import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -43,8 +44,6 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
 
 import java.awt.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +63,9 @@ public class AudioMessageManager {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private BrandingService brandingService;
 
     @Autowired
     private ApplicationContext context;
@@ -116,7 +118,7 @@ public class AudioMessageManager {
             controller.remove(soft);
             if (soft) {
                 try {
-                    controller.getMessage().editMessage(getPlayMessage(request, true).build()).queue();
+                    controller.getMessage().editMessage(getPlayMessage(request).build()).queue();
                 } catch (Exception e) {
                     // fall down and skip
                 }
@@ -211,11 +213,17 @@ public class AudioMessageManager {
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
-    public void onQueue(MessageChannel sourceChannel, BotContext context, List<TrackRequest> requests, int pageNum) {
+    public void onQueue(PlaybackInstance instance, MessageChannel sourceChannel, BotContext context, int pageNum) {
+        List<TrackRequest> requests = instance.getQueue();
+        if (requests.isEmpty()) {
+            onEmptyQueue(sourceChannel);
+            return;
+        }
+
         final int pageSize = 25;
         List<List<TrackRequest>> parts = Lists.partition(requests, pageSize);
         final int totalPages = parts.size();
-        final int offset = (pageNum - 1) * pageSize + 1;
+        final int offset = (pageNum - 1) * pageSize + 1 + instance.getCursor();
 
         final long totalDuration = requests.stream()
                 .filter(Objects::nonNull)
@@ -230,6 +238,13 @@ public class AudioMessageManager {
         List<TrackRequest> pageRequests = parts.get(pageNum - 1);
 
         EmbedBuilder builder = getQueueMessage();
+        if (instance.getCursor() > 0) {
+            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist.played",
+                    instance.getCursor(), brandingService.getWebHost(), instance.getPlaylistUuid()));
+        } else {
+            builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist",
+                    brandingService.getWebHost(), instance.getPlaylistUuid()));
+        }
         for (int i = 0; i < pageRequests.size(); i++) {
             TrackRequest request = pageRequests.get(i);
             AudioTrack track = request.getTrack();
@@ -283,23 +298,31 @@ public class AudioMessageManager {
             if (controller != null) {
                 Message message = controller.getMessage();
                 if (message != null) {
-                    message.editMessage(getPlayMessage(request).build()).queue();
+                    message.editMessage(getPlayMessage(request).build()).queue(m -> {}, t -> {
+                        if (t instanceof ErrorResponseException) {
+                            handleUpdateError(request, (ErrorResponseException) t);
+                        }
+                    });
                 }
             }
         } catch (PermissionException e) {
             LOGGER.warn("No permission to update", e);
             cancelUpdate(request);
         } catch (ErrorResponseException e) {
-            switch (e.getErrorResponse()) {
-                case UNKNOWN_MESSAGE:
-                case MISSING_ACCESS:
-                    cancelUpdate(request);
-                    break;
-                default:
-                    LOGGER.error("Update message error", e);
-                    break;
+            handleUpdateError(request, e);
+        }
+    }
 
-            }
+    private void handleUpdateError(TrackRequest request, ErrorResponseException e) {
+        switch (e.getErrorResponse()) {
+            case UNKNOWN_MESSAGE:
+            case MISSING_ACCESS:
+                cancelUpdate(request);
+                break;
+            default:
+                LOGGER.error("Update message error", e);
+                break;
+
         }
     }
 
@@ -307,18 +330,40 @@ public class AudioMessageManager {
         return messageService.getBaseEmbed().setTitle(messageService.getMessage("discord.command.audio.queue.title"), null);
     }
 
-    private EmbedBuilder getPlayMessage(TrackRequest request, boolean passed) {
+    private EmbedBuilder getPlayMessage(TrackRequest request) {
         EmbedBuilder builder = getBasicMessage(request);
         builder.setDescription(null);
 
+        AudioTrackInfo info = request.getTrack().getInfo();
+
         String durationText;
-        if (passed) {
-            durationText = request.getTrack().getInfo().isStream
-                    ? messageService.getMessage("discord.command.audio.panel.duration.passedStream")
-                    : messageService.getMessage("discord.command.audio.panel.duration.passed",
-                    CommonUtils.formatDuration(request.getTrack().getDuration()));
+        if (request.getEndReason() != null) {
+            StringBuilder reasonBuilder = new StringBuilder();
+
+            boolean hasDuration = !info.isStream && info.length > 0;
+            if (hasDuration) {
+                reasonBuilder.append(CommonUtils.formatDuration(request.getTrack().getDuration())).append(" (");
+            }
+            reasonBuilder.append(messageService.getEnumTitle(request.getEndReason()));
+            if (request.getEndMember() != null) {
+                reasonBuilder
+                        .append(" - **")
+                        .append(request.getEndMember().getEffectiveName())
+                        .append("**");
+            }
+            if (hasDuration) {
+                reasonBuilder.append(")");
+            }
+            reasonBuilder.append(CommonUtils.EMPTY_SYMBOL);
+            durationText = reasonBuilder.toString();
         } else {
             durationText = getTextProgress(request.getTrack());
+        }
+
+        PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
+        if (instance != null && instance.getPlaylistUuid() != null) {
+            builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist",
+                    brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
 
         builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
@@ -326,18 +371,17 @@ public class AudioMessageManager {
         builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
                 request.getMember().getEffectiveName(), true);
 
-        PlaybackInstance handler = request.getTrack().getUserData(PlaybackInstance.class);
-        if (!passed && handler != null) {
-            if (handler.getPlayer().getVolume() != 100) {
-                int volume = handler.getPlayer().getVolume();
+        if (request.getEndReason() == null && instance != null) {
+            if (instance.getPlayer().getVolume() != 100) {
+                int volume = instance.getPlayer().getVolume();
                 builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
                         String.format("%d%% %s", volume, CommonUtils.getVolumeIcon(volume)), true);
             }
-            if (!RepeatMode.NONE.equals(handler.getMode())) {
+            if (!RepeatMode.NONE.equals(instance.getMode())) {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.repeatMode"),
-                        handler.getMode().getEmoji(), true);
+                        instance.getMode().getEmoji(), true);
             }
-            if (handler.getPlayer().isPaused()) {
+            if (instance.getPlayer().isPaused()) {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.paused"),
                         "\u23F8", true);
             }
@@ -345,18 +389,12 @@ public class AudioMessageManager {
         return builder;
     }
 
-    private EmbedBuilder getPlayMessage(TrackRequest request) {
-        return getPlayMessage(request, false);
-    }
-
     private EmbedBuilder getBasicMessage(TrackRequest request) {
         AudioTrackInfo info = request.getTrack().getInfo();
-        String thumbUrl = getThumbnail(info);
-
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), info.uri);
-        builder.setAuthor(getArtist(info), info.uri, thumbUrl);
-        builder.setThumbnail(thumbUrl);
+        builder.setAuthor(getArtist(info), info.uri, info.artworkUri);
+        builder.setThumbnail(info.artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
         return builder;
     }
@@ -371,18 +409,6 @@ public class AudioMessageManager {
                     .append(")");
         }
         return builder.toString();
-    }
-
-    private String getThumbnail(AudioTrackInfo info) {
-        try {
-            URI uri = new URI(info.uri);
-            if (uri.getHost().contains("youtube.com") || uri.getHost().contains("youtu.be")) {
-                return String.format("https://img.youtube.com/vi/%s/0.jpg", info.identifier);
-            }
-        } catch (URISyntaxException e) {
-            // fall down
-        }
-        return null;
     }
 
     public String getTitle(AudioTrackInfo info) {

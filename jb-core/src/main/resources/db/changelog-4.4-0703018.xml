@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBotJ.
+
+ JuniperBotJ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBotJ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="4.4-07032018-1" author="caramel">
+        <createTable tableName="playlist">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_playlist"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_playlist_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-2" author="caramel">
+        <createTable tableName="playlist_item">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_playlist_item"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="playlist_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_playlist_item_playlist_id"
+                             references="playlist(id)"/>
+            </column>
+            <column name="requested_by_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_playlist_item_requested_by_id"
+                             references="member(id)"/>
+            </column>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="author" type="VARCHAR(255)"/>
+            <column name="identifier" type="VARCHAR(1000)"/>
+            <column name="uri" type="VARCHAR(1000)"/>
+            <column name="length" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stream" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-3" author="caramel">
+        <createIndex tableName="playlist" indexName="idx_playlist_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+        <createIndex tableName="playlist" indexName="idx_playlist_date">
+            <column name="date"/>
+        </createIndex>
+        <createIndex tableName="playlist_item" indexName="idx_playlist_item_playlist_id">
+            <column name="playlist_id"/>
+        </createIndex>
+        <createIndex tableName="playlist_item" indexName="idx_playlist_item_requested_by_id">
+            <column name="requested_by_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-4" author="caramel">
+        <addColumn tableName="playlist_item">
+            <column name="index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="playlist_item" indexName="idx_playlist_item_index">
+            <column name="index"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-5" author="caramel">
+        <renameColumn tableName="playlist_item" oldColumnName="stream" newColumnName="is_stream"/>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-6" author="caramel">
+        <addColumn tableName="playlist">
+            <column name="uuid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="playlist" indexName="idx_playlist_uuid">
+            <column name="uuid"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-7" author="caramel">
+        <addColumn tableName="playlist_item">
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.4-07032018-8" author="caramel">
+        <addColumn tableName="playlist_item">
+            <column name="artwork_url" type="VARCHAR(1000)" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

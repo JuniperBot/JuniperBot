@@ -21,10 +21,12 @@ import net.dv8tion.jda.core.entities.*;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.support.AbstractJob;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-public class ReminderJob implements Job {
+public class ReminderJob extends AbstractJob {
 
     private static final String ATTR_USER_ID = "userId";
     private static final String ATTR_GUILD_ID = "guildId";
@@ -39,7 +41,8 @@ public class ReminderJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         ShardManager shardManager = discordService.getShardManager();
         if (shardManager == null || !discordService.isConnected()) {
-            throw new RuntimeException("Could not send reminder, not connected!");
+            reschedule(jobExecutionContext, TimeUnit.MINUTES, 1);
+            return;
         }
 
         JobDataMap data = jobExecutionContext.getJobDetail().getJobDataMap();
