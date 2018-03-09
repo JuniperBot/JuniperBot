@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.module.mafia.service.base;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,9 +141,8 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     }
 
     protected PrivateChannel openPrivateChannel(MafiaPlayer player) {
-        User user = discordService.getJda().getUserById(player.getUser().getId());
         try {
-            return user.openPrivateChannel().complete();
+            return player.getUser().openPrivateChannel().complete();
         } catch (Exception e) {
             return null;
         }

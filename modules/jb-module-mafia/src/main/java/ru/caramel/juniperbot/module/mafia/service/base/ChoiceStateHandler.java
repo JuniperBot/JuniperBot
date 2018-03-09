@@ -67,12 +67,7 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         }
 
         Set<MafiaPlayer> ready = new HashSet<>(choosers.size());
-
-        instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
-        if (message.getTextChannel().getGuild().getSelfMember().hasPermission(message.getTextChannel(),
-                Permission.MESSAGE_MANAGE)) {
-            message.getTextChannel().pinMessageById(message.getId()).queue();
-        }
+        pinMessage(instance, message);
         instance.getListenedMessages().add(message.getId());
         reactionsListener.onReaction(message.getId(), (event, add) -> {
             if (!event.getUser().equals(event.getJDA().getSelfUser()) && instance.isInState(getState())) {
@@ -90,9 +85,11 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
                             ready.remove(chooser);
                         }
                         if (CollectionUtils.isEqualCollection(ready, choosers)) {
-                            if (instance.done(event.getUser())) {
-                                mafiaService.stop(instance);
-                            }
+                            contextService.execute(instance.getGuild(), () -> {
+                                if (instance.done(event.getUser())) {
+                                    mafiaService.stop(instance);
+                                }
+                            });
                             return true;
                         }
                         return false;
@@ -121,6 +118,22 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
         if (player.getRole() == MafiaRole.GOON && instance.getGoonChannel() != null) {
             PermissionOverride override = instance.getGoonChannel().getPermissionOverride(player.getMember());
             override.delete().queue();
+        }
+    }
+
+    public void unpinMessage(MafiaInstance instance) {
+        String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
+        if (messageId != null && instance.getChannel().getGuild().getSelfMember().hasPermission(instance.getChannel(),
+                Permission.MESSAGE_MANAGE)) {
+            instance.getChannel().unpinMessageById(messageId).queue();
+        }
+    }
+
+    protected void pinMessage(MafiaInstance instance, Message message) {
+        instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
+        if (message.getTextChannel().getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+                Permission.MESSAGE_MANAGE)) {
+            message.getTextChannel().pinMessageById(message.getId()).queue();
         }
     }
 

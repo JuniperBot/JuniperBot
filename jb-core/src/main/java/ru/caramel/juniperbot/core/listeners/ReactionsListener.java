@@ -48,11 +48,6 @@ public class ReactionsListener extends DiscordEventListener {
     @Override
     public void onGenericMessageReaction(GenericMessageReactionEvent event) {
         boolean contextInitialized = false;
-        if (event.isFromType(ChannelType.PRIVATE) && !Objects.equals(discordService.getJda(), event.getJDA())) {
-            // If we have multiple shards, the MessageReactionAddEvent event
-            // of PrivateChannel is fired twice for each JDA instance (shard).
-            return;
-        }
 
         BiFunction<GenericMessageReactionEvent, Boolean, Boolean> handler = listeners.get(event.getMessageId());
         boolean add = event instanceof MessageReactionAddEvent;
