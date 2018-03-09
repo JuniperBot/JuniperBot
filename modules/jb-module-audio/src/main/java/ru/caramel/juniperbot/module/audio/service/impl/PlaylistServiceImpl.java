@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -35,6 +35,7 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistItemRepository;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
+import ru.caramel.juniperbot.module.audio.service.PlaylistService;
 
 import javax.annotation.PostConstruct;
 import java.io.DataInput;

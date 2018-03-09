@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.codahale.metrics.annotation.Gauge;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -43,6 +43,9 @@ import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.audio.service.*;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
+import ru.caramel.juniperbot.module.audio.service.helper.PlayerListenerAdapter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

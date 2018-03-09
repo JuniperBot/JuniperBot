@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
-import ru.caramel.juniperbot.module.audio.service.AudioMessageManager;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 

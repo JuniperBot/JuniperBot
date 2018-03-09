@@ -14,14 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import lavalink.client.io.Lavalink;
 import lavalink.client.io.Link;
 import lavalink.client.player.IPlayer;
@@ -41,21 +46,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
-public class DefaultAudioService implements LavaAudioService {
+public class DefaultAudioServiceImpl implements LavaAudioService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAudioService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAudioServiceImpl.class);
 
     @Value("${discord.audio.engine.jdaNAS:true}")
     private boolean jdaNAS;
@@ -114,14 +117,18 @@ public class DefaultAudioService implements LavaAudioService {
     @PostConstruct
     public void init() {
         playerManager = new DefaultAudioPlayerManager();
-        if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
-            audioSourceManagers.forEach(playerManager::registerSourceManager);
-        }
         playerManager.getConfiguration().setResamplingQuality(resamplingQuality);
         playerManager.setFrameBufferDuration(frameBufferDuration);
         playerManager.setItemLoaderThreadPoolSize(itemLoaderThreadPoolSize);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true));
+        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
+            audioSourceManagers.forEach(playerManager::registerSourceManager);
+        }
     }
 
 
