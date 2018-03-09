@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 
 @DiscordCommand(
@@ -33,14 +34,16 @@ public class RewindCommand extends TimingCommand {
 
     @Override
     protected boolean doInternal(MessageReceivedEvent message, TrackRequest request, long millis) {
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
         AudioTrack track = request.getTrack();
-        long position = track.getPosition();
+        long position = instance.getPosition();
         millis = Math.min(position, millis);
         if (playerService.getInstance(message.getGuild()).seek(position - millis)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.rewind",
                     messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
+            return true;
         }
-        return ok(message);
+        return false;
     }
 }

@@ -21,11 +21,11 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +44,8 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
 
 import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
@@ -73,9 +72,9 @@ public class AudioMessageManager {
     @Autowired
     private ContextService contextService;
 
-    private Map<Guild, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
+    private Map<Long, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
 
-    private Map<Guild, MessageController> controllers = new ConcurrentHashMap<>();
+    private Map<Long, MessageController> controllers = new ConcurrentHashMap<>();
 
     public void onTrackAdd(TrackRequest request, boolean silent) {
         if (!silent) {
@@ -90,7 +89,8 @@ public class AudioMessageManager {
                 request.getChannel()
                         .sendMessage(getPlayMessage(request).build())
                         .queue(e -> {
-                            MessageController oldController = controllers.put(request.getGuild(), new MessageController(context, e));
+                            MessageController oldController = controllers.put(request.getGuild().getIdLong(),
+                                    new MessageController(context, e));
                             if (oldController != null) {
                                 contextService.withContext(request.getGuild(),
                                         () -> markAsPassed(request, oldController, true));
@@ -106,7 +106,7 @@ public class AudioMessageManager {
     public void onTrackEnd(TrackRequest request) {
         synchronized (request.getGuild()) {
             cancelUpdate(request);
-            controllers.computeIfPresent(request.getGuild(), (g, c) -> {
+            controllers.computeIfPresent(request.getGuild().getIdLong(), (g, c) -> {
                 markAsPassed(request, c, true);
                 return null;
             });
@@ -134,24 +134,24 @@ public class AudioMessageManager {
 
     private void deleteMessage(TrackRequest request) {
         synchronized (request.getGuild()) {
-            controllers.computeIfPresent(request.getGuild(), (g, c) -> {
+            controllers.computeIfPresent(request.getGuild().getIdLong(), (g, c) -> {
                 markAsPassed(request, c, false);
                 return null;
             });
         }
     }
 
-    public void clear(Guild guild) {
-        cancelUpdate(guild);
-        controllers.remove(guild);
+    public void clear(long guildId) {
+        cancelUpdate(guildId);
+        controllers.remove(guildId);
     }
 
     public void cancelUpdate(TrackRequest request) {
-        cancelUpdate(request.getGuild());
+        cancelUpdate(request.getGuild().getIdLong());
     }
 
-    public void cancelUpdate(Guild guild) {
-        updaterTasks.computeIfPresent(guild, (g, e) -> {
+    public void cancelUpdate(long guildId) {
+        updaterTasks.computeIfPresent(guildId, (g, e) -> {
             e.cancel(false);
             return null;
         });
@@ -271,7 +271,7 @@ public class AudioMessageManager {
                 ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(() ->
                                 contextService.withContext(request.getGuild(), () -> updateMessage(request)),
                         playRefreshInterval);
-                ScheduledFuture<?> oldTask = updaterTasks.put(request.getGuild(), task);
+                ScheduledFuture<?> oldTask = updaterTasks.put(request.getGuild().getIdLong(), task);
                 if (oldTask != null) {
                     oldTask.cancel(true);
                 }
@@ -285,7 +285,7 @@ public class AudioMessageManager {
                 request.getChannel()
                         .sendMessage(getPlayMessage(request).build())
                         .queue(m -> {
-                            MessageController oldController = controllers.put(request.getGuild(),
+                            MessageController oldController = controllers.put(request.getGuild().getIdLong(),
                                     new MessageController(context, m));
                             if (oldController != null) {
                                 oldController.remove(false);
@@ -294,7 +294,7 @@ public class AudioMessageManager {
                         });
                 return;
             }
-            MessageController controller = controllers.get(request.getGuild());
+            MessageController controller = controllers.get(request.getGuild().getIdLong());
             if (controller != null) {
                 Message message = controller.getMessage();
                 if (message != null) {
@@ -336,6 +336,8 @@ public class AudioMessageManager {
 
         AudioTrackInfo info = request.getTrack().getInfo();
 
+        PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
+
         String durationText;
         if (request.getEndReason() != null) {
             StringBuilder reasonBuilder = new StringBuilder();
@@ -357,11 +359,10 @@ public class AudioMessageManager {
             reasonBuilder.append(CommonUtils.EMPTY_SYMBOL);
             durationText = reasonBuilder.toString();
         } else {
-            durationText = getTextProgress(request.getTrack());
+            durationText = getTextProgress(instance, request.getTrack());
         }
 
-        PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
-        if (instance != null && instance.getPlaylistUuid() != null) {
+        if (instance.getPlaylistUuid() != null) {
             builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist",
                     brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
@@ -371,7 +372,7 @@ public class AudioMessageManager {
         builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
                 request.getMember().getEffectiveName(), true);
 
-        if (request.getEndReason() == null && instance != null) {
+        if (request.getEndReason() == null) {
             if (instance.getPlayer().getVolume() != 100) {
                 int volume = instance.getPlayer().getVolume();
                 builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
@@ -399,10 +400,16 @@ public class AudioMessageManager {
         return builder;
     }
 
-    private String getTextProgress(AudioTrack track) {
-        StringBuilder builder = new StringBuilder(CommonUtils.formatDuration(track.getPosition()));
+    private String getTextProgress(PlaybackInstance instance, AudioTrack track) {
+        StringBuilder builder = new StringBuilder();
+        if (instance.getPlayer().getPlayingTrack() != null) {
+            builder.append(CommonUtils.formatDuration(instance.getPosition()));
+        }
         if (!track.getInfo().isStream) {
-            builder.append("/").append(CommonUtils.formatDuration(track.getDuration()));
+            if (builder.length() > 0) {
+                builder.append("/");
+            }
+            builder.append(CommonUtils.formatDuration(track.getDuration()));
         } else {
             builder.append(" (")
                     .append(messageService.getMessage("discord.command.audio.panel.stream"))
@@ -419,5 +426,19 @@ public class AudioMessageManager {
     public String getArtist(AudioTrackInfo info) {
         return MediaContainerDetection.UNKNOWN_ARTIST.equals(info.author)
                 ? messageService.getMessage("discord.command.audio.panel.unknownArtist") : info.author;
+    }
+
+    public void monitor(Set<Long> alive) {
+        Set<Long> dead = new HashSet<>(updaterTasks.keySet());
+        dead.removeAll(alive);
+        if (CollectionUtils.isNotEmpty(dead)) {
+            for (Long deadUpdater : dead) {
+                try {
+                    clear(deadUpdater);
+                } catch (Exception e) {
+                    LOGGER.warn("Could not clear dead updater");
+                }
+            }
+        }
     }
 }

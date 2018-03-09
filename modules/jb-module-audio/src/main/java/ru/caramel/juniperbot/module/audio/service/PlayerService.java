@@ -16,15 +16,12 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 
 import java.util.List;
 import java.util.Map;
@@ -33,17 +30,11 @@ public interface PlayerService {
 
     String ACTIVE_CONNECTIONS = "player.activeConnections";
 
-    AudioPlayerManager getPlayerManager();
-
-    MusicConfig getConfig(long serverId);
-
-    MusicConfig getConfig(Guild guild);
+    Map<Long, PlaybackInstance> getInstances();
 
     PlaybackInstance getInstance(Guild guild);
 
     PlaybackInstance getInstance(long guildId, boolean create);
-
-    Map<Long, PlaybackInstance> getInstances();
 
     void play(List<TrackRequest> requests) throws DiscordException;
 
@@ -57,8 +48,6 @@ public interface PlayerService {
 
     boolean isInChannel(Member member);
 
-    boolean hasAccess(Member member);
-
     VoiceChannel getChannel(Member member);
 
     void reconnectAll();
@@ -71,5 +60,11 @@ public interface PlayerService {
 
     boolean stop(Member member, Guild guild);
 
-    Playlist getPlaylist(String uuid);
+    boolean pause(Guild guild);
+
+    boolean resume(Guild guild, boolean resetTrack);
+
+    boolean isActive(Guild guild);
+
+    boolean isActive(PlaybackInstance instance);
 }

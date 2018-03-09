@@ -25,18 +25,18 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
-import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.module.audio.service.PlaylistService;
 
 @Controller
 public class PlaylistController extends AbstractController {
 
     @Autowired
-    private PlayerService playerService;
+    private PlaylistService playlistService;
 
     @RequestMapping("/playlist/{uuid}")
     @Transactional(readOnly = true)
     public ModelAndView status(@PathVariable String uuid) {
-        Playlist playlist = playerService.getPlaylist(uuid);
+        Playlist playlist = playlistService.getPlaylist(uuid);
         if (playlist == null) {
             throw new NotFoundException();
         }

@@ -28,6 +28,7 @@ import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.service.AudioMessageManager;
+import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
 import java.util.ArrayList;
@@ -70,6 +71,8 @@ public class MessageController {
 
     private final ContextService contextService;
 
+    private final MusicConfigService musicConfigService;
+
     private boolean cancelled = false;
 
     private List<RequestFuture<Void>> reactionFutures = new ArrayList<>();
@@ -80,6 +83,7 @@ public class MessageController {
         this.playerService = context.getBean(PlayerService.class);
         this.messageManager = context.getBean(AudioMessageManager.class);
         this.contextService = context.getBean(ContextService.class);
+        this.musicConfigService = context.getBean(MusicConfigService.class);
         init();
     }
 
@@ -100,7 +104,7 @@ public class MessageController {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
                     if (action != null
-                            && playerService.hasAccess(event.getMember())
+                            && musicConfigService.hasAccess(event.getMember())
                             && playerService.isInChannel(event.getMember())) {
                         contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
@@ -115,18 +119,18 @@ public class MessageController {
     }
 
     private void handleAction(Action action, Member member) {
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
-        if (instance == null || !instance.isActive()) {
+        if (!playerService.isActive(message.getGuild())) {
             return;
         }
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
 
         boolean updateMessage = false;
         switch (action) {
             case PLAY:
-                instance.resumeTrack(false);
+                playerService.resume(message.getGuild(), false);
                 break;
             case PAUSE:
-                instance.pauseTrack();
+                playerService.pause(message.getGuild());
                 break;
             case NEXT:
                 playerService.skipTrack(member, message.getGuild());

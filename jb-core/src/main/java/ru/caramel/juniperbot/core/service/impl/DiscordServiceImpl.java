@@ -18,13 +18,11 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Gauge;
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import lombok.Getter;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -33,21 +31,28 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.service.AudioService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.support.DiscordHttpRequestFactory;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 
 import javax.annotation.PostConstruct;
@@ -62,14 +67,12 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
+    @Getter
     @Value("${discord.engine.shards:2}")
-    private Integer shards;
+    private int shardsNum;
 
     @Value("${discord.engine.corePoolSize:5}")
-    private Integer corePoolSize;
-
-    @Value("${discord.engine.jdaNAS:true}")
-    private boolean jdaNAS;
+    private int corePoolSize;
 
     @Value("${discord.client.token}")
     private String token;
@@ -95,27 +98,30 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private List<ModuleListener> moduleListeners;
 
-    @Autowired
-    private IAudioSendFactory audioSendFactory;
+    @Autowired(required = false)
+    private AudioService audioService;
 
     private Map<JDA, TimeWindowChart> pingCharts = new HashMap<>();
+
+    private RestTemplate restTemplate;
+
+    private volatile String cachedUserId;
 
     @PostConstruct
     public void init() {
         Objects.requireNonNull(token, "No Discord Token specified");
+        restTemplate = new RestTemplate(new DiscordHttpRequestFactory(token));
         try {
             DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
                     .setEventManager(eventManager)
                     .addEventListeners(this)
                     .setCorePoolSize(corePoolSize)
-                    .setShardsTotal(shards)
-                    .setShards(0, shards - 1)
+                    .setShardsTotal(shardsNum)
+                    .setShards(0, shardsNum - 1)
                     .setEnableShutdownHook(false);
-            if (jdaNAS) {
-                builder.setAudioSendFactory(new NativeAudioSendFactory());
-            } else if (audioSendFactory != null) {
-                builder.setAudioSendFactory(audioSendFactory);
+            if (audioService != null) {
+                audioService.configure(builder);
             }
             shardManager = builder.build();
         } catch (LoginException e) {
@@ -185,8 +191,13 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     @Override
+    public JDA getShardById(int shardId) {
+        return shardManager.getShardById(shardId);
+    }
+
+    @Override
     public JDA getShard(long guildId) {
-        return shardManager.getShardById((int)((guildId >> 22) % shards));
+        return shardManager.getShardById((int)((guildId >> 22) % shardsNum));
     }
 
     @Override
@@ -268,5 +279,41 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public Map<JDA, TimeWindowChart> getPingCharts() {
         return Collections.unmodifiableMap(pingCharts);
+    }
+
+    @Override
+    public String getUserId() {
+        if (cachedUserId != null) {
+            return cachedUserId;
+        }
+
+        int attempt = 0;
+        while (cachedUserId == null && attempt++ < 5) {
+            try {
+                ResponseEntity<String> response = restTemplate.getForEntity(Requester.DISCORD_API_PREFIX + "/users/@me", String.class);
+                if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                    LOGGER.warn("Could not get userId, endpoint returned {}", response.getStatusCode());
+                    continue;
+                }
+                JSONObject object = new JSONObject(response.getBody());
+                cachedUserId = object.getString("id");
+                if (StringUtils.isNotEmpty(cachedUserId)) {
+                    break;
+                }
+            } catch (Exception e) {
+                // fall down
+            }
+            LOGGER.error("Could not request my own userId from Discord, will retry a few times");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        if (cachedUserId == null) {
+            throw new RuntimeException("Failed to retrieve my own userId from Discord");
+        }
+        return cachedUserId;
     }
 }

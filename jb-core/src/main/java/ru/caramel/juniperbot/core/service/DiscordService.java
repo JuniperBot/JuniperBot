@@ -41,9 +41,15 @@ public interface DiscordService {
 
     String GAUGE_PING = "discord.ping";
 
+    String getUserId();
+
+    int getShardsNum();
+
     JDA getJda();
 
     User getSelfUser();
+
+    JDA getShardById(int guildId);
 
     JDA getShard(long guildId);
 

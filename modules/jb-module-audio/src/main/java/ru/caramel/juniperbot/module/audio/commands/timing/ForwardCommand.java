@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 
 @DiscordCommand(
@@ -33,17 +34,20 @@ public class ForwardCommand extends TimingCommand {
 
     @Override
     protected boolean doInternal(MessageReceivedEvent message, TrackRequest request, long millis) {
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+
         AudioTrack track = request.getTrack();
         long duration = track.getDuration();
-        long position = track.getPosition();
+        long position = instance.getPosition();
 
         millis = Math.min(duration - position, millis);
 
-        if (playerService.getInstance(message.getGuild()).seek(position + millis)) {
+        if (instance.seek(position + millis)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.forward",
                     messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);
+            return true;
         }
-        return ok(message);
+        return fail(message);
     }
 }

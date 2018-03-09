@@ -110,7 +110,7 @@ public class PlayCommand extends AudioCommand {
 
     protected void loadAndPlay(final TextChannel channel, final BotContext context, final Member requestedBy, final String trackUrl) {
         PlaybackInstance instance = playerService.getInstance(channel.getGuild());
-        playerService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
+        audioService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 contextService.withContext(context.getGuild(), () -> {

@@ -48,6 +48,8 @@ public class TrackRequest {
     }
 
     public void reset() {
+        endReason = null;
+        endMember = null;
         if (track != null) {
             Object data = track.getUserData();
             track = track.makeClone();

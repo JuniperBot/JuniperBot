@@ -17,18 +17,9 @@
 package ru.caramel.juniperbot.module.audio.service;
 
 import com.codahale.metrics.annotation.Gauge;
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import lombok.Getter;
+import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -44,31 +35,20 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.EndReason;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
-import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
-import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
-import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistItemRepository;
-import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Service
-public class PlayerServiceImpl extends AudioEventAdapter implements PlayerService, ModuleListener {
+public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerService, ModuleListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerServiceImpl.class);
 
@@ -81,77 +61,30 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     private DiscordService discordService;
 
     @Autowired
-    private ConfigService configService;
+    private PlaylistService playlistService;
 
     @Autowired
-    private MusicConfigRepository musicConfigRepository;
-
-    @Autowired
-    private PlaylistRepository playlistRepository;
-
-    @Autowired
-    private PlaylistItemRepository playlistItemRepository;
+    private MusicConfigService musicConfigService;
 
     @Autowired
     private ContextService contextService;
 
     @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private List<AudioSourceManager> audioSourceManagers;
+    private LavaAudioService lavaAudioService;
 
     @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
 
-    @Getter
-    private AudioPlayerManager playerManager;
-
     private final Map<Long, PlaybackInstance> instances = new ConcurrentHashMap<>();
 
-    @PostConstruct
-    public void init() {
-        playerManager = new DefaultAudioPlayerManager();
-        if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
-            audioSourceManagers.forEach(playerManager::registerSourceManager);
-        }
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
-        playerManager.setFrameBufferDuration((int) TimeUnit.SECONDS.toMillis(2));
-        playerManager.setItemLoaderThreadPoolSize(500);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
-    }
+    /* ========================================================
+     *                  Instance Factory
+     * ======================================================== */
 
     @Override
-    public void onShutdown() {
-        instances.values().forEach(e -> {
-            if (e.getCurrent() != null) {
-                e.getCurrent().setEndReason(EndReason.SHUTDOWN);
-            }
-            e.stop();
-        });
-        playerManager.shutdown();
-    }
-
-    @Override
-    @Transactional
-    public MusicConfig getConfig(long serverId) {
-        MusicConfig config = musicConfigRepository.findByGuildId(serverId);
-        if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(serverId);
-            config = new MusicConfig();
-            config.setGuildConfig(guildConfig);
-            config.setVoiceVolume(100);
-            musicConfigRepository.save(config);
-        }
-        return config;
-    }
-
-    @Override
-    @Transactional
-    public MusicConfig getConfig(Guild guild) {
-        return getConfig(guild.getIdLong());
+    public Map<Long, PlaybackInstance> getInstances() {
+        return Collections.unmodifiableMap(instances);
     }
 
     @Override
@@ -164,22 +97,113 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         synchronized (instances) {
             PlaybackInstance instance = instances.get(guildId);
             if (instance == null && create) {
-                MusicConfig config = getConfig(guildId);
+                MusicConfig config = musicConfigService.getConfig(guildId);
                 instance = instances.computeIfAbsent(guildId, e -> {
-                    AudioPlayer player = playerManager.createPlayer();
-                    player.addListener(this);
+                    IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
                     player.setVolume(config.getVoiceVolume());
                     return new PlaybackInstance(e, player);
                 });
+                registerInstance(instance);
             }
             return instance;
         }
     }
 
     @Override
-    public Map<Long, PlaybackInstance> getInstances() {
-        return Collections.unmodifiableMap(instances);
+    public boolean isActive(Guild guild) {
+        if (!lavaAudioService.isConnected(guild) || lavaAudioService.getConnectedChannel(guild) == null) {
+            return false;
+        }
+        PlaybackInstance instance = instances.get(guild.getIdLong());
+        return instance != null && instance.getPlayer().getPlayingTrack() != null;
     }
+
+    @Override
+    public boolean isActive(PlaybackInstance instance) {
+        if (instance == null) {
+            return false;
+        }
+        Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
+        return guild != null
+                && lavaAudioService.isConnected(guild)
+                && lavaAudioService.getConnectedChannel(guild) != null
+                && instance.getPlayer().getPlayingTrack() != null;
+    }
+
+    private void clearInstance(PlaybackInstance instance, boolean notify) {
+        if (stopInstance(instance, notify)) {
+            messageManager.clear(instance.getGuildId());
+            instances.remove(instance.getGuildId());
+            clearInstance(instance);
+        }
+    }
+
+    private boolean stopInstance(PlaybackInstance instance, boolean notify) {
+        if (instance != null) {
+            if (notify) {
+                notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
+            }
+            instance.stop();
+            Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
+            musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+            lavaAudioService.closeConnection(guild);
+            return true;
+        }
+        return false;
+    }
+
+    private void notifyCurrentEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
+        TrackRequest current = instance.getCurrent();
+        if (current != null) {
+            if (current.getEndReason() == null) {
+                current.setEndReason(EndReason.getForLavaPlayer(endReason));
+            }
+            contextService.withContext(current.getGuild(), () -> messageManager.onTrackEnd(current));
+        }
+    }
+
+    /* ========================================================
+     *                 Player Event Handlers
+     * ======================================================== */
+
+    @Override
+    protected void onTrackStart(PlaybackInstance instance) {
+        contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackStart(instance.getCurrent()));
+    }
+
+    @Override
+    protected void onTrackEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
+        notifyCurrentEnd(instance, endReason);
+        switch (endReason) {
+            case STOPPED:
+            case REPLACED:
+                return;
+            case FINISHED:
+            case LOAD_FAILED:
+                if (instance.playNext()) {
+                    return;
+                }
+                TrackRequest current = instance.getCurrent();
+                if (current != null) {
+                    contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
+                }
+                break;
+            case CLEANUP:
+                break;
+        }
+
+        // execute instance reset out of current thread
+        taskExecutor.execute(() -> clearInstance(instance, false));
+    }
+
+    @Override
+    protected void onTrackException(PlaybackInstance instance, FriendlyException exception) {
+        LOGGER.warn("Track error", exception);
+    }
+
+    /* ========================================================
+     *                       Actions
+     * ======================================================== */
 
     @Override
     @Transactional
@@ -189,7 +213,7 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         }
         TrackRequest request = requests.get(0);
         PlaybackInstance instance = getInstance(request.getChannel().getGuild());
-        storeToPlaylist(instance, requests);
+        playlistService.storeToPlaylist(instance, requests);
         play(request, instance);
         if (requests.size() > 1) {
             requests.subList(1, requests.size()).forEach(instance::offer);
@@ -200,47 +224,8 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     @Transactional
     public void play(TrackRequest request) throws DiscordException {
         PlaybackInstance instance = getInstance(request.getChannel().getGuild());
-        storeToPlaylist(instance, Collections.singletonList(request));
+        playlistService.storeToPlaylist(instance, Collections.singletonList(request));
         play(request, instance);
-    }
-
-    private void storeToPlaylist(PlaybackInstance instance, List<TrackRequest> requests) {
-        if (CollectionUtils.isEmpty(requests)) {
-            return;
-        }
-        LocalMember localMember = memberService.getOrCreate(requests.get(0).getMember());
-
-        synchronized (instance) {
-            try {
-                Playlist playlist = getPlaylist(instance);
-                for (TrackRequest request : requests) {
-                    PlaylistItem item = new PlaylistItem(request.getTrack(), localMember);
-                    item.setPlaylist(playlist);
-                    playlist.getItems().add(item);
-                }
-                playlistRepository.save(playlist);
-            } catch (Exception e) {
-                LOGGER.warn("[store] Could not update playlist", e);
-            }
-        }
-    }
-
-    private Playlist getPlaylist(PlaybackInstance instance) {
-        Playlist playlist = null;
-        if (instance.getPlaylistId() != null) {
-            playlist = playlistRepository.findOne(instance.getPlaylistId());
-        }
-        if (playlist == null) {
-            playlist = new Playlist();
-            playlist.setUuid(String.valueOf(UUID.randomUUID()).toLowerCase());
-            playlist.setItems(new ArrayList<>());
-            playlist.setDate(new Date());
-            playlist.setGuildConfig(configService.getOrCreate(instance.getGuildId()));
-            playlistRepository.save(playlist);
-            instance.setPlaylistId(playlist.getId());
-            instance.setPlaylistUuid(playlist.getUuid());
-        }
-        return playlist;
     }
 
     private void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
@@ -250,8 +235,91 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
     }
 
     @Override
+    public void skipTrack(Member member, Guild guild) {
+        PlaybackInstance instance = getInstance(guild);
+        // сбросим режим если принудительно вызвали следующий
+        if (RepeatMode.CURRENT.equals(instance.getMode())) {
+            instance.setMode(RepeatMode.NONE);
+        }
+        if (instance.getCurrent() != null) {
+            instance.getCurrent().setEndReason(EndReason.SKIPPED);
+            instance.getCurrent().setEndMember(member);
+        }
+        onTrackEnd(instance, AudioTrackEndReason.FINISHED);
+    }
+
+    @Override
+    public boolean stop(Member member, Guild guild) {
+        if (!isActive(guild)) {
+            return false;
+        }
+        PlaybackInstance instance = getInstance(guild);
+        if (instance.getCurrent() != null) {
+            instance.getCurrent().setEndReason(EndReason.STOPPED);
+            instance.getCurrent().setEndMember(member);
+        }
+        clearInstance(instance, true);
+        return true;
+    }
+
+    @Override
+    public boolean pause(Guild guild) {
+        if (!isActive(guild)) {
+            return false;
+        }
+        PlaybackInstance instance = getInstance(guild);
+        if (instance.pauseTrack()) {
+            contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackPause(instance.getCurrent()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean resume(Guild guild, boolean resetMessage) {
+        if (!isActive(guild)) {
+            return false;
+        }
+        PlaybackInstance instance = getInstance(guild);
+        if (instance.resumeTrack(resetMessage)) {
+            contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackResume(instance.getCurrent()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean shuffle(Guild guild) {
+        PlaybackInstance instance = getInstance(guild);
+        boolean result;
+        synchronized (instance) {
+            result = instance.shuffle();
+            if (result) {
+                playlistService.refreshStoredPlaylist(instance);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public TrackRequest removeByIndex(Guild guild, int index) {
+        PlaybackInstance instance = getInstance(guild);
+        TrackRequest result = instance.removeByIndex(index);
+        if (result != null && instance.getPlaylistId() != null) {
+            playlistService.refreshStoredPlaylist(instance);
+        }
+        return result;
+    }
+
+    /* ========================================================
+     *              Voice Channel Manipulation
+     * ======================================================== */
+
+    @Override
     public VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
-        VoiceChannel channel = getDesiredChannel(member);
+        VoiceChannel channel = musicConfigService.getDesiredChannel(member);
         if (channel == null) {
             return null;
         }
@@ -259,11 +327,45 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
             throw new DiscordException("discord.global.voice.noAccess");
         }
         try {
-            instance.openAudioConnection(channel);
+            lavaAudioService.openConnection(instance.getPlayer(), channel);
         } catch (InsufficientPermissionException e) {
             throw new DiscordException("discord.global.voice.noAccess", e);
         }
         return channel;
+    }
+
+    @Override
+    public boolean isInChannel(Member member) {
+        PlaybackInstance instance = getInstance(member.getGuild());
+        VoiceChannel channel = getChannel(member, instance);
+        return channel != null && channel.getMembers().contains(member);
+    }
+
+    @Override
+    public VoiceChannel getChannel(Member member) {
+        PlaybackInstance instance = getInstance(member.getGuild());
+        return getChannel(member, instance);
+    }
+
+    private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
+        return isActive(instance)
+                ? lavaAudioService.getConnectedChannel(instance.getGuildId())
+                : musicConfigService.getDesiredChannel(member);
+    }
+
+    /* ========================================================
+     *         Player Service Monitoring and Helpers
+     * ======================================================== */
+
+    @Override
+    public void onShutdown() {
+        instances.values().forEach(e -> {
+            if (e.getCurrent() != null) {
+                e.getCurrent().setEndReason(EndReason.SHUTDOWN);
+            }
+            stopInstance(e, true);
+        });
+        lavaAudioService.shutdown();
     }
 
     @Override
@@ -279,127 +381,11 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
         });
     }
 
-    @Override
-    public void skipTrack(Member member, Guild guild) {
-        PlaybackInstance instance = getInstance(guild);
-        // сбросим режим если принудительно вызвали следующий
-        if (RepeatMode.CURRENT.equals(instance.getMode())) {
-            instance.setMode(RepeatMode.NONE);
-        }
-        if (instance.getCurrent() != null) {
-            instance.getCurrent().setEndReason(EndReason.SKIPPED);
-            instance.getCurrent().setEndMember(member);
-        }
-        onTrackEnd(instance.getPlayer(), instance.getPlayer().getPlayingTrack(), AudioTrackEndReason.FINISHED);
-    }
-
-    @Override
-    @Transactional
-    public TrackRequest removeByIndex(Guild guild, int index) {
-        PlaybackInstance instance = getInstance(guild);
-        TrackRequest result = instance.removeByIndex(index);
-        if (result != null && instance.getPlaylistId() != null) {
-            refreshStoredPlaylist(instance);
-        }
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public boolean shuffle(Guild guild) {
-        PlaybackInstance instance = getInstance(guild);
-        boolean result;
-        synchronized (instance) {
-            result = instance.shuffle();
-            if (result) {
-                refreshStoredPlaylist(instance);
-            }
-        }
-        return result;
-    }
-
-    private void refreshStoredPlaylist(PlaybackInstance instance) {
-        try {
-            Playlist playlist = getPlaylist(instance);
-            List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
-            List<PlaylistItem> newItems = new ArrayList<>(playlist.getItems().size());
-            instance.getPlaylist().forEach(e -> {
-                PlaylistItem item = find(playlist, e.getTrack().getInfo());
-                if (item == null) {
-                    LocalMember member = memberService.getOrCreate(e.getMember());
-                    item = new PlaylistItem(e.getTrack(), member);
-                }
-                newItems.add(item);
-            });
-            toRemove.removeAll(newItems);
-            playlist.setItems(newItems);
-            playlistRepository.save(playlist);
-            if (!toRemove.isEmpty()) {
-                playlistItemRepository.delete(toRemove);
-            }
-        } catch (Exception e) {
-            LOGGER.warn("[shuffle] Could not update playlist", e);
-        }
-    }
-
-    @Override
-    public boolean isInChannel(Member member) {
-        PlaybackInstance instance = getInstance(member.getGuild());
-        VoiceChannel channel = getChannel(member, instance);
-        return channel != null && channel.getMembers().contains(member);
-    }
-
-    @Override
-    public boolean hasAccess(Member member) {
-        MusicConfig config = getConfig(member.getGuild());
-        return config == null
-                || CollectionUtils.isEmpty(config.getRoles())
-                || member.isOwner()
-                || member.hasPermission(Permission.ADMINISTRATOR)
-                || member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
-    }
-
-    private VoiceChannel getDesiredChannel(Member member) {
-        MusicConfig musicConfig = getConfig(member.getGuild());
-        VoiceChannel channel = null;
-        if (musicConfig != null) {
-            if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
-                channel = member.getVoiceState().getChannel();
-            }
-            if (channel == null && musicConfig.getChannelId() != null) {
-                channel = discordService.getShardManager().getVoiceChannelById(musicConfig.getChannelId());
-            }
-        }
-        if (channel == null) {
-            channel = discordService.getDefaultMusicChannel(member.getGuild().getIdLong());
-        }
-        return channel;
-    }
-
-    @Override
-    public VoiceChannel getChannel(Member member) {
-        PlaybackInstance instance = getInstance(member.getGuild());
-        return getChannel(member, instance);
-    }
-
-    private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
-        return instance.isActive() ? instance.getAudioManager().getConnectedChannel() : getDesiredChannel(member);
-    }
-
-    private long countListeners(PlaybackInstance instance) {
-        if (instance.isActive()) {
-            return instance.getAudioManager().getConnectedChannel().getMembers()
-                    .stream()
-                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
-        }
-        return 0;
-    }
-
     @Scheduled(fixedDelay = 15000)
     public void monitor() {
         long currentTimeMillis = System.currentTimeMillis();
 
-        Set<Long> inactiveIds = new HashSet<>();
+        Set<PlaybackInstance> toKill = new HashSet<>();
         instances.forEach((k, v) -> {
             long lastMillis = v.getActiveTime();
             TrackRequest current = v.getCurrent();
@@ -411,128 +397,28 @@ public class PlayerServiceImpl extends AudioEventAdapter implements PlayerServic
                 if (current != null) {
                     contextService.withContext(current.getGuild(), () -> messageManager.onIdle(current.getChannel()));
                 }
-                v.stop();
-                v.getPlayer().removeListener(this);
-                inactiveIds.add(k);
+                toKill.add(v);
+                stopInstance(v, true);
             }
         });
-        inactiveIds.forEach(instances::remove);
+        for (PlaybackInstance instance : toKill) {
+            clearInstance(instance, true);
+        }
+        messageManager.monitor(instances.keySet());
     }
 
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (track == null) {
-            return;
+    private long countListeners(PlaybackInstance instance) {
+        if (isActive(instance)) {
+            return lavaAudioService.getConnectedChannel(instance.getGuildId()).getMembers()
+                    .stream()
+                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
         }
-        PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
-        if (instance == null) {
-            return;
-        }
-        TrackRequest current = instance.getCurrent();
-        if (current != null) {
-            if (current.getEndReason() == null) {
-                current.setEndReason(EndReason.getForLavaPlayer(endReason));
-            }
-            contextService.withContext(current.getGuild(), () -> messageManager.onTrackEnd(current));
-        }
-        switch (endReason) {
-            case STOPPED:
-            case CLEANUP:
-                break;
-            case REPLACED:
-                return;
-            case FINISHED:
-            case LOAD_FAILED:
-                if (instance.playNext()) {
-                    return;
-                }
-                if (current != null) {
-                    contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
-                }
-                break;
-        }
-        musicConfigRepository.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
-        // execute instance reset out of current thread
-        taskExecutor.execute(() -> {
-            instance.reset();
-            instance.getPlayer().removeListener(this);
-            instances.remove(instance.getGuildId());
-        });
-    }
-
-    @Override
-    public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
-        contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackStart(instance.getCurrent()));
-    }
-
-    @Override
-    public void onPlayerPause(AudioPlayer player) {
-        PlaybackInstance instance = player.getPlayingTrack().getUserData(PlaybackInstance.class);
-        if (instance.isActive()) {
-            contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackPause(instance.getCurrent()));
-        }
-    }
-
-    @Override
-    public void onPlayerResume(AudioPlayer player) {
-        AudioTrack track = player.getPlayingTrack();
-        if (track != null) {
-            PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
-            if (instance.isActive()) {
-                contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackResume(instance.getCurrent()));
-            }
-        }
-    }
-
-    @Override
-    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        LOGGER.error("Track error", exception);
+        return 0;
     }
 
     @Gauge(name = ACTIVE_CONNECTIONS, absolute = true)
     @Override
     public long getActiveCount() {
         return instances.size();
-    }
-
-    @Override
-    public boolean stop(Member member, Guild guild) {
-        PlaybackInstance instance = instances.get(guild.getIdLong());
-        if (instance == null) {
-            return false;
-        }
-        instances.computeIfPresent(guild.getIdLong(), (g, e) -> {
-            if (e.isActive() && e.getCurrent() != null) {
-                e.getCurrent().setEndReason(EndReason.STOPPED);
-                e.getCurrent().setEndMember(member);
-            }
-            e.stop();
-            e.getPlayer().removeListener(this);
-            return null;
-        });
-        instances.remove(guild.getIdLong());
-        messageManager.clear(guild);
-        return true;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Playlist getPlaylist(String uuid) {
-        return playlistRepository.findByUuid(uuid);
-    }
-
-    private static PlaylistItem find(Playlist playlist, AudioTrackInfo info) {
-        for (PlaylistItem item : playlist.getItems()) {
-            if (item != null &&
-                    Objects.equals(item.getTitle(), info.title) &&
-                    Objects.equals(item.getAuthor(), info.author) &&
-                    Objects.equals(item.getLength(), info.length) &&
-                    Objects.equals(item.getIdentifier(), info.identifier) &&
-                    Objects.equals(item.getUri(), info.uri)) {
-                return item;
-            }
-        }
-        return null;
     }
 }

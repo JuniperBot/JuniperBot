@@ -44,7 +44,8 @@ public class RepeatCommand extends AudioCommand {
             return false;
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
-        if (instance.setMode(mode)) {
+        if (playerService.isActive(message.getGuild())) {
+            instance.setMode(mode);
             messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
             if (instance.getCurrent() != null) {
                 messageManager.updateMessage(instance.getCurrent());

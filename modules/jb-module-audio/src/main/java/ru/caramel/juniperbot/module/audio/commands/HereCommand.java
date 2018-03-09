@@ -40,11 +40,11 @@ public class HereCommand extends AudioCommand {
             messageService.onError(message.getTextChannel(), "discord.command.here.notInChannel");
             return fail(message);
         }
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
-        if (!instance.isActive()) {
+        if (!playerService.isActive(message.getGuild())) {
             messageService.onError(message.getTextChannel(), "discord.command.audio.notStarted");
             return fail(message);
         }
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
         VoiceChannel channel = playerService.connectToChannel(instance, message.getMember());
         if (channel != null) {
             return ok(message, "discord.command.here.connected", channel.getName());
@@ -57,7 +57,7 @@ public class HereCommand extends AudioCommand {
         if (config == null) {
             return false;
         }
-        MusicConfig musicConfig = playerService.getConfig(config.getGuildId());
+        MusicConfig musicConfig = musicConfigService.getConfig(config.getGuildId());
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 

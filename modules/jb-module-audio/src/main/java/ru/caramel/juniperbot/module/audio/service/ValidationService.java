@@ -38,6 +38,9 @@ public class ValidationService {
     @Autowired
     private PlayerService playerService;
 
+    @Autowired
+    private MusicConfigService musicConfigService;
+
     private boolean compareTracks(AudioTrack track1, AudioTrack track2) {
         if (Objects.equals(track1, track2)) {
             return true;
@@ -57,7 +60,7 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
-        MusicConfig config = playerService.getConfig(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
@@ -85,7 +88,7 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
-        MusicConfig config = playerService.getConfig(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();

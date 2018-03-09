@@ -49,6 +49,7 @@
         <joda-time.version>2.9.9</joda-time.version>
         <joda-money.version>0.12</joda-money.version>
         <lavaplayer.version>1.2.56-jb</lavaplayer.version>
+        <lavalink.version>3c54c0566e46ee9e9ccf3a6324ebcd3a8b15c02b</lavalink.version>
         <jda-nas.version>1.0.5</jda-nas.version>
         <google-api-services-youtube.version>v3-rev183-1.22.0</google-api-services-youtube.version>
         <tiles.version>3.0.7</tiles.version>
@@ -84,6 +85,10 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 

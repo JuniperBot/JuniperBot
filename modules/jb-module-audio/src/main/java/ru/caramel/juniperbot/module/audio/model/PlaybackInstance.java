@@ -17,13 +17,12 @@
 package ru.caramel.juniperbot.module.audio.model;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import lavalink.client.player.IPlayer;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import ru.caramel.juniperbot.core.model.FeatureInstance;
-import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 @Setter
 public class PlaybackInstance extends FeatureInstance {
 
-    private final AudioPlayer player;
+    private final IPlayer player;
 
     private final List<TrackRequest> playlist = Collections.synchronizedList(new ArrayList<>());
 
@@ -50,7 +49,7 @@ public class PlaybackInstance extends FeatureInstance {
 
     private String playlistUuid;
 
-    public PlaybackInstance(long guildId, AudioPlayer player) {
+    public PlaybackInstance(long guildId, IPlayer player) {
         this.guildId = guildId;
         this.player = player;
         reset();
@@ -59,11 +58,8 @@ public class PlaybackInstance extends FeatureInstance {
     public synchronized void reset() {
         mode = RepeatMode.NONE;
         playlist.clear();
-        player.playTrack(null);
+        player.stopTrack();
         cursor = -1;
-        if (audioManager != null) {
-            audioManager.closeAudioConnection();
-        }
         tick();
     }
 
@@ -98,13 +94,9 @@ public class PlaybackInstance extends FeatureInstance {
         return false;
     }
 
-    public synchronized boolean stop() {
-        boolean active = isActive();
-        if (active) {
-            player.stopTrack();
-        }
+    public synchronized void stop() {
+        player.stopTrack();
         reset();
-        return active;
     }
 
     public synchronized TrackRequest removeByIndex(int index) {
@@ -119,7 +111,8 @@ public class PlaybackInstance extends FeatureInstance {
     }
 
     public synchronized boolean pauseTrack() {
-        boolean playing = isActive() && !player.isPaused();
+        tick();
+        boolean playing = !player.isPaused();
         if (playing) {
             player.setPaused(true);
         }
@@ -132,36 +125,15 @@ public class PlaybackInstance extends FeatureInstance {
         if (current != null) {
             current.setResetOnResume(resetMessage);
         }
-        boolean paused = isActive() && player.isPaused();
+        boolean paused = player.isPaused();
         if (paused) {
             player.setPaused(false);
         }
         return paused;
     }
 
-    public synchronized boolean setMode(RepeatMode mode) {
-        boolean result = isActive();
-        if (result) {
-            this.mode = mode;
-        }
-        return result;
-    }
-
-    public synchronized void openAudioConnection(VoiceChannel channel) {
-        audioManager = channel.getGuild().getAudioManager();
-        if (audioManager.getConnectedChannel() == null) {
-            audioManager.setSendingHandler(new GuildAudioSendHandler(player));
-        }
-        audioManager.openAudioConnection(channel);
-    }
-
-    public synchronized boolean isConnected() {
-        return audioManager != null && (audioManager.isConnected() || audioManager.isAttemptingToConnect());
-    }
-
-    public synchronized boolean isActive() {
-        return audioManager != null && isConnected()
-                && audioManager.getConnectedChannel() != null && player.getPlayingTrack() != null;
+    public synchronized void setMode(RepeatMode mode) {
+        this.mode = mode;
     }
 
     public synchronized void setVolume(int volume) {
@@ -219,13 +191,21 @@ public class PlaybackInstance extends FeatureInstance {
     }
 
     public synchronized boolean seek(long position) {
-        if (isActive() && !player.getPlayingTrack().isSeekable()) {
+        if (!player.getPlayingTrack().isSeekable()) {
             return false;
         }
         if (player.getPlayingTrack() != null) {
-            player.getPlayingTrack().setPosition(position);
+            player.seekTo(position);
         }
         return true;
+    }
+
+    public synchronized long getPosition() {
+        try {
+            return player.getTrackPosition();
+        } catch (IllegalStateException e) {
+            return 0;
+        }
     }
 
     public synchronized void offer(TrackRequest request) {
