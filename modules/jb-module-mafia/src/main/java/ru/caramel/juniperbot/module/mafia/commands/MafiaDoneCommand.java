@@ -24,10 +24,14 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
         description = "discord.command.mafia.done.desc",
         group = "mafia.name",
         priority = 5)
-public class MafiaDoneCommand extends MafiaCommand {
+public class MafiaDoneCommand extends MafiaCommandAsync {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        return mafiaService.done(message.getAuthor(), message.getTextChannel()) ? ok(message) : fail(message);
+    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
+        if (mafiaService.done(message.getAuthor(), message.getTextChannel())) {
+            ok(message);
+        } else  {
+            fail(message);
+        }
     }
 }

@@ -36,11 +36,11 @@ public class RemoveCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
-        if (!instance.isActive()) {
+        if (!playerService.isActive(message.getGuild())) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;
         }
+        PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (StringUtils.isNumeric(content)) {
             Integer index = 0;
             try {

@@ -36,6 +36,7 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,6 +117,10 @@ public class MafiaService implements ModuleListener {
             } catch (Exception e) {
                 LOGGER.warn("Cannot send end message", e);
             }
+        }
+
+        if (instance.getHandler() != null && instance.getHandler() instanceof ChoiceStateHandler) {
+            ((ChoiceStateHandler) instance.getHandler()).unpinMessage(instance);
         }
 
         if (instance.getGoonChannel() != null) {

@@ -128,9 +128,11 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
                             instance.tick();
                             choiceAction(instance, player, channel);
                         }
-                        if (pass && instance.done(event.getUser())) {
-                            mafiaService.stop(instance);
-                        }
+                        contextService.execute(instance.getGuild(), () -> {
+                            if (pass && instance.done(event.getUser())) {
+                                mafiaService.stop(instance);
+                            }
+                        });
                     });
                     return true;
                 }

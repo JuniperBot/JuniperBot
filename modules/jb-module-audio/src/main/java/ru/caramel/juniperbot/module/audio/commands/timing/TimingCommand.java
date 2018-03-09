@@ -29,6 +29,10 @@ public abstract class TimingCommand extends AudioCommand {
 
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        if (!playerService.isActive(message.getGuild())) {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+            return false;
+        }
         TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
         if (current == null) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");

@@ -75,7 +75,7 @@ public abstract class AbstractCommand implements Command {
 
     private void sendEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
         try {
-            if (message.getGuild() == null || message.getMember().hasPermission(message.getTextChannel(),
+            if (message.getGuild() == null || message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                     Permission.MESSAGE_ADD_REACTION)) {
                 try {
                     message.getMessage().addReaction(emoji).queue();

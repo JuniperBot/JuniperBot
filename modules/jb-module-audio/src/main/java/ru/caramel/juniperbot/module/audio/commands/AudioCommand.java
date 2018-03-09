@@ -24,13 +24,21 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.module.audio.service.AudioMessageManager;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
+import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
+import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
 public abstract class AudioCommand extends AbstractCommand {
 
     @Autowired
     protected PlayerService playerService;
+
+    @Autowired
+    protected MusicConfigService musicConfigService;
+
+    @Autowired
+    protected LavaAudioService audioService;
 
     @Autowired
     protected AudioMessageManager messageManager;
@@ -43,7 +51,7 @@ public abstract class AudioCommand extends AbstractCommand {
         if (member == null) {
             return false;
         }
-        if (!playerService.hasAccess(member)) {
+        if (!musicConfigService.hasAccess(member)) {
             throw new ValidationException("discord.command.audio.missingAccess");
         }
         if (isChannelRestricted() && !playerService.isInChannel(member)) {

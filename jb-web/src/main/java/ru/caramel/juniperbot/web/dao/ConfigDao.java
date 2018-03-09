@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
+import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
@@ -72,6 +73,9 @@ public class ConfigDao extends AbstractDao {
     private PlayerService playerService;
 
     @Autowired
+    private MusicConfigService musicConfigService;
+
+    @Autowired
     private ModerationService moderationService;
 
     @Autowired
@@ -101,7 +105,7 @@ public class ConfigDao extends AbstractDao {
         }
         dto.setVkConnections(vkConnectionDtos);
 
-        MusicConfig musicConfig = playerService.getConfig(serverId);
+        MusicConfig musicConfig = musicConfigService.getConfig(serverId);
         MusicConfigDto musicConfigDto = mapper.getMusicDto(musicConfig);
         if (discordService.isConnected(serverId) && (musicConfigDto.getChannelId() == null ||
                 discordService.getShardManager().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
@@ -136,7 +140,7 @@ public class ConfigDao extends AbstractDao {
 
         // update music config
         MusicConfigDto musicConfigDto = dto.getMusicConfig();
-        MusicConfig musicConfig = playerService.getConfig(serverId);
+        MusicConfig musicConfig = musicConfigService.getConfig(serverId);
         mapper.updateMusicConfig(musicConfigDto, musicConfig);
         musicConfigRepository.save(musicConfig);
 

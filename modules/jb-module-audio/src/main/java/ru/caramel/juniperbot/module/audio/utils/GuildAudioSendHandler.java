@@ -16,18 +16,19 @@
  */
 package ru.caramel.juniperbot.module.audio.utils;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavaplayerPlayerWrapper;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 
 public class GuildAudioSendHandler implements AudioSendHandler {
 
     private AudioFrame lastFrame;
 
-    private final AudioPlayer player;
+    private final LavaplayerPlayerWrapper player;
 
-    public GuildAudioSendHandler(AudioPlayer player) {
-        this.player = player;
+    public GuildAudioSendHandler(IPlayer player) {
+        this.player = (LavaplayerPlayerWrapper) player;
     }
 
     @Override

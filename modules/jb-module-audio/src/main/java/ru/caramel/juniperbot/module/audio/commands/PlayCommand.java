@@ -34,11 +34,10 @@ import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
-import ru.caramel.juniperbot.module.audio.service.ValidationService;
-import ru.caramel.juniperbot.module.audio.service.YouTubeService;
+import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
+import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,7 +109,7 @@ public class PlayCommand extends AudioCommand {
 
     protected void loadAndPlay(final TextChannel channel, final BotContext context, final Member requestedBy, final String trackUrl) {
         PlaybackInstance instance = playerService.getInstance(channel.getGuild());
-        playerService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
+        audioService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 contextService.withContext(context.getGuild(), () -> {

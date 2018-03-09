@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.module.audio.service.helper;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -27,6 +27,8 @@ import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
+import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +39,9 @@ public class ValidationService {
 
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private MusicConfigService musicConfigService;
 
     private boolean compareTracks(AudioTrack track1, AudioTrack track2) {
         if (Objects.equals(track1, track2)) {
@@ -57,7 +62,7 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
-        MusicConfig config = playerService.getConfig(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
@@ -85,7 +90,7 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
-        MusicConfig config = playerService.getConfig(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
