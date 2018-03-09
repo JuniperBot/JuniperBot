@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -53,7 +54,8 @@ public class RemoveCommand extends AudioCommand {
                     TrackRequest request = playerService.removeByIndex(message.getGuild(), index);
                     if (request != null) {
                         messageManager.onMessage(message.getChannel(), "discord.command.audio.remove.done",
-                                messageManager.getTitle(request.getTrack().getInfo()), request.getTrack().getInfo().uri);
+                                messageManager.getTitle(request.getTrack().getInfo()),
+                                CommonUtils.getUrl(request.getTrack().getInfo().uri));
                         return true;
                     }
                 }

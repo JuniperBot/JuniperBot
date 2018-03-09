@@ -36,6 +36,7 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistItemRepository;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
 import ru.caramel.juniperbot.module.audio.service.PlaylistService;
+import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.DataInput;
@@ -256,7 +257,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
             List<PlaylistItem> newItems = new ArrayList<>(playlist.getItems().size());
             instance.getPlaylist().forEach(e -> {
-                PlaylistItem item = find(playlist, e.getTrack().getInfo());
+                PlaylistItem item = PlaylistUtils.find(playlist, e.getTrack().getInfo());
                 if (item == null) {
                     LocalMember member = memberService.getOrCreate(e.getMember());
                     item = new PlaylistItem(e.getTrack(), member);
@@ -272,19 +273,5 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not update playlist", e);
         }
-    }
-
-    private static PlaylistItem find(Playlist playlist, AudioTrackInfo info) {
-        for (PlaylistItem item : playlist.getItems()) {
-            if (item != null &&
-                    Objects.equals(item.getTitle(), info.title) &&
-                    Objects.equals(item.getAuthor(), info.author) &&
-                    Objects.equals(item.getLength(), info.length) &&
-                    Objects.equals(item.getIdentifier(), info.identifier) &&
-                    Objects.equals(item.getUri(), info.uri)) {
-                return item;
-            }
-        }
-        return null;
     }
 }
