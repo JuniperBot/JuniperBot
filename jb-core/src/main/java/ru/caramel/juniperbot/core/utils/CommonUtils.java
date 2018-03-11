@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.utils;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
@@ -214,5 +216,23 @@ public final class CommonUtils {
         List<Role> roles = new ArrayList<>(member.getRoles());
         roles.sort(Comparator.comparingInt(Role::getPosition));
         return roles.get(0);
+    }
+
+    public static String getUrl(String url) {
+        if (StringUtils.isEmpty(url) || url.length() > MessageEmbed.URL_MAX_LENGTH) {
+            return null;
+        }
+        if (EmbedBuilder.URL_PATTERN.matcher(url).matches()) {
+            return url;
+        }
+        try {
+            String result = java.net.URLDecoder.decode(url, "UTF-8");
+            if (EmbedBuilder.URL_PATTERN.matcher(result).matches()) {
+                return result;
+            }
+        } catch (Exception e) {
+            // nah I don't care
+        }
+        return null;
     }
 }

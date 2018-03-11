@@ -253,7 +253,7 @@ public class AudioMessageManager {
             int rowNum = i + offset;
             String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
                     CommonUtils.formatDuration(track.getDuration()), rowNum == 1 ? ":musical_note: " : "",
-                    getTitle(info), info.uri, request.getMember().getEffectiveName());
+                    getTitle(info), getUrl(info), request.getMember().getEffectiveName());
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
         builder.setFooter(totalPages > 1
@@ -393,9 +393,10 @@ public class AudioMessageManager {
     private EmbedBuilder getBasicMessage(TrackRequest request) {
         AudioTrackInfo info = request.getTrack().getInfo();
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(getTitle(info), info.uri);
-        builder.setAuthor(getArtist(info), info.uri, info.artworkUri);
-        builder.setThumbnail(info.artworkUri);
+        builder.setTitle(getTitle(info), getUrl(info));
+        String artworkUri = CommonUtils.getUrl(info.artworkUri);
+        builder.setAuthor(getArtist(info), getUrl(info), artworkUri);
+        builder.setThumbnail(artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
         return builder;
     }
@@ -426,6 +427,10 @@ public class AudioMessageManager {
     public String getArtist(AudioTrackInfo info) {
         return MediaContainerDetection.UNKNOWN_ARTIST.equals(info.author)
                 ? messageService.getMessage("discord.command.audio.panel.unknownArtist") : info.author;
+    }
+
+    public String getUrl(AudioTrackInfo info) {
+        return CommonUtils.getUrl(info.uri);
     }
 
     public void monitor(Set<Long> alive) {

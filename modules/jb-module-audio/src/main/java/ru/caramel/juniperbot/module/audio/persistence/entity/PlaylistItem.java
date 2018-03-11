@@ -24,6 +24,7 @@ import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.persistence.*;
 
@@ -74,11 +75,11 @@ public class PlaylistItem extends BaseEntity {
     public PlaylistItem(AudioTrack track, LocalMember requestedBy) {
         this.requestedBy = requestedBy;
         type = track.getClass().getSimpleName();
-        AudioTrackInfo info = track.getInfo();
-        this.title = CommonUtils.trimTo(info.title, 255);
-        this.author = CommonUtils.trimTo(info.author, 255);
-        this.identifier = CommonUtils.trimTo(info.identifier, 1000);
-        this.uri = CommonUtils.trimTo(info.uri, 1000);
+        AudioTrackInfo info = PlaylistUtils.getNormalized(track.getInfo());
+        this.title = info.title;
+        this.author = info.author;
+        this.identifier = info.identifier;
+        this.uri = info.uri;
         this.length = info.length;
         this.stream = info.isStream;
         this.artworkUri = info.artworkUri;
