@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -83,6 +84,9 @@ public class AudioMessageManager {
     }
 
     public void onTrackStart(TrackRequest request) {
+        if (request.getEndReason() != null || request.getTrack().getState() == AudioTrackState.FINISHED) {
+            return;
+        }
         synchronized (request.getGuild()) {
             try {
                 request.setResetMessage(false);
