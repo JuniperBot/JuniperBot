@@ -51,7 +51,7 @@ public class ClearCommand extends ModeratorCommandAsync {
 
     private static final int MAX_MESSAGES = 1000;
 
-    private static final Pattern COUNT_PATTERN = Pattern.compile("(\\d+)$");
+    private static final Pattern COUNT_PATTERN = Pattern.compile("^(\\d+)");
 
     @Override
     protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) throws DiscordException {
