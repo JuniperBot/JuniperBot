@@ -147,9 +147,11 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
             }
             instance.stop();
-            Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
             musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
-            lavaAudioService.closeConnection(guild);
+            Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
+            if (guild != null) {
+                lavaAudioService.closeConnection(guild);
+            }
             return true;
         }
         return false;
