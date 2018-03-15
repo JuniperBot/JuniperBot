@@ -411,10 +411,12 @@ public class AudioMessageManager {
             builder.append(CommonUtils.formatDuration(instance.getPosition()));
         }
         if (!track.getInfo().isStream) {
-            if (builder.length() > 0) {
-                builder.append("/");
+            if (track.getDuration() >= 0) {
+                if (builder.length() > 0) {
+                    builder.append("/");
+                }
+                builder.append(CommonUtils.formatDuration(track.getDuration()));
             }
-            builder.append(CommonUtils.formatDuration(track.getDuration()));
         } else {
             builder.append(" (")
                     .append(messageService.getMessage("discord.command.audio.panel.stream"))
