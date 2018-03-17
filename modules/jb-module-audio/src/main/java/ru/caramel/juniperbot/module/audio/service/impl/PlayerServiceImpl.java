@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.codahale.metrics.annotation.Gauge;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.core.Permission;
@@ -38,10 +39,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
-import ru.caramel.juniperbot.module.audio.model.EndReason;
-import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
-import ru.caramel.juniperbot.module.audio.model.RepeatMode;
-import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.*;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
@@ -212,13 +210,24 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     @Transactional
-    public void play(List<TrackRequest> requests) throws DiscordException {
+    public void play(AudioPlaylist playlist, List<TrackRequest> requests) throws DiscordException {
         if (CollectionUtils.isEmpty(requests)) {
             return;
         }
+
         TrackRequest request = requests.get(0);
-        PlaybackInstance instance = getInstance(request.getChannel().getGuild());
-        playlistService.storeToPlaylist(instance, requests);
+        Guild guild = request.getChannel().getGuild();
+        PlaybackInstance instance = getInstance(guild);
+
+        if (playlist instanceof StoredPlaylist
+                && ((StoredPlaylist)playlist).getGuildId() == guild.getIdLong()
+                && !isActive(guild)) {
+            StoredPlaylist storedPlaylist = (StoredPlaylist) playlist;
+            instance.setPlaylistId(storedPlaylist.getPlaylistId());
+            instance.setPlaylistUuid(storedPlaylist.getPlaylistUuid());
+        } else {
+            playlistService.storeToPlaylist(instance, requests);
+        }
         play(request, instance);
         if (requests.size() > 1) {
             requests.subList(1, requests.size()).forEach(instance::offer);

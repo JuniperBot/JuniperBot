@@ -21,9 +21,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.persistence.*;
@@ -71,6 +71,10 @@ public class PlaylistItem extends BaseEntity {
 
     @Column(name = "artwork_url")
     private String artworkUri;
+
+    @Type(type="org.hibernate.type.BinaryType")
+    @Column
+    private byte[] data;
 
     public PlaylistItem(AudioTrack track, LocalMember requestedBy) {
         this.requestedBy = requestedBy;

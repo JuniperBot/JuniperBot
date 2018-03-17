@@ -127,7 +127,8 @@ public class PlayCommand extends AudioCommand {
                 contextService.withContext(context.getGuild(), () -> {
                     try {
                         List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
-                        playerService.play(tracks.stream().map(e -> new TrackRequest(e, requestedBy, channel)).collect(Collectors.toList()));
+                        playerService.play(playlist, tracks.stream().map(e -> new TrackRequest(e, requestedBy, channel))
+                                .collect(Collectors.toList()));
                     } catch (DiscordException e) {
                         messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                     }

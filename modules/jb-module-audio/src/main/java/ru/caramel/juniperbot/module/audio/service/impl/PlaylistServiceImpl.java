@@ -17,11 +17,15 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
+import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +33,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.module.audio.model.StoredPlaylist;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistItemRepository;
 import ru.caramel.juniperbot.module.audio.persistence.repository.PlaylistRepository;
+import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.PlaylistService;
 import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -78,6 +82,9 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private LavaAudioService lavaAudioService;
+
     private Method sourceMethod;
 
     @PostConstruct
@@ -103,16 +110,16 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
                 List<AudioTrack> tracks = new ArrayList<>(playlist.getItems().size());
                 playlist.getItems().forEach(e -> {
                     try {
-                        List<AudioTrack> items = getTracksFor(manager, e);
-                        if (CollectionUtils.isNotEmpty(items)) {
-                            tracks.addAll(items);
+                        AudioTrack track = getTracksFor(manager, e);
+                        if (track != null) {
+                            tracks.add(track);
                         }
                     } catch (Exception ex) {
                         // fall down and ignore it
                     }
                 });
                 if (!tracks.isEmpty()) {
-                    return new BasicAudioPlaylist(uuid, tracks, null, false);
+                    return new StoredPlaylist(playlist, tracks);
                 }
             }
             onError(playlist, "discord.command.audio.playlist.notFound");
@@ -126,40 +133,54 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
         });
     }
 
-    private List<AudioTrack> getTracksFor(DefaultAudioPlayerManager manager, PlaylistItem item) {
+    private AudioTrack getTracksFor(DefaultAudioPlayerManager manager, PlaylistItem item) {
         if (sourceMethod == null) {
             return null;
         }
 
-        List<AudioTrack> items = new ArrayList<>();
-        AudioLoadResultHandler handler = new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                items.add(track);
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                if (playlist.getTracks() != null) {
-                    items.addAll(playlist.getTracks());
-                }
-            }
-
-            @Override
-            public void noMatches() {
-                // nothing
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                // nothing
-            }
-        };
-
-        if (!checkSourcesForItem(manager, new AudioReference(item.getUri(), item.getTitle()), handler)) {
-            checkSourcesForItem(manager, new AudioReference(item.getIdentifier(), item.getTitle()), handler);
+        class TrackHolder {
+            AudioTrack track;
         }
-        return items;
+
+        TrackHolder holder = new TrackHolder();
+
+        if (ArrayUtils.isNotEmpty(item.getData())) {
+            holder.track = decodeTrack(item.getData());
+        }
+
+        if (holder.track == null) {
+            AudioLoadResultHandler handler = new AudioLoadResultHandler() {
+                @Override
+                public void trackLoaded(AudioTrack track) {
+                    holder.track = track;
+                }
+
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist) {
+                    // no playlist supported
+                }
+
+                @Override
+                public void noMatches() {
+                    // nothing
+                }
+
+                @Override
+                public void loadFailed(FriendlyException exception) {
+                    // nothing
+                }
+            };
+
+            if (!checkSourcesForItem(manager, new AudioReference(item.getUri(), item.getTitle()), handler)) {
+                checkSourcesForItem(manager, new AudioReference(item.getIdentifier(), item.getTitle()), handler);
+            }
+
+            if (ArrayUtils.isEmpty(item.getData()) && holder.track != null) {
+                item.setData(encodeTrack(holder.track));
+                playlistItemRepository.save(item);
+            }
+        }
+        return holder.track;
     }
 
     private boolean checkSourcesForItem(DefaultAudioPlayerManager manager, AudioReference reference, AudioLoadResultHandler resultHandler) {
@@ -240,6 +261,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
                 for (TrackRequest request : requests) {
                     PlaylistItem item = new PlaylistItem(request.getTrack(), localMember);
                     item.setPlaylist(playlist);
+                    item.setData(encodeTrack(request.getTrack()));
                     playlist.getItems().add(item);
                 }
                 playlistRepository.save(playlist);
@@ -261,6 +283,10 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
                 if (item == null) {
                     LocalMember member = memberService.getOrCreate(e.getMember());
                     item = new PlaylistItem(e.getTrack(), member);
+                    item.setPlaylist(playlist);
+                }
+                if (ArrayUtils.isEmpty(item.getData())) {
+                    item.setData(encodeTrack(e.getTrack()));
                 }
                 newItems.add(item);
             });
@@ -273,5 +299,34 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not update playlist", e);
         }
+    }
+
+    private byte[] encodeTrack(AudioTrack track) {
+        if (track == null) {
+            return null;
+        }
+        AudioPlayerManager manager = lavaAudioService.getPlayerManager();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            MessageOutput output = new MessageOutput(outputStream);
+            manager.encodeTrack(output, track);
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            LOGGER.warn("Could not encode track {}", track);
+        }
+        return null;
+    }
+
+    private AudioTrack decodeTrack(byte[] data) {
+        if (ArrayUtils.isEmpty(data)) {
+            return null;
+        }
+        AudioPlayerManager manager = lavaAudioService.getPlayerManager();
+        try (ByteArrayInputStream stream = new ByteArrayInputStream(data)) {
+            DecodedTrackHolder holder = manager.decodeTrack(new MessageInput(stream));
+            return holder != null && holder.decodedTrack != null ? holder.decodedTrack : null;
+        } catch (IOException e) {
+            LOGGER.warn("Could not decode track");
+        }
+        return null;
     }
 }

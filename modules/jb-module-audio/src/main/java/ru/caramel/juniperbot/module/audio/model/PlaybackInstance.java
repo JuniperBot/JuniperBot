@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.module.audio.model;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import lavalink.client.player.IPlayer;
 import lombok.Getter;
 import lombok.Setter;
