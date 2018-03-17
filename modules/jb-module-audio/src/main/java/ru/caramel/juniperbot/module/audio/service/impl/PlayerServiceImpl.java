@@ -219,15 +219,24 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         Guild guild = request.getChannel().getGuild();
         PlaybackInstance instance = getInstance(guild);
 
-        if (playlist instanceof StoredPlaylist
-                && ((StoredPlaylist)playlist).getGuildId() == guild.getIdLong()
-                && !isActive(guild)) {
+        boolean store = true;
+        if (playlist instanceof StoredPlaylist) {
             StoredPlaylist storedPlaylist = (StoredPlaylist) playlist;
-            instance.setPlaylistId(storedPlaylist.getPlaylistId());
-            instance.setPlaylistUuid(storedPlaylist.getPlaylistUuid());
-        } else {
+            if (isActive(guild)) {
+                if (Objects.equals(storedPlaylist.getPlaylistId(), instance.getPlaylistId())) {
+                    throw new DiscordException("discord.command.audio.playlistInQueue");
+                }
+            } else if (storedPlaylist.getGuildId() == guild.getIdLong() && !isActive(guild)) {
+                instance.setPlaylistId(storedPlaylist.getPlaylistId());
+                instance.setPlaylistUuid(storedPlaylist.getPlaylistUuid());
+                store = false;
+            }
+        }
+
+        if (store) {
             playlistService.storeToPlaylist(instance, requests);
         }
+
         play(request, instance);
         if (requests.size() > 1) {
             requests.subList(1, requests.size()).forEach(instance::offer);
