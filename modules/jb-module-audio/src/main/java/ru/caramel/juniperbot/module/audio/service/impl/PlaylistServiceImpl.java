@@ -51,6 +51,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.COMMON;
 
@@ -106,20 +107,24 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
         if (matcher.find()) {
             String uuid = matcher.group(1);
             Playlist playlist = getPlaylist(uuid);
-            if (playlist != null && CollectionUtils.isNotEmpty(playlist.getItems())) {
-                List<AudioTrack> tracks = new ArrayList<>(playlist.getItems().size());
-                playlist.getItems().forEach(e -> {
-                    try {
-                        AudioTrack track = getTracksFor(manager, e);
-                        if (track != null) {
-                            tracks.add(track);
+            if (playlist != null) {
+                List<PlaylistItem> items = new ArrayList<>(playlist.getItems());
+                if (CollectionUtils.isNotEmpty(items)) {
+                    List<AudioTrack> tracks = new ArrayList<>(items.size());
+                    items.forEach(e -> {
+                        try {
+                            AudioTrack track = getTracksFor(manager, e);
+                            if (track != null) {
+                                tracks.add(track);
+                            }
+                        } catch (Exception ex) {
+                            // fall down and ignore it
                         }
-                    } catch (Exception ex) {
-                        // fall down and ignore it
+                    });
+                    if (!tracks.isEmpty()) {
+                        refreshStoredPlaylist(playlist, tracks);
+                        return new StoredPlaylist(playlist, tracks);
                     }
-                });
-                if (!tracks.isEmpty()) {
-                    return new StoredPlaylist(playlist, tracks);
                 }
             }
             onError(playlist, "discord.command.audio.playlist.notFound");
@@ -298,6 +303,24 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             }
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not update playlist", e);
+        }
+    }
+
+    private void refreshStoredPlaylist(Playlist playlist, List<AudioTrack> tracks) {
+        try {
+            List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
+            List<PlaylistItem> existentItems = tracks.stream()
+                    .map(e -> PlaylistUtils.find(playlist, e.getInfo()))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            toRemove.removeAll(existentItems);
+            playlist.setItems(existentItems);
+            playlistRepository.save(playlist);
+            if (!toRemove.isEmpty()) {
+                playlistItemRepository.delete(toRemove);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("[shuffle] Could not clear playlist", e);
         }
     }
 
