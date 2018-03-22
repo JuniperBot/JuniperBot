@@ -51,8 +51,6 @@ public interface PlayerService {
 
     VoiceChannel getChannel(Member member);
 
-    void reconnectAll();
-
     VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException;
 
     void monitor();

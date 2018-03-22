@@ -391,19 +391,6 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         lavaAudioService.shutdown();
     }
 
-    @Override
-    public void reconnectAll() {
-        instances.forEach((k, v) -> {
-            if (v.getCurrent() != null) {
-                try {
-                    connectToChannel(v, v.getCurrent().getMember());
-                } catch (DiscordException e) {
-                    // fall down
-                }
-            }
-        });
-    }
-
     @Scheduled(fixedDelay = 15000)
     public void monitor() {
         long currentTimeMillis = System.currentTimeMillis();
