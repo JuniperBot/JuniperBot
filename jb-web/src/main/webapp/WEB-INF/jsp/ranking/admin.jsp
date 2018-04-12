@@ -181,9 +181,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 <div class="box-header">
                     <h3 class="box-title"><spring:message code="page.ranking.list.title"/></h3>
                     <div class="box-tools pull-right">
-                        <button id="ranking-import-button" type="button" class="btn btn-info">
-                            <spring:message code="page.ranking.list.button.import"/>
-                        </button>
                         <button id="ranking-reset-button" type="button" class="btn btn-danger">
                             <spring:message code="global.button.resetAll"/>
                         </button>

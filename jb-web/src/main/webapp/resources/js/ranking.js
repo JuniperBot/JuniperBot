@@ -37,7 +37,6 @@ function Ranking(lang) {
 
     var $syncButton = $('#ranking-sync-button');
 
-    var $importButton = $('#ranking-import-button');
     var $resetButton = $('#ranking-reset-button');
 
     var $searchInput = $("#ranking-search-input");
@@ -186,32 +185,6 @@ function Ranking(lang) {
 
     $syncButton.click(self.reload);
 
-    $importButton.click(function () {
-        BootstrapDialog.show({
-            title: lang.importModalTitle,
-            type: BootstrapDialog.TYPE_WARNING,
-            message: $("#import-content").clone().removeClass('hidden'),
-            spinicon: 'fa fa-circle-o-notch',
-            buttons: [{
-                label: lang.importButtonText,
-                cssClass: 'btn-info',
-                autospin: true,
-                action: function (dialogRef) {
-                    dialogRef.enableButtons(false);
-                    dialogRef.setClosable(false);
-                    syncMee6(function () {
-                        dialogRef.close();
-                    });
-                }
-            }, {
-                label: lang.closeButtonText,
-                action: function (dialogRef) {
-                    dialogRef.close();
-                }
-            }]
-        });
-    });
-
     $resetButton.click(function () {
         BootstrapDialog.show({
             title: lang.resetAllModalTitle,
@@ -257,17 +230,6 @@ function Ranking(lang) {
         $.post(contextPath + 'ranking/update/' + serverId, {userId: userId, level: level})
             .done(function () {
                 $updateModal.modal('hide');
-                self.reload();
-            })
-            .fail(function () {
-                BootstrapDialog.warning(lang.somethingIsWrong);
-            })
-            .always(callback);
-    }
-
-    function syncMee6(callback) {
-        $.post(contextPath + 'ranking/syncMee6/' + serverId)
-            .done(function () {
                 self.reload();
             })
             .fail(function () {

@@ -138,21 +138,6 @@ public class RankingController extends AbstractController {
                 .addObject("members", members);
     }
 
-    @RequestMapping(value = "/ranking/syncMee6/{serverId}", method = RequestMethod.POST)
-    @ResponseBody
-    public String syncMee6(
-            @PathVariable("serverId") long serverId) throws IOException {
-        validateGuildId(serverId);
-        if (discordService.isConnected(serverId)) {
-            Guild guild = discordService.getShardManager().getGuildById(serverId);
-            if (guild != null) {
-                rankingService.syncMee6(guild);
-                return "ok";
-            }
-        }
-        return "fail";
-    }
-
     @RequestMapping(value = "/ranking/resetAll/{serverId}", method = RequestMethod.POST)
     @ResponseBody
     public String resetAll(
