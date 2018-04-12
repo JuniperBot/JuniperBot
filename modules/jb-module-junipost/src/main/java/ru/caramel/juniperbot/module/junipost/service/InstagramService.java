@@ -16,12 +16,16 @@
  */
 package ru.caramel.juniperbot.module.junipost.service;
 
+import me.postaddict.instagram.scraper.Instagram;
+import me.postaddict.instagram.scraper.cookie.CookieHashSet;
+import me.postaddict.instagram.scraper.cookie.DefaultCookieJar;
+import me.postaddict.instagram.scraper.interceptor.ErrorInterceptor;
+import me.postaddict.instagram.scraper.model.Account;
+import me.postaddict.instagram.scraper.model.Media;
+import me.postaddict.instagram.scraper.model.PageInfo;
+import me.postaddict.instagram.scraper.model.PageObject;
+import okhttp3.OkHttpClient;
 import org.apache.commons.collections4.CollectionUtils;
-import org.jinstagram.Instagram;
-import org.jinstagram.auth.model.Token;
-import org.jinstagram.entity.users.feed.MediaFeed;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.jinstagram.exceptions.InstagramException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +34,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -38,17 +42,8 @@ public class InstagramService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstagramService.class);
 
-    @Value("${instagram.clientId}")
-    private String clientId;
-
-    @Value("${instagram.clientSecret}")
-    private String clientSecret;
-
-    @Value("${instagram.token}")
-    private String token;
-
     @Value("${instagram.pollUserId}")
-    private String pollUserId;
+    private Long pollUserId;
 
     @Value("${instagram.ttl:30000}")
     private Long ttl;
@@ -64,52 +59,58 @@ public class InstagramService {
 
     private Instagram instagram;
 
-    private List<MediaFeedData> cache;
+    private List<Media> cache;
 
     private long latestUpdate;
 
+    private Account account;
+
     @PostConstruct
     public void init() {
-        if (clientId == null
-                || clientSecret == null
-                || token == null
-                || pollUserId == null) {
-            LOGGER.warn("No Instagram clientId, clientSecret, token or userId were provided. Integration will not work");
-            return;
-        }
-        instagram = new Instagram(clientId);
-        instagram.setAccessToken(new Token(token, clientSecret));
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(new ErrorInterceptor())
+                .cookieJar(new DefaultCookieJar(new CookieHashSet()))
+                .build();
+        instagram = new Instagram(httpClient);
         scheduler.scheduleWithFixedDelay(this::update, updateInterval);
     }
 
-    public List<MediaFeedData> getRecent() throws InstagramException {
-        if (instagram == null) {
-            return null;
-        }
+    public List<Media> getRecent() {
         try {
             long currentTimestamp = System.currentTimeMillis();
             if (currentTimestamp > latestUpdate + ttl) {
                 synchronized (this) {
-                    MediaFeed feed = instagram.getRecentMediaFeed(pollUserId);
-                    cache = feed.getData();
-                    latestUpdate = currentTimestamp;
+                    account = instagram.getAccountById(pollUserId);
+                    PageObject<Media> medias = instagram.getMedias(pollUserId, 1, new PageInfo(true, ""));
+                    if (medias != null && medias.getCount() != null && medias.getCount() > 0) {
+                        cache = medias.getNodes();
+                        latestUpdate = currentTimestamp;
+                    }
                 }
             }
-            return cache;
-        } catch (InstagramException e) {
+        } catch (IOException e) {
             LOGGER.error("Could not get Instagram data", e);
         }
-        return null;
+        return cache;
+    }
+
+    public Account getAccount() {
+        synchronized (this) {
+            try {
+                if (account == null) {
+                    account = instagram.getAccountById(pollUserId);
+                }
+            } catch (IOException e) {
+                LOGGER.error("Could not get Instagram account data", e);
+            }
+        }
+        return account;
     }
 
     private void update() {
-        try {
-            List<MediaFeedData> medias = getRecent();
-            if (CollectionUtils.isNotEmpty(medias)) {
-                postService.onInstagramUpdated(medias);
-            }
-        } catch (InstagramException e) {
-            LOGGER.error("Could not get Instagram data", e);
+        List<Media> medias = getRecent();
+        if (CollectionUtils.isNotEmpty(medias)) {
+            postService.onInstagramUpdated(medias);
         }
     }
 }

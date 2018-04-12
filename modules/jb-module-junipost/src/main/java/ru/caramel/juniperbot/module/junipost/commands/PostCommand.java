@@ -16,10 +16,9 @@
  */
 package ru.caramel.juniperbot.module.junipost.commands;
 
+import me.postaddict.instagram.scraper.model.Media;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.jinstagram.exceptions.InstagramException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +38,6 @@ import java.util.List;
         priority = 5)
 public class PostCommand extends AbstractCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);
-
     @Autowired
     private InstagramService instagramService;
 
@@ -50,12 +47,7 @@ public class PostCommand extends AbstractCommand {
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int count = parseCount(content);
-        List<MediaFeedData> medias = null;
-        try {
-            medias = instagramService.getRecent();
-        } catch (InstagramException e) {
-            LOGGER.error("Could not get instagram data", e);
-        }
+        List<Media> medias = instagramService.getRecent();
 
         if (medias == null) {
             messageService.onError(message.getChannel(), "discord.command.post.error");

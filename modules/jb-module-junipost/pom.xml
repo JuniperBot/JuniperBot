@@ -40,9 +40,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sachinhandiekar</groupId>
-            <artifactId>jInstagram</artifactId>
-            <version>${jInstagram.version}</version>
+            <groupId>com.github.igor-suhorukov</groupId>
+            <artifactId>instagramscraper</artifactId>
+            <version>${instagramscraper.version}</version>
         </dependency>
 
         <dependency>

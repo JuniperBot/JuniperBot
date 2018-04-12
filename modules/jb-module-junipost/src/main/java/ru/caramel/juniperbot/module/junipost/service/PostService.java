@@ -16,13 +16,14 @@
  */
 package ru.caramel.juniperbot.module.junipost.service;
 
+import me.postaddict.instagram.scraper.model.Account;
+import me.postaddict.instagram.scraper.model.Media;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class PostService {
 
     public static final int MAX_DETAILED = 3;
 
+    public static final String POST_URL = "https://www.instagram.com/p/";
+
     @Value("${instagram.post.userName:JuniperBot}")
     private String userName;
 
@@ -57,9 +60,12 @@ public class PostService {
     @Autowired
     private MessageService messageService;
 
-    private String latestId;
+    @Autowired
+    private InstagramService instagramService;
 
-    public void post(List<MediaFeedData> medias, MessageChannel channel) {
+    private long latestId;
+
+    public void post(List<Media> medias, MessageChannel channel) {
         if (medias.size() > 0) {
             for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
                 EmbedBuilder builder = convertToEmbed(medias.get(i));
@@ -68,11 +74,11 @@ public class PostService {
         }
     }
 
-    public void onInstagramUpdated(List<MediaFeedData> medias) {
-        if (latestId != null) {
-            List<MediaFeedData> newMedias = new ArrayList<>();
-            for (MediaFeedData media : medias) {
-                if (media.getId().equals(latestId)) {
+    public void onInstagramUpdated(List<Media> medias) {
+        if (latestId != 0) {
+            List<Media> newMedias = new ArrayList<>();
+            for (Media media : medias) {
+                if (media.getId() == latestId) {
                     break;
                 }
                 newMedias.add(media);
@@ -100,24 +106,29 @@ public class PostService {
         latestId = medias.get(0).getId();
     }
 
-    public EmbedBuilder convertToEmbed(MediaFeedData media) {
+    public EmbedBuilder convertToEmbed(Media media) {
         EmbedBuilder builder = new EmbedBuilder()
-                .setImage(media.getImages().getStandardResolution().getImageUrl())
-                .setAuthor(media.getUser().getFullName(), null, media.getUser().getProfilePictureUrl())
-                .setTimestamp(new Date(Long.parseLong(media.getCreatedTime()) * 1000).toInstant())
+                .setImage(media.getDisplayUrl())
+                .setTimestamp(new Date(media.getTakenAtTimestamp()).toInstant())
                 .setColor(messageService.getAccentColor());
 
+        Account account = instagramService.getAccount();
+        if (account != null) {
+            builder.setAuthor(account.getFullName(), null, account.getProfilePicUrl());
+        }
+
         if (media.getCaption() != null) {
-            String text = media.getCaption().getText();
+            String text = media.getCaption();
             if (StringUtils.isNotEmpty(text)) {
                 if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
                     text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
                 }
-                if (media.getCaption().getText().length() > 200) {
-                    builder.setTitle(media.getLink(), media.getLink());
+                String link = POST_URL + media.getShortcode();
+                if (media.getCaption().length() > 200) {
+                    builder.setTitle(link, link);
                     builder.setDescription(text);
                 } else {
-                    builder.setTitle(text, media.getLink());
+                    builder.setTitle(text, link);
                 }
             }
         }
