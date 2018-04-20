@@ -207,19 +207,20 @@ public class RankingServiceImpl implements RankingService {
             int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
             if (newLevel < 1000 && level != newLevel) {
                 if (config.isAnnouncementEnabled()) {
-                    MessageChannel channel = event.getChannel();
                     if (config.isWhisper()) {
                         try {
                             contextService.queue(event.getGuild(), event.getAuthor().openPrivateChannel(), c -> {
-                                messageService.sendMessageSilent(channel::sendMessage,
-                                        getAnnounce(config, event.getAuthor().getAsMention(), newLevel));
+                                String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
+                                sendAnnounce(config, c, content);
                             });
                         } catch (Exception e) {
                             LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
                         }
                     } else {
-                        messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config,
-                                event.getMember().getAsMention(), newLevel));
+                        MessageChannel channel = config.getAnnouncementChannelId() != null ?
+                                event.getGuild().getTextChannelById(config.getAnnouncementChannelId()) : null;
+                        String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
+                        sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
                     }
                 }
                 updateRewards(config, event.getMember(), ranking);
@@ -239,6 +240,14 @@ public class RankingServiceImpl implements RankingService {
                     }
                 }
             }
+        }
+    }
+
+    private void sendAnnounce(RankingConfig config, MessageChannel channel, String content) {
+        if (config.isEmbed()) {
+            messageService.onEmbedMessage(channel, content);
+        } else {
+            messageService.sendMessageSilent(channel::sendMessage, content);
         }
     }
 

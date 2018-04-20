@@ -59,7 +59,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
                     <div class="form-group">
                         <label for="joinRichEnabled" class="col-sm-4 control-label">
-                            <spring:message code="page.welcome.embed"/>
+                            <spring:message code="global.button.embed"/>
                         </label>
                         <div class="col-sm-2">
                             <form:checkbox id="joinRichEnabled" path="joinRichEnabled"
@@ -132,7 +132,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
                     <div class="form-group">
                         <label for="leaveRichEnabled" class="col-sm-4 control-label">
-                            <spring:message code="page.welcome.embed"/>
+                            <spring:message code="global.button.embed"/>
                         </label>
                         <div class="col-sm-8">
                             <form:checkbox id="leaveRichEnabled" path="leaveRichEnabled"

@@ -66,49 +66,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </div>
                 <div class="box-body">
-                    <spring:bind path="announcement">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <div class="col-md-12">
-                                <spring:message code="discord.command.rank.levelup" var="lvlupPlaceholder"/>
-                                <form:textarea path="announcement" cssClass="form-control" rows="5"
-                                               placeholder="${lvlupPlaceholder}" />
-                                <form:errors path="announcement" class="help-block" />
-                            </div>
-                        </div>
-                    </spring:bind>
-
-                    <spring:bind path="announcementEnabled">
-                        <div class="form-group">
-                            <label for="announcementEnabled" class="col-sm-5 control-label">
-                                <spring:message code="page.ranking.admin.announce"/>
-                            </label>
-                            <div class="col-sm-7">
-                                <form:checkbox id="announcementEnabled" path="announcementEnabled"
-                                               data-toggle="toggle"
-                                               data-onstyle="warning"
-                                               data-size="small"
-                                               data-on="${switchOn}"
-                                               data-off="${switchOff}" />
-                            </div>
-                        </div>
-                    </spring:bind>
-
-                    <spring:bind path="whisper">
-                        <div class="form-group">
-                            <label for="whisper" class="col-sm-5 control-label">
-                                <spring:message code="global.button.sendToDM"/>
-                            </label>
-                            <div class="col-sm-7">
-                                <form:checkbox id="whisper" path="whisper"
-                                               data-toggle="toggle"
-                                               data-onstyle="warning"
-                                               data-size="small"
-                                               data-on="${switchOn}"
-                                               data-off="${switchOff}" />
-                            </div>
-                        </div>
-                    </spring:bind>
-
                     <div class="form-group">
                         <label for="resetOnLeave" class="col-sm-5 control-label">
                             <spring:message code="page.ranking.admin.resetOnLeave"/>
@@ -137,6 +94,68 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             <form:errors path="bannedRoles" class="help-block" />
                         </div>
                     </div>
+
+                    <hr />
+
+                    <spring:bind path="announcementEnabled">
+                        <div class="form-group">
+                            <label for="announcementEnabled" class="col-sm-5 control-label">
+                                <spring:message code="page.ranking.admin.announce"/>
+                            </label>
+                            <div class="col-sm-7">
+                                <form:checkbox id="announcementEnabled" path="announcementEnabled"
+                                               data-toggle="toggle"
+                                               data-onstyle="warning"
+                                               data-size="small"
+                                               data-on="${switchOn}"
+                                               data-off="${switchOff}" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
+                    <spring:bind path="embed">
+                        <div class="form-group">
+                            <label for="embed" class="col-sm-5 control-label">
+                                <spring:message code="global.button.embed"/>
+                            </label>
+                            <div class="col-sm-7">
+                                <form:checkbox id="embed" path="embed"
+                                               data-toggle="toggle"
+                                               data-onstyle="warning"
+                                               data-size="small"
+                                               data-on="${switchOn}"
+                                               data-off="${switchOff}" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
+                    <spring:bind path="announcementChannelId">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="announcementChannelId" class="col-sm-5 control-label">
+                                <spring:message code="page.ranking.admin.channel"/>
+                            </label>
+                            <div class="col-sm-7">
+                                <form:select id="announcementChannelId" path="announcementChannelId" disabled="${not serverAdded}"
+                                             cssClass="form-control select2" cssStyle="width: 100%;">
+                                    <form:option value=""><spring:message code="page.ranking.admin.channel.message"/></form:option>
+                                    <form:option value="-1"><spring:message code="page.ranking.admin.channel.dm"/></form:option>
+                                    <form:options items="${textChannels}" itemValue="idLong" itemLabel="name" />
+                                </form:select>
+                                <form:errors path="announcementChannelId" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
+                    <spring:bind path="announcement">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <div class="col-md-12">
+                                <spring:message code="discord.command.rank.levelup" var="lvlupPlaceholder"/>
+                                <form:textarea path="announcement" cssClass="form-control" rows="5"
+                                               placeholder="${lvlupPlaceholder}" />
+                                <form:errors path="announcement" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
                 </div>
             </div>
         </div>

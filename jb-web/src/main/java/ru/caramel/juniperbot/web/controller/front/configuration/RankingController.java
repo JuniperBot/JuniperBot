@@ -72,12 +72,12 @@ public class RankingController extends AbstractController {
         if (!authorized && !rankingService.isEnabled(serverId)) {
             throw new NotFoundException();
         }
-        RankingConfig rankingConfig = rankingService.getConfig(serverId);
         ModelAndView mv;
         if (!forceUser && authorized) {
             mv = createAdminModel(serverId)
-                    .addObject("config", mapperService.getRankingDto(rankingConfig));
+                    .addObject("config", rankingDao.getConfig(serverId));
         } else {
+            RankingConfig rankingConfig = rankingService.getConfig(serverId);
             mv = createModel("ranking.user", serverId, false)
                     .addObject("rewards", getRewards(serverId, rankingConfig));
         }
@@ -104,6 +104,7 @@ public class RankingController extends AbstractController {
         return mv
                 .addObject("rolesManageable", hasPermission(serverId, Permission.MANAGE_ROLES))
                 .addObject("roles", getRoles(serverId, false))
+                .addObject("textChannels", getTextChannels(serverId))
                 .addObject("rolesInteract", getRoles(serverId, true));
     }
 

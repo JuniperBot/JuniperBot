@@ -33,7 +33,9 @@ public class RankingConfigDto implements Serializable {
 
     private boolean announcementEnabled;
 
-    private boolean whisper;
+    private boolean embed;
+
+    private Long announcementChannelId;
 
     private boolean resetOnLeave;
 
