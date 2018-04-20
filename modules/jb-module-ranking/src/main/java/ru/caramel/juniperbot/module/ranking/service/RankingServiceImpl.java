@@ -36,7 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
+import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
@@ -52,6 +54,7 @@ import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +66,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private LocalMemberRepository memberRepository;
+
+    @Autowired
+    private LocalUserRepository userRepository;
 
     @Autowired
     private RankingRepository rankingRepository;
@@ -78,6 +84,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private ImportProvider importProvider;
 
     @Autowired
     private MemberService memberService;
@@ -287,6 +296,57 @@ public class RankingServiceImpl implements RankingService {
         });
         memberRepository.save(members);
         rankingRepository.recalculateRank(guild.getId());
+    }
+
+    @Transactional
+    @Override
+    public long importRanking(Guild guild) {
+        List<LocalMember> members = memberService.syncMembers(guild);
+        Map<String, LocalMember> membersMap = members.stream()
+                .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
+
+        AtomicLong count = new AtomicLong();
+
+        importProvider.export(guild.getIdLong(), e -> {
+            Set<LocalUser> toUserSave = new HashSet<>(e.size());
+            Set<LocalMember> toMemberSave = new HashSet<>(e.size());
+            Set<Ranking> toSave = new HashSet<>(e.size());
+            for (RankingInfo info : e) {
+                try {
+                    LocalMember member = membersMap.get(info.getId());
+                    if (member == null) {
+                        member = new LocalMember();
+                        member.setGuildId(guild.getId());
+                        member.setEffectiveName(info.getNick());
+
+                        LocalUser user = userRepository.findByUserId(info.getId());
+                        if (user == null) {
+                            user = new LocalUser();
+                            user.setUserId(info.getId());
+                        }
+                        if (StringUtils.isNotEmpty(info.getAvatarUrl())) {
+                            user.setAvatarUrl(info.getAvatarUrl());
+                        }
+                        user.setName(info.getName());
+                        user.setDiscriminator(info.getDiscriminator());
+                        member.setUser(user);
+                        toUserSave.add(user);
+                        toMemberSave.add(member);
+                    }
+                    Ranking ranking = getRanking(member);
+                    ranking.setExp(info.getTotalExp());
+                    count.incrementAndGet();
+                } catch (Exception ex) {
+                    LOGGER.error("Import batch failed", ex);
+                }
+            }
+            userRepository.save(toUserSave);
+            memberRepository.save(toMemberSave);
+            rankingRepository.save(toSave);
+        });
+
+        sync(guild);
+        return count.longValue();
     }
 
     @Transactional

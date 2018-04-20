@@ -52,6 +52,8 @@ public interface RankingService {
 
     void sync(Guild guild);
 
+    long importRanking(Guild guild);
+
     void resetAll(long serverId);
 
     boolean isBanned(RankingConfig config, Member member);
