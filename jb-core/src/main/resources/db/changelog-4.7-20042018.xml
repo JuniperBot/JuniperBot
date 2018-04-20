@@ -35,4 +35,10 @@
         <addNotNullConstraint tableName="ranking_config" columnName="is_embed"/>
     </changeSet>
 
+    <changeSet id="4.7-20042018-4" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="join_role_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

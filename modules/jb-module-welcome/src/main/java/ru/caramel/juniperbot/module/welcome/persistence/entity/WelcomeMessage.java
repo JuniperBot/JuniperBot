@@ -47,6 +47,9 @@ public class WelcomeMessage extends GuildOwnedEntity {
     @Column(name = "join_channel_id")
     private Long joinChannelId;
 
+    @Column(name = "join_role_id")
+    private Long joinRoleId;
+
     @Column(name = "join_to_dm")
     private boolean joinToDM;
 

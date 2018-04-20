@@ -69,6 +69,7 @@ public class WelcomeController extends AbstractController {
     @Override
     protected ModelAndView createModel(String name, long serverId) {
         return super.createModel(name, serverId)
-                .addObject("textChannels", getTextChannels(serverId));
+                .addObject("textChannels", getTextChannels(serverId))
+                .addObject("rolesInteract", getRoles(serverId, true));
     }
 }

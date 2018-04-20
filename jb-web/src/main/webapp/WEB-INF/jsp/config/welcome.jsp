@@ -99,6 +99,21 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </spring:bind>
 
+                    <spring:bind path="joinRoleId">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
+                            <label for="joinRoleId" class="col-sm-4 control-label">
+                                <spring:message code="page.welcome.roleAssign"/>
+                            </label>
+                            <div class="col-sm-8">
+                                <form:select id="joinRoleId" path="joinRoleId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;">
+                                    <form:option value=""><spring:message code="global.select.none"/></form:option>
+                                    <form:options items="${rolesInteract}" itemValue="idLong" itemLabel="name" />
+                                </form:select>
+                                <form:errors path="joinChannelId" class="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+
                 </div>
             </div>
         </div>

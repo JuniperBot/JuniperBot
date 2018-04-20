@@ -18,10 +18,8 @@ package ru.caramel.juniperbot.module.welcome.listeners;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
@@ -59,7 +57,18 @@ public class WelcomeUserListener extends DiscordEventListener {
             return;
         }
         WelcomeMessage message = welcomeMessageRepository.findByGuild(event.getGuild());
-        if (message == null || !message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
+        if (message == null) {
+            return;
+        }
+
+        if (message.getJoinRoleId() != null && event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            Role role = event.getGuild().getRoleById(message.getJoinRoleId());
+            if (role != null) {
+                event.getGuild().getController().addRolesToMember(event.getMember(), role).queue();
+            }
+        }
+
+        if (!message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
             return;
         }
 
