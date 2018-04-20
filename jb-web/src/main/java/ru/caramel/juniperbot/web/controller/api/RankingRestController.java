@@ -16,8 +16,9 @@
  */
 package ru.caramel.juniperbot.web.controller.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
@@ -25,19 +26,29 @@ import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class RankingRestController extends BaseRestController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RankingRestController.class);
-
     @Autowired
     private RankingService rankingService;
+
+    private LoadingCache<Long, List<RankingInfo>> rankingCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<Long, List<RankingInfo>>() {
+                        public List<RankingInfo> load(Long serverId) {
+                            return rankingService.getRankingInfos(serverId);
+                        }
+                    });
 
     @RequestMapping(value = "/ranking/list/{serverId}", method = RequestMethod.GET)
     @ResponseBody
     public List<RankingInfo> list(
-            @PathVariable("serverId") long serverId) {
-        return rankingService.isEnabled(serverId) ? rankingService.getRankingInfos(serverId) : Collections.emptyList();
+            @PathVariable("serverId") long serverId) throws ExecutionException {
+        return rankingService.isEnabled(serverId) ? rankingCache.get(serverId) : Collections.emptyList();
     }
 }
