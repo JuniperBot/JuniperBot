@@ -23,12 +23,39 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 <spring:message code="global.switch.on" var="switchOn"/>
 <spring:message code="global.switch.off" var="switchOff"/>
 
+
+<div id="help-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><spring:message code="page.custom.modal.help.title"/></h4>
+            </div>
+            <div class="modal-body">
+                <jb:command code="discord.command.rank.key" var="rankCommand"/>
+                <jb:command code="discord.command.leaders.key" var="leadersCommand"/>
+                <p><spring:message code="page.ranking.admin.callout.1"/></p>
+                <p><spring:message code="page.ranking.admin.callout.2" arguments="${actionUrl}"/></p>
+                <p><spring:message code="page.ranking.admin.rewards.hint"/></p>
+                <p><spring:message code="page.ranking.admin.callout.3" arguments="${prefix};${rankCommand};${leadersCommand}"
+                                   argumentSeparator=";"/></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <spring:message code="global.button.close"/>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
     <div class="row">
         <div class="col-lg-7 col-md-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><spring:message code="page.ranking.title"/></h3>
+                    <h3 class="box-title"><spring:message code="page.ranking.title"/>
+                        <i class="fa fa-question-circle" style="cursor: pointer" data-toggle="modal" data-target="#help-dialog"></i></h3>
                     <div class="box-tools pull-right">
                         <form:checkbox path="enabled"
                                        data-toggle="toggle"
@@ -40,14 +67,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="box-body">
                     <spring:bind path="announcement">
-                        <div class="callout callout-info">
-                            <jb:command code="discord.command.rank.key" var="rankCommand"/>
-                            <jb:command code="discord.command.leaders.key" var="leadersCommand"/>
-                            <p><spring:message code="page.ranking.admin.callout.1"/></p>
-                            <p><spring:message code="page.ranking.admin.callout.2" arguments="${actionUrl}"/></p>
-                            <p><spring:message code="page.ranking.admin.callout.3" arguments="${prefix};${rankCommand};${leadersCommand}"
-                                               argumentSeparator=";"/></p>
-                        </div>
                         <div class="form-group ${status.error ? 'has-error' : ''}">
                             <div class="col-md-12">
                                 <spring:message code="discord.command.rank.levelup" var="lvlupPlaceholder"/>
@@ -58,34 +77,37 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </spring:bind>
 
-                    <div class="form-group">
-                        <label for="announcementEnabled" class="col-sm-4 control-label">
-                            <spring:message code="page.ranking.admin.announce"/>
-                        </label>
-                        <div class="col-sm-2">
-                            <form:checkbox id="announcementEnabled" path="announcementEnabled"
-                                           data-toggle="toggle"
-                                           data-onstyle="warning"
-                                           data-size="small"
-                                           data-on="${switchOn}"
-                                           data-off="${switchOff}" />
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="row">
-                                <label for="whisper" class="col-sm-6 control-label">
-                                    <spring:message code="global.button.sendToDM"/>
-                                </label>
-                                <div class="col-sm-6">
-                                    <form:checkbox id="whisper" path="whisper"
-                                                   data-toggle="toggle"
-                                                   data-onstyle="warning"
-                                                   data-size="small"
-                                                   data-on="${switchOn}"
-                                                   data-off="${switchOff}" />
-                                </div>
+                    <spring:bind path="announcementEnabled">
+                        <div class="form-group">
+                            <label for="announcementEnabled" class="col-sm-5 control-label">
+                                <spring:message code="page.ranking.admin.announce"/>
+                            </label>
+                            <div class="col-sm-7">
+                                <form:checkbox id="announcementEnabled" path="announcementEnabled"
+                                               data-toggle="toggle"
+                                               data-onstyle="warning"
+                                               data-size="small"
+                                               data-on="${switchOn}"
+                                               data-off="${switchOff}" />
                             </div>
                         </div>
-                    </div>
+                    </spring:bind>
+
+                    <spring:bind path="whisper">
+                        <div class="form-group">
+                            <label for="whisper" class="col-sm-5 control-label">
+                                <spring:message code="global.button.sendToDM"/>
+                            </label>
+                            <div class="col-sm-7">
+                                <form:checkbox id="whisper" path="whisper"
+                                               data-toggle="toggle"
+                                               data-onstyle="warning"
+                                               data-size="small"
+                                               data-on="${switchOn}"
+                                               data-off="${switchOff}" />
+                            </div>
+                        </div>
+                    </spring:bind>
 
                     <div class="form-group">
                         <label for="resetOnLeave" class="col-sm-5 control-label">
@@ -150,9 +172,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                             </c:forEach>
                             </tbody>
                         </table>
-                        <div class="callout callout-info no-margin">
-                            <p><spring:message code="page.ranking.admin.rewards.hint"/></p>
-                        </div>
                     </c:if>
                     <c:if test="${serverAdded && not rolesManageable}">
                         <div class="callout callout-warning">
