@@ -40,12 +40,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.igor-suhorukov</groupId>
-            <artifactId>instagramscraper</artifactId>
-            <version>${instagramscraper.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>

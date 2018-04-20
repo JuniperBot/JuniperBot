@@ -16,34 +16,43 @@
  */
 package ru.caramel.juniperbot.module.junipost.service;
 
-import me.postaddict.instagram.scraper.Instagram;
-import me.postaddict.instagram.scraper.cookie.CookieHashSet;
-import me.postaddict.instagram.scraper.cookie.DefaultCookieJar;
-import me.postaddict.instagram.scraper.interceptor.ErrorInterceptor;
-import me.postaddict.instagram.scraper.model.Account;
-import me.postaddict.instagram.scraper.model.Media;
-import me.postaddict.instagram.scraper.model.PageInfo;
-import me.postaddict.instagram.scraper.model.PageObject;
-import okhttp3.OkHttpClient;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.module.junipost.model.InstagramMedia;
+import ru.caramel.juniperbot.module.junipost.model.InstagramProfile;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class InstagramService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstagramService.class);
 
-    @Value("${instagram.pollUserId}")
-    private Long pollUserId;
+    public static final String ROOT_URL = "https://www.instagram.com/";
+
+    public static final String POST_URL = "https://www.instagram.com/p/";
+
+    private static final Pattern PATTERN = Pattern.compile("window._sharedData = (.*);</script>");
+
+    @Value("${instagram.pollUserName:juniperfoxx}")
+    private String pollUserName;
 
     @Value("${instagram.ttl:30000}")
     private Long ttl;
@@ -57,60 +66,106 @@ public class InstagramService {
     @Autowired
     private PostService postService;
 
-    private Instagram instagram;
-
-    private List<Media> cache;
+    private InstagramProfile cache;
 
     private long latestUpdate;
 
-    private Account account;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @PostConstruct
     public void init() {
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(new ErrorInterceptor())
-                .cookieJar(new DefaultCookieJar(new CookieHashSet()))
-                .build();
-        instagram = new Instagram(httpClient);
+        restTemplate = new RestTemplate();
         scheduler.scheduleWithFixedDelay(this::update, updateInterval);
     }
 
-    public List<Media> getRecent() {
+    public InstagramProfile getRecent() {
         try {
             long currentTimestamp = System.currentTimeMillis();
             if (currentTimestamp > latestUpdate + ttl) {
                 synchronized (this) {
-                    account = instagram.getAccountById(pollUserId);
-                    PageObject<Media> medias = instagram.getMedias(pollUserId, 1, new PageInfo(true, ""));
-                    if (medias != null && medias.getCount() != null && medias.getCount() > 0) {
-                        cache = medias.getNodes();
-                        latestUpdate = currentTimestamp;
+
+                    ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL + pollUserName, String.class);
+                    if (HttpStatus.OK == response.getStatusCode()) {
+                        String result = response.getBody();
+
+                        Matcher matcher = PATTERN.matcher(result);
+                        if (matcher.find()) {
+                            JsonParser parser = new JsonParser();
+                            JsonObject data = parser.parse(matcher.group(1)).getAsJsonObject();
+
+                            if (data != null) {
+                                data = data.getAsJsonObject("entry_data");
+                            }
+                            if (data != null) {
+                                JsonArray array = data.getAsJsonArray("ProfilePage");
+                                if (array != null && array.size() > 0) {
+                                    data = array.get(0).getAsJsonObject();
+                                }
+                            }
+                            if (data != null) {
+                                data = data.getAsJsonObject("graphql");
+                            }
+                            if (data != null) {
+                                data = data.getAsJsonObject("user");
+                            }
+
+                            InstagramProfile profile = new InstagramProfile();
+
+                            if (data != null) {
+                                profile.setFullName(data.get("full_name").getAsString());
+                                profile.setImageUrl(data.get("profile_pic_url").getAsString());
+                                data = data.getAsJsonObject("edge_owner_to_timeline_media");
+                            }
+                            if (data != null) {
+                                JsonArray edges = data.getAsJsonArray("edges");
+                                if (edges != null && edges.size() > 0) {
+                                    List<InstagramMedia> mediaList = new ArrayList<>();
+                                    profile.setFeed(mediaList);
+                                    for (JsonElement edge : edges) {
+                                        JsonObject node = edge.getAsJsonObject().getAsJsonObject("node");
+                                        if (node != null && node.get("id") != null) {
+                                            InstagramMedia media = new InstagramMedia();
+                                            media.setId(node.get("id").getAsLong());
+                                            media.setImageUrl(node.get("display_url").getAsString());
+                                            media.setText(getCaption(node.getAsJsonObject("edge_media_to_caption")));
+                                            media.setDate(new Date(node.get("taken_at_timestamp").getAsLong() * 1000));
+                                            media.setLink(POST_URL + node.get("shortcode").getAsString());
+                                            mediaList.add(media);
+                                        }
+                                    }
+                                    cache = profile;
+                                    latestUpdate = currentTimestamp;
+                                }
+                            }
+                        }
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Could not get Instagram data", e);
         }
         return cache;
     }
 
-    public Account getAccount() {
-        synchronized (this) {
-            try {
-                if (account == null) {
-                    account = instagram.getAccountById(pollUserId);
-                }
-            } catch (IOException e) {
-                LOGGER.error("Could not get Instagram account data", e);
+    private String getCaption(JsonObject root) {
+        JsonArray edges = root.getAsJsonArray("edges");
+        if (edges != null && edges.size() > 0) {
+            JsonObject node = edges.get(0).getAsJsonObject();
+            if (node != null) {
+                node = node.getAsJsonObject("node");
+            }
+            if (node != null && node.get("text") != null) {
+                return node.get("text").getAsString();
             }
         }
-        return account;
+        return null;
     }
 
     private void update() {
-        List<Media> medias = getRecent();
-        if (CollectionUtils.isNotEmpty(medias)) {
-            postService.onInstagramUpdated(medias);
+        InstagramProfile profile = getRecent();
+        if (profile != null && CollectionUtils.isNotEmpty(profile.getFeed())) {
+            postService.onInstagramUpdated(profile);
         }
     }
 }

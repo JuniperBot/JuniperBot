@@ -45,7 +45,6 @@
         <json.version>20160810</json.version>
         <apache.commons.lang3.version>3.6</apache.commons.lang3.version>
         <apache.commons.io.version>2.5</apache.commons.io.version>
-        <instagramscraper.version>2.2</instagramscraper.version>
         <joda-time.version>2.9.9</joda-time.version>
         <joda-money.version>0.12</joda-money.version>
         <lavaplayer.version>1.2.56-jb</lavaplayer.version>
