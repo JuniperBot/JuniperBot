@@ -840,3 +840,7 @@ h6.hyperlink:hover > a {
 .list-group.list-group-hover .list-group-item:hover {
     background-color: #f5f5f5;
 }
+
+.nav-tabs-custom.nav-tabs-warn>.nav-tabs>li.active {
+    border-top-color: #f39c12;
+}
