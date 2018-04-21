@@ -133,6 +133,15 @@ public abstract class AbstractController {
         return guild != null ? guild.getTextChannels() : Collections.emptyList();
     }
 
+    protected List<TextChannel> getTextChannels(long guildId, boolean onlyWriteable) {
+        Guild guild = getGuild(guildId);
+        return guild != null ?
+                guild.getTextChannels().stream()
+                        .filter(e -> !onlyWriteable || guild.getSelfMember().hasPermission(e, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS))
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
+    }
+
     protected List<VoiceChannel> getVoiceChannels(long guildId) {
         Guild guild = getGuild(guildId);
         return guild != null ? guild.getVoiceChannels() : Collections.emptyList();

@@ -16,31 +16,18 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
-import ru.caramel.juniperbot.module.audio.model.TrackRequest;
-import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
-import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @DiscordCommand(
         key = "discord.command.play.key",
@@ -62,12 +49,6 @@ public class PlayCommand extends AudioCommand {
 
     protected static final String ATTR_SEARCH_ACTIONS = "search-actions";
 
-    @Autowired
-    private YouTubeService youTubeService;
-
-    @Autowired
-    protected ValidationService validationService;
-
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
         if (!message.getMessage().getAttachments().isEmpty()) {
@@ -84,11 +65,7 @@ public class PlayCommand extends AudioCommand {
             }
         }
         message.getTextChannel().sendTyping().queue();
-        if (!ResourceUtils.isUrl(query)) {
-            String result = youTubeService.searchForUrl(query);
-            query = result != null ? result : query;
-        }
-        loadAndPlay(message.getTextChannel(), context, message.getMember(), query);
+        playerService.loadAndPlay(message.getTextChannel(), message.getMember(), query);
         return true;
     }
 
@@ -105,46 +82,5 @@ public class PlayCommand extends AudioCommand {
         }
         context.removeAttribute(Message.class, ATTR_SEARCH_MESSAGE).delete().queue();
         return (String) context.removeAttribute(List.class, ATTR_SEARCH_RESULTS).get(index);
-    }
-
-    protected void loadAndPlay(final TextChannel channel, final BotContext context, final Member requestedBy, final String trackUrl) {
-        PlaybackInstance instance = playerService.getInstance(channel.getGuild());
-        audioService.getPlayerManager().loadItemOrdered(instance, trackUrl, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                contextService.withContext(context.getGuild(), () -> {
-                    try {
-                        validationService.validateSingle(track, requestedBy, context);
-                        playerService.play(new TrackRequest(track, requestedBy, channel));
-                    } catch (DiscordException e) {
-                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
-                    }
-                });
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                contextService.withContext(context.getGuild(), () -> {
-                    try {
-                        List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy, context);
-                        playerService.play(playlist, tracks.stream().map(e -> new TrackRequest(e, requestedBy, channel))
-                                .collect(Collectors.toList()));
-                    } catch (DiscordException e) {
-                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
-                    }
-                });
-            }
-
-            @Override
-            public void noMatches() {
-                contextService.withContext(context.getGuild(), () -> messageManager.onNoMatches(channel, trackUrl));
-            }
-
-            @Override
-            public void loadFailed(FriendlyException e) {
-                contextService.withContext(context.getGuild(), () ->
-                        messageManager.onQueueError(channel, "discord.command.audio.error", e.getMessage()));
-            }
-        });
     }
 }

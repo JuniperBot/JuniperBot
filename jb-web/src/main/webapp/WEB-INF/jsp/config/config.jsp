@@ -91,10 +91,13 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
     <div class="row">
         <div class="col-lg-7">
             <div class="nav-tabs-custom nav-tabs-warn">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab_common_config" data-toggle="tab" aria-expanded="true"><spring:message code="page.config.common.title"/></a></li>
-                    <li><a href="#tab_music_config" data-toggle="tab" aria-expanded="false"><spring:message code="page.config.music.title"/></a></li>
-                    <li><a href="#tab_publish" data-toggle="tab"><spring:message code="page.config.publish.title"/></a></li>
+                <ul id="config-tabs" class="nav nav-tabs">
+                    <li class="active"><a href="#tab_common_config" data-toggle="tab" aria-expanded="true"><spring:message code="page.config.common.title"/>
+                        <i class="error-mark hide fa fa-fw fa-exclamation-triangle text-red"></i></a></li>
+                    <li><a href="#tab_music_config" data-toggle="tab" aria-expanded="false"><spring:message code="page.config.music.title"/>
+                        <i class="error-mark hide fa fa-fw fa-exclamation-triangle text-red"></i></a></li>
+                    <li><a href="#tab_publish" data-toggle="tab"><spring:message code="page.config.publish.title"/>
+                        <i class="error-mark hide fa fa-fw fa-exclamation-triangle text-red"></i></a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="tab_common_config">
@@ -210,6 +213,35 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
                                             <form:errors path="musicConfig.userJoinEnabled" class="help-block" />
                                         </div>
                                     </spring:bind>
+                                </div>
+                            </div>
+                        </spring:bind>
+
+                        <spring:bind path="musicConfig.textChannelId">
+                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                <label for="music-text-channel" class="col-sm-4 control-label">
+                                    <spring:message code="page.config.music.textChannel"/>
+                                </label>
+                                <div class="col-sm-8">
+                                    <form:select id="music-text-channel" path="musicConfig.textChannelId" disabled="${not serverAdded}" cssClass="form-control select2" cssStyle="width: 100%;"
+                                                 items="${writeableTextChannels}" itemValue="idLong" itemLabel="name" />
+                                    <form:errors path="musicConfig.textChannelId" class="help-block" />
+                                </div>
+                            </div>
+                        </spring:bind>
+
+                        <spring:bind path="musicConfig.autoPlay">
+                            <div class="form-group ${status.error ? 'has-error' : ''}">
+                                <label for="music-autoplay" class="col-sm-4 control-label">
+                                    <spring:message code="page.config.music.autoplay"/>
+                                    <i class="fa fa-fw fa-question-circle" data-toggle="tooltip"
+                                       title="<spring:message code="page.config.music.autoplay.help"/>"
+                                       data-container="body"></i>
+                                </label>
+                                <div class="col-sm-8">
+                                    <form:input id="music-autoplay" path="musicConfig.autoPlay" type="text" class="form-control"
+                                                placeholder="https://www.youtube.com/watch?v=mghhLqu31cQ" />
+                                    <form:errors path="musicConfig.autoPlay" class="help-block" />
                                 </div>
                             </div>
                         </spring:bind>
@@ -454,5 +486,29 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
             somethingIsWrong:   '<spring:message code="global.somethingIsWrong"/>'
         });
         connector.init();
+
+        var $tabs = $("#config-tabs");
+        var $tabLinks = $tabs.find("a");
+
+        $tabLinks.click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+
+        $tabLinks.on("shown.bs.tab", function(e) {
+            setStored('config.selectedTab', $(e.target).attr("href"));
+        });
+
+        var selectedTab = getStored('config.selectedTab');
+        if (selectedTab) {
+            $tabs.find('a[href="' + selectedTab + '"]').tab('show');
+        }
+
+        $tabLinks.each(function() {
+            var id = $(this).attr("href").substr(1);
+            if ($('#' + id).find('.has-error').length) {
+                $(this).find('.error-mark').removeClass('hide');
+            }
+        })
     });
 </script>

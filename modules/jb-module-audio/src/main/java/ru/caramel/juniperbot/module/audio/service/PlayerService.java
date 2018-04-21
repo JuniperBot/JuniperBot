@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.audio.service;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -36,6 +37,8 @@ public interface PlayerService {
     PlaybackInstance getInstance(Guild guild);
 
     PlaybackInstance getInstance(long guildId, boolean create);
+
+    void loadAndPlay(final TextChannel channel, final Member requestedBy, final String trackUrl);
 
     void play(AudioPlaylist playlist, List<TrackRequest> requests) throws DiscordException;
 

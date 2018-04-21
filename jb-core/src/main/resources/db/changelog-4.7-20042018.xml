@@ -41,4 +41,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="4.7-20042018-5" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="auto_play" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-6" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="text_channel_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
