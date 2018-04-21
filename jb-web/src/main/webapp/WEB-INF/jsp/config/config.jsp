@@ -89,7 +89,7 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
 
 <form:form class="form-horizontal" method="post" modelAttribute="config" action="${actionUrl}">
     <div class="row">
-        <div class="col-lg-7">
+        <div class="col-lg-8 col-md-11">
             <div class="nav-tabs-custom nav-tabs-warn">
                 <ul id="config-tabs" class="nav nav-tabs">
                     <li class="active"><a href="#tab_common_config" data-toggle="tab" aria-expanded="true"><spring:message code="page.config.common.title"/>
