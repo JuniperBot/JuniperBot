@@ -53,4 +53,29 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="4.7-20042018-7" author="caramel">
+        <createTable tableName="reaction_roulette">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_reaction_roulette"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_reaction_roulette_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="is_enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reaction" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="percent" type="INTEGER" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

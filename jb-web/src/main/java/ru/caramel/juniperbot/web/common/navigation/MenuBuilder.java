@@ -35,6 +35,7 @@ public class MenuBuilder {
             items.add(new MenuItem(WELCOME_MESSAGES));
             items.add(new MenuItem(CONFIG_COMMANDS));
             items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
+            items.add(new MenuItem(FUNNY));
         }
         items.add(new MenuItem(STATUS, false, true));
         items.add(new MenuItem(APIDOCS, false));

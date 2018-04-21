@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
+import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
@@ -56,6 +57,8 @@ public interface MapperService {
     ModerationConfigDto getModerationDto(ModerationConfig moderationConfig);
 
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
+
+    ReactionRouletteDto getReactionRouletteDto(ReactionRoulette reactionRoulette);
 
     @Mappings({
             @Mapping(target = "version", ignore = true),
@@ -135,6 +138,13 @@ public interface MapperService {
             @Mapping(target = "guildConfig", ignore = true)
     })
     void updateWelcomeMessage(WelcomeMessageDto source, @MappingTarget WelcomeMessage target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true)
+    })
+    void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;
