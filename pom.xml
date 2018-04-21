@@ -98,7 +98,7 @@
         <module>modules/jb-module-holiday</module>
         <module>modules/jb-module-junipost</module>
         <module>modules/jb-module-reminder</module>
-        <module>modules/jb-module-translit</module>
+        <module>modules/jb-module-misc</module>
         <module>modules/jb-module-vk</module>
         <module>modules/jb-module-welcome</module>
         <module>modules/jb-module-wikifur</module>
