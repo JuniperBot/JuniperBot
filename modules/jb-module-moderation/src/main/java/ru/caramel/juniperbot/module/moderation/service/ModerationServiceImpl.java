@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.quartz.*;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ConfigService;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
@@ -46,6 +48,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,6 +72,9 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private ContextService contextService;
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
@@ -258,7 +264,7 @@ public class ModerationServiceImpl implements ModerationService {
         } else {
             PermissionOverride override = channel.getPermissionOverride(member);
             if (override != null && !override.getDenied().contains(Permission.MESSAGE_WRITE)) {
-                override.getManagerUpdatable().deny(Permission.MESSAGE_WRITE).update().queue();
+                override.getManager().deny(Permission.MESSAGE_WRITE).queue();
                 return true;
             }
             if (override == null) {
@@ -355,12 +361,14 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public void kick(Member author, Member member, String reason) {
+    public void kick(Member author, Member member, final String reason) {
         if (member.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
-            reason = StringUtils.isNotEmpty(reason)
+            String reasonAuthor = StringUtils.isNotEmpty(reason)
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
-            member.getGuild().getController().kick(member, reason).queue();
+            notifyUserAction(e -> {
+                member.getGuild().getController().kick(member, reasonAuthor).queue();
+            }, member, "discord.command.mod.action.message.kick", reason);
         }
     }
 
@@ -375,12 +383,14 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public void ban(Member author, Member member, int delDays, String reason) {
+    public void ban(Member author, Member member, int delDays, final String reason) {
         if (member.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            reason = StringUtils.isNotEmpty(reason)
+            String reasonAuthor = StringUtils.isNotEmpty(reason)
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
-            member.getGuild().getController().ban(member, delDays, reason).queue();
+            notifyUserAction(e -> {
+                member.getGuild().getController().ban(member, delDays, reasonAuthor).queue();
+            }, member, "discord.command.mod.action.message.ban", reason);
         }
     }
 
@@ -412,12 +422,16 @@ public class ModerationServiceImpl implements ModerationService {
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 
-        boolean exceed = warningRepository.countActiveByViolator(config, memberLocal) >= moderationConfig.getMaxWarnings() - 1;
+        long count = warningRepository.countActiveByViolator(config, memberLocal);
+        boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
         MemberWarning warning = new MemberWarning(config, authorLocal, memberLocal, reason);
         if (exceed) {
             warningRepository.flushWarnings(config, memberLocal);
             warning.setActive(false);
             ban(author, member, messageService.getMessage("discord.command.mod.warn.ban.reason"));
+        } else {
+            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,
+                    moderationConfig.getMaxWarnings());
         }
         warningRepository.save(warning);
         return exceed;
@@ -429,5 +443,29 @@ public class ModerationServiceImpl implements ModerationService {
         Objects.requireNonNull(warning, "No warning specified to remove");
         warning.setActive(false);
         warningRepository.save(warning);
+    }
+
+    private void notifyUserAction(Consumer<Void> consumer, Member member, String code, String reason, Object... objects) {
+        if (StringUtils.isEmpty(reason)) {
+            code += ".noReason";
+        }
+        String finalCode = code;
+        try {
+            member.getUser().openPrivateChannel().queue(e -> {
+                contextService.withContext(member.getGuild(), () -> {
+                    Object[] args = new Object[] { member.getGuild().getName() };
+                    if (ArrayUtils.isNotEmpty(objects)) {
+                        args = ArrayUtils.addAll(args, objects);
+                    }
+                    if (StringUtils.isNotEmpty(reason)) {
+                        args = ArrayUtils.add(args, reason);
+                    }
+                    String message = messageService.getMessage(finalCode, args);
+                    e.sendMessage(message).queue(t -> consumer.accept(null), t -> consumer.accept(null));
+                });
+            }, t -> consumer.accept(null));
+        } catch (Exception e) {
+            consumer.accept(null);
+        }
     }
 }
