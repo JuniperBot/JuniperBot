@@ -225,13 +225,13 @@ public class ModerationServiceImpl implements ModerationService {
             switch (mode) {
                 case DENY:
                     if (!override.getDenied().contains(permission)) {
-                        override.getManagerUpdatable().deny(permission).update().queue();
+                        override.getManager().deny(permission).queue();
                     }
                     break;
                 case UNCHECKED:
                 case ALLOW:
                     if (!override.getAllowed().contains(permission)) {
-                        override.getManagerUpdatable().clear(permission).update().queue();
+                        override.getManager().clear(permission).queue();
                     }
                     break;
             }

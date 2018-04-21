@@ -184,6 +184,16 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     protected void onTrackStart(PlaybackInstance instance) {
+        TrackRequest request = instance.getCurrent();
+        if (request != null
+                && request.getTimeCode() != null
+                && request.getTimeCode() > 0
+                && request.getTrack().isSeekable()) {
+            long seekTo = request.getTimeCode() * 1000;
+            if (request.getTrack().getDuration() > seekTo) {
+                instance.seek(seekTo);
+            }
+        }
         contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackStart(instance.getCurrent()));
     }
 
@@ -223,9 +233,13 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public void loadAndPlay(final TextChannel channel, final Member requestedBy, String trackUrl) {
+        final Long timeCode;
         if (!ResourceUtils.isUrl(trackUrl)) {
             String result = youTubeService.searchForUrl(trackUrl);
             trackUrl = result != null ? result : trackUrl;
+            timeCode = null;
+        } else {
+            timeCode = youTubeService.extractTimecode(trackUrl);
         }
         final String query = trackUrl;
 
@@ -236,7 +250,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 contextService.withContext(channel.getGuild(), () -> {
                     try {
                         validationService.validateSingle(track, requestedBy);
-                        play(new TrackRequest(track, requestedBy, channel));
+                        play(new TrackRequest(track, requestedBy, channel, timeCode));
                     } catch (DiscordException e) {
                         messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
                     }
