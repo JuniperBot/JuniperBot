@@ -27,6 +27,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NavigationInterceptor extends HandlerInterceptorAdapter {
 
@@ -44,10 +45,10 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
             return;
         }
 
-        Set<MenuItem> toParse = new HashSet<>();
-
-        List<MenuItem> menuItems = builder.build();
-        toParse.addAll(menuItems);
+        List<NavigationItem> menuItems = builder.build();
+        Set<MenuItem> toParse = menuItems.stream()
+                .filter(e -> e instanceof MenuItem)
+                .map(e -> (MenuItem)e).collect(Collectors.toSet());
         modelAndView.addObject("navigationMenu", menuItems);
 
         if (handler instanceof HandlerMethod) {
@@ -60,7 +61,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
             if (navigation != null) {
                 PageElement pageElement = navigation.value();
 
-                MenuItem item = findForElement(pageElement, menuItems);
+                MenuItem item = findForElement(pageElement, toParse);
                 if (item != null) {
                     item.setCurrent(true);
 
@@ -83,7 +84,7 @@ public class NavigationInterceptor extends HandlerInterceptorAdapter {
         parseMenu(request, modelAndView, toParse);
     }
 
-    private MenuItem findForElement(PageElement element, List<MenuItem> items) {
+    private MenuItem findForElement(PageElement element, Collection<MenuItem> items) {
         for (MenuItem item : items) {
             if (element.equals(item.getElement())) {
                 return item;

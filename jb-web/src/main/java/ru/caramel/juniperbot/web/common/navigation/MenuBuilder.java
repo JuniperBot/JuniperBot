@@ -27,15 +27,17 @@ import static ru.caramel.juniperbot.web.common.navigation.PageElement.*;
 @Component
 public class MenuBuilder {
 
-    public List<MenuItem> build() {
-        List<MenuItem> items = new ArrayList<>();
+    public List<NavigationItem> build() {
+        List<NavigationItem> items = new ArrayList<>();
         if (SecurityUtils.isAuthenticated()) {
+            items.add(new MenuSeparator("sidebar.main"));
             items.add(new MenuItem(CONFIG_COMMON));
             items.add(new MenuItem(RANKING));
             items.add(new MenuItem(WELCOME_MESSAGES));
             items.add(new MenuItem(CONFIG_COMMANDS));
             items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
             items.add(new MenuItem(FUNNY));
+            items.add(new MenuSeparator("sidebar.help"));
         }
         items.add(new MenuItem(STATUS, false, true));
         items.add(new MenuItem(APIDOCS, false));
