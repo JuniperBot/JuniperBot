@@ -317,9 +317,6 @@ public class RankingServiceImpl implements RankingService {
         AtomicLong count = new AtomicLong();
 
         importProvider.export(guild.getIdLong(), e -> {
-            Set<LocalUser> toUserSave = new HashSet<>(e.size());
-            Set<LocalMember> toMemberSave = new HashSet<>(e.size());
-            Set<Ranking> toSave = new HashSet<>(e.size());
             for (RankingInfo info : e) {
                 try {
                     LocalMember member = membersMap.get(info.getId());
@@ -338,20 +335,18 @@ public class RankingServiceImpl implements RankingService {
                         }
                         user.setName(info.getName());
                         user.setDiscriminator(info.getDiscriminator());
+                        userRepository.save(user);
                         member.setUser(user);
-                        toUserSave.add(user);
-                        toMemberSave.add(member);
+                        memberRepository.save(member);
                     }
                     Ranking ranking = getRanking(member);
                     ranking.setExp(info.getTotalExp());
+                    rankingRepository.save(ranking);
                     count.incrementAndGet();
                 } catch (Exception ex) {
                     LOGGER.error("Import batch failed", ex);
                 }
             }
-            userRepository.save(toUserSave);
-            memberRepository.save(toMemberSave);
-            rankingRepository.save(toSave);
         });
 
         sync(guild);
