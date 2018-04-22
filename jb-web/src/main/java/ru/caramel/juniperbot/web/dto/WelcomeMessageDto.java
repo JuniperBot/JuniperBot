@@ -37,6 +37,8 @@ public class WelcomeMessageDto implements Serializable {
 
     private Long joinChannelId;
 
+    private Long joinRoleId;
+
     private boolean joinToDM;
 
     private boolean leaveEnabled;

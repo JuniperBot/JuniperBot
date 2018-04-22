@@ -17,13 +17,16 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.codahale.metrics.annotation.Gauge;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,6 +38,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -44,9 +48,12 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.*;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.helper.PlayerListenerAdapter;
+import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
+import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerService, ModuleListener {
@@ -72,6 +79,12 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Autowired
     private LavaAudioService lavaAudioService;
+
+    @Autowired
+    protected ValidationService validationService;
+
+    @Autowired
+    private YouTubeService youTubeService;
 
     @Autowired
     @Qualifier("executor")
@@ -171,6 +184,16 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     protected void onTrackStart(PlaybackInstance instance) {
+        TrackRequest request = instance.getCurrent();
+        if (request != null
+                && request.getTimeCode() != null
+                && request.getTimeCode() > 0
+                && request.getTrack().isSeekable()) {
+            long seekTo = request.getTimeCode() * 1000;
+            if (request.getTrack().getDuration() > seekTo) {
+                instance.seek(seekTo);
+            }
+        }
         contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackStart(instance.getCurrent()));
     }
 
@@ -207,6 +230,58 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     /* ========================================================
      *                       Actions
      * ======================================================== */
+
+    @Override
+    public void loadAndPlay(final TextChannel channel, final Member requestedBy, String trackUrl) {
+        final Long timeCode;
+        if (!ResourceUtils.isUrl(trackUrl)) {
+            String result = youTubeService.searchForUrl(trackUrl);
+            trackUrl = result != null ? result : trackUrl;
+            timeCode = null;
+        } else {
+            timeCode = youTubeService.extractTimecode(trackUrl);
+        }
+        final String query = trackUrl;
+
+        PlaybackInstance instance = getInstance(channel.getGuild());
+        lavaAudioService.getPlayerManager().loadItemOrdered(instance, query, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                contextService.withContext(channel.getGuild(), () -> {
+                    try {
+                        validationService.validateSingle(track, requestedBy);
+                        play(new TrackRequest(track, requestedBy, channel, timeCode));
+                    } catch (DiscordException e) {
+                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
+                    }
+                });
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                contextService.withContext(channel.getGuild(), () -> {
+                    try {
+                        List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy);
+                        play(playlist, tracks.stream().map(e -> new TrackRequest(e, requestedBy, channel))
+                                .collect(Collectors.toList()));
+                    } catch (DiscordException e) {
+                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
+                    }
+                });
+            }
+
+            @Override
+            public void noMatches() {
+                contextService.withContext(channel.getGuild(), () -> messageManager.onNoMatches(channel, query));
+            }
+
+            @Override
+            public void loadFailed(FriendlyException e) {
+                contextService.withContext(channel.getGuild(), () ->
+                        messageManager.onQueueError(channel, "discord.command.audio.error", e.getMessage()));
+            }
+        });
+    }
 
     @Override
     @Transactional

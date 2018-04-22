@@ -31,6 +31,7 @@ public enum PageElement {
     APIDOCS("fa fa-book", "/apidocs"),
     PATREON("fa fa-heart", "https://www.patreon.com/JuniperBot"),
     STATUS("fa fa-area-chart", "/status"),
+    FUNNY("fa fa-futbol-o", "/funny/${serverId}"),
     ;
 
     @Getter

@@ -71,7 +71,7 @@
 
         <dependency>
             <groupId>ru.caramel</groupId>
-            <artifactId>jb-module-translit</artifactId>
+            <artifactId>jb-module-misc</artifactId>
             <version>${project.version}</version>
         </dependency>
 

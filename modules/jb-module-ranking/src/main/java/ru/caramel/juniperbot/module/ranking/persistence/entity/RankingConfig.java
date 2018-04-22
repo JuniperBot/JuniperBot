@@ -46,6 +46,12 @@ public class RankingConfig extends GuildOwnedEntity {
     @Column(name = "is_whisper")
     private boolean whisper;
 
+    @Column(name = "is_embed")
+    private boolean embed;
+
+    @Column(name = "announcement_channel_id")
+    private Long announcementChannelId;
+
     @Column(name = "reset_on_leave")
     private boolean resetOnLeave;
 

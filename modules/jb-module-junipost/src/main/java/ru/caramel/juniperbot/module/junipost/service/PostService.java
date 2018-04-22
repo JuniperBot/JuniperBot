@@ -21,19 +21,20 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import net.dv8tion.jda.webhook.WebhookMessageBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.module.junipost.model.InstagramMedia;
+import ru.caramel.juniperbot.module.junipost.model.InstagramProfile;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,22 +58,22 @@ public class PostService {
     @Autowired
     private MessageService messageService;
 
-    private String latestId;
+    private long latestId;
 
-    public void post(List<MediaFeedData> medias, MessageChannel channel) {
+    public void post(InstagramProfile profile, List<InstagramMedia> medias, MessageChannel channel) {
         if (medias.size() > 0) {
             for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
-                EmbedBuilder builder = convertToEmbed(medias.get(i));
+                EmbedBuilder builder = convertToEmbed(profile, medias.get(i));
                 messageService.sendMessageSilent(channel::sendMessage, builder.build());
             }
         }
     }
 
-    public void onInstagramUpdated(List<MediaFeedData> medias) {
-        if (latestId != null) {
-            List<MediaFeedData> newMedias = new ArrayList<>();
-            for (MediaFeedData media : medias) {
-                if (media.getId().equals(latestId)) {
+    public void onInstagramUpdated(InstagramProfile profile) {
+        if (latestId != 0) {
+            List<InstagramMedia> newMedias = new ArrayList<>();
+            for (InstagramMedia media : profile.getFeed()) {
+                if (media.getId() == latestId) {
                     break;
                 }
                 newMedias.add(media);
@@ -81,7 +82,7 @@ public class PostService {
             int size = Math.min(MAX_DETAILED, newMedias.size());
             if (size > 0) {
                 List<MessageEmbed> embeds = newMedias.stream()
-                        .map(e -> convertToEmbed(e).build())
+                        .map(e -> convertToEmbed(profile, e).build())
                         .collect(Collectors.toList());
 
                 WebhookMessage message = new WebhookMessageBuilder()
@@ -97,27 +98,30 @@ public class PostService {
                 }));
             }
         }
-        latestId = medias.get(0).getId();
+        if (CollectionUtils.isNotEmpty(profile.getFeed())) {
+            latestId = profile.getFeed().get(0).getId();
+        }
     }
 
-    public EmbedBuilder convertToEmbed(MediaFeedData media) {
+    public EmbedBuilder convertToEmbed(InstagramProfile profile, InstagramMedia media) {
         EmbedBuilder builder = new EmbedBuilder()
-                .setImage(media.getImages().getStandardResolution().getImageUrl())
-                .setAuthor(media.getUser().getFullName(), null, media.getUser().getProfilePictureUrl())
-                .setTimestamp(new Date(Long.parseLong(media.getCreatedTime()) * 1000).toInstant())
-                .setColor(messageService.getAccentColor());
+                .setImage(media.getImageUrl())
+                .setTimestamp(media.getDate().toInstant())
+                .setColor(messageService.getAccentColor())
+                .setAuthor(profile.getFullName(), null, profile.getImageUrl());
 
-        if (media.getCaption() != null) {
-            String text = media.getCaption().getText();
+        if (media.getText() != null) {
+            String text = media.getText();
             if (StringUtils.isNotEmpty(text)) {
                 if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
                     text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
                 }
-                if (media.getCaption().getText().length() > 200) {
-                    builder.setTitle(media.getLink(), media.getLink());
+                String link = media.getLink();
+                if (media.getText().length() > 200) {
+                    builder.setTitle(link, link);
                     builder.setDescription(text);
                 } else {
-                    builder.setTitle(text, media.getLink());
+                    builder.setTitle(text, link);
                 }
             }
         }

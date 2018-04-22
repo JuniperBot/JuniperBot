@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuItem implements Serializable {
+public class MenuItem implements Serializable, NavigationItem {
 
     private static final long serialVersionUID = 3626205728803177946L;
 

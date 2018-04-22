@@ -18,16 +18,14 @@ package ru.caramel.juniperbot.module.junipost.commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.jinstagram.exceptions.InstagramException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
+import ru.caramel.juniperbot.module.junipost.model.InstagramMedia;
+import ru.caramel.juniperbot.module.junipost.model.InstagramProfile;
 import ru.caramel.juniperbot.module.junipost.service.InstagramService;
 import ru.caramel.juniperbot.module.junipost.service.PostService;
 
@@ -39,8 +37,6 @@ import java.util.List;
         priority = 5)
 public class PostCommand extends AbstractCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostCommand.class);
-
     @Autowired
     private InstagramService instagramService;
 
@@ -50,17 +46,13 @@ public class PostCommand extends AbstractCommand {
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int count = parseCount(content);
-        List<MediaFeedData> medias = null;
-        try {
-            medias = instagramService.getRecent();
-        } catch (InstagramException e) {
-            LOGGER.error("Could not get instagram data", e);
-        }
+        InstagramProfile profile = instagramService.getRecent();
 
-        if (medias == null) {
+        if (profile == null) {
             messageService.onError(message.getChannel(), "discord.command.post.error");
             return false;
         }
+        List<InstagramMedia> medias = profile.getFeed();
         if (medias.isEmpty()) {
             messageService.onMessage(message.getChannel(), "discord.command.post.empty");
             return false;
@@ -71,7 +63,7 @@ public class PostCommand extends AbstractCommand {
             count = medias.size();
         }
         medias = medias.subList(0, count);
-        postService.post(medias, message.getChannel());
+        postService.post(profile, medias, message.getChannel());
         return true;
     }
 

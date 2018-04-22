@@ -61,12 +61,12 @@ public class ValidationService {
         return Objects.equals(info1, info1);
     }
 
-    public void validateSingle(AudioTrack track, Member requestedBy, BotContext context) throws ValidationException {
+    public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {
         MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
-        PlaybackInstance instance = playerService.getInstance(context.getGuild());
+        PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
 
         if (track.getInfo().isStream && !config.isStreamsEnabled()) {
             throw new ValidationException("discord.command.audio.queue.limits.streams");
@@ -89,12 +89,12 @@ public class ValidationService {
         }
     }
 
-    public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy, BotContext context) throws ValidationException {
+    public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy) throws ValidationException {
         MusicConfig config = musicConfigService.getConfig(requestedBy.getGuild());
         Long queueLimit = config.getQueueLimit();
         Long durationLimit = config.getDurationLimit();
         Long duplicateLimit = config.getDuplicateLimit();
-        PlaybackInstance instance = playerService.getInstance(context.getGuild());
+        PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
 
         if (!Boolean.TRUE.equals(config.getPlaylistEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.playlists");

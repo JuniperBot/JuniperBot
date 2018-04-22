@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +29,19 @@ import java.util.stream.Collectors;
 @Service
 public class RankingDao extends AbstractDao {
 
+    private final static Long WHISPER_CHANNEL = -1L;
+
     @Autowired
     private RankingService rankingService;
 
     @Transactional
     public RankingConfigDto getConfig(long serverId) {
-        return mapper.getRankingDto(rankingService.getConfig(serverId));
+        RankingConfig config = rankingService.getConfig(serverId);
+        RankingConfigDto dto = mapper.getRankingDto(config);
+        if (config.isWhisper()) {
+            dto.setAnnouncementChannelId(WHISPER_CHANNEL);
+        }
+        return dto;
     }
 
     @Transactional
@@ -43,9 +49,12 @@ public class RankingDao extends AbstractDao {
         RankingConfig config = rankingService.getConfig(serverId);
         config.setAnnouncementEnabled(configDto.isAnnouncementEnabled());
         config.setEnabled(configDto.isEnabled());
-        config.setWhisper(configDto.isWhisper());
+        config.setWhisper(WHISPER_CHANNEL.equals(configDto.getAnnouncementChannelId()));
         config.setAnnouncement(configDto.getAnnouncement());
         config.setResetOnLeave(configDto.isResetOnLeave());
+        config.setEmbed(configDto.isEmbed());
+        config.setAnnouncementChannelId(WHISPER_CHANNEL.equals(configDto.getAnnouncementChannelId())
+                ? null : configDto.getAnnouncementChannelId());
         if (discordService.isConnected(serverId)) {
             config.setBannedRoles(configDto.getBannedRoles());
             if (configDto.getRewards() != null) {

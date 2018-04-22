@@ -38,8 +38,14 @@ public class MusicConfig extends GuildOwnedEntity {
     @Column(name = "channel_id")
     private Long channelId;
 
+    @Column(name = "text_channel_id")
+    private Long textChannelId;
+
     @Column(name = "playlist_enabled")
     private Boolean playlistEnabled;
+
+    @Column(name = "auto_play")
+    private String autoPlay;
 
     @Column(name = "streams_enabled")
     private boolean streamsEnabled;

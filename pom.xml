@@ -40,16 +40,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-compiler.version>3.6.1</maven-compiler.version>
         <java.version>1.8</java.version>
-        <JDA.version>3.5.1_347</JDA.version>
+        <JDA.version>3.6.0_358</JDA.version>
         <lombok.version>1.16.18</lombok.version>
         <json.version>20160810</json.version>
         <apache.commons.lang3.version>3.6</apache.commons.lang3.version>
         <apache.commons.io.version>2.5</apache.commons.io.version>
-        <jInstagram.version>1.2.1</jInstagram.version>
         <joda-time.version>2.9.9</joda-time.version>
         <joda-money.version>0.12</joda-money.version>
-        <lavaplayer.version>1.2.56-jb</lavaplayer.version>
-        <lavalink.version>3c54c0566e46ee9e9ccf3a6324ebcd3a8b15c02b</lavalink.version>
+        <lavaplayer.version>1.2.63-jb</lavaplayer.version>
+        <lavalink.version>a070ddc5ebefaf0914f8971d378b9fde1fefd957</lavalink.version>
         <jda-nas.version>1.0.5</jda-nas.version>
         <google-api-services-youtube.version>v3-rev183-1.22.0</google-api-services-youtube.version>
         <tiles.version>3.0.7</tiles.version>
@@ -99,7 +98,7 @@
         <module>modules/jb-module-holiday</module>
         <module>modules/jb-module-junipost</module>
         <module>modules/jb-module-reminder</module>
-        <module>modules/jb-module-translit</module>
+        <module>modules/jb-module-misc</module>
         <module>modules/jb-module-vk</module>
         <module>modules/jb-module-welcome</module>
         <module>modules/jb-module-wikifur</module>

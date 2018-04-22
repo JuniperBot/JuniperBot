@@ -21,6 +21,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,6 +89,23 @@ public class YouTubeService {
     public String searchForUrl(String queryTerm) {
         List<SearchResult> result = search(queryTerm, 1L);
         return result.isEmpty() ? null : getUrl(result.get(0));
+    }
+
+    public Long extractTimecode(String input) {
+        try {
+            URIBuilder uri = new URIBuilder(input);
+            if (!uri.getHost().endsWith("youtube.com") && !uri.getHost().endsWith("youtu.be")) {
+                return null;
+            }
+            return uri.getQueryParams().stream()
+                    .filter(e -> "t".equals(e.getName()))
+                    .map(NameValuePair::getValue)
+                    .map(Long::parseLong)
+                    .findFirst().orElse(null);
+        } catch (Exception e) {
+            // impossible
+        }
+        return null;
     }
 
     public String getUrl(SearchResult result) {

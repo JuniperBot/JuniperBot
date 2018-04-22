@@ -21,6 +21,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -28,6 +29,8 @@ import java.util.List;
 public class MusicConfigDto {
 
     private Long channelId;
+
+    private Long textChannelId;
 
     @NotNull
     private Boolean playlistEnabled;
@@ -44,6 +47,9 @@ public class MusicConfigDto {
 
     @Min(0)
     private Long duplicateLimit;
+
+    @Size(max = 255)
+    private String autoPlay;
 
     private List<Long> roles;
 }

@@ -32,6 +32,19 @@
         <constructor-arg value="/login"/>
     </bean>
 
+    <bean id="corsConfiguration" class="org.springframework.web.cors.CorsConfiguration">
+        <property name="allowedOrigins" value="*"/>
+        <property name="allowedMethods" value="*"/>
+    </bean>
+
+    <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/api/ranking/**" value-ref="corsConfiguration"/>
+            </map>
+        </property>
+    </bean>
+
     <!-- make ALL other requests go thru the Oauth security filters  -->
     <security:http pattern="/**"
                    create-session="always"
@@ -39,6 +52,7 @@
                    disable-url-rewriting="true"
                    use-expressions="true"
                    xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
         <security:intercept-url pattern="/resources/**" access="permitAll"/>
         <security:intercept-url pattern="/" access="permitAll"/>
         <security:intercept-url pattern="/vk/callback/**" access="permitAll"/>

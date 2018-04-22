@@ -105,7 +105,6 @@ public class CommandsServiceImpl implements CommandsService {
             if (!(usingMention = content.startsWith(mention))) {
                 mention = String.format("<@!%s>", jda.getSelfUser().getId());
                 usingMention = content.startsWith(mention);
-
             }
             if (usingMention) {
                 prefix = mention;
@@ -127,7 +126,7 @@ public class CommandsServiceImpl implements CommandsService {
             prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
             input = content.substring(prefix.length()).trim();
         }
-        if (content.startsWith(prefix)) {
+        if (content.toLowerCase().startsWith(prefix.toLowerCase())) {
             String[] args = input.split("\\s+", 2);
             input = args.length > 1 ? args[1] : "";
             return sender.sendCommand(event, input, args[0], guildConfig);

@@ -28,8 +28,6 @@ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
         resetAllButtonText:     '<spring:message code="global.button.resetAll"/>',
         resetAllModalTitle:     '<spring:message code="page.ranking.resetAll.modal.title"/>',
         resetAllModalContent:   "<spring:message code="page.ranking.resetAll.modal.content"/>", // dirty hack to not escape ' in string
-        importButtonText:       '<spring:message code="page.ranking.admin.modal.import.button"/>',
-        importModalTitle:       '<spring:message code="page.ranking.admin.modal.import.title"/>',
         resetButtonText:        '<spring:message code="global.button.reset"/>',
         resetModalTitle:        '<spring:message code="page.ranking.reset.modal.title"/>',
         resetModalContent:      '<spring:message code="page.ranking.reset.modal.content"/>'

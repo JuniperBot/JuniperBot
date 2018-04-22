@@ -41,10 +41,17 @@ public class TrackRequest {
 
     private Member endMember;
 
+    private Long timeCode;
+
     public TrackRequest(AudioTrack track, Member member, TextChannel channel) {
+        this(track, member, channel, null);
+    }
+
+    public TrackRequest(AudioTrack track, Member member, TextChannel channel, Long timeCode) {
         this.track = track;
         this.member = member;
         this.channel = channel;
+        this.timeCode = timeCode;
     }
 
     public void reset() {

@@ -54,6 +54,9 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
 
     @Override
     public Command getByLocale(String localizedKey) {
+        if (localizedKey != null) {
+            localizedKey = localizedKey.toLowerCase();
+        }
         Map<String, Command> commandMap = getLocalizedMap();
         return commandMap != null ? commandMap.get(localizedKey) : null;
     }
@@ -65,6 +68,9 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Override
     public Command getByLocale(String localizedKey, boolean anyLocale) {
         if (MapUtils.isNotEmpty(localizedCommands) && anyLocale) {
+            if (localizedKey != null) {
+                localizedKey = localizedKey.toLowerCase();
+            }
             for (Map<String, Command> commandMap : localizedCommands.values()) {
                 if (commandMap.containsKey(localizedKey)) {
                     return commandMap.get(localizedKey);
@@ -76,7 +82,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
 
     @Override
     public boolean isAnyCommand(String key) {
-        String reverseKey = StringUtils.reverse(key);
+        String reverseKey = StringUtils.reverse(key).toLowerCase();
         return CollectionUtils.isNotEmpty(reverseCommandKeys)
                 && reverseCommandKeys.stream().anyMatch(reverseKey::startsWith);
     }

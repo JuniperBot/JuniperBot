@@ -23,7 +23,7 @@
         <import resource="classpath:spring-context/module-holiday-context.xml" />
         <import resource="classpath:spring-context/module-junipost-context.xml" />
         <import resource="classpath:spring-context/module-reminder-context.xml" />
-        <import resource="classpath:spring-context/module-translit-context.xml" />
+        <import resource="classpath:spring-context/module-misc-context.xml" />
         <import resource="classpath:spring-context/module-vk-context.xml" />
         <import resource="classpath:spring-context/module-welcome-context.xml" />
         <import resource="classpath:spring-context/module-wikifur-context.xml" />

@@ -52,7 +52,7 @@ public interface RankingService {
 
     void sync(Guild guild);
 
-    void syncMee6(Guild guild) throws IOException;
+    long importRanking(Guild guild);
 
     void resetAll(long serverId);
 

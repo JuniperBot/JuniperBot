@@ -51,10 +51,10 @@ import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfig
 import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingRepository;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,7 +86,7 @@ public class RankingServiceImpl implements RankingService {
     private ConfigService configService;
 
     @Autowired
-    private Mee6Provider mee6Provider;
+    private ImportProvider importProvider;
 
     @Autowired
     private MemberService memberService;
@@ -207,19 +207,20 @@ public class RankingServiceImpl implements RankingService {
             int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
             if (newLevel < 1000 && level != newLevel) {
                 if (config.isAnnouncementEnabled()) {
-                    MessageChannel channel = event.getChannel();
                     if (config.isWhisper()) {
                         try {
                             contextService.queue(event.getGuild(), event.getAuthor().openPrivateChannel(), c -> {
-                                messageService.sendMessageSilent(channel::sendMessage,
-                                        getAnnounce(config, event.getAuthor().getAsMention(), newLevel));
+                                String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
+                                sendAnnounce(config, c, content);
                             });
                         } catch (Exception e) {
                             LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
                         }
                     } else {
-                        messageService.sendMessageSilent(channel::sendMessage, getAnnounce(config,
-                                event.getMember().getAsMention(), newLevel));
+                        MessageChannel channel = config.getAnnouncementChannelId() != null ?
+                                event.getGuild().getTextChannelById(config.getAnnouncementChannelId()) : null;
+                        String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
+                        sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
                     }
                 }
                 updateRewards(config, event.getMember(), ranking);
@@ -239,6 +240,14 @@ public class RankingServiceImpl implements RankingService {
                     }
                 }
             }
+        }
+    }
+
+    private void sendAnnounce(RankingConfig config, MessageChannel channel, String content) {
+        if (config.isEmbed()) {
+            messageService.onEmbedMessage(channel, content);
+        } else {
+            messageService.sendMessageSilent(channel::sendMessage, content);
         }
     }
 
@@ -300,39 +309,53 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
-    public void syncMee6(Guild guild) throws IOException {
-        List<RankingInfo> mee6Infos = mee6Provider.export(guild.getIdLong());
-        if (CollectionUtils.isNotEmpty(mee6Infos)) {
-            List<LocalMember> members = memberService.syncMembers(guild);
-            Map<String, LocalMember> membersMap = members.stream()
-                    .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
-            for (RankingInfo info : mee6Infos) {
-                LocalMember member = membersMap.get(info.getId());
-                if (member == null) {
-                    member = new LocalMember();
-                    member.setGuildId(guild.getId());
-                    member.setEffectiveName(info.getNick());
+    public long importRanking(Guild guild) {
+        List<LocalMember> members = memberService.syncMembers(guild);
+        Map<String, LocalMember> membersMap = members.stream()
+                .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
 
-                    LocalUser user = userRepository.findByUserId(info.getId());
-                    if (user == null) {
-                        user = new LocalUser();
-                        user.setUserId(info.getId());
+        AtomicLong count = new AtomicLong();
+
+        importProvider.export(guild.getIdLong(), e -> {
+            Set<LocalUser> toUserSave = new HashSet<>(e.size());
+            Set<LocalMember> toMemberSave = new HashSet<>(e.size());
+            Set<Ranking> toSave = new HashSet<>(e.size());
+            for (RankingInfo info : e) {
+                try {
+                    LocalMember member = membersMap.get(info.getId());
+                    if (member == null) {
+                        member = new LocalMember();
+                        member.setGuildId(guild.getId());
+                        member.setEffectiveName(info.getNick());
+
+                        LocalUser user = userRepository.findByUserId(info.getId());
+                        if (user == null) {
+                            user = new LocalUser();
+                            user.setUserId(info.getId());
+                        }
+                        if (StringUtils.isNotEmpty(info.getAvatarUrl())) {
+                            user.setAvatarUrl(info.getAvatarUrl());
+                        }
+                        user.setName(info.getName());
+                        user.setDiscriminator(info.getDiscriminator());
+                        member.setUser(user);
+                        toUserSave.add(user);
+                        toMemberSave.add(member);
                     }
-                    if (StringUtils.isNotEmpty(info.getAvatarUrl())) {
-                        user.setAvatarUrl(info.getAvatarUrl());
-                    }
-                    user.setName(info.getName());
-                    user.setDiscriminator(info.getDiscriminator());
-                    member.setUser(user);
-                    userRepository.save(user);
-                    memberRepository.save(member);
+                    Ranking ranking = getRanking(member);
+                    ranking.setExp(info.getTotalExp());
+                    count.incrementAndGet();
+                } catch (Exception ex) {
+                    LOGGER.error("Import batch failed", ex);
                 }
-                Ranking ranking = getRanking(member);
-                ranking.setExp(info.getTotalExp());
-                rankingRepository.save(ranking);
             }
-            sync(guild);
-        }
+            userRepository.save(toUserSave);
+            memberRepository.save(toMemberSave);
+            rankingRepository.save(toSave);
+        });
+
+        sync(guild);
+        return count.longValue();
     }
 
     @Transactional
