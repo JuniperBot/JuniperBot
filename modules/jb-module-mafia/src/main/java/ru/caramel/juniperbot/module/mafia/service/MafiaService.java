@@ -37,6 +37,7 @@ import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
+import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +68,9 @@ public class MafiaService implements ModuleListener {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private ModerationService moderationService;
+
     private final Map<Long, MafiaInstance> instances = new ConcurrentHashMap<>();
 
     public MafiaInstance getInstance(TextChannel channel) {
@@ -88,7 +92,7 @@ public class MafiaService implements ModuleListener {
         MafiaInstance instance = getRelatedInstance(channel.getIdLong());
         if (instance == null || !(instance.getState().equals(MafiaState.CHOOSING)
                 || instance.isPlayer(requestedBy)
-                || requestedBy.hasPermission(Permission.ADMINISTRATOR))) {
+                || moderationService.isModerator(requestedBy))) {
             return false;
         }
         stop(instance);
