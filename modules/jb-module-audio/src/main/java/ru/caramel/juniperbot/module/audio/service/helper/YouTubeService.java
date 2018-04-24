@@ -21,6 +21,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,11 +99,16 @@ public class YouTubeService {
             if (!uri.getHost().endsWith("youtube.com") && !uri.getHost().endsWith("youtu.be")) {
                 return null;
             }
-            return uri.getQueryParams().stream()
+            String timecode = uri.getQueryParams().stream()
                     .filter(e -> "t".equals(e.getName()))
                     .map(NameValuePair::getValue)
-                    .map(Long::parseLong)
                     .findFirst().orElse(null);
+            if (StringUtils.isNotEmpty(timecode)) {
+                if (StringUtils.isNumeric(timecode)) {
+                    return Long.parseLong(timecode) * 1000;
+                }
+                return Duration.parse("PT" + timecode).toMillis();
+            }
         } catch (Exception e) {
             // impossible
         }

@@ -189,7 +189,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 && request.getTimeCode() != null
                 && request.getTimeCode() > 0
                 && request.getTrack().isSeekable()) {
-            long seekTo = request.getTimeCode() * 1000;
+            long seekTo = request.getTimeCode();
             if (request.getTrack().getDuration() > seekTo) {
                 instance.seek(seekTo);
             }
