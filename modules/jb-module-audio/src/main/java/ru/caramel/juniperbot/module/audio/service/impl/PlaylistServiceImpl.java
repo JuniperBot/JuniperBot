@@ -317,7 +317,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             playlist.setItems(existentItems);
             playlistRepository.save(playlist);
             if (!toRemove.isEmpty()) {
-                playlistItemRepository.delete(toRemove);
+                playlistItemRepository.delete(toRemove.stream().filter(Objects::nonNull).collect(Collectors.toList()));
             }
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not clear playlist", e);
