@@ -124,6 +124,9 @@ public class CommandsServiceImpl implements CommandsService {
 
         if (!usingMention) {
             prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
+            if (prefix.length() > content.length()) {
+                return true;
+            }
             input = content.substring(prefix.length()).trim();
         }
         if (content.toLowerCase().startsWith(prefix.toLowerCase())) {

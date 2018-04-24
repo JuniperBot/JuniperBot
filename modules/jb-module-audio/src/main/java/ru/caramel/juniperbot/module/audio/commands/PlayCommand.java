@@ -49,6 +49,7 @@ public class PlayCommand extends AudioCommand {
 
     protected static final String ATTR_SEARCH_ACTIONS = "search-actions";
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
         if (!message.getMessage().getAttachments().isEmpty()) {
