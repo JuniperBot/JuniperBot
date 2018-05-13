@@ -35,7 +35,7 @@ public class UnMuteCommand extends ModeratorCommandAsync {
     protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
-            messageService.onError(event.getChannel(), "discord.command.mod.mute.mention");
+            messageService.onError(event.getChannel(), "discord.command.mod.unmute.mention");
             return;
         }
         boolean unmuted = moderationService.unmute(event.getTextChannel(), mentioned);
