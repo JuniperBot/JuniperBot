@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.controller.api.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

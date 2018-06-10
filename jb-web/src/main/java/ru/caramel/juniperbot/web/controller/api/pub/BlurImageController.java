@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.controller.api.pub;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.web.controller.api.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.service.OpenCVService;
 import ru.caramel.juniperbot.web.utils.BoxBlurFilter;
 
@@ -42,7 +43,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 @RestController
-public class BlurImageController extends BaseRestController {
+public class BlurImageController extends BasePublicRestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlurImageController.class);
 

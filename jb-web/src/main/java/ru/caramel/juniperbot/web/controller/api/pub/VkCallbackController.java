@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.controller.api.pub;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -22,15 +22,13 @@ import com.google.gson.reflect.TypeToken;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.service.VkService;
-import ru.caramel.juniperbot.web.controller.front.AbstractController;
+import ru.caramel.juniperbot.web.controller.api.base.BaseRestController;
 import ru.caramel.juniperbot.web.dto.VkConnectionDto;
 import ru.caramel.juniperbot.web.service.MapperService;
 
@@ -41,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class VkCallbackController extends AbstractController {
+public class VkCallbackController extends BaseRestController {
 
     private final Gson gson = GsonUtils.create();
 

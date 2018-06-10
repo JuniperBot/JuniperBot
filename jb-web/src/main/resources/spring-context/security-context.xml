@@ -19,6 +19,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -27,50 +28,58 @@
         http://www.springframework.org/schema/security/oauth2
         http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
 
-    <bean id="oauthAuthenticationEntryPoint"
-          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-        <constructor-arg value="/login"/>
-    </bean>
+    <bean id="authenticationManager"
+          class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager"
+          p:tokenServices-ref="discordTokenServices" />
 
-    <bean id="corsConfiguration" class="org.springframework.web.cors.CorsConfiguration">
-        <property name="allowedOrigins" value="*"/>
-        <property name="allowedMethods" value="*"/>
+    <security:global-method-security authentication-manager-ref="authenticationManager" />
+
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+
+    <bean id="accessDeniedHandler"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+
+    <bean id="corsConfiguration" class="org.springframework.web.cors.CorsConfiguration"
+          p:allowedOrigins="*"
+          p:allowedMethods="*"
+          p:allowedHeaders="*">
     </bean>
 
     <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
             <map>
-                <entry key="/api/ranking/**" value-ref="corsConfiguration"/>
+                <entry key="/api/**" value-ref="corsConfiguration"/>
             </map>
         </property>
     </bean>
 
-    <!-- make ALL other requests go thru the Oauth security filters  -->
+    <security:http pattern="/api/oauth2/token"
+                   authentication-manager-ref="authenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="oAuth2TokenRequestFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
+        <security:access-denied-handler ref="accessDeniedHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
     <security:http pattern="/**"
-                   create-session="always"
+                   create-session="stateless"
+                   authentication-manager-ref="authenticationManager"
                    entry-point-ref="oauthAuthenticationEntryPoint"
                    disable-url-rewriting="true"
                    use-expressions="true"
                    xmlns="http://www.springframework.org/schema/security">
         <security:cors configuration-source-ref="corsSource"/>
-        <security:intercept-url pattern="/resources/**" access="permitAll"/>
-        <security:intercept-url pattern="/" access="permitAll"/>
         <security:intercept-url pattern="/vk/callback/**" access="permitAll"/>
-        <security:intercept-url pattern="/favicon.ico" access="permitAll"/>
         <security:intercept-url pattern="/.well-known/**" access="permitAll"/>
-        <security:intercept-url pattern="/ranking/**" access="permitAll"/>
-        <security:intercept-url pattern="/status/**" access="permitAll"/>
-        <security:intercept-url pattern="/playlist/**" access="permitAll"/>
-        <security:intercept-url pattern="/apidocs" access="permitAll"/>
-        <security:intercept-url pattern="/api/blur" access="permitAll"/>
-        <security:intercept-url pattern="/api/ping" access="permitAll"/>
-        <security:intercept-url pattern="/api/ranking/list/**" access="permitAll"/>
+        <security:intercept-url pattern="/api/public/**" access="permitAll"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-        <security:custom-filter ref="oauth2RedirectForAccessTokenFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
-        <security:access-denied-handler error-page="/denied"/>
-        <security:logout logout-url="/logout" logout-success-url="/"/>
+        <security:access-denied-handler ref="accessDeniedHandler" />
         <security:csrf disabled="true"/>
     </security:http>
 
@@ -95,32 +104,32 @@
 
     <bean id="requestFactory" class="ru.caramel.juniperbot.web.security.auth.DiscordHttpRequestFactory"/>
     <bean id="tokenProvider"
-          class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider">
-        <property name="requestFactory" ref="requestFactory"/>
-    </bean>
+          class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider"
+          p:requestFactory-ref="requestFactory"
+          p:stateMandatory="false" />
 
-    <bean id="discordTokenServices" class="ru.caramel.juniperbot.web.security.auth.DiscordTokenServices">
+    <bean id="discordTokenServices" class="ru.caramel.juniperbot.web.security.auth.DiscordTokenServices"
+          p:requestFactory-ref="requestFactory">
         <constructor-arg value="${discord.oauth.userInfoUri}"/>
         <constructor-arg value="${discord.oauth.guildsInfoUri}"/>
         <constructor-arg value="${discord.oauth.clientId}"/>
         <constructor-arg ref="oauthResource"/>
-        <property name="requestFactory" ref="requestFactory"/>
     </bean>
 
     <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider"/>
 
-    <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
     <bean id="oauth2AuthenticationFilter"
-          class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter">
-        <constructor-arg name="defaultFilterProcessesUrl" value="/login"/>
-        <property name="restTemplate" ref="restTemplate"/>
-        <property name="tokenServices" ref="discordTokenServices"/>
+          class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
+          p:authenticationManager-ref="authenticationManager" />
+
+    <bean id="oAuth2TokenRequestFilter"
+          class="ru.caramel.juniperbot.web.security.auth.OAuth2TokenRequestFilter"
+          p:tokenServices-ref="discordTokenServices"
+          p:restTemplate-ref="restTemplate">
+        <constructor-arg name="defaultFilterProcessesUrl" value="/api/oauth2/token"/>
         <property name="authenticationSuccessHandler">
-            <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
-                <property name="defaultTargetUrl" value="/servers"/>
-            </bean>
+            <bean class="ru.caramel.juniperbot.web.security.auth.TokenRequestSuccessHandler"/>
         </property>
     </bean>
 
-    <security:authentication-manager id="authenticationManager"/>
 </beans>

@@ -14,10 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.controller.api.priv;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import ru.caramel.juniperbot.web.controller.api.base.BaseRestController;
+import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
-@RequestMapping("api")
-public abstract class BaseRestController {
+@RestController
+public class SecureRestController extends BaseRestController {
+
+    @RequestMapping(value = "/secure", method = RequestMethod.GET)
+    @ResponseBody
+    public String ping() {
+        //throw new RuntimeException("testtest");
+        return SecurityUtils.getToken();
+    }
 }

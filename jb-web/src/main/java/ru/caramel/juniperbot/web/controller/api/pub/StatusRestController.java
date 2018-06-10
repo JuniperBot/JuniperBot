@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.api;
+package ru.caramel.juniperbot.web.controller.api.pub;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -23,13 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.web.controller.api.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dto.ChartDto;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-public class StatusRestController extends BaseRestController {
+public class StatusRestController extends BasePublicRestController {
 
     @Autowired
     private DiscordService discordService;
