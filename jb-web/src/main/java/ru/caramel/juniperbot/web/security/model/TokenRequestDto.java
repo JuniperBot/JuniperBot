@@ -14,28 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.security.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 @Getter
-public class ErrorDetailsDto implements Serializable {
+@Setter
+public class TokenRequestDto implements Serializable {
 
-    private final String error;
+    private String code;
 
-    @JsonProperty("error_description")
-    private final String description;
+    private String clientId;
 
-    @JsonProperty("stack_trace")
-    private final String stackTrace;
+    private String redirectUri;
 
-    public ErrorDetailsDto(Exception e) {
-        this.error = e.getClass().getName();
-        this.description = e.getMessage();
-        this.stackTrace = ExceptionUtils.getStackTrace(e);
-    }
 }

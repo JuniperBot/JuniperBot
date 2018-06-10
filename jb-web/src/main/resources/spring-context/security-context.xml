@@ -59,7 +59,6 @@
                    create-session="stateless"
                    xmlns="http://www.springframework.org/schema/security">
         <security:cors configuration-source-ref="corsSource"/>
-        <security:custom-filter ref="oAuth2TokenRequestFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:access-denied-handler ref="accessDeniedHandler" />
         <security:csrf disabled="true"/>
@@ -118,6 +117,7 @@
 
     <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider"/>
 
+    <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
     <bean id="oauth2AuthenticationFilter"
           class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
           p:authenticationManager-ref="authenticationManager" />

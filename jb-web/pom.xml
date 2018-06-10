@@ -33,19 +33,6 @@
     </parent>
 
     <properties>
-        <webjars.jquery.version>3.2.1</webjars.jquery.version>
-        <webjars.jquery-datatables.version>1.10.16</webjars.jquery-datatables.version>
-        <webjars.fontawesome.version>4.7.0</webjars.fontawesome.version>
-        <webjars.select2.version>4.0.3-1</webjars.select2.version>
-        <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
-        <webjars.bootstrap3-dialog.version>1.35.3</webjars.bootstrap3-dialog.version>
-        <webjars.bootstrap-toggle.version>2.2.2</webjars.bootstrap-toggle.version>
-        <webjars-bootpag.version>1.0.7</webjars-bootpag.version>
-        <webjars.adminLTE.version>2.4.0</webjars.adminLTE.version>
-        <webjars.html5shiv.version>3.7.3-1</webjars.html5shiv.version>
-        <webjars.respond.version>1.4.2-1</webjars.respond.version>
-        <webjars.flot.version>0.8.3-1</webjars.flot.version>
-        <webjars.flot-axislabels.version>1.0.0</webjars.flot-axislabels.version>
         <acme4j.version>0.14</acme4j.version>
     </properties>
 
@@ -113,46 +100,6 @@
             <version>${geoip2.version}</version>
         </dependency>
 
-        <!-- WEB DEPENDENCIES -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tiles</groupId>
-            <artifactId>tiles-core</artifactId>
-            <version>${tiles.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tiles</groupId>
-            <artifactId>tiles-jsp</artifactId>
-            <version>${tiles.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tiles</groupId>
-            <artifactId>tiles-servlet</artifactId>
-            <version>${tiles.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tiles</groupId>
-            <artifactId>tiles-template</artifactId>
-            <version>${tiles.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tiles</groupId>
-            <artifactId>tiles-el</artifactId>
-            <version>${tiles.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.shredzone.acme4j</groupId>
             <artifactId>acme4j-client</artifactId>
@@ -162,124 +109,6 @@
             <groupId>org.shredzone.acme4j</groupId>
             <artifactId>acme4j-utils</artifactId>
             <version>${acme4j.version}</version>
-        </dependency>
-
-        <!-- WEBJARs DEPENDENCIES -->
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>${webjars.jquery.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>datatables</artifactId>
-            <version>${webjars.jquery-datatables.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>${webjars.bootstrap.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars.bower</groupId>
-            <artifactId>bootstrap3-dialog</artifactId>
-            <version>${webjars.bootstrap3-dialog.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.webjars.bower</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bower</groupId>
-                    <artifactId>bootstrap</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars.bower</groupId>
-            <artifactId>bootstrap-toggle</artifactId>
-            <version>${webjars.bootstrap-toggle.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.webjars.bower</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bower</groupId>
-                    <artifactId>bootstrap</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars.bower</groupId>
-            <artifactId>bootpag</artifactId>
-            <version>${webjars-bootpag.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>font-awesome</artifactId>
-            <version>${webjars.fontawesome.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>select2</artifactId>
-            <version>${webjars.select2.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>AdminLTE</artifactId>
-            <version>${webjars.adminLTE.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>html5shiv</artifactId>
-            <version>${webjars.html5shiv.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>respond</artifactId>
-            <version>${webjars.respond.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>flot</artifactId>
-            <version>${webjars.flot.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars.npm</groupId>
-            <artifactId>flot-axislabels</artifactId>
-            <version>${webjars.flot-axislabels.version}</version>
         </dependency>
 
         <!-- SECURITY DEPENDENCIES -->

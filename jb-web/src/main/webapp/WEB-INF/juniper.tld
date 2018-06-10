@@ -25,53 +25,6 @@
     <short-name>juniper</short-name>
     <uri>http://juniperbot.ru/tags</uri>
 
-    <tag>
-        <name>avatar</name>
-        <tag-class>ru.caramel.juniperbot.web.common.tags.AvatarTag</tag-class>
-        <body-content>empty</body-content>
-
-        <attribute>
-            <description>User's snowflake</description>
-            <name>userId</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>User's avatar</description>
-            <name>avatar</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>User's avatar</description>
-            <name>current</name>
-            <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-    </tag>
-
-    <tag>
-        <name>command</name>
-        <tag-class>ru.caramel.juniperbot.web.common.tags.CommandTag</tag-class>
-        <body-content>empty</body-content>
-
-        <attribute>
-            <description>Command Code</description>
-            <name>code</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>Output variable</description>
-            <name>var</name>
-            <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-    </tag>
-
     <function>
         <name>getHTMLAwtColor</name>
         <function-class>ru.caramel.juniperbot.core.utils.CommonUtils</function-class>
@@ -84,15 +37,4 @@
         <function-signature>java.lang.String formatDuration(long)</function-signature>
     </function>
 
-    <function>
-        <name>getLevelForRole</name>
-        <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
-        <function-signature>java.lang.Integer getLevelForRole(ru.caramel.juniperbot.web.dto.RankingConfigDto,java.lang.Long)</function-signature>
-    </function>
-
-    <function>
-        <name>getDisplayLanguage</name>
-        <function-class>ru.caramel.juniperbot.web.common.tags.TagFunctions</function-class>
-        <function-signature>java.lang.String getDisplayLanguage()</function-signature>
-    </function>
 </taglib>
