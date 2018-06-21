@@ -14,25 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api;
 
 import lombok.Getter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
-public class ErrorDetailsDto implements Serializable {
+@Setter
+public class ServersDto implements Serializable {
+    private static final long serialVersionUID = -4243311763429092143L;
 
-    private final String error;
+    private boolean connected;
 
-    private final String description;
-
-    private final String stackTrace;
-
-    public ErrorDetailsDto(Exception e) {
-        this.error = e.getClass().getName();
-        this.description = e.getMessage();
-        this.stackTrace = ExceptionUtils.getStackTrace(e);
-    }
+    private List<GuildDto> guilds;
 }
