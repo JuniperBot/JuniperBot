@@ -27,6 +27,7 @@ import ru.caramel.juniperbot.web.dto.api.ServersDto;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
+import java.util.Collections;
 import java.util.List;
 
 import static net.dv8tion.jda.core.OnlineStatus.OFFLINE;

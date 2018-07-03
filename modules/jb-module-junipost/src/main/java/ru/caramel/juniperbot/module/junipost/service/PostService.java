@@ -70,7 +70,10 @@ public class PostService {
     }
 
     public void onInstagramUpdated(InstagramProfile profile) {
-        if (latestId != 0) {
+        if (CollectionUtils.isEmpty(profile.getFeed())) {
+            return;
+        }
+        if (profile.getFeed().stream().anyMatch(e -> e.getId() == latestId)) {
             List<InstagramMedia> newMedias = new ArrayList<>();
             for (InstagramMedia media : profile.getFeed()) {
                 if (media.getId() == latestId) {
@@ -98,9 +101,7 @@ public class PostService {
                 }));
             }
         }
-        if (CollectionUtils.isNotEmpty(profile.getFeed())) {
-            latestId = profile.getFeed().get(0).getId();
-        }
+        latestId = profile.getFeed().get(0).getId();
     }
 
     public EmbedBuilder convertToEmbed(InstagramProfile profile, InstagramMedia media) {

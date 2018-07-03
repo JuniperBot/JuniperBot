@@ -85,7 +85,7 @@ public class BlurImageController extends BasePublicRestController {
 
     @RequestMapping(value = "/blur", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<InputStreamResource> blur(@RequestParam("source") String sourceUrl, HttpServletResponse response) {
+    public ResponseEntity<InputStreamResource> blur(@RequestParam("source") String sourceUrl) {
         if (!StringUtils.startsWithAny(sourceUrl, ALLOWED_PREFIX)) {
             return ResponseEntity.badRequest().build();
         }
@@ -154,7 +154,7 @@ public class BlurImageController extends BasePublicRestController {
 
         try (InputStream input = con.getInputStream()) {
             BufferedImage image = ImageIO.read(input);
-            image = scaleImage(image, BufferedImage.TYPE_INT_RGB, 1920, 1920);
+            image = scaleImage(image, BufferedImage.TYPE_INT_RGB, 1080, 1080);
             BufferedImage blurredImage = null;
             if (useOpenCV && openCVService.isInitialized()) {
                 try {

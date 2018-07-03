@@ -21,10 +21,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.dto.ErrorDetailsDto;
 
 @RestControllerAdvice
 public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(NotFoundException.class)
+    public final ResponseEntity handleNotFound(NotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public final ResponseEntity handleAccessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDto> handleAllExceptions(Exception e) {
