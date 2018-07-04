@@ -19,6 +19,8 @@ package ru.caramel.juniperbot.web.dto.api;
 import lombok.Getter;
 import lombok.Setter;
 
+import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,5 +31,5 @@ public class ServersDto implements Serializable {
 
     private boolean connected;
 
-    private List<GuildDto> guilds;
+    private List<GuildShortDto> guilds;
 }

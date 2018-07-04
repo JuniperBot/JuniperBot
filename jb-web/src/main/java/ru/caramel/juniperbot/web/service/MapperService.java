@@ -30,8 +30,6 @@ import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.web.dto.*;
-import ru.caramel.juniperbot.web.dto.api.GuildDto;
-import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
 import java.util.List;
 
@@ -149,13 +147,6 @@ public interface MapperService {
             @Mapping(target = "guildConfig", ignore = true)
     })
     void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);
-
-    @Mappings({
-            @Mapping(target = "added", ignore = true)
-    })
-    GuildDto getGuildDto(DiscordGuildDetails details);
-
-    List<GuildDto> getGuildDtos(List<DiscordGuildDetails> details);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

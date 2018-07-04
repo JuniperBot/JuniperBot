@@ -14,26 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.api.request;
+package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
-public class GuildInfoRequest implements Serializable {
-    private static final long serialVersionUID = 5508207930655357131L;
+public class ModerationConfigDto implements Serializable {
 
-    private long id;
+    private static final long serialVersionUID = 2373520739258476656L;
 
-    private Set<PartType> parts;
+    private List<Long> roles;
 
-    public enum PartType {
-        TEXT_CHANNELS,
-        VOICE_CHANNELS,
-        ROLES;
-    }
+    private boolean publicColors;
+
+    @Min(ModerationConfig.DEFAULT_MAX_WARNINGS)
+    @Max(20)
+    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
 }

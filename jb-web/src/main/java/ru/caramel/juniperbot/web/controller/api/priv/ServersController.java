@@ -44,7 +44,7 @@ public class ServersController extends BaseRestController {
     public ServersDto getServers() {
         List<DiscordGuildDetails> detailsList = discordTokenServices.getCurrentGuilds(true);
         ServersDto result = new ServersDto();
-        result.setGuilds(mapperService.getGuildDtos(detailsList));
+        result.setGuilds(apiMapperService.getGuildDtos(detailsList));
         if (discordService.isConnected()) {
             result.setConnected(true);
             result.getGuilds().forEach(e -> {

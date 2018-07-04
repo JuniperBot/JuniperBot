@@ -14,26 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.api.request;
+package ru.caramel.juniperbot.web.dto.api.discord;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
-public class GuildInfoRequest implements Serializable {
-    private static final long serialVersionUID = 5508207930655357131L;
+@Builder(builderClassName = "Builder")
+public class GuildDto implements Serializable {
+    private static final long serialVersionUID = 5728172690699536067L;
 
-    private long id;
+    private String id;
 
-    private Set<PartType> parts;
+    private String name;
 
-    public enum PartType {
-        TEXT_CHANNELS,
-        VOICE_CHANNELS,
-        ROLES;
-    }
+    private String icon;
+
+    private boolean available;
+
+    private List<RoleDto> roles;
+
 }

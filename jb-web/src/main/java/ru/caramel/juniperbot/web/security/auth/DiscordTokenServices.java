@@ -161,6 +161,11 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
                 || (StringUtils.isNotEmpty(superUserId) && user != null && Objects.equals(superUserId, user.getId()));
     }
 
+    public boolean hasPermission(long guildId) {
+        DiscordGuildDetails details = getGuildById(guildId);
+        return details != null && hasPermission(details);
+    }
+
     public DiscordGuildDetails getGuildById(long id) {
         String idStr = String.valueOf(id);
         return getCurrentGuilds(false).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);

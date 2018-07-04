@@ -28,6 +28,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.service.VkService;
+import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.api.base.BaseRestController;
 import ru.caramel.juniperbot.web.dto.VkConnectionDto;
 import ru.caramel.juniperbot.web.service.MapperService;
@@ -99,19 +100,17 @@ public class VkCallbackController extends BaseRestController {
     @RequestMapping(value = "/vk/create/{serverId}", method = RequestMethod.POST)
     @ResponseBody
     public VkConnectionDto create(
-            @PathVariable("serverId") long serverId,
+            @GuildId @PathVariable("serverId") long serverId,
             @RequestParam("name") String name,
             @RequestParam("code") String code) {
-        validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
         return mapperService.getVkConnectionDto(vkService.create(config, name, code));
     }
 
     @RequestMapping(value = "/vk/delete/{serverId}", method = RequestMethod.POST)
     public void delete(
-            @PathVariable("serverId") long serverId,
+            @GuildId @PathVariable("serverId") long serverId,
             @RequestParam("id") long id) {
-        validateGuildId(serverId);
         GuildConfig config = configService.getOrCreate(serverId);
         vkService.delete(config, id);
     }

@@ -14,31 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.api;
+package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.Permission;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
 
 @Getter
 @Setter
-public class GuildDto implements Serializable {
-    private static final long serialVersionUID = 5292170456825288531L;
+public class CommonConfigDto implements Serializable {
 
-    private String id;
+    private static final long serialVersionUID = 5706403671642660929L;
 
-    private String name;
+    @Size(max = 20, message = "{validation.config.prefix.Size.message}")
+    @NotBlank(message = "{validation.config.prefix.NotBlank.message}")
+    @Pattern(regexp = "[^\\s]+", message = "{validation.config.prefix.Pattern.message}")
+    private String prefix;
 
-    private String icon;
+    @Size(max = 10)
+    @NotBlank
+    private String locale;
 
-    private boolean owner;
+    private boolean privateHelp;
 
-    private List<Permission> permissions;
-
-    private boolean added;
-
-    private long members;
+    @Valid
+    private ModerationConfigDto modConfig;
 }
