@@ -17,19 +17,29 @@
 package ru.caramel.juniperbot.web.service;
 
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.web.dto.api.config.MusicConfigDto;
 import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
 import ru.caramel.juniperbot.web.dto.api.config.CommonConfigDto;
 import ru.caramel.juniperbot.web.dto.api.config.ModerationConfigDto;
 import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
+import ru.caramel.juniperbot.web.dto.api.discord.TextChannelDto;
+import ru.caramel.juniperbot.web.dto.api.discord.VoiceChannelDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ApiMapperService {
@@ -44,6 +54,18 @@ public interface ApiMapperService {
             @Mapping(target = "interactable", ignore = true)
     })
     RoleDto getRoleDto(Role role);
+
+    @Mappings({
+            @Mapping(source = "NSFW", target = "nsfw"),
+            @Mapping(expression = "java(channel.canTalk())", target = "canTalk"),
+    })
+    TextChannelDto getTextChannelDto(TextChannel channel);
+
+    List<TextChannelDto> getTextChannelDto(List<TextChannel> channels);
+
+    VoiceChannelDto getVoiceChannelDto(VoiceChannel channel);
+
+    List<VoiceChannelDto> getVoiceChannelDto(List<VoiceChannel> channels);
 
     List<GuildShortDto> getGuildDtos(List<DiscordGuildDetails> details);
 
@@ -63,16 +85,57 @@ public interface ApiMapperService {
     })
     void updateCommon(CommonConfigDto source, @MappingTarget GuildConfig target);
 
-    ModerationConfigDto getModerationDto(ModerationConfig moderationConfig);
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRoles()))", target = "roles"),
+    })
+    ModerationConfigDto getModerationDto(ModerationConfig source);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true)
+            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
     })
     void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);
 
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toString(source.getChannelId()))", target = "channelId"),
+            @Mapping(expression = "java(ApiMapperService.toString(source.getTextChannelId()))", target = "textChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRoles()))", target = "roles"),
+    })
+    MusicConfigDto getMusicDto(MusicConfig source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "voiceVolume", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLong(source.getChannelId()))", target = "channelId"),
+            @Mapping(expression = "java(ApiMapperService.toLong(source.getTextChannelId()))", target = "textChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
+    })
+    void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
+
     default String trimmed(String s) {
         return s != null ? s.trim() : null;
+    }
+
+    static String toString(Long source) {
+        return source != null ? String.valueOf(source) : null;
+    }
+
+    static Long toLong(String source) {
+        return StringUtils.isNumeric(source) ? Long.valueOf(source) : null;
+    }
+
+    static Set<String> toStringSet(Collection<Long> source) {
+        return source != null ? source.stream().map(String::valueOf).collect(Collectors.toSet()) : null;
+    }
+
+    static List<Long> toLongList(Collection<String> source) {
+        return source != null ? source
+                .stream()
+                .filter(StringUtils::isNumeric)
+                .map(Long::valueOf).collect(Collectors.toList()) : null;
     }
 }

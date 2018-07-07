@@ -27,7 +27,6 @@ import ru.caramel.juniperbot.web.dto.api.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
 import ru.caramel.juniperbot.web.dto.api.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
-import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
 import java.util.stream.Collectors;
@@ -82,15 +81,14 @@ public class GuildDao extends AbstractDao {
                     break;
 
                 case TEXT_CHANNELS:
-                    // TODO
+                    builder.textChannels(apiMapper.getTextChannelDto(guild.getTextChannels()));
                     break;
 
                 case VOICE_CHANNELS:
-                    // TODO
+                    builder.voiceChannels(apiMapper.getVoiceChannelDto(guild.getVoiceChannels()));
                     break;
             }
         }
-
         return builder.build();
     }
 }

@@ -64,6 +64,13 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     }
 
     @Override
+    public void save(MusicConfig config) {
+        if (config != null) {
+            musicConfigRepository.save(config);
+        }
+    }
+
+    @Override
     @Transactional
     public boolean hasAccess(Member member) {
         MusicConfig config = getConfig(member.getGuild());

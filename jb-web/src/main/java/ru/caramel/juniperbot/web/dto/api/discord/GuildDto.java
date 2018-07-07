@@ -39,4 +39,8 @@ public class GuildDto implements Serializable {
 
     private List<RoleDto> roles;
 
+    private List<TextChannelDto> textChannels;
+
+    private List<VoiceChannelDto> voiceChannels;
+
 }

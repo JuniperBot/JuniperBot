@@ -18,24 +18,37 @@ package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
 @Getter
 @Setter
-public class ModerationConfigDto implements Serializable {
+public class MusicConfigDto implements Serializable {
 
-    private static final long serialVersionUID = 2373520739258476656L;
+    private String channelId;
+
+    private boolean userJoinEnabled;
+
+    private String textChannelId;
+
+    @Size(max = 255)
+    private String autoPlay;
+
+    private boolean playlistEnabled;
+
+    private boolean streamsEnabled;
+
+    @Min(0)
+    private Long queueLimit;
+
+    @Min(0)
+    private Long durationLimit;
+
+    @Min(0)
+    private Long duplicateLimit;
 
     private Set<String> roles;
-
-    private boolean publicColors;
-
-    @Min(ModerationConfig.DEFAULT_MAX_WARNINGS)
-    @Max(20)
-    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
 }
