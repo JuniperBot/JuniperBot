@@ -45,6 +45,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
         dto.setType(SubscriptionType.VK);
+        dto.setName(connection.getName());
         dto.setStatus(VkConnectionStatus.CONNECTED == connection.getStatus()
                 ? SubscriptionStatus.ACTIVE : SubscriptionStatus.PENDING);
         return dto;

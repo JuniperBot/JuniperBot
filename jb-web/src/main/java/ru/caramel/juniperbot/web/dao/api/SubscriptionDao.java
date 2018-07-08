@@ -29,7 +29,6 @@ import ru.caramel.juniperbot.web.dao.AbstractDao;
 import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.api.request.SubscriptionCreateRequest;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
-import ru.caramel.juniperbot.web.service.subscriptions.JuniSubscriptionHandler;
 import ru.caramel.juniperbot.web.service.subscriptions.SubscriptionHandler;
 
 import java.util.*;

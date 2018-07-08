@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
-import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
+import ru.caramel.juniperbot.module.junipost.service.PostService;
 import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
@@ -30,10 +30,17 @@ import java.util.Map;
 @Component
 public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPost> {
 
+    @Autowired
+    private PostService postService;
+
     @Override
     public SubscriptionDto getSubscription(JuniPost juniPost) {
         SubscriptionDto dto = getDtoForHook(juniPost.getGuildConfig().getGuildId(), juniPost.getWebHook());
         dto.setId(juniPost.getId());
+        dto.setName(postService.getAccountName());
+        if (postService.getIconUrl() != null) {
+            dto.setIconUrl(postService.getIconUrl());
+        }
         dto.setStatus(SubscriptionStatus.ACTIVE);
         dto.setType(SubscriptionType.JUNIPERFOXX);
         return dto;

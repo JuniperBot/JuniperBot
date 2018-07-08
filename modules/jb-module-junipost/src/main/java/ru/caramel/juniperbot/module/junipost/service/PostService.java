@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.junipost.service;
 
+import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -60,6 +61,13 @@ public class PostService {
 
     private long latestId;
 
+    @Getter
+    @Value("${instagram.accountName:JuniperFoxx}")
+    private String accountName;
+
+    @Getter
+    private String iconUrl;
+
     public void post(InstagramProfile profile, List<InstagramMedia> medias, MessageChannel channel) {
         if (medias.size() > 0) {
             for (int i = 0; i < Math.min(MAX_DETAILED, medias.size()); i++) {
@@ -73,6 +81,8 @@ public class PostService {
         if (CollectionUtils.isEmpty(profile.getFeed())) {
             return;
         }
+        accountName = profile.getFullName();
+        iconUrl = profile.getImageUrl();
         if (profile.getFeed().stream().anyMatch(e -> e.getId() == latestId)) {
             List<InstagramMedia> newMedias = new ArrayList<>();
             for (InstagramMedia media : profile.getFeed()) {

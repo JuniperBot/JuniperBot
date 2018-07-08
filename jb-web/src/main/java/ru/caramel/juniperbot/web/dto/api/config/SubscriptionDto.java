@@ -28,7 +28,13 @@ import java.util.Map;
 @Setter
 public class SubscriptionDto implements Serializable {
 
+    private static final long serialVersionUID = 1615419486664927621L;
+
     private Long id;
+
+    private String name;
+
+    private String iconUrl;
 
     private SubscriptionType type;
 
