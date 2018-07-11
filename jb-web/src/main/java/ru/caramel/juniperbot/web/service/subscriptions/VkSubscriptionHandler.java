@@ -73,6 +73,8 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         }
         if (VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
             updateWebHook(connection, subscription);
+        } else {
+            connection.getWebHook().setEnabled(subscription.isEnabled());
         }
         Collection attachments = getValue(subscription.getAttributes(), "attachments", Collection.class);
         if (attachments == null) {
@@ -85,8 +87,12 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
-
+        VkConnection connection = vkService.find(id);
+        if (check(connection)) {
+            vkService.delete(connection);
+        }
     }
 
     @Override

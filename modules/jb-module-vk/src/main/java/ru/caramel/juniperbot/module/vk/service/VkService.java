@@ -32,7 +32,7 @@ public interface VkService {
 
     VkConnection save(VkConnection connection);
 
-    void delete(GuildConfig config, long id);
+    void delete(VkConnection connection);
 
     VkConnection getForToken(String token);
 

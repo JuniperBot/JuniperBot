@@ -160,13 +160,9 @@ public class VkServiceImpl implements VkService {
 
     @Override
     @Transactional
-    public void delete(GuildConfig config, long id) {
-        VkConnection connection = repository.getOne(id);
-        if (!connection.getGuildConfig().equals(config)) {
-            throw new IllegalStateException("Trying to delete not own connection!");
-        }
+    public void delete(VkConnection connection) {
+        webHookService.delete(connection.getGuildConfig().getGuildId(), connection.getWebHook());
         repository.delete(connection);
-        webHookService.delete(config.getGuildId(), connection.getWebHook());
     }
 
     @Override
