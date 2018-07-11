@@ -28,4 +28,6 @@ public abstract class ChannelDto implements Serializable {
     private String id;
 
     private String name;
+
+    private long permissions;
 }

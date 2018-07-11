@@ -58,11 +58,15 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(source = "NSFW", target = "nsfw"),
             @Mapping(expression = "java(channel.canTalk())", target = "canTalk"),
+            @Mapping(target = "permissions", ignore = true)
     })
     TextChannelDto getTextChannelDto(TextChannel channel);
 
     List<TextChannelDto> getTextChannelDto(List<TextChannel> channels);
 
+    @Mappings({
+            @Mapping(target = "permissions", ignore = true)
+    })
     VoiceChannelDto getVoiceChannelDto(VoiceChannel channel);
 
     List<VoiceChannelDto> getVoiceChannelDto(List<VoiceChannel> channels);

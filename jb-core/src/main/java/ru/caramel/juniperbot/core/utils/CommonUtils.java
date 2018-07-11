@@ -33,12 +33,11 @@ import org.springframework.web.util.UriUtils;
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class CommonUtils {
@@ -80,6 +79,24 @@ public final class CommonUtils {
         if (content.length() > length) {
             content = content.substring(0, length - 3) + "...";
         }
+        return content;
+    }
+
+    public static String trimTo(String content, int minLength, int maxLength) {
+        if (StringUtils.isEmpty(content)) {
+            return content;
+        }
+        if (content.length() > maxLength) {
+            content = content.substring(0, maxLength - 3) + "...";
+        }
+        if (content.length() < minLength) {
+            StringBuilder result = new StringBuilder(content);
+            while (result.length() < minLength) {
+                result.append("_");
+            }
+            content = result.toString();
+        }
+
         return content;
     }
 
@@ -233,5 +250,11 @@ public final class CommonUtils {
             // nah I don't care
         }
         return null;
+    }
+
+    public static <T extends Enum<T>> List<T> safeEnumSet(Collection<?> collection, Class<T> type) {
+        return Stream.of(type.getEnumConstants())
+                .filter(e -> collection.contains(e.name()))
+                .collect(Collectors.toList());
     }
 }

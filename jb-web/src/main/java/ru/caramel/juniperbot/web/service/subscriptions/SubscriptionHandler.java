@@ -27,7 +27,7 @@ public interface SubscriptionHandler<T> {
 
     SubscriptionDto create(long fuildId, Map<String, ?> data);
 
-    void update(SubscriptionDto object);
+    boolean update(SubscriptionDto object);
 
     void delete(long id);
 

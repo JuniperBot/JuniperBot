@@ -20,11 +20,15 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 
 import java.util.Map;
 
@@ -38,6 +42,23 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
 
     @Autowired
     protected DiscordService discordService;
+
+    @Autowired
+    protected DiscordTokenServices tokenServices;
+
+    @Autowired
+    protected WebHookRepository webHookRepository;
+
+    protected boolean check(WebHookOwnedEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        long guildId = entity.getGuildConfig().getGuildId();
+        if (!tokenServices.hasPermission(guildId)) {
+            throw new AccessDeniedException();
+        }
+        return true;
+    }
 
     protected SubscriptionDto getDtoForHook(long guildId, WebHook webHook) {
         SubscriptionDto dto = new SubscriptionDto();
@@ -62,7 +83,20 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
         return dto;
     }
 
+    protected void updateWebHook(WebHookOwnedEntity entity, SubscriptionDto dto) {
+        WebHook webHook = entity.getWebHook();
+        webHook.setEnabled(dto.isEnabled());
+        if (webHook.isEnabled() && dto.getChannelId() != null) {
+            webHookService.updateWebHook(entity.getGuildConfig().getGuildId(), Long.valueOf(dto.getChannelId()), webHook, dto.getName());
+            webHookService.invalidateCache(entity.getGuildConfig().getGuildId());
+        }
+        webHookRepository.save(webHook);
+    }
+
     protected <V> V getValue(Map<String, ?> data, String key, Class<V> type) {
+        if (data == null) {
+            return null;
+        }
         Object value = data.get(key);
         return value != null && type.isAssignableFrom(value.getClass()) ? (V) value : null;
     }

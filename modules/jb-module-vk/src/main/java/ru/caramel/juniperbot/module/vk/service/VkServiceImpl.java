@@ -136,7 +136,7 @@ public class VkServiceImpl implements VkService {
     @Transactional
     public VkConnection create(GuildConfig config, String name, String code) {
         VkConnection connection = new VkConnection();
-        connection.setConfig(config);
+        connection.setGuildConfig(config);
         connection.setStatus(VkConnectionStatus.CONFIRMATION);
         connection.setToken(UUID.randomUUID().toString());
         connection.setName(name);
@@ -149,10 +149,20 @@ public class VkServiceImpl implements VkService {
     }
 
     @Override
+    public VkConnection find(long id) {
+        return repository.findOne(id);
+    }
+
+    @Override
+    public VkConnection save(VkConnection connection) {
+        return repository.save(connection);
+    }
+
+    @Override
     @Transactional
     public void delete(GuildConfig config, long id) {
         VkConnection connection = repository.getOne(id);
-        if (!connection.getConfig().equals(config)) {
+        if (!connection.getGuildConfig().equals(config)) {
             throw new IllegalStateException("Trying to delete not own connection!");
         }
         repository.delete(connection);
@@ -177,7 +187,7 @@ public class VkServiceImpl implements VkService {
         if (!connection.getWebHook().isValid()) {
             return;
         }
-        contextService.withContext(connection.getConfig().getGuildId(), () -> {
+        contextService.withContext(connection.getGuildConfig().getGuildId(), () -> {
             discordService.executeWebHook(connection.getWebHook(), createMessage(connection, message), e -> {
                 e.setEnabled(false);
                 hookRepository.save(e);

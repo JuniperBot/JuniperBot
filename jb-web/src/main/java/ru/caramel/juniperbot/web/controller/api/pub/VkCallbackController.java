@@ -23,6 +23,7 @@ import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
@@ -66,6 +67,7 @@ public class VkCallbackController extends BaseRestController {
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)
+    @Transactional
     public String callback(@RequestBody String content, @PathVariable("token") String token, HttpServletResponse response) {
         JsonObject json = gson.fromJson(content, JsonObject.class);
         String type = json.get("type").getAsString();

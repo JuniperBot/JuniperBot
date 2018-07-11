@@ -16,19 +16,14 @@
  */
 package ru.caramel.juniperbot.module.vk.persistence.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 
 import java.util.List;
 
 @Repository
-public interface VkConnectionRepository extends JpaRepository<VkConnection, Long> {
-
-    @Query("SELECT e FROM VkConnection e WHERE e.config.guildId = :guildId")
-    List<VkConnection> findAllByGuildId(@Param("guildId") long guildId);
+public interface VkConnectionRepository extends GuildOwnedRepository<VkConnection> {
 
     VkConnection findByToken(String token);
 }

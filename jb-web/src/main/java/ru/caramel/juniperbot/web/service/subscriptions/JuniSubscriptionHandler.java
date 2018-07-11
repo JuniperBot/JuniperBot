@@ -18,8 +18,10 @@ package ru.caramel.juniperbot.web.service.subscriptions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 import ru.caramel.juniperbot.module.junipost.service.PostService;
 import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
@@ -32,6 +34,9 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private JuniPostRepository juniPostRepository;
 
     @Override
     public SubscriptionDto getSubscription(JuniPost juniPost) {
@@ -47,8 +52,15 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
     }
 
     @Override
-    public void update(SubscriptionDto subscription) {
-
+    @Transactional
+    public boolean update(SubscriptionDto subscription) {
+        JuniPost post = juniPostRepository.findOne(subscription.getId());
+        if (!check(post)) {
+            return false;
+        }
+        updateWebHook(post, subscription);
+        juniPostRepository.save(post);
+        return true;
     }
 
     @Override

@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.dao.api;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.web.dao.AbstractDao;
 import ru.caramel.juniperbot.web.dto.api.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
+import ru.caramel.juniperbot.web.dto.api.discord.TextChannelDto;
+import ru.caramel.juniperbot.web.dto.api.discord.VoiceChannelDto;
 import ru.caramel.juniperbot.web.dto.api.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
@@ -81,11 +84,21 @@ public class GuildDao extends AbstractDao {
                     break;
 
                 case TEXT_CHANNELS:
-                    builder.textChannels(apiMapper.getTextChannelDto(guild.getTextChannels()));
+                    builder.textChannels(guild.getTextChannels().stream()
+                        .map(e -> {
+                            TextChannelDto dto = apiMapper.getTextChannelDto(e);
+                            dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
+                            return dto;
+                        }).collect(Collectors.toList()));
                     break;
 
                 case VOICE_CHANNELS:
-                    builder.voiceChannels(apiMapper.getVoiceChannelDto(guild.getVoiceChannels()));
+                    builder.voiceChannels(guild.getVoiceChannels().stream()
+                            .map(e -> {
+                                VoiceChannelDto dto = apiMapper.getVoiceChannelDto(e);
+                                dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
+                                return dto;
+                            }).collect(Collectors.toList()));
                     break;
             }
         }

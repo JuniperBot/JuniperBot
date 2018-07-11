@@ -20,9 +20,7 @@ import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 
 import javax.persistence.*;
@@ -32,16 +30,8 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "vk_connection")
-public class VkConnection extends BaseEntity {
+public class VkConnection extends WebHookOwnedEntity {
     private static final long serialVersionUID = 2146901518074674594L;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "web_hook_id")
-    private WebHook webHook;
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "guild_config_id")
-    private GuildConfig config;
 
     @Column(name = "group_id")
     private Integer groupId;

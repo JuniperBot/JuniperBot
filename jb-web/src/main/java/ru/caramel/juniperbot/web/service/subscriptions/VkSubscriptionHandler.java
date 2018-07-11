@@ -16,9 +16,11 @@
  */
 package ru.caramel.juniperbot.web.service.subscriptions;
 
+import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
@@ -28,8 +30,7 @@ import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnection> {
@@ -41,7 +42,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     public SubscriptionDto getSubscription(VkConnection connection) {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("attachments", CommonUtils.reverse(vkService.getAttachmentTypes(), connection.getAttachments()));
-        SubscriptionDto dto = getDtoForHook(connection.getConfig().getGuildId(), connection.getWebHook());
+        SubscriptionDto dto = getDtoForHook(connection.getGuildConfig().getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
         dto.setType(SubscriptionType.VK);
@@ -64,8 +65,23 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     }
 
     @Override
-    public void update(SubscriptionDto subscription) {
-
+    @Transactional
+    public boolean update(SubscriptionDto subscription) {
+        VkConnection connection = vkService.find(subscription.getId());
+        if (!check(connection)) {
+            return false;
+        }
+        if (VkConnectionStatus.CONNECTED.equals(connection.getStatus())) {
+            updateWebHook(connection, subscription);
+        }
+        Collection attachments = getValue(subscription.getAttributes(), "attachments", Collection.class);
+        if (attachments == null) {
+            attachments = Collections.emptyList();
+        }
+        List<WallpostAttachmentType> attachmentTypes = CommonUtils.safeEnumSet(attachments, WallpostAttachmentType.class);
+        connection.setAttachments(CommonUtils.reverse(vkService.getAttachmentTypes(), attachmentTypes));
+        vkService.save(connection);
+        return true;
     }
 
     @Override

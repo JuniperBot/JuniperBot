@@ -14,38 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.api.config;
+package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.web.model.SubscriptionStatus;
-import ru.caramel.juniperbot.web.model.SubscriptionType;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.*;
 
 @Getter
 @Setter
-public class SubscriptionDto implements Serializable {
+@MappedSuperclass
+public abstract class WebHookOwnedEntity extends GuildOwnedEntity {
 
-    private static final long serialVersionUID = 1615419486664927621L;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "web_hook_id")
+    private WebHook webHook;
 
-    private Long id;
-
-    private String name;
-
-    private String iconUrl;
-
-    private SubscriptionType type;
-
-    private SubscriptionStatus status;
-
-    private boolean enabled;
-
-    private boolean available;
-
-    private String channelId;
-
-    private Map<String, Object> attributes = new HashMap<>();
 }

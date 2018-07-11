@@ -90,7 +90,7 @@ public interface MapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true),
             @Mapping(target = "groupId", ignore = true),
             @Mapping(target = "confirmCode", ignore = true)
     })

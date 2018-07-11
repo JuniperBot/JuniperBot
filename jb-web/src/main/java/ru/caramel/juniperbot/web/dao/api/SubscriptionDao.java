@@ -84,12 +84,11 @@ public class SubscriptionDao extends AbstractDao {
 
     @Transactional
     public boolean update(SubscriptionDto dto) {
-        SubscriptionHandler<?> handler = handlersByType.get(dto.getType());
-        if (handler != null) {
-            handler.update(dto);
-            return true;
+        if (dto.getId() == null) {
+            return false;
         }
-        return false;
+        SubscriptionHandler<?> handler = handlersByType.get(dto.getType());
+        return handler != null && handler.update(dto);
     }
 
     @Transactional
