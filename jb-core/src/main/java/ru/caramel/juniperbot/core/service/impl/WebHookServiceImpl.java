@@ -62,7 +62,7 @@ public class WebHookServiceImpl implements WebHookService {
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,100)).complete();
+                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32)).complete();
                     }
                 }
                 if (webhook != null) {

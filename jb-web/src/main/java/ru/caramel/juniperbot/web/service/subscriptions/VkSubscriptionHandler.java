@@ -42,6 +42,8 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     public SubscriptionDto getSubscription(VkConnection connection) {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("attachments", CommonUtils.reverse(vkService.getAttachmentTypes(), connection.getAttachments()));
+        attributes.put("vk.token", connection.getToken());
+        attributes.put("vk.groupId", connection.getGroupId());
         SubscriptionDto dto = getDtoForHook(connection.getGuildConfig().getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);

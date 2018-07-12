@@ -25,13 +25,9 @@ import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.service.VkService;
-import ru.caramel.juniperbot.web.common.aspect.GuildId;
-import ru.caramel.juniperbot.web.controller.api.base.BaseRestController;
-import ru.caramel.juniperbot.web.dto.VkConnectionDto;
 import ru.caramel.juniperbot.web.service.MapperService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class VkCallbackController extends BaseRestController {
+public class VkCallbackController {
 
     private final Gson gson = GsonUtils.create();
 
@@ -97,15 +93,5 @@ public class VkCallbackController extends BaseRestController {
             }
         }
         return "ok";
-    }
-
-    @RequestMapping(value = "/vk/create/{serverId}", method = RequestMethod.POST)
-    @ResponseBody
-    public VkConnectionDto create(
-            @GuildId @PathVariable("serverId") long serverId,
-            @RequestParam("name") String name,
-            @RequestParam("code") String code) {
-        GuildConfig config = configService.getOrCreate(serverId);
-        return mapperService.getVkConnectionDto(vkService.create(config, name, code));
     }
 }
