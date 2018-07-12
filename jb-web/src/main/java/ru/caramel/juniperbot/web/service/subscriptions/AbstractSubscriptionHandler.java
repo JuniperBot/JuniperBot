@@ -75,8 +75,6 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
                         dto.setName(webhook.getDefaultUser().getName());
                     }
                     dto.setChannelId(webhook.getChannel().getId());
-                } else {
-                    dto.setEnabled(false);
                 }
             }
         }

@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.web.dto.RankingConfigDto;
 import java.util.stream.Collectors;
 
 @Service
-public class RankingDao extends AbstractDao {
+public class LegacyRankingDao extends AbstractDao {
 
     private final static Long WHISPER_CHANNEL = -1L;
 

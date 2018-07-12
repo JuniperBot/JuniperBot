@@ -52,7 +52,6 @@ public class CommonDao extends AbstractDao {
         GuildConfig config = configService.getOrCreate(guildId);
         apiMapper.updateCommon(dto, config);
 
-        // update mod config
         ModerationConfigDto modConfigDto = dto.getModConfig();
         ModerationConfig modConfig = moderationService.getConfig(guildId);
         apiMapper.updateModerationConfig(modConfigDto, modConfig);

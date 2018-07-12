@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.web.dao.AbstractDao;
@@ -40,6 +41,7 @@ public class GuildDao extends AbstractDao {
     @Autowired
     private DiscordTokenServices tokenServices;
 
+    @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
         GuildConfig config = configService.getById(request.getId());
         if (config == null) {

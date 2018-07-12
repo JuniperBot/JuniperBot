@@ -39,12 +39,11 @@ import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.navigation.Navigation;
 import ru.caramel.juniperbot.web.common.navigation.PageElement;
 import ru.caramel.juniperbot.web.controller.front.AbstractController;
-import ru.caramel.juniperbot.web.dao.RankingDao;
+import ru.caramel.juniperbot.web.dao.LegacyRankingDao;
 import ru.caramel.juniperbot.web.dto.RankingConfigDto;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 import ru.caramel.juniperbot.web.service.MapperService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -57,7 +56,7 @@ public class RankingController extends AbstractController {
     private RankingService rankingService;
 
     @Autowired
-    private RankingDao rankingDao;
+    private LegacyRankingDao legacyRankingDao;
 
     @Autowired
     private ConfigService configService;
@@ -75,7 +74,7 @@ public class RankingController extends AbstractController {
         ModelAndView mv;
         if (!forceUser && authorized) {
             mv = createAdminModel(serverId)
-                    .addObject("config", rankingDao.getConfig(serverId));
+                    .addObject("config", legacyRankingDao.getConfig(serverId));
         } else {
             RankingConfig rankingConfig = rankingService.getConfig(serverId);
             mv = createModel("ranking.user", serverId, false)
@@ -94,7 +93,7 @@ public class RankingController extends AbstractController {
             return createAdminModel(serverId)
                     .addObject("prefix", configService.getPrefix(serverId));
         }
-        rankingDao.saveConfig(config, serverId);
+        legacyRankingDao.saveConfig(config, serverId);
         flash.success("flash.rating.save.success.message");
         return view(serverId, false);
     }

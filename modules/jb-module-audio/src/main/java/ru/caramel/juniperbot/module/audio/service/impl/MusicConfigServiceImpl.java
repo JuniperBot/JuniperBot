@@ -91,7 +91,7 @@ public class MusicConfigServiceImpl implements MusicConfigService {
                 channel = member.getVoiceState().getChannel();
             }
             if (channel == null && musicConfig.getChannelId() != null) {
-                channel = discordService.getShardManager().getVoiceChannelById(musicConfig.getChannelId());
+                channel = member.getGuild().getVoiceChannelById(musicConfig.getChannelId());
             }
         }
         if (channel == null) {
