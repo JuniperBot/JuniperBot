@@ -21,7 +21,6 @@ import lombok.Getter;
 public enum PageElement {
     HOME("fa fa-home", "/"),
     SERVERS("fa fa-server", "/servers"),
-    DASHBOARD("fa fa-dashboard", "/dashboard/${serverId}"),
     CONFIG_COMMON("fa fa-cog", "/config/${serverId}"),
     CONFIG_COMMANDS("fa fa-exclamation", "/commands/${serverId}"),
     CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),

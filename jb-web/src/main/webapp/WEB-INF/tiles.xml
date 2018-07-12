@@ -59,11 +59,6 @@
         <put-attribute name="title" value="global.title.servers" />
     </definition>
 
-    <definition name="dashboard" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/dashboard/dashboard.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.DASHBOARD" />
-    </definition>
-
     <definition name="apidocs" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/apidocs/apidocs.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.APIDOCS" />
