@@ -36,25 +36,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MapperService {
 
-    @Mappings({
-            @Mapping(target = "musicConfig", ignore = true),
-            @Mapping(target = "modConfig", ignore = true),
-            @Mapping(target = "webHook", ignore = true),
-            @Mapping(target = "vkConnections", ignore = true)
-    })
-    ConfigDto getConfigDto(GuildConfig config);
-
-    VkConnectionDto getVkConnectionDto(VkConnection connection);
-
-    List<VkConnectionDto> getVkConnectionDtos(List<VkConnection> connection);
-
     CustomCommandDto getCommandDto(CustomCommand command);
 
-    MusicConfigDto getMusicDto(MusicConfig musicConfig);
-
     RankingConfigDto getRankingDto(RankingConfig rankingConfig);
-
-    ModerationConfigDto getModerationDto(ModerationConfig moderationConfig);
 
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
 
@@ -71,40 +55,6 @@ public interface MapperService {
     List<CustomCommand> getCommands(List<CustomCommandDto> command);
 
     @Mappings({
-            @Mapping(target = "prefix", expression = "java(trimmed(source.getPrefix()))"),
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildId", ignore = true),
-            @Mapping(target = "name", ignore = true),
-            @Mapping(target = "iconUrl", ignore = true),
-            @Mapping(target = "disabledCommands", ignore = true)
-    })
-    void updateConfig(ConfigDto source, @MappingTarget GuildConfig target);
-
-    @Mappings({
-            @Mapping(target = "available", ignore = true),
-            @Mapping(target = "channelId", ignore = true),
-    })
-    WebHookDto getWebHookDto(WebHook config);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
-            @Mapping(target = "groupId", ignore = true),
-            @Mapping(target = "confirmCode", ignore = true)
-    })
-    void updateConnection(VkConnectionDto source, @MappingTarget VkConnection target);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
-            @Mapping(target = "voiceVolume", ignore = true)
-    })
-    void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
-
-    @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildConfig", ignore = true),
@@ -115,24 +65,9 @@ public interface MapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true)
-    })
-    void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
             @Mapping(target = "config", ignore = true)
     })
     void updateCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "hookId", ignore = true),
-            @Mapping(target = "token", ignore = true)
-    })
-    void updateWebHook(WebHookDto source, @MappingTarget WebHook target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

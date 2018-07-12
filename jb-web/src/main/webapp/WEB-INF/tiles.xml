@@ -77,11 +77,6 @@
         <put-attribute name="sidebarVisible" value="false" />
     </definition>
 
-    <definition name="config" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/config/config.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.CONFIG" />
-    </definition>
-
     <definition name="custom-commands" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/config/custom-commands.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.CONFIG_CUSTOM_COMMANDS_FULL" />
