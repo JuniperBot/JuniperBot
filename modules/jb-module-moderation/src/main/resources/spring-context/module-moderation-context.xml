@@ -26,7 +26,8 @@
     <context:component-scan base-package="
         ru.caramel.juniperbot.module.moderation.commands,
         ru.caramel.juniperbot.module.moderation.service,
-        ru.caramel.juniperbot.module.moderation.listeners"/>
+        ru.caramel.juniperbot.module.moderation.listeners,
+        ru.caramel.juniperbot.module.moderation.persistence.repository"/>
 
     <jpa:repositories base-package="ru.caramel.juniperbot.module.moderation.persistence.repository"/>
 

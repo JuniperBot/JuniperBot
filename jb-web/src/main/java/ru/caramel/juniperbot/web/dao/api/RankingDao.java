@@ -33,6 +33,8 @@ public class RankingDao extends AbstractDao {
 
     private final static String WHISPER_CHANNEL = "-1";
 
+    private final static String MESSAGE_CHANNEL = "-2";
+
     @Autowired
     private RankingService rankingService;
 
@@ -42,6 +44,8 @@ public class RankingDao extends AbstractDao {
         RankingDto dto = apiMapper.getRankingDto(config);
         if (config.isWhisper()) {
             dto.setAnnouncementChannelId(WHISPER_CHANNEL);
+        } else if (dto.getAnnouncementChannelId() == null) {
+            dto.setAnnouncementChannelId(MESSAGE_CHANNEL);
         }
         return dto;
     }

@@ -12,5 +12,7 @@ public class Reward implements Serializable {
 
     protected String roleId;
 
+    protected boolean reset;
+
     protected Integer level;
 }

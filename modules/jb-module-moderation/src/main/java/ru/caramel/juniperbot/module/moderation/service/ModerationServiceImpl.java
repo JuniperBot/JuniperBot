@@ -428,7 +428,7 @@ public class ModerationServiceImpl implements ModerationService {
         if (exceed) {
             warningRepository.flushWarnings(config, memberLocal);
             warning.setActive(false);
-            ban(author, member, messageService.getMessage("discord.command.mod.warn.ban.reason"));
+            ban(author, member, messageService.getMessage("discord.command.mod.warn.ban.reason", count));
         } else {
             notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,
                     moderationConfig.getMaxWarnings());

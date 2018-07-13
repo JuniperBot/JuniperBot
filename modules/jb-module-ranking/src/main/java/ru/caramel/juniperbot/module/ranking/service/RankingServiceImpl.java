@@ -370,17 +370,34 @@ public class RankingServiceImpl implements RankingService {
         }
 
         int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-        Set<Role> rolesToGive = config.getRewards().stream()
-                .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)  // filter by level
+
+        List<Reward> rewards = config.getRewards().stream()
+                .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)
+                .sorted(Comparator.comparing(Reward::getLevel))
+                .collect(Collectors.toList());
+
+        if (rewards.isEmpty()) {
+            return;
+        }
+        Reward highest = rewards.remove(rewards.size() - 1);
+
+        List<Reward> rewardsToAdd = new ArrayList<>();
+        List<Reward> rewardsToRemove = new ArrayList<>();
+        rewards.forEach(e -> (e.isReset() ? rewardsToRemove : rewardsToAdd).add(e));
+        rewardsToAdd.add(highest);
+
+        Set<Role> rolesToAdd = getRoles(member, rewardsToAdd);
+        Set<Role> rolesToRemove = getRoles(member, rewardsToRemove);
+        member.getGuild().getController().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
+    }
+
+    private Set<Role> getRoles(Member member, List<Reward> rewards) {
+        Member self = member.getGuild().getSelfMember();
+        return rewards.stream()
                 .map(Reward::getRoleId)                                          // map by id
-                .filter(roleId -> member.getRoles().stream().noneMatch(role -> roleId.equals(role.getId()))) // filter by non-existent
                 .map(roleId -> member.getGuild().getRoleById(roleId))            // find actual role object
                 .filter(role -> role != null && self.canInteract(role) && !role.isManaged())          // check that we can assign that role
                 .collect(Collectors.toSet());
-
-        if (!rolesToGive.isEmpty()) {
-            member.getGuild().getController().addRolesToMember(member, rolesToGive).queue();
-        }
     }
 
     @Override
