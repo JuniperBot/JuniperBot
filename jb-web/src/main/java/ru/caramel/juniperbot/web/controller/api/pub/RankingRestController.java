@@ -16,40 +16,42 @@
  */
 package ru.caramel.juniperbot.web.controller.api.pub;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.controller.api.base.BasePublicRestController;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import ru.caramel.juniperbot.web.dto.api.PageDto;
+import ru.caramel.juniperbot.web.dto.api.RankingInfoDto;
 
 @RestController
 public class RankingRestController extends BasePublicRestController {
 
+    private static final int MAX_PAGE = 100;
+
     @Autowired
     private RankingService rankingService;
 
-    private LoadingCache<Long, List<RankingInfo>> rankingCache = CacheBuilder.newBuilder()
-            .concurrencyLevel(4)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build(
-                    new CacheLoader<Long, List<RankingInfo>>() {
-                        public List<RankingInfo> load(Long serverId) {
-                            return rankingService.getRankingInfos(serverId);
-                        }
-                    });
-
-    @RequestMapping(value = "/ranking/list/{serverId}", method = RequestMethod.GET)
+    @RequestMapping("/ranking/list/{guildId}")
     @ResponseBody
-    public List<RankingInfo> list(
-            @PathVariable("serverId") long serverId) throws ExecutionException {
-        return rankingService.isEnabled(serverId) ? rankingCache.get(serverId) : Collections.emptyList();
+    public PageDto<RankingInfoDto> list(@PathVariable long guildId,
+                                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                        @RequestParam(value = "size", defaultValue = "100", required = false) int size,
+                                        @RequestParam(value = "search", required = false) String search) {
+        if (!rankingService.isEnabled(guildId)) {
+            throw new NotFoundException();
+        }
+        if (size > MAX_PAGE || size < 0) {
+            size = MAX_PAGE;
+        }
+        if (page < 0) {
+            page = 0;
+        }
+        Pageable pageRequest = new PageRequest(page, size, new Sort("rank"));
+        return new PageDto<>(rankingService.getRankingInfos(guildId, search, pageRequest)
+                .map(apiMapperService::getRankingInfoDto));
     }
 }

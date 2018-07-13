@@ -27,7 +27,9 @@ import org.mapstruct.Mappings;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.web.dto.api.RankingInfoDto;
 import ru.caramel.juniperbot.web.dto.api.config.MusicConfigDto;
 import ru.caramel.juniperbot.web.dto.api.config.RankingDto;
 import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
@@ -126,6 +128,8 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toString(source.getAnnouncementChannelId()))", target = "announcementChannelId"),
     })
     RankingDto getRankingDto(RankingConfig source);
+
+    RankingInfoDto getRankingInfoDto(RankingInfo info);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

@@ -19,12 +19,10 @@ package ru.caramel.juniperbot.module.ranking.service;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
-
-import java.io.IOException;
-import java.util.List;
 
 public interface RankingService {
 
@@ -42,11 +40,7 @@ public interface RankingService {
 
     long countRankings(String serverId);
 
-    List<RankingInfo> getRankingInfos(long serverId);
-
-    List<RankingInfo> getRankingInfos(long serverId, String search, Pageable pageable);
-
-    long getRankingInfoCount(long serverId, String search);
+    Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
     void setLevel(long serverId, long userId, int level);
 

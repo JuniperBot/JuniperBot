@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -156,33 +157,22 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
-    public List<RankingInfo> getRankingInfos(long serverId) {
-        return getRankingInfos(serverId, null, null);
-    }
-
-    @Transactional
-    @Override
-    public List<RankingInfo> getRankingInfos(long serverId, String search, Pageable pageable) {
-        List<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(serverId), search != null ? search.toLowerCase() : "", pageable);
-        if (CollectionUtils.isNotEmpty(rankings)) {
-            Map<Long, LocalMember> memberMap = rankings.stream().collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
+    public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
+        Page<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(guildId), search != null ? search.toLowerCase() : "", pageable);
+        Map<Long, Long> cookiesMap = new HashMap<>();
+        if (rankings.hasContent()) {
+            Map<Long, LocalMember> memberMap = rankings.getContent().stream()
+                    .collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
             List<Object[]> cookies = cookieRepository.countByRecipients(memberMap.values());
-            Map<Long, Long> cookiesMap = new HashMap<>(cookies.size());
             cookies.forEach(e -> cookiesMap.put((Long)e[0], (Long)e[1]));
-            return rankings.stream().map(e -> {
-                RankingInfo info = RankingUtils.calculateInfo(e);
-                if (cookiesMap.containsKey(e.getMember().getId())) {
-                    info.setCookies(cookiesMap.get(e.getMember().getId()));
-                }
-                return info;
-            }).collect(Collectors.toList());
         }
-        return Collections.emptyList();
-    }
-
-    @Override
-    public long getRankingInfoCount(long serverId, String search) {
-        return rankingRepository.countByGuildId(String.valueOf(serverId), search);
+        return rankings.map(e -> {
+            RankingInfo info = RankingUtils.calculateInfo(e);
+            if (cookiesMap.containsKey(e.getMember().getId())) {
+                info.setCookies(cookiesMap.get(e.getMember().getId()));
+            }
+            return info;
+        });
     }
 
     @Transactional
