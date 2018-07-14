@@ -54,11 +54,6 @@
         <put-attribute name="title" value="global.application.name" />
     </definition>
 
-    <definition name="servers" extends="baseLayoutLite">
-        <put-attribute name="content" value="/WEB-INF/jsp/servers/servers.jsp"/>
-        <put-attribute name="title" value="global.title.servers" />
-    </definition>
-
     <definition name="apidocs" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/apidocs/apidocs.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.APIDOCS" />
@@ -87,20 +82,6 @@
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.WELCOME_MESSAGES" />
     </definition>
 
-    <definition name="ranking.admin" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/ranking/admin.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.RANKING" />
-    </definition>
-
-    <definition name="ranking.user" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/ranking/user.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.RANKING" />
-        <put-attribute name="sidebarVisible" value="false" />
-        <put-attribute name="breadcrumbVisible" value="false" />
-        <put-attribute name="noContentPadding" value="true" />
-        <put-attribute name="body-class" value="jumbo-headed" />
-    </definition>
-
     <definition name="playlist" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/playlist/playlist.jsp"/>
         <put-attribute name="title" value="page.playlist.title" />
@@ -109,8 +90,6 @@
         <put-attribute name="noContentPadding" value="true" />
         <put-attribute name="body-class" value="jumbo-headed" />
     </definition>
-
-    <definition name="ranking.list" template="/WEB-INF/jsp/ranking/list.jsp" />
 
     <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp"/>
 

@@ -249,14 +249,14 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
-    public void setLevel(long serverId, long userId, int level) {
-        if (level > 1000) {
+    public void setLevel(long serverId, String userId, int level) {
+        Objects.requireNonNull(userId);
+        if (level > RankingUtils.MAX_LEVEL) {
             level = RankingUtils.MAX_LEVEL;
         } else if (level < 0) {
             level = 0;
         }
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId),
-                String.valueOf(userId));
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId), userId);
 
         Ranking ranking = getRanking(localMember);
 

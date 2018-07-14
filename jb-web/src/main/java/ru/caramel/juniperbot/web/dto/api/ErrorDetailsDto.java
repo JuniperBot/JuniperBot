@@ -14,35 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api;
 
 import lombok.Getter;
-import lombok.Setter;
-import ru.caramel.juniperbot.module.ranking.model.Reward;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
 
 @Getter
-@Setter
-public class RankingConfigDto implements Serializable {
-    private static final long serialVersionUID = 2028894220167975335L;
+public class ErrorDetailsDto implements Serializable {
 
-    private boolean enabled;
+    private static final long serialVersionUID = -5105826145748518821L;
 
-    private boolean announcementEnabled;
+    private final String error;
 
-    private boolean embed;
+    private final String description;
 
-    private Long announcementChannelId;
-
-    private boolean resetOnLeave;
-
-    @Size(max = 1800)
-    private String announcement;
-
-    private String[] bannedRoles;
-
-    private List<Reward> rewards;
+    public ErrorDetailsDto(Exception e) {
+        this.error = e.getClass().getName();
+        this.description = e.getMessage();
+    }
 }

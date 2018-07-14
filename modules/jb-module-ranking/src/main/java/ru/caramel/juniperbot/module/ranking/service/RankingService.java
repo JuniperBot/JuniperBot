@@ -42,7 +42,7 @@ public interface RankingService {
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
-    void setLevel(long serverId, long userId, int level);
+    void setLevel(long serverId, String userId, int level);
 
     void sync(Guild guild);
 

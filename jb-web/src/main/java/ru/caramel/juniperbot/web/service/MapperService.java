@@ -38,8 +38,6 @@ public interface MapperService {
 
     CustomCommandDto getCommandDto(CustomCommand command);
 
-    RankingConfigDto getRankingDto(RankingConfig rankingConfig);
-
     WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
 
     ReactionRouletteDto getReactionRouletteDto(ReactionRoulette reactionRoulette);
@@ -53,14 +51,6 @@ public interface MapperService {
     List<CustomCommandDto> getCommandsDto(List<CustomCommand> command);
 
     List<CustomCommand> getCommands(List<CustomCommandDto> command);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
-            @Mapping(target = "whisper", ignore = true)
-    })
-    void updateRankingConfig(RankingConfigDto source, @MappingTarget RankingConfig target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

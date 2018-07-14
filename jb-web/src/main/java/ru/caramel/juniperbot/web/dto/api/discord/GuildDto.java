@@ -33,6 +33,10 @@ public class GuildDto implements Serializable {
 
     private String name;
 
+    private String prefix;
+
+    private String locale;
+
     private String icon;
 
     private boolean available;

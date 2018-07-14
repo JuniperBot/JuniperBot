@@ -19,16 +19,21 @@ package ru.caramel.juniperbot.web.controller.api.priv.dashboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.api.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.api.RankingDao;
 import ru.caramel.juniperbot.web.dto.api.config.RankingDto;
+import ru.caramel.juniperbot.web.dto.api.request.RankingUpdateRequest;
 
 @RestController
 public class RankingController extends BaseRestController {
 
     @Autowired
     private RankingDao rankingDao;
+
+    @Autowired
+    private RankingService rankingService;
 
     @RequestMapping(value = "/ranking/{guildId}", method = RequestMethod.GET)
     @ResponseBody
@@ -40,5 +45,18 @@ public class RankingController extends BaseRestController {
     public void save(@GuildId @PathVariable long guildId,
                      @RequestBody @Validated RankingDto dto) {
         rankingDao.save(dto, guildId);
+    }
+
+    @RequestMapping(value = "/ranking/reset/{guildId}", method = RequestMethod.POST)
+    public void resetAll(
+            @GuildId @PathVariable("guildId") long serverId) {
+        rankingService.resetAll(serverId);
+    }
+
+    @RequestMapping(value = "/ranking/update/{guildId}", method = RequestMethod.POST)
+    public void update(
+            @GuildId @PathVariable("guildId") long guildId,
+            @RequestBody @Validated RankingUpdateRequest request) {
+        rankingService.setLevel(guildId, request.getUserId(), request.getLevel());
     }
 }

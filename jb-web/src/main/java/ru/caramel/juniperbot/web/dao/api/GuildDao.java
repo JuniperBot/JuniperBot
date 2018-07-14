@@ -49,6 +49,8 @@ public class GuildDao extends AbstractDao {
         }
         GuildDto.Builder builder = GuildDto.builder()
                 .name(config.getName())
+                .prefix(config.getPrefix())
+                .locale(config.getLocale())
                 .id(String.valueOf(config.getGuildId()))
                 .icon(config.getIconUrl());
 
