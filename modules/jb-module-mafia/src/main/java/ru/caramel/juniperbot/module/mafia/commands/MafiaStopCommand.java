@@ -23,7 +23,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.stop.key",
         description = "discord.command.mafia.stop.desc",
-        group = "mafia.name",
+        group = "discord.command.group.mafia",
         source = ChannelType.TEXT,
         priority = 10)
 public class MafiaStopCommand extends MafiaCommand {

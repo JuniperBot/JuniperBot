@@ -20,7 +20,6 @@ import lombok.Getter;
 
 public enum PageElement {
     HOME("fa fa-home", "/"),
-    CONFIG_COMMANDS("fa fa-exclamation", "/commands/${serverId}"),
     CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),
     APIDOCS("fa fa-book", "/apidocs"),
     PATREON("fa fa-heart", "https://www.patreon.com/JuniperBot"),

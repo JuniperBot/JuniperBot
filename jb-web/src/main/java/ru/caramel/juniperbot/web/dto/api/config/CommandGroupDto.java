@@ -14,23 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
-public class CommandTypeDto implements Serializable {
-    private static final long serialVersionUID = 1328230463233769540L;
-    private final String key;
-    private final String description;
+public class CommandGroupDto implements Serializable {
 
-    public CommandTypeDto(DiscordCommand command) {
-        key = command.key();
-        description = command.description();
-    }
+    private static final long serialVersionUID = -7922129138506760758L;
+
+    private String key;
+
+    private List<CommandDto> commands;
 }

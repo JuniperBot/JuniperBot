@@ -24,7 +24,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.start.key",
         description = "discord.command.mafia.start.desc",
-        group = "mafia.name",
+        group = "discord.command.group.mafia",
         permissions = {
                 Permission.MESSAGE_WRITE,
                 Permission.MESSAGE_EMBED_LINKS,
