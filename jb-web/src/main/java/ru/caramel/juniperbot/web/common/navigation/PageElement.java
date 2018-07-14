@@ -22,7 +22,6 @@ public enum PageElement {
     HOME("fa fa-home", "/"),
     CONFIG_COMMANDS("fa fa-exclamation", "/commands/${serverId}"),
     CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),
-    WELCOME_MESSAGES("fa fa-user-plus", "/welcome/${serverId}"),
     APIDOCS("fa fa-book", "/apidocs"),
     PATREON("fa fa-heart", "https://www.patreon.com/JuniperBot"),
     STATUS("fa fa-area-chart", "/status"),

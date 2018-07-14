@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class WelcomeUserListener extends DiscordEventListener {
@@ -61,10 +66,14 @@ public class WelcomeUserListener extends DiscordEventListener {
             return;
         }
 
-        if (message.getJoinRoleId() != null && event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-            Role role = event.getGuild().getRoleById(message.getJoinRoleId());
-            if (role != null) {
-                event.getGuild().getController().addRolesToMember(event.getMember(), role).queue();
+        if (CollectionUtils.isNotEmpty(message.getJoinRoles()) && event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            List<Role> roleList = message.getJoinRoles().stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> event.getGuild().getRoleById(e))
+                    .filter(e -> e != null && event.getGuild().getSelfMember().canInteract(e) && !e.isManaged())
+                    .collect(Collectors.toList());
+            if (!roleList.isEmpty()) {
+                event.getGuild().getController().addRolesToMember(event.getMember(), roleList).queue();
             }
         }
 

@@ -29,12 +29,10 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.web.dto.api.RankingInfoDto;
-import ru.caramel.juniperbot.web.dto.api.config.MusicConfigDto;
-import ru.caramel.juniperbot.web.dto.api.config.RankingDto;
+import ru.caramel.juniperbot.web.dto.api.config.*;
 import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
-import ru.caramel.juniperbot.web.dto.api.config.CommonConfigDto;
-import ru.caramel.juniperbot.web.dto.api.config.ModerationConfigDto;
 import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
 import ru.caramel.juniperbot.web.dto.api.discord.TextChannelDto;
 import ru.caramel.juniperbot.web.dto.api.discord.VoiceChannelDto;
@@ -130,6 +128,23 @@ public interface ApiMapperService {
     RankingDto getRankingDto(RankingConfig source);
 
     RankingInfoDto getRankingInfoDto(RankingInfo info);
+
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toString(source.getJoinChannelId()))", target = "joinChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toString(source.getLeaveChannelId()))", target = "leaveChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getJoinRoles()))", target = "joinRoles"),
+    })
+    WelcomeDto getWelcomeDto(WelcomeMessage source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLong(source.getJoinChannelId()))", target = "joinChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toLong(source.getLeaveChannelId()))", target = "leaveChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
+    })
+    void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

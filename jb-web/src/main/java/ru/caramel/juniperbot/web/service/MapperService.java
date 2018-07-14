@@ -38,8 +38,6 @@ public interface MapperService {
 
     CustomCommandDto getCommandDto(CustomCommand command);
 
-    WelcomeMessageDto getMessageDto(WelcomeMessage welcomeMessage);
-
     ReactionRouletteDto getReactionRouletteDto(ReactionRoulette reactionRoulette);
 
     @Mappings({
@@ -58,13 +56,6 @@ public interface MapperService {
             @Mapping(target = "config", ignore = true)
     })
     void updateCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true)
-    })
-    void updateWelcomeMessage(WelcomeMessageDto source, @MappingTarget WelcomeMessage target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

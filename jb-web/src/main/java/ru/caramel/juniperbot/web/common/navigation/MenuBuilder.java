@@ -31,7 +31,6 @@ public class MenuBuilder {
         List<NavigationItem> items = new ArrayList<>();
         if (SecurityUtils.isAuthenticated()) {
             items.add(new MenuSeparator("sidebar.main"));
-            items.add(new MenuItem(WELCOME_MESSAGES));
             items.add(new MenuItem(CONFIG_COMMANDS));
             items.add(new MenuItem(CONFIG_CUSTOM_COMMANDS));
             items.add(new MenuItem(FUNNY));

@@ -14,19 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
-public class WelcomeMessageDto implements Serializable {
+public class WelcomeDto implements Serializable {
 
-    private static final long serialVersionUID = 4047559433178553736L;
+    private static final long serialVersionUID = -7504705178352675860L;
 
     private boolean joinEnabled;
 
@@ -35,9 +37,9 @@ public class WelcomeMessageDto implements Serializable {
     @Size(max = 1800)
     private String joinMessage;
 
-    private Long joinChannelId;
+    private String joinChannelId;
 
-    private Long joinRoleId;
+    private Set<String> joinRoles = new HashSet<>();
 
     private boolean joinToDM;
 
@@ -48,5 +50,5 @@ public class WelcomeMessageDto implements Serializable {
     @Size(max = 1800)
     private String leaveMessage;
 
-    private Long leaveChannelId;
+    private String leaveChannelId;
 }
