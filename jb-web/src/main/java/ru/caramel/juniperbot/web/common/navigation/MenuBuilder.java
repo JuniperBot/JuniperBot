@@ -36,8 +36,6 @@ public class MenuBuilder {
             items.add(new MenuSeparator("sidebar.help"));
         }
         items.add(new MenuItem(STATUS, false, true));
-        items.add(new MenuItem(APIDOCS, false));
-        items.add(new MenuItem(PATREON, true, true));
         return items;
     }
 }

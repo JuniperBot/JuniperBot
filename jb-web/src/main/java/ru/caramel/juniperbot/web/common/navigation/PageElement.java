@@ -21,8 +21,6 @@ import lombok.Getter;
 public enum PageElement {
     HOME("fa fa-home", "/"),
     CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),
-    APIDOCS("fa fa-book", "/apidocs"),
-    PATREON("fa fa-heart", "https://www.patreon.com/JuniperBot"),
     STATUS("fa fa-area-chart", "/status"),
     FUNNY("fa fa-futbol-o", "/funny/${serverId}"),
     ;

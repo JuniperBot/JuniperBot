@@ -54,13 +54,6 @@
         <put-attribute name="title" value="global.application.name" />
     </definition>
 
-    <definition name="apidocs" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/apidocs/apidocs.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.APIDOCS" />
-        <put-attribute name="sidebarVisible" value="false" />
-        <put-attribute name="breadcrumbTitleVisible" value="false" />
-    </definition>
-
     <definition name="status" extends="baseLayout">
         <put-attribute name="content" value="/WEB-INF/jsp/status/status.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.STATUS" />
