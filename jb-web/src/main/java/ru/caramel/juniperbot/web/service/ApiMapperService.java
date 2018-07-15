@@ -27,6 +27,7 @@ import org.mapstruct.Mappings;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
+import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
@@ -37,6 +38,7 @@ import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
 import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
 import ru.caramel.juniperbot.web.dto.api.discord.TextChannelDto;
 import ru.caramel.juniperbot.web.dto.api.discord.VoiceChannelDto;
+import ru.caramel.juniperbot.web.dto.api.games.ReactionRouletteDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
 import java.util.Collection;
@@ -165,6 +167,19 @@ public interface ApiMapperService {
             @Mapping(target = "config", ignore = true)
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
+
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels")
+    })
+    ReactionRouletteDto getReactionRouletteDto(ReactionRoulette source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
+    })
+    void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

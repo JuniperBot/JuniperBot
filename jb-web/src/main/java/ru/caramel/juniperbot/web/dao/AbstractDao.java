@@ -20,12 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
-import ru.caramel.juniperbot.web.service.MapperService;
 
 public abstract class AbstractDao {
-
-    @Autowired
-    protected MapperService mapper;
 
     @Autowired
     protected ApiMapperService apiMapper;

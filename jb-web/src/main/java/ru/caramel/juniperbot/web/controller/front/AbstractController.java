@@ -33,7 +33,6 @@ import ru.caramel.juniperbot.web.common.flash.Flash;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
-import ru.caramel.juniperbot.web.service.MapperService;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,9 +51,6 @@ public abstract class AbstractController {
 
     @Autowired
     protected ConfigService configService;
-
-    @Autowired
-    protected MapperService mapperService;
 
     protected ModelAndView createModel(String modelName, long serverId) {
         return createModel(modelName, serverId, true);

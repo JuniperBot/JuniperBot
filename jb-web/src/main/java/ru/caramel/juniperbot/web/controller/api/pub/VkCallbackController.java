@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.service.VkService;
-import ru.caramel.juniperbot.web.service.MapperService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
@@ -57,9 +56,6 @@ public class VkCallbackController {
 
     @Autowired
     private VkService vkService;
-
-    @Autowired
-    private MapperService mapperService;
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)

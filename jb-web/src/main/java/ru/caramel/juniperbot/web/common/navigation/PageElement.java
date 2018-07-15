@@ -21,7 +21,6 @@ import lombok.Getter;
 public enum PageElement {
     HOME("fa fa-home", "/"),
     STATUS("fa fa-area-chart", "/status"),
-    FUNNY("fa fa-futbol-o", "/funny/${serverId}"),
     ;
 
     @Getter

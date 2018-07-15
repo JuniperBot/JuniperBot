@@ -14,40 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dao;
+package ru.caramel.juniperbot.web.dao.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
-import ru.caramel.juniperbot.web.dto.FunnyConfigDto;
-import ru.caramel.juniperbot.web.dto.ReactionRouletteDto;
+import ru.caramel.juniperbot.web.dao.AbstractDao;
+import ru.caramel.juniperbot.web.dto.api.games.ReactionRouletteDto;
 
 @Service
-public class FunnyDao extends AbstractDao {
+public class ReactionRouletteDao extends AbstractDao {
 
     @Autowired
     private ReactionRouletteRepository reactionRouletteRepository;
 
     @Transactional
-    public FunnyConfigDto getConfig(long serverId) {
-        FunnyConfigDto result = new FunnyConfigDto();
-        ReactionRoulette roulette = reactionRouletteRepository.findByGuildId(serverId);
-        result.setReactionRoulette(roulette != null ? mapper.getReactionRouletteDto(roulette) : new ReactionRouletteDto());
-        return result;
+    public ReactionRouletteDto get(long guildId) {
+        ReactionRoulette roulette = reactionRouletteRepository.findByGuildId(guildId);
+        if (roulette == null) {
+            return new ReactionRouletteDto();
+        }
+        return apiMapper.getReactionRouletteDto(roulette);
     }
 
     @Transactional
-    public void save(long serverId, FunnyConfigDto input) {
-        if (input.getReactionRoulette() != null) {
-            ReactionRoulette roulette = reactionRouletteRepository.findByGuildId(serverId);
-            if (roulette == null) {
-                roulette = new ReactionRoulette();
-                roulette.setGuildConfig(configService.getOrCreate(serverId));
-            }
-            mapper.updateReactionRoulette(input.getReactionRoulette(), roulette);
-            reactionRouletteRepository.save(roulette);
+    public void save(ReactionRouletteDto dto, long guildId) {
+        ReactionRoulette roulette = reactionRouletteRepository.findByGuildId(guildId);
+        if (roulette == null) {
+            roulette = new ReactionRoulette();
+            roulette.setGuildConfig(configService.getOrCreate(guildId));
         }
+        apiMapper.updateReactionRoulette(dto, roulette);
+        reactionRouletteRepository.save(roulette);
     }
 }

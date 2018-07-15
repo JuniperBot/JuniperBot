@@ -39,4 +39,10 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="5.0-15072018-1" author="caramel">
+        <addColumn tableName="reaction_roulette">
+            <column name="ignored_channels" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

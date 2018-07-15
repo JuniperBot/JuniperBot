@@ -29,11 +29,6 @@ public class MenuBuilder {
 
     public List<NavigationItem> build() {
         List<NavigationItem> items = new ArrayList<>();
-        if (SecurityUtils.isAuthenticated()) {
-            items.add(new MenuSeparator("sidebar.main"));
-            items.add(new MenuItem(FUNNY));
-            items.add(new MenuSeparator("sidebar.help"));
-        }
         items.add(new MenuItem(STATUS, false, true));
         return items;
     }

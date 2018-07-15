@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api.games;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +22,7 @@ import lombok.Setter;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,7 +34,9 @@ public class ReactionRouletteDto implements Serializable {
 
     private boolean reaction;
 
+    private Set<String> ignoredChannels;
+
     @Min(1)
-    @Max(2)
+    @Max(5)
     private int percent = 1;
 }

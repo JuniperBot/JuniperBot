@@ -59,9 +59,4 @@
 
     <definition name="menu.item" template="/WEB-INF/template/navigation/menu-item.jsp"/>
 
-    <definition name="funny" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/config/funny.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.FUNNY" />
-    </definition>
-
 </tiles-definitions>
