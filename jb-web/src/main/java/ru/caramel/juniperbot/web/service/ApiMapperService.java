@@ -26,12 +26,16 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
+import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
+import ru.caramel.juniperbot.web.dto.api.playlist.PlaylistDto;
+import ru.caramel.juniperbot.web.dto.api.playlist.PlaylistItemDto;
 import ru.caramel.juniperbot.web.dto.api.RankingInfoDto;
 import ru.caramel.juniperbot.web.dto.api.config.*;
 import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
@@ -180,6 +184,15 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
     })
     void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);
+
+    PlaylistItemDto getPlaylistItemDto(PlaylistItem source);
+
+    List<PlaylistItemDto> getPlaylistItemDtos(List<PlaylistItem> source);
+
+    @Mappings({
+            @Mapping(target = "guild", ignore = true)
+    })
+    PlaylistDto getPlaylistDto(Playlist playlist);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

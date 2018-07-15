@@ -33,6 +33,7 @@ import ru.caramel.juniperbot.web.dto.api.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,8 +45,18 @@ public class GuildDao extends AbstractDao {
     @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
         GuildConfig config = configService.getById(request.getId());
+        return getGuild(config, request.getParts());
+    }
+
+    @Transactional
+    public GuildDto getGuild(GuildConfig config) {
+        return getGuild(config, null);
+    }
+
+    @Transactional
+    public GuildDto getGuild(GuildConfig config, Set<GuildInfoRequest.PartType> parts) {
         if (config == null) {
-            throw new NotFoundException();
+            return null;
         }
         GuildDto.Builder builder = GuildDto.builder()
                 .name(config.getName())
@@ -58,7 +69,7 @@ public class GuildDao extends AbstractDao {
             return builder.build();
         }
 
-        Guild guild = discordService.getGuildById(request.getId());
+        Guild guild = discordService.getGuildById(config.getGuildId());
         if (guild == null || !guild.isAvailable()) {
             return builder.build();
         }
@@ -68,13 +79,13 @@ public class GuildDao extends AbstractDao {
                 .icon(guild.getIconUrl())
                 .available(true);
 
-        if (CollectionUtils.isEmpty(request.getParts())
+        if (CollectionUtils.isEmpty(parts)
                 || !SecurityUtils.isAuthenticated()
                 || !tokenServices.hasPermission(guild.getIdLong())) {
             return builder.build();
         }
 
-        for (GuildInfoRequest.PartType part : request.getParts()) {
+        for (GuildInfoRequest.PartType part : parts) {
             switch (part) {
                 case ROLES:
                     builder.roles(guild.getRoles().stream()
