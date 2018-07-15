@@ -21,6 +21,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface CommandsHolderService {
 
@@ -35,4 +36,6 @@ public interface CommandsHolderService {
     Command getByLocale(String localizedKey, boolean anyLocale);
 
     boolean isAnyCommand(String key);
+
+    Set<String> getPublicCommandKeys();
 }

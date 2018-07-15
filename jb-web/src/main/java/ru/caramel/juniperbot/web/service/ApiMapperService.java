@@ -26,6 +26,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
@@ -145,6 +146,25 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
+
+    CustomCommandDto getCustomCommandDto(CustomCommand command);
+
+    List<CustomCommandDto> getCustomCommandsDto(List<CustomCommand> command);
+
+    @Mappings({
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "config", ignore = true),
+    })
+    CustomCommand getCustomCommand(CustomCommandDto command);
+
+    List<CustomCommand> getCustomCommands(List<CustomCommandDto> command);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "config", ignore = true)
+    })
+    void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

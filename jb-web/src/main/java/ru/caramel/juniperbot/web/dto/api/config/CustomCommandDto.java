@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class CustomCommandDto implements Serializable {
-    private static final long serialVersionUID = 6050850842749762636L;
 
     private Long id;
 

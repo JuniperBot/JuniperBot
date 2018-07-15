@@ -20,42 +20,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
-import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.web.dto.*;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface MapperService {
 
-    CustomCommandDto getCommandDto(CustomCommand command);
-
     ReactionRouletteDto getReactionRouletteDto(ReactionRoulette reactionRoulette);
-
-    @Mappings({
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true),
-    })
-    CustomCommand getCommand(CustomCommandDto command);
-
-    List<CustomCommandDto> getCommandsDto(List<CustomCommand> command);
-
-    List<CustomCommand> getCommands(List<CustomCommandDto> command);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true)
-    })
-    void updateCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

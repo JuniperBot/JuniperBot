@@ -20,7 +20,6 @@ import lombok.Getter;
 
 public enum PageElement {
     HOME("fa fa-home", "/"),
-    CONFIG_CUSTOM_COMMANDS("fa fa-terminal", "/custom-commands/${serverId}"),
     STATUS("fa fa-area-chart", "/status"),
     FUNNY("fa fa-futbol-o", "/funny/${serverId}"),
     ;

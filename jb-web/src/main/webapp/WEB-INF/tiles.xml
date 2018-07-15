@@ -37,18 +37,6 @@
         <put-attribute name="body-class" value="not-found-background landing-mode" />
     </definition>
 
-    <definition name="error403" extends="baseLayoutLite">
-        <put-attribute name="content" value="/WEB-INF/jsp/errors/403.jsp"/>
-        <put-attribute name="title" value="global.title.error.denied" />
-        <put-attribute name="body-class" value="forbidden-background landing-mode" />
-    </definition>
-
-    <definition name="error500" extends="baseLayoutLite">
-        <put-attribute name="content" value="/WEB-INF/jsp/errors/500.jsp"/>
-        <put-attribute name="title" value="global.title.error" />
-        <put-attribute name="body-class" value="error-background landing-mode" />
-    </definition>
-
     <definition name="index" extends="baseLayoutLite">
         <put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
         <put-attribute name="title" value="global.application.name" />
@@ -58,11 +46,6 @@
         <put-attribute name="content" value="/WEB-INF/jsp/status/status.jsp"/>
         <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.STATUS" />
         <put-attribute name="sidebarVisible" value="false" />
-    </definition>
-
-    <definition name="custom-commands" extends="baseLayout">
-        <put-attribute name="content" value="/WEB-INF/jsp/config/custom-commands.jsp"/>
-        <put-attribute name="title" value="ru.caramel.juniperbot.web.common.navigation.PageElement.CONFIG_CUSTOM_COMMANDS_FULL" />
     </definition>
 
     <definition name="playlist" extends="baseLayout">
