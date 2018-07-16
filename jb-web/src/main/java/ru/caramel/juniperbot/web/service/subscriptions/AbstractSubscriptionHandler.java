@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
-import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 
 import java.util.Map;

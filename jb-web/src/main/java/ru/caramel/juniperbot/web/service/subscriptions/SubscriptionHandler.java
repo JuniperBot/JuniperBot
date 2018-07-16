@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.web.service.subscriptions;
 
-import ru.caramel.juniperbot.web.dto.api.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
 import java.util.Map;

@@ -51,7 +51,6 @@
         <joda-time.version>2.9.9</joda-time.version>
         <joda-money.version>0.12</joda-money.version>
         <google-api-services-youtube.version>v3-rev183-1.22.0</google-api-services-youtube.version>
-        <tiles.version>3.0.7</tiles.version>
         <org.mapstruct.version>1.1.0.Final</org.mapstruct.version>
         <postgresql.version>42.1.4</postgresql.version>
         <liquibase.version>3.5.3</liquibase.version>

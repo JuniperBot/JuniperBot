@@ -24,7 +24,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
-import ru.caramel.juniperbot.web.dto.api.config.CustomCommandDto;
+import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 
 import java.util.Collection;
 import java.util.HashSet;

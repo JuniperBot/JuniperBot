@@ -173,20 +173,6 @@ public final class CommonUtils {
         return String.format("[%s](%s)", title, url);
     }
 
-    public static String getHTMLAwtColor(Color color) {
-        if (color == null) {
-            return "auto";
-        }
-        String red = Integer.toHexString(color.getRed());
-        String green = Integer.toHexString(color.getGreen());
-        String blue = Integer.toHexString(color.getBlue());
-
-        return "#" +
-                (red.length() == 1 ? "0" + red : red) +
-                (green.length() == 1 ? "0" + green : green) +
-                (blue.length() == 1 ? "0" + blue : blue);
-    }
-
     public static String unwrapCode(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;

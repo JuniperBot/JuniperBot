@@ -40,9 +40,8 @@
     <context:component-scan base-package="
         ru.caramel.juniperbot.web.dao,
         ru.caramel.juniperbot.web.service,
-        ru.caramel.juniperbot.web.controller.api,
-        ru.caramel.juniperbot.web.common.validation,
-        ru.caramel.juniperbot.web.common.aspect"/>
+        ru.caramel.juniperbot.web.controller,
+        ru.caramel.juniperbot.web.common"/>
 
     <bean id="contextListener" class="org.springframework.web.context.request.RequestContextListener"/>
     <bean id="dispatcherServlet" class="org.springframework.web.servlet.DispatcherServlet"

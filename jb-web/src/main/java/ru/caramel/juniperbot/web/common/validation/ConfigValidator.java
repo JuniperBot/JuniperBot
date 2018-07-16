@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.web.dto.api.config.CommonConfigDto;
+import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
 
 @Component
 public class ConfigValidator implements Validator {

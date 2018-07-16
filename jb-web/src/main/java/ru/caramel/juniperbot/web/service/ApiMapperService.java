@@ -34,15 +34,15 @@ import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConf
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.web.dto.api.playlist.PlaylistDto;
-import ru.caramel.juniperbot.web.dto.api.playlist.PlaylistItemDto;
-import ru.caramel.juniperbot.web.dto.api.RankingInfoDto;
-import ru.caramel.juniperbot.web.dto.api.config.*;
-import ru.caramel.juniperbot.web.dto.api.discord.GuildShortDto;
-import ru.caramel.juniperbot.web.dto.api.discord.RoleDto;
-import ru.caramel.juniperbot.web.dto.api.discord.TextChannelDto;
-import ru.caramel.juniperbot.web.dto.api.discord.VoiceChannelDto;
-import ru.caramel.juniperbot.web.dto.api.games.ReactionRouletteDto;
+import ru.caramel.juniperbot.web.dto.config.*;
+import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
+import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
+import ru.caramel.juniperbot.web.dto.RankingInfoDto;
+import ru.caramel.juniperbot.web.dto.discord.GuildShortDto;
+import ru.caramel.juniperbot.web.dto.discord.RoleDto;
+import ru.caramel.juniperbot.web.dto.discord.TextChannelDto;
+import ru.caramel.juniperbot.web.dto.discord.VoiceChannelDto;
+import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
 import java.util.Collection;
