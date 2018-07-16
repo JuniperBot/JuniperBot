@@ -24,18 +24,29 @@ import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.web.controller.api.base.BasePublicRestController;
-import ru.caramel.juniperbot.web.dto.ChartDto;
+import ru.caramel.juniperbot.web.dao.api.StatusDao;
+import ru.caramel.juniperbot.web.dto.api.ChartDto;
+import ru.caramel.juniperbot.web.dto.api.StatusDto;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-public class StatusRestController extends BasePublicRestController {
+public class StatusController extends BasePublicRestController {
+
+    @Autowired
+    private StatusDao statusDao;
 
     @Autowired
     private DiscordService discordService;
 
     private Supplier<List<ChartDto>> pingCache = Suppliers.memoizeWithExpiration(this::getPing, 5, TimeUnit.SECONDS);
+
+    @RequestMapping("/status")
+    @ResponseBody
+    public StatusDto get() {
+        return statusDao.get();
+    }
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     @ResponseBody
@@ -55,7 +66,7 @@ public class StatusRestController extends BasePublicRestController {
             TimeWindowChart chart = chartMap.get(jda);
             if (chart != null) {
                 ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId(), jda.getPing()));
-                dto.setColor(jda.getShardInfo().getShardId());
+                dto.setId(jda.getShardInfo().getShardId());
                 Map<Long, Long> measurements = chart.getMeasurements();
                 if (measurements != null) {
                     measurements = new LinkedHashMap<>(measurements);

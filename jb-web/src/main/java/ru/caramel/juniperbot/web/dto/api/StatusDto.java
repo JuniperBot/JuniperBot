@@ -14,20 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.api;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class ChartDto {
+public class StatusDto implements Serializable {
 
-    private final String label;
+    private static final long serialVersionUID = 1569031085142209018L;
 
-    private int color;
+    private long guildCount;
 
-    private Object[][] data;
+    private long userCount;
+
+    private long textChannelCount;
+
+    private long voiceChannelCount;
+
+    private long activeConnections;
+
+    private long uptimeDuration;
+
+    private long executedCommands;
+
+    private double commandsRateMean;
+
+    private double commandsRate1m;
+
+    private double commandsRate5m;
+
+    private double commandsRate15m;
 }
