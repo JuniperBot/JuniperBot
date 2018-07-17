@@ -41,8 +41,8 @@
         <maven-compiler.version>3.6.1</maven-compiler.version>
         <java.version>1.8</java.version>
         <JDA.version>3.7.0_384</JDA.version>
-        <lavaplayer.version>1.2.63-jb</lavaplayer.version>
-        <lavalink.version>a070ddc5ebefaf0914f8971d378b9fde1fefd957</lavalink.version>
+        <lavaplayer.version>1.3.7-jb</lavaplayer.version>
+        <lavalink.version>a013d25afa3754dbc541ec5ff620b200cc1eb2e9</lavalink.version>
         <jda-nas.version>1.0.6</jda-nas.version>
         <lombok.version>1.16.18</lombok.version>
         <json.version>20160810</json.version>
