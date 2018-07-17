@@ -158,15 +158,7 @@ public final class CommonUtils {
             }
             string = sb.toString();
         }
-        return maskDiscordFormat(string);
-    }
-
-    public static String maskDiscordFormat(String string) {
-        if (StringUtils.isEmpty(string)) return string;
-        return string
-                .replace("*", "\\*")
-                .replace("_", "\\_")
-                .replace("~~", "\\~\\~");
+        return string;
     }
 
     public static String makeLink(String title, String url) {

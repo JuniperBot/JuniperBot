@@ -253,7 +253,7 @@ public class VkServiceImpl implements VkService {
 
     private void addField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
         EmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
-        prevBuilder.addField(name, CommonUtils.maskDiscordFormat(value), inline);
+        prevBuilder.addField(name, value, inline);
     }
 
     private void addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
