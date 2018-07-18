@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.web.dto.request;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class GuildInfoRequest implements Serializable {
     private static final long serialVersionUID = 5508207930655357131L;
 
@@ -35,5 +37,9 @@ public class GuildInfoRequest implements Serializable {
         TEXT_CHANNELS,
         VOICE_CHANNELS,
         ROLES;
+    }
+
+    public GuildInfoRequest(long id) {
+        this.id = id;
     }
 }

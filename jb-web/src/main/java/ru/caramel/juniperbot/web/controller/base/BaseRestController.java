@@ -22,7 +22,7 @@ import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 
-@RequestMapping("api")
+@RequestMapping("api/priv")
 public abstract class BaseRestController {
 
     @Autowired

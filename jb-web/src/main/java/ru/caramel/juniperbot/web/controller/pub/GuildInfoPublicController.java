@@ -17,26 +17,26 @@
 package ru.caramel.juniperbot.web.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import ru.caramel.juniperbot.web.service.AcmeService;
+import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
+import ru.caramel.juniperbot.web.dao.GuildDao;
+import ru.caramel.juniperbot.web.dto.discord.GuildDto;
+import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 
-import javax.servlet.http.HttpServletResponse;
-
-@Controller
-public class LetsEncryptController {
+@RestController
+public class GuildInfoPublicController extends BasePublicRestController {
 
     @Autowired
-    private AcmeService acmeService;
+    private GuildDao guildDao;
 
-    @RequestMapping(value = "/.well-known/acme-challenge/{token}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/guild/{guildId}", method = RequestMethod.GET)
     @ResponseBody
-    public String message(HttpServletResponse response, @PathVariable("token") String token) {
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-        return acmeService.getTokens().get(token);
+    public GuildDto getGuild(@PathVariable long guildId) {
+        GuildDto dto = guildDao.getGuild(new GuildInfoRequest(guildId));
+        if (dto == null) {
+            throw new NotFoundException();
+        }
+        return dto;
     }
 }

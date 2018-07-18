@@ -39,16 +39,24 @@
     <bean id="accessDeniedHandler"
           class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
-    <bean id="corsConfiguration" class="org.springframework.web.cors.CorsConfiguration"
+    <bean id="publicConfiguration" class="org.springframework.web.cors.CorsConfiguration"
           p:allowedOrigins="*"
-          p:allowedMethods="*"
+          p:allowedMethods="#{'${cors.allowedMethods:GET,HEAD,POST,OPTIONS,PUT,DELETE}'.split(',')}"
+          p:allowedHeaders="*">
+    </bean>
+
+    <bean id="domainConfiguration" class="org.springframework.web.cors.CorsConfiguration"
+          p:allowedOrigins="#{'${cors.allowedOrigins}'.split(',')}"
+          p:allowedMethods="#{'${cors.allowedMethods:GET,HEAD,POST,OPTIONS,PUT,DELETE}'.split(',')}"
           p:allowedHeaders="*">
     </bean>
 
     <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
             <map>
-                <entry key="/api/**" value-ref="corsConfiguration"/>
+                <entry key="/api/public/**" value-ref="publicConfiguration"/>
+                <entry key="/api/oauth2/token" value-ref="publicConfiguration"/>
+                <entry key="/api/priv/**" value-ref="domainConfiguration"/>
             </map>
         </property>
     </bean>
@@ -64,7 +72,7 @@
         <security:csrf disabled="true"/>
     </security:http>
 
-    <security:http pattern="/**"
+    <security:http pattern="/api/priv/**"
                    create-session="stateless"
                    authentication-manager-ref="authenticationManager"
                    entry-point-ref="oauthAuthenticationEntryPoint"
@@ -72,15 +80,14 @@
                    use-expressions="true"
                    xmlns="http://www.springframework.org/schema/security">
         <security:cors configuration-source-ref="corsSource"/>
-        <security:intercept-url pattern="/vk/callback/**" access="permitAll"/>
-        <security:intercept-url pattern="/.well-known/**" access="permitAll"/>
-        <security:intercept-url pattern="/api/public/**" access="permitAll"/>
-        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <security:intercept-url pattern="/api/priv/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:access-denied-handler ref="accessDeniedHandler" />
         <security:csrf disabled="true"/>
     </security:http>
+
+    <security:http pattern="/api/public/**" security="none" />
 
     <bean id="anonymousAuthFilter"
           class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
@@ -119,8 +126,13 @@
 
     <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
     <bean id="oauth2AuthenticationFilter"
-          class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
-          p:authenticationManager-ref="authenticationManager" />
+      class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
+      p:authenticationManager-ref="authenticationManager" />
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="oauth2AuthenticationFilter"/>
+        <property name="enabled" value="false"/>
+    </bean>
 
     <bean id="oAuth2TokenRequestFilter"
           class="ru.caramel.juniperbot.web.security.auth.OAuth2TokenRequestFilter"

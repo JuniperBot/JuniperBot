@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.controller.pub;
+package ru.caramel.juniperbot.web.controller.priv;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
-import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
+import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 
 @RestController
-public class GuildInfoController extends BasePublicRestController {
+public class GuildInfoController extends BaseRestController {
 
     @Autowired
     private GuildDao guildDao;

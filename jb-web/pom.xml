@@ -32,10 +32,6 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <properties>
-        <acme4j.version>0.14</acme4j.version>
-    </properties>
-
     <repositories>
         <repository>
             <id>data-local</id>
@@ -97,17 +93,6 @@
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
             <version>${opencv.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-client</artifactId>
-            <version>${acme4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-utils</artifactId>
-            <version>${acme4j.version}</version>
         </dependency>
 
         <!-- SECURITY DEPENDENCIES -->
