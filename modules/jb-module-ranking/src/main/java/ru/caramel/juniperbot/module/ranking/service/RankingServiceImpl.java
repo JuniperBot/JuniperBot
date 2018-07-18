@@ -159,20 +159,7 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
         Page<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(guildId), search != null ? search.toLowerCase() : "", pageable);
-        Map<Long, Long> cookiesMap = new HashMap<>();
-        if (rankings.hasContent()) {
-            Map<Long, LocalMember> memberMap = rankings.getContent().stream()
-                    .collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
-            List<Object[]> cookies = cookieRepository.countByRecipients(memberMap.values());
-            cookies.forEach(e -> cookiesMap.put((Long)e[0], (Long)e[1]));
-        }
-        return rankings.map(e -> {
-            RankingInfo info = RankingUtils.calculateInfo(e);
-            if (cookiesMap.containsKey(e.getMember().getId())) {
-                info.setCookies(cookiesMap.get(e.getMember().getId()));
-            }
-            return info;
-        });
+        return rankings.map(RankingUtils::calculateInfo);
     }
 
     @Transactional

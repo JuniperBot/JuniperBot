@@ -47,8 +47,6 @@ public class RankingInfoDto implements Serializable {
 
     private long rank;
 
-    private long cookies;
-
     private int pct;
 
 }
