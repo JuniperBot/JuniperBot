@@ -28,9 +28,6 @@ In this section you can configure all available commands just in one place
 * :pencil: **Custom commands:**
 In this section you can add your own commands with some info or something else
 
-### :page_facing_up: Documentation:
-We have some API for ranking feature and you can check its docs [here](https://juniperbot.ru/apidocs).
-
 ### :question: Have a question?
 * **Our website:** https://juniperbot.ru/
 * **Our Discord official server:** https://discord.gg/EdWspu3
