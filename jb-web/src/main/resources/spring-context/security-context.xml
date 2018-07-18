@@ -67,6 +67,7 @@
                    create-session="stateless"
                    xmlns="http://www.springframework.org/schema/security">
         <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="oAuth2TokenRequestFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:access-denied-handler ref="accessDeniedHandler" />
         <security:csrf disabled="true"/>
@@ -87,7 +88,15 @@
         <security:csrf disabled="true"/>
     </security:http>
 
-    <security:http pattern="/api/public/**" security="none" />
+    <security:http pattern="/api/public/**"
+                   authentication-manager-ref="authenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
+        <security:csrf disabled="true"/>
+    </security:http>
 
     <bean id="anonymousAuthFilter"
           class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
@@ -142,6 +151,11 @@
         <property name="authenticationSuccessHandler">
             <bean class="ru.caramel.juniperbot.web.security.auth.TokenRequestSuccessHandler"/>
         </property>
+    </bean>
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="oAuth2TokenRequestFilter"/>
+        <property name="enabled" value="false"/>
     </bean>
 
 </beans>
