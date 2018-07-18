@@ -48,6 +48,11 @@ public class ReactionRouletteListener extends DiscordEventListener {
             return;
         }
 
+        if (CollectionUtils.isNotEmpty(roulette.getIgnoredChannels())
+                && roulette.getIgnoredChannels().contains(event.getChannel().getIdLong())) {
+            return;
+        }
+
         if (RandomUtils.nextLong(1, 1000) <= roulette.getPercent() * 10) {
             List<Emote> emotes = new ArrayList<>(guild.getEmotes());
             if (CollectionUtils.isEmpty(emotes)) {

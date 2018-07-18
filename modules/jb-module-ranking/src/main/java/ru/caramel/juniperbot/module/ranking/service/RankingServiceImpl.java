@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -156,33 +157,22 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
-    public List<RankingInfo> getRankingInfos(long serverId) {
-        return getRankingInfos(serverId, null, null);
-    }
-
-    @Transactional
-    @Override
-    public List<RankingInfo> getRankingInfos(long serverId, String search, Pageable pageable) {
-        List<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(serverId), search != null ? search.toLowerCase() : "", pageable);
-        if (CollectionUtils.isNotEmpty(rankings)) {
-            Map<Long, LocalMember> memberMap = rankings.stream().collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
+    public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
+        Page<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(guildId), search != null ? search.toLowerCase() : "", pageable);
+        Map<Long, Long> cookiesMap = new HashMap<>();
+        if (rankings.hasContent()) {
+            Map<Long, LocalMember> memberMap = rankings.getContent().stream()
+                    .collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
             List<Object[]> cookies = cookieRepository.countByRecipients(memberMap.values());
-            Map<Long, Long> cookiesMap = new HashMap<>(cookies.size());
             cookies.forEach(e -> cookiesMap.put((Long)e[0], (Long)e[1]));
-            return rankings.stream().map(e -> {
-                RankingInfo info = RankingUtils.calculateInfo(e);
-                if (cookiesMap.containsKey(e.getMember().getId())) {
-                    info.setCookies(cookiesMap.get(e.getMember().getId()));
-                }
-                return info;
-            }).collect(Collectors.toList());
         }
-        return Collections.emptyList();
-    }
-
-    @Override
-    public long getRankingInfoCount(long serverId, String search) {
-        return rankingRepository.countByGuildId(String.valueOf(serverId), search);
+        return rankings.map(e -> {
+            RankingInfo info = RankingUtils.calculateInfo(e);
+            if (cookiesMap.containsKey(e.getMember().getId())) {
+                info.setCookies(cookiesMap.get(e.getMember().getId()));
+            }
+            return info;
+        });
     }
 
     @Transactional
@@ -259,14 +249,14 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
-    public void setLevel(long serverId, long userId, int level) {
-        if (level > 1000) {
+    public void setLevel(long serverId, String userId, int level) {
+        Objects.requireNonNull(userId);
+        if (level > RankingUtils.MAX_LEVEL) {
             level = RankingUtils.MAX_LEVEL;
         } else if (level < 0) {
             level = 0;
         }
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId),
-                String.valueOf(userId));
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId), userId);
 
         Ranking ranking = getRanking(localMember);
 
@@ -370,17 +360,34 @@ public class RankingServiceImpl implements RankingService {
         }
 
         int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-        Set<Role> rolesToGive = config.getRewards().stream()
-                .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)  // filter by level
+
+        List<Reward> rewards = config.getRewards().stream()
+                .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)
+                .sorted(Comparator.comparing(Reward::getLevel))
+                .collect(Collectors.toList());
+
+        if (rewards.isEmpty()) {
+            return;
+        }
+        Reward highest = rewards.remove(rewards.size() - 1);
+
+        List<Reward> rewardsToAdd = new ArrayList<>();
+        List<Reward> rewardsToRemove = new ArrayList<>();
+        rewards.forEach(e -> (e.isReset() ? rewardsToRemove : rewardsToAdd).add(e));
+        rewardsToAdd.add(highest);
+
+        Set<Role> rolesToAdd = getRoles(member, rewardsToAdd);
+        Set<Role> rolesToRemove = getRoles(member, rewardsToRemove);
+        member.getGuild().getController().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
+    }
+
+    private Set<Role> getRoles(Member member, List<Reward> rewards) {
+        Member self = member.getGuild().getSelfMember();
+        return rewards.stream()
                 .map(Reward::getRoleId)                                          // map by id
-                .filter(roleId -> member.getRoles().stream().noneMatch(role -> roleId.equals(role.getId()))) // filter by non-existent
                 .map(roleId -> member.getGuild().getRoleById(roleId))            // find actual role object
                 .filter(role -> role != null && self.canInteract(role) && !role.isManaged())          // check that we can assign that role
                 .collect(Collectors.toSet());
-
-        if (!rolesToGive.isEmpty()) {
-            member.getGuild().getController().addRolesToMember(member, rolesToGive).queue();
-        }
     }
 
     @Override

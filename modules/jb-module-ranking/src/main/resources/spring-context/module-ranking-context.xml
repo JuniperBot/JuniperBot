@@ -26,7 +26,8 @@
     <context:component-scan base-package="
         ru.caramel.juniperbot.module.ranking.commands,
         ru.caramel.juniperbot.module.ranking.listeners,
-        ru.caramel.juniperbot.module.ranking.service"/>
+        ru.caramel.juniperbot.module.ranking.service,
+        ru.caramel.juniperbot.module.ranking.persistence.repository"/>
 
     <jpa:repositories base-package="ru.caramel.juniperbot.module.ranking.persistence.repository"/>
 

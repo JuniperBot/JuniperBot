@@ -17,10 +17,13 @@
 package ru.caramel.juniperbot.module.audio.listeners;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,19 +47,28 @@ public class GuildListener extends DiscordEventListener {
     }
 
     @Override
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+        tryAutoPlay(event.getMember(), event.getGuild(), event.getChannelJoined());
+    }
+
+    @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-        if (playerService.isActive(event.getGuild())) {
+        tryAutoPlay(event.getMember(), event.getGuild(), event.getChannelJoined());
+    }
+
+    private void tryAutoPlay(Member member, Guild guild, VoiceChannel joinedChannel) {
+        if (member.getUser().isBot() || playerService.isActive(guild)) {
             return;
         }
 
-        MusicConfig config = musicConfigService.getConfig(event.getGuild());
+        MusicConfig config = musicConfigService.getConfig(guild);
 
         VoiceChannel targetChannel = null;
         if (config.getChannelId() != null) {
-            targetChannel = event.getGuild().getVoiceChannelById(config.getChannelId());
+            targetChannel = guild.getVoiceChannelById(config.getChannelId());
         }
         if (!hasPermission(targetChannel)) {
-            for (VoiceChannel voiceChannel : event.getGuild().getVoiceChannels()) {
+            for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
                 if (hasPermission(voiceChannel)) {
                     targetChannel = voiceChannel;
                     break;
@@ -64,14 +76,14 @@ public class GuildListener extends DiscordEventListener {
             }
         }
 
-        if (event.getChannelJoined().equals(targetChannel) && StringUtils.isNotEmpty(config.getAutoPlay())) {
+        if (joinedChannel.equals(targetChannel) && targetChannel.getMembers().size() < 2 && StringUtils.isNotEmpty(config.getAutoPlay())) {
             TextChannel channel = null;
             if (config.getTextChannelId() != null) {
-                channel = event.getGuild().getTextChannelById(config.getTextChannelId());
+                channel = guild.getTextChannelById(config.getTextChannelId());
             }
 
             if (!hasPermission(channel)) {
-                for (TextChannel textChannel : event.getGuild().getTextChannels()) {
+                for (TextChannel textChannel : guild.getTextChannels()) {
                     if (hasPermission(textChannel)) {
                         channel = textChannel;
                         break;
@@ -80,7 +92,7 @@ public class GuildListener extends DiscordEventListener {
             }
 
             if (channel != null) {
-                playerService.loadAndPlay(channel, event.getMember(), config.getAutoPlay());
+                playerService.loadAndPlay(channel, member, config.getAutoPlay());
             }
         }
     }

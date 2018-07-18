@@ -64,6 +64,13 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     }
 
     @Override
+    public void save(MusicConfig config) {
+        if (config != null) {
+            musicConfigRepository.save(config);
+        }
+    }
+
+    @Override
     @Transactional
     public boolean hasAccess(Member member) {
         MusicConfig config = getConfig(member.getGuild());
@@ -84,7 +91,7 @@ public class MusicConfigServiceImpl implements MusicConfigService {
                 channel = member.getVoiceState().getChannel();
             }
             if (channel == null && musicConfig.getChannelId() != null) {
-                channel = discordService.getShardManager().getVoiceChannelById(musicConfig.getChannelId());
+                channel = member.getGuild().getVoiceChannelById(musicConfig.getChannelId());
             }
         }
         if (channel == null) {

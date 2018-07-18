@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
-import ru.caramel.juniperbot.web.dto.WelcomeMessageDto;
+import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
 
 @Service
 public class WelcomeDao extends AbstractDao {
@@ -29,25 +29,20 @@ public class WelcomeDao extends AbstractDao {
     @Autowired
     private WelcomeMessageRepository welcomeMessageRepository;
 
-    @Transactional(readOnly = true)
-    public WelcomeMessageDto getWelcomeMessageDto(long serverId) {
-        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
-        return welcomeMessage != null ? mapper.getMessageDto(welcomeMessage) : new WelcomeMessageDto();
-    }
-
-    @Transactional(readOnly = true)
-    public WelcomeMessage getWelcomeMessage(long serverId) {
-        return welcomeMessageRepository.findByGuildId(serverId);
+    @Transactional
+    public WelcomeDto get(long guildId) {
+        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(guildId);
+        return welcomeMessage != null ? apiMapper.getWelcomeDto(welcomeMessage) : new WelcomeDto();
     }
 
     @Transactional
-    public void saveWelcomeMessage(WelcomeMessageDto dto, long serverId) {
-        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(serverId);
+    public void save(WelcomeDto dto, long guildId) {
+        WelcomeMessage welcomeMessage = welcomeMessageRepository.findByGuildId(guildId);
         if (welcomeMessage == null) {
             welcomeMessage = new WelcomeMessage();
-            welcomeMessage.setGuildConfig(configService.getOrCreate(serverId));
+            welcomeMessage.setGuildConfig(configService.getOrCreate(guildId));
         }
-        mapper.updateWelcomeMessage(dto, welcomeMessage);
+        apiMapper.updateWelcome(dto, welcomeMessage);
         welcomeMessageRepository.save(welcomeMessage);
     }
 }

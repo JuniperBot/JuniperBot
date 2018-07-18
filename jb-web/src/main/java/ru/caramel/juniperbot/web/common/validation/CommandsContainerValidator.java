@@ -24,10 +24,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
-import ru.caramel.juniperbot.web.dto.CommandsContainer;
-import ru.caramel.juniperbot.web.dto.CustomCommandDto;
+import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -41,25 +42,26 @@ public class CommandsContainerValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return CommandsContainer.class.equals(clazz);
+        return CustomCommandDto.class.equals(clazz) || Collection.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
-        CommandsContainer container = (CommandsContainer) target;
-
-        if (CollectionUtils.isNotEmpty(container.getCommands())) {
-            Set<String> existingKey = new HashSet<>();
-            for (int i = 0; i < container.getCommands().size(); i++) {
-                String path = "commands[" + i + "].";
-                CustomCommandDto command = container.getCommands().get(i);
-                String key = command.getKey();
-                if (StringUtils.isNotEmpty(key)) {
-                    if (!existingKey.add(key)) {
-                        errors.rejectValue(path + "key", "validation.commands.key.unique.message");
-                    } else if (holderService.getByLocale(key, true) != null) {
-                        errors.rejectValue(path + "key", "validation.commands.key.service.message");
+        if (target instanceof List) {
+            List<CustomCommandDto> container = (List<CustomCommandDto>) target;
+            if (CollectionUtils.isNotEmpty(container)) {
+                Set<String> existingKey = new HashSet<>();
+                for (int i = 0; i < container.size(); i++) {
+                    String path = "commands[" + i + "].";
+                    CustomCommandDto command = container.get(i);
+                    String key = command.getKey();
+                    if (StringUtils.isNotEmpty(key)) {
+                        if (!existingKey.add(key)) {
+                            errors.rejectValue(path + "key", "validation.commands.key.unique.message");
+                        } else if (holderService.getByLocale(key, true) != null) {
+                            errors.rejectValue(path + "key", "validation.commands.key.service.message");
+                        }
                     }
                 }
             }

@@ -16,55 +16,63 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
-import ru.caramel.juniperbot.web.dto.RankingConfigDto;
+import ru.caramel.juniperbot.web.dto.config.RankingDto;
 
 import java.util.stream.Collectors;
 
 @Service
 public class RankingDao extends AbstractDao {
 
-    private final static Long WHISPER_CHANNEL = -1L;
+    private final static String WHISPER_CHANNEL = "-1";
+
+    private final static String MESSAGE_CHANNEL = "-2";
 
     @Autowired
     private RankingService rankingService;
 
     @Transactional
-    public RankingConfigDto getConfig(long serverId) {
-        RankingConfig config = rankingService.getConfig(serverId);
-        RankingConfigDto dto = mapper.getRankingDto(config);
+    public RankingDto get(long guildId) {
+        RankingConfig config = rankingService.getConfig(guildId);
+        RankingDto dto = apiMapper.getRankingDto(config);
         if (config.isWhisper()) {
             dto.setAnnouncementChannelId(WHISPER_CHANNEL);
+        } else if (dto.getAnnouncementChannelId() == null) {
+            dto.setAnnouncementChannelId(MESSAGE_CHANNEL);
         }
         return dto;
     }
 
     @Transactional
-    public void saveConfig(RankingConfigDto configDto, long serverId) {
-        RankingConfig config = rankingService.getConfig(serverId);
-        config.setAnnouncementEnabled(configDto.isAnnouncementEnabled());
-        config.setEnabled(configDto.isEnabled());
-        config.setWhisper(WHISPER_CHANNEL.equals(configDto.getAnnouncementChannelId()));
-        config.setAnnouncement(configDto.getAnnouncement());
-        config.setResetOnLeave(configDto.isResetOnLeave());
-        config.setEmbed(configDto.isEmbed());
-        config.setAnnouncementChannelId(WHISPER_CHANNEL.equals(configDto.getAnnouncementChannelId())
-                ? null : configDto.getAnnouncementChannelId());
-        if (discordService.isConnected(serverId)) {
-            config.setBannedRoles(configDto.getBannedRoles());
-            if (configDto.getRewards() != null) {
-                config.setRewards(configDto.getRewards().stream()
-                        .filter(e -> e.getLevel() != null && e.getLevel() >= 0 && e.getLevel() <= RankingUtils.MAX_LEVEL)
-                        .collect(Collectors.toList()));
-            } else {
-                config.setRewards(null);
-            }
+    public void save(RankingDto dto, long guildId) {
+        RankingConfig config = rankingService.getConfig(guildId);
+        config.setAnnouncementEnabled(dto.isAnnouncementEnabled());
+        config.setEnabled(dto.isEnabled());
+        config.setAnnouncement(dto.getAnnouncement());
+        config.setResetOnLeave(dto.isResetOnLeave());
+        config.setEmbed(dto.isEmbed());
+        config.setBannedRoles(dto.getBannedRoles());
 
+        config.setWhisper(WHISPER_CHANNEL.equals(dto.getAnnouncementChannelId()));
+        if (config.isWhisper()) {
+            config.setAnnouncementChannelId(null);
+        } else {
+            config.setAnnouncementChannelId(StringUtils.isNumeric(dto.getAnnouncementChannelId())
+                    ? Long.parseLong(dto.getAnnouncementChannelId()) : null);
+        }
+
+        if (dto.getRewards() != null) {
+            config.setRewards(dto.getRewards().stream()
+                    .filter(e -> e.getLevel() != null && e.getLevel() >= 0 && e.getLevel() <= RankingUtils.MAX_LEVEL)
+                    .collect(Collectors.toList()));
+        } else {
+            config.setRewards(null);
         }
         rankingService.save(config);
     }

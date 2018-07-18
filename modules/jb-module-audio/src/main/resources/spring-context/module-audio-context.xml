@@ -26,7 +26,8 @@
     <context:component-scan base-package="
         ru.caramel.juniperbot.module.audio.commands,
         ru.caramel.juniperbot.module.audio.listeners,
-        ru.caramel.juniperbot.module.audio.service"/>
+        ru.caramel.juniperbot.module.audio.service,
+        ru.caramel.juniperbot.module.audio.persistence.repository"/>
 
     <jpa:repositories base-package="ru.caramel.juniperbot.module.audio.persistence.repository"/>
 

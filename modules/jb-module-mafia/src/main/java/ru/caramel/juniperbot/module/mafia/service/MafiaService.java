@@ -114,7 +114,7 @@ public class MafiaService implements ModuleListener {
                     : messageService.getMessage("mafia.stop.message");
 
             EmbedBuilder builder = messageService.getBaseEmbed();
-            builder.setTitle(messageService.getMessage("mafia.name"));
+            builder.setTitle(messageService.getMessage("discord.command.group.mafia"));
             builder.setDescription(stopReason);
             try {
                 instance.getChannel().sendMessage(builder.build()).queue();

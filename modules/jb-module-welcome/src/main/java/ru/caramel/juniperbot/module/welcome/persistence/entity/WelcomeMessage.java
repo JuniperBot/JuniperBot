@@ -19,12 +19,14 @@ package ru.caramel.juniperbot.module.welcome.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name = "welcome_message")
@@ -47,8 +49,9 @@ public class WelcomeMessage extends GuildOwnedEntity {
     @Column(name = "join_channel_id")
     private Long joinChannelId;
 
-    @Column(name = "join_role_id")
-    private Long joinRoleId;
+    @Type(type = "jsonb")
+    @Column(name = "join_roles", columnDefinition = "json")
+    private List<Long> joinRoles;
 
     @Column(name = "join_to_dm")
     private boolean joinToDM;

@@ -27,7 +27,7 @@ public class ChartDto {
 
     private final String label;
 
-    private int color;
+    private int id;
 
     private Object[][] data;
 }

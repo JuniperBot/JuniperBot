@@ -25,7 +25,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.help.key",
         description = "discord.command.mafia.help.desc",
-        group = "mafia.name",
+        group = "discord.command.group.mafia",
         source = ChannelType.TEXT,
         priority = 15)
 public class MafiaHelpCommand extends MafiaCommand {

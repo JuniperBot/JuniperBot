@@ -22,7 +22,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.done.key",
         description = "discord.command.mafia.done.desc",
-        group = "mafia.name",
+        group = "discord.command.group.mafia",
         priority = 5)
 public class MafiaDoneCommand extends MafiaCommandAsync {
 

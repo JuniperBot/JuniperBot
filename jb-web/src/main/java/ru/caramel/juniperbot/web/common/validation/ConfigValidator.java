@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.web.dto.ConfigDto;
+import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
 
 @Component
 public class ConfigValidator implements Validator {
@@ -35,13 +35,13 @@ public class ConfigValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return ConfigDto.class.equals(clazz);
+        return CommonConfigDto.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
-        ConfigDto configDto = (ConfigDto) target;
+        CommonConfigDto configDto = (CommonConfigDto) target;
         if (!contextService.isSupported(configDto.getLocale())) {
             errors.rejectValue("locale", "validation.config.locale.message");
         }

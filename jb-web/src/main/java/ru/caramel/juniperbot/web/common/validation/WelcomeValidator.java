@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import ru.caramel.juniperbot.web.dto.WelcomeMessageDto;
+import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
 
 @Component
 public class WelcomeValidator implements Validator {
@@ -32,13 +32,13 @@ public class WelcomeValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return WelcomeMessageDto.class.equals(clazz);
+        return WelcomeDto.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
-        WelcomeMessageDto message = (WelcomeMessageDto) target;
+        WelcomeDto message = (WelcomeDto) target;
         if (message.isJoinEnabled()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "joinMessage", "validation.message.content.NotBlank.message");
         }

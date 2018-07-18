@@ -27,6 +27,8 @@ public interface MusicConfigService {
 
     MusicConfig getConfig(Guild guild);
 
+    void save(MusicConfig config);
+
     boolean hasAccess(Member member);
 
     VoiceChannel getDesiredChannel(Member member);

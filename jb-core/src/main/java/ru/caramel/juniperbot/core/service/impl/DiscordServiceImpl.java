@@ -147,7 +147,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         if (StringUtils.isNotEmpty(playingStatus)) {
             shardManager.setGame(Game.playing(playingStatus));
         }
-        pingCharts.put(event.getJDA(), new TimeWindowChart(1, TimeUnit.HOURS));
+        pingCharts.put(event.getJDA(), new TimeWindowChart(10, TimeUnit.MINUTES));
     }
 
     @Override
@@ -196,6 +196,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     @Override
+    public Guild getGuildById(long guildId) {
+        return shardManager.getGuildById(guildId);
+    }
+
+    @Override
     public JDA getShard(long guildId) {
         return shardManager.getShardById((int)((guildId >> 22) % shardsNum));
     }
@@ -227,7 +232,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         return guild.getVoiceChannels().stream().findAny().orElse(null);
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 30000)
     public void tickPing() {
         if (MapUtils.isEmpty(pingCharts)) {
             return;

@@ -28,7 +28,11 @@ public interface VkService {
 
     VkConnection create(GuildConfig config, String name, String code);
 
-    void delete(GuildConfig config, long id);
+    VkConnection find(long id);
+
+    VkConnection save(VkConnection connection);
+
+    void delete(VkConnection connection);
 
     VkConnection getForToken(String token);
 

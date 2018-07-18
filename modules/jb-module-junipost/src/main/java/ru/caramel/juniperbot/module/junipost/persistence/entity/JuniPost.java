@@ -19,8 +19,7 @@ package ru.caramel.juniperbot.module.junipost.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
+import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
 
 import javax.persistence.*;
 
@@ -29,11 +28,7 @@ import javax.persistence.*;
 @ToString
 @Getter
 @Setter
-public class JuniPost extends GuildOwnedEntity {
+public class JuniPost extends WebHookOwnedEntity {
     private static final long serialVersionUID = -3872054410668142201L;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "web_hook_id")
-    private WebHook webHook;
 
 }

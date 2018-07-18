@@ -18,36 +18,36 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <import resource="classpath:spring-context/core-context.xml"/>
     <import resource="classpath:spring-context/module-full-context.xml"/>
-    <import resource="classpath:spring-context/mvc-context.xml"/>
     <import resource="classpath:spring-context/security-context.xml"/>
 
-    <context:component-scan base-package="ru.caramel.juniperbot.web.dao, ru.caramel.juniperbot.web.service"/>
+    <context:annotation-config/>
+    <mvc:annotation-driven/>
+    <aop:aspectj-autoproxy/>
 
-    <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="
-        /web-jbmessages,
-        /pages/errors-jbmessages,
-        /pages/index-jbmessages,
-        /pages/servers-jbmessages,
-        /pages/dashboard-jbmessages,
-        /pages/config-jbmessages,
-        /pages/custom-jbmessages,
-        /pages/welcome-jbmessages,
-        /pages/ranking-jbmessages,
-        /pages/apidocs-jbmessages,
-        /pages/status-jbmessages,
-        /pages/playlist-jbmessages,
-        /pages/funny-jbmessages"/>
+    <context:component-scan base-package="
+        ru.caramel.juniperbot.web.dao,
+        ru.caramel.juniperbot.web.service,
+        ru.caramel.juniperbot.web.controller,
+        ru.caramel.juniperbot.web.common"/>
+
+    <bean id="contextListener" class="org.springframework.web.context.request.RequestContextListener"/>
+    <bean id="dispatcherServlet" class="org.springframework.web.servlet.DispatcherServlet"
+          p:throwExceptionIfNoHandlerFound="true"/>
+
+    <bean id="mdcFilter" class="ru.caramel.juniperbot.web.common.InfoMdcFilter"/>
     <bean id="messageSource" class="ru.caramel.juniperbot.core.support.JbMessageSource" />
-
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
-          p:validationMessageSource-ref="messageSource"/>
-    <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"
-          p:validator-ref="validator"/>
 
 </beans>

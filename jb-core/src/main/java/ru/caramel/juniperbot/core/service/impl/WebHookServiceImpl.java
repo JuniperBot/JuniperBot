@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -53,7 +54,7 @@ public class WebHookServiceImpl implements WebHookService {
                         }
                     });
 
-    public void updateWebHook(long guildId, Long channelId, WebHook webHook, String name) {
+    public boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name) {
         if (discordService.isConnected(guildId)) {
             Guild guild = discordService.getShardManager().getGuildById(guildId);
             if (guild != null && channelId != null) {
@@ -61,7 +62,7 @@ public class WebHookServiceImpl implements WebHookService {
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-                        webhook = channel.createWebhook(name).complete();
+                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32)).complete();
                     }
                 }
                 if (webhook != null) {
@@ -70,13 +71,17 @@ public class WebHookServiceImpl implements WebHookService {
                         if (channel == null) {
                             throw new IllegalStateException("Tried to set non-existent channel");
                         }
-                        webhook.getManager().setChannel(channel).complete();
+                        if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
+                            webhook.getManager().setChannel(channel).complete();
+                        }
                     }
                     webHook.setHookId(webhook.getIdLong());
                     webHook.setToken(webhook.getToken());
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public boolean delete(long guildId, WebHook webHook) {

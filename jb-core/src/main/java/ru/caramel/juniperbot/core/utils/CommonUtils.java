@@ -33,12 +33,11 @@ import org.springframework.web.util.UriUtils;
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class CommonUtils {
@@ -80,6 +79,24 @@ public final class CommonUtils {
         if (content.length() > length) {
             content = content.substring(0, length - 3) + "...";
         }
+        return content;
+    }
+
+    public static String trimTo(String content, int minLength, int maxLength) {
+        if (StringUtils.isEmpty(content)) {
+            return content;
+        }
+        if (content.length() > maxLength) {
+            content = content.substring(0, maxLength - 3) + "...";
+        }
+        if (content.length() < minLength) {
+            StringBuilder result = new StringBuilder(content);
+            while (result.length() < minLength) {
+                result.append("_");
+            }
+            content = result.toString();
+        }
+
         return content;
     }
 
@@ -141,33 +158,11 @@ public final class CommonUtils {
             }
             string = sb.toString();
         }
-        return maskDiscordFormat(string);
-    }
-
-    public static String maskDiscordFormat(String string) {
-        if (StringUtils.isEmpty(string)) return string;
-        return string
-                .replace("*", "\\*")
-                .replace("_", "\\_")
-                .replace("~~", "\\~\\~");
+        return string;
     }
 
     public static String makeLink(String title, String url) {
         return String.format("[%s](%s)", title, url);
-    }
-
-    public static String getHTMLAwtColor(Color color) {
-        if (color == null) {
-            return "auto";
-        }
-        String red = Integer.toHexString(color.getRed());
-        String green = Integer.toHexString(color.getGreen());
-        String blue = Integer.toHexString(color.getBlue());
-
-        return "#" +
-                (red.length() == 1 ? "0" + red : red) +
-                (green.length() == 1 ? "0" + green : green) +
-                (blue.length() == 1 ? "0" + blue : blue);
     }
 
     public static String unwrapCode(String value) {
@@ -233,5 +228,11 @@ public final class CommonUtils {
             // nah I don't care
         }
         return null;
+    }
+
+    public static <T extends Enum<T>> List<T> safeEnumSet(Collection<?> collection, Class<T> type) {
+        return Stream.of(type.getEnumConstants())
+                .filter(e -> collection.contains(e.name()))
+                .collect(Collectors.toList());
     }
 }

@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.security.auth;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.Permission;
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.Authoriti
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,9 +40,11 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 import ru.caramel.juniperbot.web.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
@@ -95,6 +99,26 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
                         }
                     });
 
+    private LoadingCache<String, OAuth2Authentication> authorities = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .maximumSize(10000)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<String, OAuth2Authentication>() {
+                        public OAuth2Authentication load(String accessToken) {
+                            Map map = executeRequest(Map.class, userInfoEndpointUrl, accessToken);
+                            Object principal = principalExtractor.extractPrincipal(map);
+                            principal = (principal == null ? "unknown" : principal);
+                            List<GrantedAuthority> authorities = authoritiesExtractor.extractAuthorities(map);
+                            OAuth2Request request = new OAuth2Request(null, clientId, null, true, null,
+                                    null, null, null, null);
+                            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                                    principal, "N/A", authorities);
+                            token.setDetails(DiscordUserDetails.create(map));
+                            return new OAuth2Authentication(request, token);
+                        }
+                    });
+
     public DiscordTokenServices(String userInfoEndpointUrl, String guildsInfoEndpointUrl, String clientId, OAuth2ProtectedResourceDetails resource) {
         this.userInfoEndpointUrl = userInfoEndpointUrl;
         this.guildsInfoEndpointUrl = guildsInfoEndpointUrl;
@@ -105,16 +129,14 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken)
             throws AuthenticationException, InvalidTokenException {
-        Map map = executeRequest(Map.class, userInfoEndpointUrl, accessToken);
-        Object principal = principalExtractor.extractPrincipal(map);
-        principal = (principal == null ? "unknown" : principal);
-        List<GrantedAuthority> authorities = authoritiesExtractor.extractAuthorities(map);
-        OAuth2Request request = new OAuth2Request(null, clientId, null, true, null,
-                null, null, null, null);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                principal, "N/A", authorities);
-        token.setDetails(DiscordUserDetails.create(map));
-        return new OAuth2Authentication(request, token);
+        try {
+            return authorities.get(accessToken);
+        } catch (ExecutionException | UncheckedExecutionException e) {
+            if (e.getCause() instanceof OAuth2Exception) {
+                throw (OAuth2Exception) e.getCause();
+            }
+            throw new RuntimeException(e);
+        }
     }
 
     public List<DiscordGuildDetails> getCurrentGuilds() {
@@ -139,6 +161,11 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
                 || (StringUtils.isNotEmpty(superUserId) && user != null && Objects.equals(superUserId, user.getId()));
     }
 
+    public boolean hasPermission(long guildId) {
+        DiscordGuildDetails details = getGuildById(guildId);
+        return details != null && hasPermission(details);
+    }
+
     public DiscordGuildDetails getGuildById(long id) {
         String idStr = String.valueOf(id);
         return getCurrentGuilds(false).stream().filter(e -> Objects.equals(idStr, e.getId())).findFirst().orElse(null);
@@ -149,14 +176,22 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Getting user info from: " + path);
         }
-        return restTemplates.computeIfAbsent(accessToken, e -> {
-            OAuth2RestTemplate newTemplate = new OAuth2RestTemplate(resource);
-            newTemplate.setRequestFactory(requestFactory);
-            DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
-            token.setTokenType(DefaultOAuth2AccessToken.BEARER_TYPE);
-            newTemplate.getOAuth2ClientContext().setAccessToken(token);
-            return newTemplate;
-        }).getForEntity(path, clazz).getBody();
+        try {
+            return restTemplates.computeIfAbsent(accessToken, e -> {
+                OAuth2RestTemplate newTemplate = new OAuth2RestTemplate(resource);
+                newTemplate.setRequestFactory(requestFactory);
+                DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
+                token.setTokenType(DefaultOAuth2AccessToken.BEARER_TYPE);
+                newTemplate.getOAuth2ClientContext().setAccessToken(token);
+                return newTemplate;
+            }).getForEntity(path, clazz).getBody();
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.UNAUTHORIZED == e.getStatusCode()) {
+                throw new InvalidTokenException("Invalid token, access denied");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override

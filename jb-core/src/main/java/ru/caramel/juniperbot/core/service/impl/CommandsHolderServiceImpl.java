@@ -40,6 +40,9 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     @Autowired
     private ContextService contextService;
 
+    @Getter
+    private Set<String> publicCommandKeys;
+
     private Set<String> reverseCommandKeys;
 
     private Map<Locale, Map<String, Command>> localizedCommands;
@@ -92,6 +95,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
         this.localizedCommands = new HashMap<>();
         this.commands = new HashMap<>();
         this.publicCommands = new HashMap<>();
+        this.publicCommandKeys = new HashSet<>();
         this.reverseCommandKeys = new HashSet<>();
         Collection<Locale> locales = contextService.getSupportedLocales().values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
@@ -105,9 +109,19 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
                 Map<String, Command> localeCommands = localizedCommands.computeIfAbsent(locale, e2 -> new HashMap<>());
                 String localizedKey = messageService.getMessage(rawKey, locale);
                 reverseCommandKeys.add(StringUtils.reverse(localizedKey));
+                if (!annotation.hidden()) {
+                    publicCommandKeys.add(localizedKey);
+                }
                 localeCommands.put(localizedKey, e);
             }
         });
+
+        // lock everything
+        this.localizedCommands = Collections.unmodifiableMap(this.localizedCommands);
+        this.commands = Collections.unmodifiableMap(this.commands);
+        this.publicCommands = Collections.unmodifiableMap(this.publicCommands);
+        this.publicCommandKeys = Collections.unmodifiableSet(this.publicCommandKeys);
+        this.reverseCommandKeys = Collections.unmodifiableSet(this.reverseCommandKeys);
     }
 
     @Override

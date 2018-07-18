@@ -19,9 +19,11 @@ package ru.caramel.juniperbot.module.misc.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "reaction_roulette")
@@ -40,4 +42,9 @@ public class ReactionRoulette extends GuildOwnedEntity {
 
     @Column
     private int percent = 1;
+
+    @Type(type = "jsonb")
+    @Column(name = "ignored_channels", columnDefinition = "json")
+    private List<Long> ignoredChannels;
+
 }

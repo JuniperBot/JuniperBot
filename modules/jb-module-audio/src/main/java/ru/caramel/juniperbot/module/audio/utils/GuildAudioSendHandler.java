@@ -33,20 +33,13 @@ public class GuildAudioSendHandler implements AudioSendHandler {
 
     @Override
     public boolean canProvide() {
-        if (lastFrame == null) {
-            lastFrame = player.provide();
-        }
+        lastFrame = player.provide();
         return lastFrame != null;
     }
 
     @Override
     public byte[] provide20MsAudio() {
-        if (lastFrame == null) {
-            lastFrame = player.provide();
-        }
-        byte[] data = lastFrame != null ? lastFrame.data : null;
-        lastFrame = null;
-        return data;
+        return lastFrame.getData();
     }
 
     @Override

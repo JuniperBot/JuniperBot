@@ -24,6 +24,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.*;
+import net.dv8tion.jda.core.entities.Member;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -258,7 +259,15 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
         if (CollectionUtils.isEmpty(requests)) {
             return;
         }
-        LocalMember localMember = memberService.getOrCreate(requests.get(0).getMember());
+        Member member = requests.stream()
+                .map(TrackRequest::getMember)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        if (member == null) {
+            return;
+        }
+        LocalMember localMember = memberService.getOrCreate(member);
 
         synchronized (instance) {
             try {

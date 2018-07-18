@@ -84,8 +84,6 @@ public class WelcomeGuildListener extends DiscordEventListener {
                 m.apply("welcome.fields.commands.content") + NEW_LINE, false);
         builder.addField(m.apply("welcome.fields.custom.title"),
                 m.apply("welcome.fields.custom.content") + NEW_LINE, false);
-        builder.addField(m.apply("welcome.fields.api.title"),
-                m.apply("welcome.fields.api.content") + NEW_LINE, false);
 
         builder.addField(m.apply("welcome.fields.support.title"),
                 messageService.getMessage("welcome.fields.support.content", webPage, discordServer, githubPage),
