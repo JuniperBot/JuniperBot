@@ -31,4 +31,6 @@ public interface PlaylistService {
     void refreshStoredPlaylist(PlaybackInstance instance);
 
     Playlist getPlaylist(String uuid);
+
+    Playlist find(Long id);
 }
