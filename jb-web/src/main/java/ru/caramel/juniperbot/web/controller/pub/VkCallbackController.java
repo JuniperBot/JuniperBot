@@ -21,7 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
-import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
+import com.vk.api.sdk.objects.wall.Wallpost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +46,7 @@ public class VkCallbackController extends BasePublicRestController {
     static {
         Map<String, Type> types = new HashMap<>();
 
-        types.put(CallbackMessageType.WALL_POST_NEW.getValue(), new TypeToken<CallbackMessage<CallbackWallPost>>() {
+        types.put(CallbackMessageType.WALL_POST_NEW.getValue(), new TypeToken<CallbackMessage<Wallpost>>() {
         }.getType());
 
         types.put(CallbackMessageType.CONFIRMATION.getValue(), new TypeToken<CallbackMessage>() {

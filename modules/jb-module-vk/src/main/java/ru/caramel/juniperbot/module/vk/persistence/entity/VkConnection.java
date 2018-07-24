@@ -53,4 +53,7 @@ public class VkConnection extends WebHookOwnedEntity {
     @Column(columnDefinition = "json")
     private List<WallpostAttachmentType> attachments;
 
+    @Column(name = "group_only_posts")
+    private boolean groupOnlyPosts;
+
 }

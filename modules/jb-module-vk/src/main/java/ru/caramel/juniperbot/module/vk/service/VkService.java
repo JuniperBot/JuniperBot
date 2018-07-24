@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.vk.service;
 
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
-import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
+import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
@@ -38,7 +38,7 @@ public interface VkService {
 
     String confirm(VkConnection connection, CallbackMessage message);
 
-    void post(VkConnection connection, CallbackMessage<CallbackWallPost> message);
+    void post(VkConnection connection, CallbackMessage<Wallpost> message);
 
     List<WallpostAttachmentType> getAttachmentTypes();
 }
