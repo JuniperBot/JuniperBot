@@ -27,6 +27,7 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
+import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
@@ -47,6 +48,9 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private ModerationService moderationService;
 
     @PostConstruct
     public void init() {
@@ -104,6 +108,9 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
         resolver.put("author", event.getAuthor().getAsMention());
         resolver.put("guild", event.getGuild().getName());
+        if (!moderationService.isModerator(event.getMember())) {
+            content = CommonUtils.maskPublicMentions(content);
+        }
         resolver.put("content", content);
         return resolver;
     }

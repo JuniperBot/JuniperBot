@@ -22,6 +22,8 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +38,9 @@ public class ReminderJob extends AbstractJob {
 
     @Autowired
     private DiscordService discordService;
+
+    @Autowired
+    private ModerationService moderationService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -52,6 +57,8 @@ public class ReminderJob extends AbstractJob {
         String channelId = data.getString(ATTR_CHANNEL_ID);
         String messageRaw = data.getString(ATTR_MESSAGE);
 
+        boolean maskMentions = true;
+
         MessageChannel channel = null;
         User user = shardManager.getUserById(userId);
         StringBuilder message = new StringBuilder();
@@ -60,11 +67,15 @@ public class ReminderJob extends AbstractJob {
             if (guild != null && guild.isAvailable()) {
                 channel = guild.getTextChannelById(channelId);
                 if (user != null && guild.isMember(user)) {
+                    maskMentions = !moderationService.isModerator(guild.getMember(user));
                     message.append(user.getAsMention()).append(" ");
                 }
             }
         } else {
             channel = shardManager.getPrivateChannelById(channelId);
+        }
+        if (maskMentions) {
+            messageRaw = CommonUtils.maskPublicMentions(messageRaw);
         }
         message.append(messageRaw);
         if (channel == null && user != null) {
