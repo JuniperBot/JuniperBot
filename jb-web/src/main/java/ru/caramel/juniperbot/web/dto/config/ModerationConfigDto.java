@@ -18,10 +18,12 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.module.moderation.model.WarnExceedAction;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -38,4 +40,10 @@ public class ModerationConfigDto implements Serializable {
     @Min(ModerationConfig.DEFAULT_MAX_WARNINGS)
     @Max(20)
     private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
+
+    @NotNull
+    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
+
+    @Min(1)
+    private int muteCount = ModerationConfig.DEFAULT_MUTE_COUNT;
 }

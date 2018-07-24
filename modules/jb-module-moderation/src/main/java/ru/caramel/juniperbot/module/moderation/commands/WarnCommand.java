@@ -20,10 +20,16 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.units.JustNow;
+import org.ocpsoft.prettytime.units.Millisecond;
+import org.ocpsoft.prettytime.units.Second;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.module.moderation.model.WarnExceedAction;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
+import java.util.Date;
 import java.util.Objects;
 
 @DiscordCommand(key = "discord.command.mod.warn.key",
@@ -47,7 +53,20 @@ public class WarnCommand extends ModeratorCommandAsync {
             return;
         }
         if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.ban.message", mentioned.getEffectiveName());
+            ModerationConfig config = moderationService.getConfig(event.getGuild());
+            String messageCode = "discord.command.mod.warn.exceeded.message." + config.getWarnExceedAction().name();
+
+            String argument = "";
+            if (WarnExceedAction.MUTE.equals(config.getWarnExceedAction())) {
+                Date date = new Date();
+                date.setTime(date.getTime() + (long) (60000 * config.getMuteCount()));
+                PrettyTime formatter = new PrettyTime(contextService.getLocale());
+                formatter.removeUnit(JustNow.class);
+                formatter.removeUnit(Millisecond.class);
+                formatter.removeUnit(Second.class);
+                argument = formatter.format(date);
+            }
+            messageService.onEmbedMessage(event.getChannel(), messageCode, mentioned.getEffectiveName(), argument);
             return;
         }
         ModerationConfig config = moderationService.getConfig(event.getGuild());

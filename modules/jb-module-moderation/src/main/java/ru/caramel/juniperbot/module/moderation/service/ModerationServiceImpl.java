@@ -248,9 +248,9 @@ public class ModerationServiceImpl implements ModerationService {
     public boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason) {
         // TODO reason will be implemented in audit
         if (global) {
-            Role mutedRole = getMutedRole(channel.getGuild());
+            Role mutedRole = getMutedRole(member.getGuild());
             if (!member.getRoles().contains(mutedRole)) {
-                channel.getGuild()
+                member.getGuild()
                         .getController()
                         .addRolesToMember(member, mutedRole)
                         .queue();
@@ -297,7 +297,7 @@ public class ModerationServiceImpl implements ModerationService {
             PermissionOverride override = channel.getPermissionOverride(member);
             if (override != null) {
                 override.delete().queue();
-                result |= true;
+                result = true;
             }
         }
         removeUnMuteSchedule(member);
@@ -428,7 +428,18 @@ public class ModerationServiceImpl implements ModerationService {
         if (exceed) {
             warningRepository.flushWarnings(config, memberLocal);
             warning.setActive(false);
-            ban(author, member, messageService.getMessage("discord.command.mod.warn.ban.reason", count));
+            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
+            switch (moderationConfig.getWarnExceedAction()) {
+                case BAN:
+                    ban(author, member, reason);
+                    break;
+                case KICK:
+                    kick(author, member, reason);
+                    break;
+                case MUTE:
+                    mute(null, member, true, moderationConfig.getMuteCount(), reason);
+                    break;
+            }
         } else {
             notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,
                     moderationConfig.getMaxWarnings());

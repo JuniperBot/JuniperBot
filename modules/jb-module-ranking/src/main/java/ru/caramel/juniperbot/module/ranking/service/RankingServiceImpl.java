@@ -159,20 +159,7 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
         Page<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(guildId), search != null ? search.toLowerCase() : "", pageable);
-        Map<Long, Long> cookiesMap = new HashMap<>();
-        if (rankings.hasContent()) {
-            Map<Long, LocalMember> memberMap = rankings.getContent().stream()
-                    .collect(Collectors.toMap(k -> k.getMember().getId(), Ranking::getMember));
-            List<Object[]> cookies = cookieRepository.countByRecipients(memberMap.values());
-            cookies.forEach(e -> cookiesMap.put((Long)e[0], (Long)e[1]));
-        }
-        return rankings.map(e -> {
-            RankingInfo info = RankingUtils.calculateInfo(e);
-            if (cookiesMap.containsKey(e.getMember().getId())) {
-                info.setCookies(cookiesMap.get(e.getMember().getId()));
-            }
-            return info;
-        });
+        return rankings.map(RankingUtils::calculateInfo);
     }
 
     @Transactional
@@ -187,7 +174,7 @@ public class RankingServiceImpl implements RankingService {
 
         Ranking ranking = getRanking(event.getMember());
 
-        if (coolDowns.getIfPresent(memberKey) == null) {
+        if (coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())) {
             int level = RankingUtils.getLevelFromExp(ranking.getExp());
             ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
             rankingRepository.save(ranking);
@@ -219,12 +206,12 @@ public class RankingServiceImpl implements RankingService {
 
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
-                && event.getMessage().getContentRaw().contains("\uD83C\uDF6A")) {
-            Date checkDate = DateTime.now().minusMinutes(10).toDate();
+                && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE)) {
+            Date checkDate = getCookieCoolDown();
             for (User user : event.getMessage().getMentionedUsers()) {
                 if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                     Member recipientMember = event.getGuild().getMember(user);
-                    if (recipientMember != null) {
+                    if (recipientMember != null && memberService.isApplicable(recipientMember)) {
                         LocalMember recipient = memberService.getOrCreate(recipientMember);
                         giveCookie(ranking.getMember(), recipient, checkDate);
                     }
@@ -239,6 +226,22 @@ public class RankingServiceImpl implements RankingService {
         } else {
             messageService.sendMessageSilent(channel::sendMessage, content);
         }
+    }
+
+    @Transactional
+    @Override
+    public void giveCookie(Member senderMember, Member recipientMember) {
+        if (!memberService.isApplicable(senderMember) || !memberService.isApplicable(recipientMember)) {
+            return;
+        }
+        LocalMember recipient = memberService.getOrCreate(recipientMember);
+        LocalMember sender = memberService.getOrCreate(senderMember);
+        giveCookie(sender, recipient, getCookieCoolDown());
+    }
+
+    @Override
+    public void giveCookie(LocalMember sender, LocalMember recipient) {
+        giveCookie(sender, recipient, getCookieCoolDown());
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
@@ -400,6 +403,13 @@ public class RankingServiceImpl implements RankingService {
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
     }
 
+    private boolean isIgnoredChannel(RankingConfig config, TextChannel channel) {
+        if (channel == null || CollectionUtils.isEmpty(config.getIgnoredChannels())) {
+            return false;
+        }
+        return config.getIgnoredChannels().contains(channel.getIdLong());
+    }
+
     private String getAnnounce(RankingConfig config, String mention, int level) {
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
         resolver.put("user", mention);
@@ -460,5 +470,9 @@ public class RankingServiceImpl implements RankingService {
             calculateQueue.clear();
         }
         queue.forEach(rankingRepository::recalculateRank);
+    }
+
+    private static Date getCookieCoolDown() {
+        return DateTime.now().minusMinutes(10).toDate();
     }
 }

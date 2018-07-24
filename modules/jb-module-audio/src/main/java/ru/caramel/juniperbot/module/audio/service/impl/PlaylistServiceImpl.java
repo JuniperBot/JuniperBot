@@ -228,9 +228,15 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Playlist getPlaylist(String uuid) {
-        return playlistRepository.findByUuid(uuid);
+        return validateItems(playlistRepository.findByUuid(uuid));
+    }
+
+    @Override
+    @Transactional
+    public Playlist find(Long id) {
+        return validateItems(playlistRepository.findOne(id));
     }
 
     @Override
@@ -238,7 +244,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
     public Playlist getPlaylist(PlaybackInstance instance) {
         Playlist playlist = null;
         if (instance.getPlaylistId() != null) {
-            playlist = playlistRepository.findOne(instance.getPlaylistId());
+            playlist = find(instance.getPlaylistId());
         }
         if (playlist == null) {
             playlist = new Playlist();
@@ -360,5 +366,13 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             LOGGER.warn("Could not decode track");
         }
         return null;
+    }
+
+    private Playlist validateItems(Playlist playlist) {
+        if (playlist != null && CollectionUtils.isNotEmpty(playlist.getItems()) && playlist.getItems().contains(null)) {
+            playlist.setItems(playlist.getItems().stream().filter(Objects::nonNull).collect(Collectors.toList()));
+            playlistRepository.save(playlist);
+        }
+        return playlist;
     }
 }

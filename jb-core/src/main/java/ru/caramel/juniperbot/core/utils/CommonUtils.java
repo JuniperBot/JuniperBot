@@ -235,4 +235,13 @@ public final class CommonUtils {
                 .filter(e -> collection.contains(e.name()))
                 .collect(Collectors.toList());
     }
+
+    public static String maskPublicMentions(String value) {
+        if (value == null) {
+            return null;
+        }
+        value = value.replace("@everyone", "@\u2063everyone");
+        value = value.replace("@here", "@\u2063here");
+        return value;
+    }
 }

@@ -40,6 +40,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.ocpsoft.prettytime</groupId>
+            <artifactId>prettytime</artifactId>
+            <version>${prettytime.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>ru.caramel</groupId>
             <artifactId>jb-module-ranking</artifactId>
             <version>${project.version}</version>

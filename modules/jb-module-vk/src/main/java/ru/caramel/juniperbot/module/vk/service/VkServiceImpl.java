@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.module.vk.service;
 
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
-import com.vk.api.sdk.callback.objects.wall.CallbackWallPost;
 import com.vk.api.sdk.objects.audio.AudioFull;
 import com.vk.api.sdk.objects.base.Link;
 import com.vk.api.sdk.objects.docs.Doc;
@@ -179,7 +178,7 @@ public class VkServiceImpl implements VkService {
     }
 
     @Override
-    public void post(VkConnection connection, CallbackMessage<CallbackWallPost> message) {
+    public void post(VkConnection connection, CallbackMessage<Wallpost> message) {
         if (!connection.getWebHook().isValid()) {
             return;
         }
@@ -191,10 +190,14 @@ public class VkServiceImpl implements VkService {
         });
     }
 
-    private WebhookMessage createMessage(VkConnection connection, CallbackMessage<CallbackWallPost> message) {
-        CallbackWallPost post = message.getObject();
+    private WebhookMessage createMessage(VkConnection connection, CallbackMessage<Wallpost> message) {
+        Wallpost post = message.getObject();
         if (PostType.SUGGEST.equals(post.getPostType())) {
             return null; // do not post suggestions
+        }
+
+        if (connection.isGroupOnlyPosts() && !Objects.equals(connection.getGroupId(), post.getFromId() * -1)) {
+            return null;
         }
 
         List<WallpostAttachment> attachments = new ArrayList<>(CollectionUtils.isNotEmpty(post.getAttachments()) ? post.getAttachments() : Collections.emptyList());
@@ -235,13 +238,13 @@ public class VkServiceImpl implements VkService {
         return !builder.isEmpty() ? builder.build() : null;
     }
 
-    private EmbedBuilder initBuilder(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders) {
+    private EmbedBuilder initBuilder(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders) {
         EmbedBuilder builder = messageService.getBaseEmbed().setFooter(String.format(CLUB_URL, message.getGroupId()), null);
         builders.add(builder);
         return builder;
     }
 
-    private EmbedBuilder initBuilderIfRequired(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, int desiredLength) {
+    private EmbedBuilder initBuilderIfRequired(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, int desiredLength) {
         EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
         if (prevBuilder == null || prevBuilder.getFields().size() == 25) {
             return initBuilder(message, builders);
@@ -251,12 +254,12 @@ public class VkServiceImpl implements VkService {
                 ? prevBuilder : initBuilder(message, builders);
     }
 
-    private void addField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
+    private void addField(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
         EmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
         prevBuilder.addField(name, value, inline);
     }
 
-    private void addBlankField(CallbackMessage<CallbackWallPost> message, List<EmbedBuilder> builders, boolean inline) {
+    private void addBlankField(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, boolean inline) {
         EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
         if (prevBuilder == null || prevBuilder.getFields().size() == 24) { // do not add last empty fields
             prevBuilder = initBuilder(message, builders);
@@ -278,7 +281,7 @@ public class VkServiceImpl implements VkService {
         return false;
     }
 
-    private void processAttachment(Set<String> images, VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<CallbackWallPost> message, WallpostAttachment attachment) {
+    private void processAttachment(Set<String> images, VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<Wallpost> message, WallpostAttachment attachment) {
         if (connection.getAttachments() != null && connection.getAttachments().contains(attachment.getType())) {
             return; // ignore attachments
         }
@@ -479,7 +482,7 @@ public class VkServiceImpl implements VkService {
         }
     }
 
-    private void setPhoto(Set<String> images, EmbedBuilder builder, CallbackMessage<CallbackWallPost> message, Photo photo, boolean showText) {
+    private void setPhoto(Set<String> images, EmbedBuilder builder, CallbackMessage<Wallpost> message, Photo photo, boolean showText) {
         String imageUrl = coalesce(photo.getPhoto2560(),
                 photo.getPhoto1280(),
                 photo.getPhoto807(),

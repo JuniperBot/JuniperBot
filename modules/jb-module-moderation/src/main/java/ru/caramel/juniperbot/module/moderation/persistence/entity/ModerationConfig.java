@@ -21,10 +21,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.module.moderation.model.WarnExceedAction;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -34,9 +34,11 @@ import java.util.List;
 @Table(name = "mod_config")
 public class ModerationConfig extends GuildOwnedEntity {
 
+    private static final long serialVersionUID = 7052650749958531237L;
+
     public static final int DEFAULT_MAX_WARNINGS = 3;
 
-    private static final long serialVersionUID = 7052650749958531237L;
+    public static final int DEFAULT_MUTE_COUNT = 1440;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
@@ -47,4 +49,13 @@ public class ModerationConfig extends GuildOwnedEntity {
 
     @Column(name = "max_warnings")
     private int maxWarnings = DEFAULT_MAX_WARNINGS;
+
+    @Column(name = "warn_exceed_action")
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
+
+    @Column(name = "mute_count")
+    private int muteCount = DEFAULT_MUTE_COUNT;
+
 }

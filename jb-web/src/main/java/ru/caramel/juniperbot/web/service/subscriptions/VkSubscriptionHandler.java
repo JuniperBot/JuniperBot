@@ -44,6 +44,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         attributes.put("attachments", CommonUtils.reverse(vkService.getAttachmentTypes(), connection.getAttachments()));
         attributes.put("vk.token", connection.getToken());
         attributes.put("vk.groupId", connection.getGroupId());
+        attributes.put("vk.groupOnlyPosts", connection.isGroupOnlyPosts());
         SubscriptionDto dto = getDtoForHook(connection.getGuildConfig().getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
@@ -86,6 +87,9 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         }
         List<WallpostAttachmentType> attachmentTypes = CommonUtils.safeEnumSet(attachments, WallpostAttachmentType.class);
         connection.setAttachments(CommonUtils.reverse(vkService.getAttachmentTypes(), attachmentTypes));
+
+        Boolean groupOnlyPosts = getValue(subscription.getAttributes(), "vk.groupOnlyPosts", Boolean.class);
+        connection.setGroupOnlyPosts(groupOnlyPosts != null ? groupOnlyPosts : false);
         vkService.save(connection);
         return true;
     }
