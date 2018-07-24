@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.moderation.jobs;
 
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.entities.*;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -61,7 +62,8 @@ public class UnMuteJob extends AbstractJob {
             }
             Member member = guild.getMemberById(userId);
             if (member != null) {
-                moderationService.unmute(guild.getTextChannelById(channelId), member);
+                TextChannel channel = StringUtils.isNotBlank(channelId) ? guild.getTextChannelById(channelId) : null;
+                moderationService.unmute(channel, member);
             }
         }
     }
@@ -72,7 +74,7 @@ public class UnMuteJob extends AbstractJob {
                 .withIdentity(getKey(member))
                 .usingJobData(ATTR_GUILD_ID, member.getGuild().getId())
                 .usingJobData(ATTR_USER_ID, member.getUser().getId())
-                .usingJobData(ATTR_CHANNEL_ID, channel.getId())
+                .usingJobData(ATTR_CHANNEL_ID, channel != null ? channel.getId() : null)
                 .build();
     }
 

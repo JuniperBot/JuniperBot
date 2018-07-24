@@ -35,4 +35,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5.1-24072018-3" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="warn_exceed_action" type="VARCHAR(10)"/>
+        </addColumn>
+        <addColumn tableName="mod_config">
+            <column name="mute_count" type="INTEGER"/>
+        </addColumn>
+        <sql>UPDATE mod_config SET warn_exceed_action = 'BAN', mute_count = 1440</sql>
+        <addNotNullConstraint tableName="mod_config" columnName="warn_exceed_action"/>
+        <addNotNullConstraint tableName="mod_config" columnName="mute_count"/>
+    </changeSet>
+
 </databaseChangeLog>
