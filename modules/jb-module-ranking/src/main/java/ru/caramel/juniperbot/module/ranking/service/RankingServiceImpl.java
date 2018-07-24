@@ -206,8 +206,8 @@ public class RankingServiceImpl implements RankingService {
 
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
-                && event.getMessage().getContentRaw().contains("\uD83C\uDF6A")) {
-            Date checkDate = DateTime.now().minusMinutes(10).toDate();
+                && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE)) {
+            Date checkDate = getCookieCoolDown();
             for (User user : event.getMessage().getMentionedUsers()) {
                 if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                     Member recipientMember = event.getGuild().getMember(user);
@@ -226,6 +226,22 @@ public class RankingServiceImpl implements RankingService {
         } else {
             messageService.sendMessageSilent(channel::sendMessage, content);
         }
+    }
+
+    @Transactional
+    @Override
+    public void giveCookie(Member senderMember, Member recipientMember) {
+        if (senderMember == null || recipientMember == null) {
+            return;
+        }
+        LocalMember recipient = memberService.getOrCreate(recipientMember);
+        LocalMember sender = memberService.getOrCreate(senderMember);
+        giveCookie(sender, recipient, getCookieCoolDown());
+    }
+
+    @Override
+    public void giveCookie(LocalMember sender, LocalMember recipient) {
+        giveCookie(sender, recipient, getCookieCoolDown());
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
@@ -447,5 +463,9 @@ public class RankingServiceImpl implements RankingService {
             calculateQueue.clear();
         }
         queue.forEach(rankingRepository::recalculateRank);
+    }
+
+    private static Date getCookieCoolDown() {
+        return DateTime.now().minusMinutes(10).toDate();
     }
 }

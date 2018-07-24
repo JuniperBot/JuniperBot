@@ -21,10 +21,13 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
 public interface RankingService {
+
+    String COOKIE_EMOTE = "\uD83C\uDF6A";
 
     void onMessage(GuildMessageReceivedEvent event);
 
@@ -53,4 +56,8 @@ public interface RankingService {
     boolean isBanned(RankingConfig config, Member member);
 
     void calculateQueue();
+
+    void giveCookie(LocalMember sender, LocalMember recipient);
+
+    void giveCookie(Member senderMember, Member recipientMember);
 }
