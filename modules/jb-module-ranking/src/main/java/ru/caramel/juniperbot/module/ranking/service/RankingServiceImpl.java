@@ -174,7 +174,7 @@ public class RankingServiceImpl implements RankingService {
 
         Ranking ranking = getRanking(event.getMember());
 
-        if (coolDowns.getIfPresent(memberKey) == null) {
+        if (coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())) {
             int level = RankingUtils.getLevelFromExp(ranking.getExp());
             ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
             rankingRepository.save(ranking);
@@ -211,7 +211,7 @@ public class RankingServiceImpl implements RankingService {
             for (User user : event.getMessage().getMentionedUsers()) {
                 if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                     Member recipientMember = event.getGuild().getMember(user);
-                    if (recipientMember != null) {
+                    if (recipientMember != null && memberService.isApplicable(recipientMember)) {
                         LocalMember recipient = memberService.getOrCreate(recipientMember);
                         giveCookie(ranking.getMember(), recipient, checkDate);
                     }
@@ -231,7 +231,7 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public void giveCookie(Member senderMember, Member recipientMember) {
-        if (senderMember == null || recipientMember == null) {
+        if (!memberService.isApplicable(senderMember) || !memberService.isApplicable(recipientMember)) {
             return;
         }
         LocalMember recipient = memberService.getOrCreate(recipientMember);
@@ -401,6 +401,13 @@ public class RankingServiceImpl implements RankingService {
         List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
         return CollectionUtils.isNotEmpty(member.getRoles()) && member.getRoles().stream()
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
+    }
+
+    private boolean isIgnoredChannel(RankingConfig config, TextChannel channel) {
+        if (channel == null || CollectionUtils.isEmpty(config.getIgnoredChannels())) {
+            return false;
+        }
+        return config.getIgnoredChannels().contains(channel.getIdLong());
     }
 
     private String getAnnounce(RankingConfig config, String mention, int level) {

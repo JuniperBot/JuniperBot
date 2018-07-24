@@ -67,4 +67,8 @@ public class RankingConfig extends GuildOwnedEntity {
     @Column(columnDefinition = "json")
     private List<Reward> rewards;
 
+    @Type(type = "jsonb")
+    @Column(name = "ignored_channels", columnDefinition = "json")
+    private List<Long> ignoredChannels;
+
 }

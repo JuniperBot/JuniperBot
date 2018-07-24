@@ -131,6 +131,7 @@ public interface ApiMapperService {
 
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toString(source.getAnnouncementChannelId()))", target = "announcementChannelId"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels")
     })
     RankingDto getRankingDto(RankingConfig source);
 

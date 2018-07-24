@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 import ru.caramel.juniperbot.web.dto.config.RankingDto;
+import ru.caramel.juniperbot.web.service.ApiMapperService;
 
 import java.util.stream.Collectors;
 
@@ -58,6 +59,7 @@ public class RankingDao extends AbstractDao {
         config.setResetOnLeave(dto.isResetOnLeave());
         config.setEmbed(dto.isEmbed());
         config.setBannedRoles(dto.getBannedRoles());
+        config.setIgnoredChannels(ApiMapperService.toLongList(dto.getIgnoredChannels()));
 
         config.setWhisper(WHISPER_CHANNEL.equals(dto.getAnnouncementChannelId()));
         if (config.isWhisper()) {
