@@ -28,7 +28,10 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.CommandExtension;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
+import ru.caramel.juniperbot.core.service.CommandConfigService;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ConfigService;
 
 import java.util.*;
@@ -45,6 +48,12 @@ public class HelpCommand extends AbstractCommand {
     private CommandsHolderService holderService;
 
     @Autowired
+    private CommandsService commandsService;
+
+    @Autowired
+    private CommandConfigService commandConfigService;
+
+    @Autowired
     private ConfigService configService;
 
     @Autowired(required = false)
@@ -54,8 +63,13 @@ public class HelpCommand extends AbstractCommand {
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
         boolean direct = context.getConfig() != null && Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
+        Map<String, CommandConfig> configMap = context.getConfig() != null
+                ? commandConfigService.findAllMap(context.getConfig().getGuildId())
+                : Collections.emptyMap();
+
         List<DiscordCommand> discordCommands = holderService.getCommands().entrySet().stream()
-                .filter(e -> e.getValue().isApplicable(message, context.getConfig()))
+                .filter(e -> commandsService.isApplicable(message, e.getValue(), context.getConfig(),
+                        configMap.get(e.getValue().getClass().getAnnotation(DiscordCommand.class).key())))
                 .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
                 .filter(e -> !e.hidden())
                 .collect(Collectors.toList());

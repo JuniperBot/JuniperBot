@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
@@ -35,7 +36,18 @@ public class CustomCommandsDao extends AbstractDao {
 
     @Transactional
     public List<CustomCommandDto> get(long guildId) {
-        return apiMapper.getCustomCommandsDto(commandRepository.findAllByGuildId(guildId));
+        return commandRepository.findAllByGuildId(guildId).stream().map(e -> {
+            CustomCommandDto dto = apiMapper.getCustomCommandDto(e);
+            CommandConfig commandConfig = e.getCommandConfig();
+            if (commandConfig == null) {
+                commandConfig = new CommandConfig();
+                commandConfig.setKey(e.getKey());
+                commandConfig.setGuildConfig(e.getConfig());
+                e.setCommandConfig(commandConfig);
+            }
+            apiMapper.updateCommandDto(e.getCommandConfig(), dto);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -54,6 +66,11 @@ public class CustomCommandsDao extends AbstractDao {
             }
             CustomCommand command = customCommands.stream().filter(e1 -> Objects.equals(e1.getId(), e.getId())).findFirst().orElse(null);
             if (command != null) {
+                if (command.getCommandConfig() == null) {
+                    CommandConfig commandConfig = new CommandConfig();
+                    commandConfig.setGuildConfig(config);
+                }
+                apiMapper.updateCommandConfig(e, command.getCommandConfig());
                 apiMapper.updateCustomCommand(e, command);
                 result.add(command);
             }
@@ -61,8 +78,16 @@ public class CustomCommandsDao extends AbstractDao {
 
         // adding new commands
         Set<String> keys = customCommands.stream().map(CustomCommand::getKey).collect(Collectors.toSet());
-        result.addAll(apiMapper.getCustomCommands(dtos.stream().filter(e -> e.getId() == null && !keys.contains(e.getKey())).collect(Collectors.toList())));
-        result.forEach(e -> e.setConfig(config));
+        result.addAll(dtos.stream().filter(e -> e.getId() == null && !keys.contains(e.getKey())).map(e -> {
+            CustomCommand customCommand = new CustomCommand();
+            customCommand.setConfig(config);
+            CommandConfig commandConfig = new CommandConfig();
+            commandConfig.setGuildConfig(config);
+            customCommand.setCommandConfig(commandConfig);
+            apiMapper.updateCommandConfig(e, commandConfig);
+            apiMapper.updateCustomCommand(e, customCommand);
+            return customCommand;
+        }).collect(Collectors.toList()));
 
         commandRepository.save(preventDuplicates(result));
 
@@ -78,6 +103,7 @@ public class CustomCommandsDao extends AbstractDao {
                 for (int i = 1; i < list.size(); i++) {
                     CustomCommand command = list.get(i);
                     command.setKey(command.getKey() + i);
+                    command.getCommandConfig().setKey(command.getKey() + i);
                 }
             }
         });

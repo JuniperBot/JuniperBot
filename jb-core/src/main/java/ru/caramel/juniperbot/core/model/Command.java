@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.core.model;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
@@ -28,21 +27,11 @@ public interface Command {
 
     boolean isAvailable(MessageReceivedEvent event, GuildConfig config);
 
-    default boolean isApplicable(MessageReceivedEvent event, GuildConfig config) {
+    default String getKey() {
         if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
-            return false;
+            return null;
         }
-        DiscordCommand command = getClass().getAnnotation(DiscordCommand.class);
-        if (config != null && ArrayUtils.contains(config.getDisabledCommands(), command.key())) {
-            return false;
-        }
-        if (!isAvailable(event, config)) {
-            return false;
-        }
-        if (command.source().length == 0) {
-            return true;
-        }
-        return ArrayUtils.contains(command.source(), event.getChannelType());
+        return getClass().getAnnotation(DiscordCommand.class).key();
     }
 
     default Permission[] getPermissions() {

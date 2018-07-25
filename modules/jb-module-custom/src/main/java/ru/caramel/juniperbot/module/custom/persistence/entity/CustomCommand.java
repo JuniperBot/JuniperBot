@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.custom.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.module.custom.model.CommandType;
@@ -37,6 +38,10 @@ public class CustomCommand extends BaseEntity {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "guild_config_id")
     private GuildConfig config;
+
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "command_config_id")
+    private CommandConfig commandConfig;
 
     @Column
     @Enumerated(EnumType.STRING)

@@ -17,6 +17,9 @@
 package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import ru.caramel.juniperbot.core.model.Command;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 import java.util.function.Function;
 
@@ -31,4 +34,11 @@ public interface CommandsService extends CommandSender {
     boolean sendMessage(MessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
 
     void registerHandler(CommandHandler sender);
+
+    boolean isApplicable(MessageReceivedEvent event, Command command, GuildConfig config, CommandConfig commandConfig);
+
+    void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args);
+
+    boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig);
+
 }

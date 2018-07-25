@@ -14,26 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.io.Serializable;
-import java.util.Set;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 
-@Getter
-@Setter
-public class CommandDto implements Serializable {
+@Repository
+public interface CommandConfigRepository extends GuildOwnedRepository<CommandConfig> {
 
-    private static final long serialVersionUID = 6868784854320464983L;
+    @Query("SELECT c FROM CommandConfig c WHERE c.guildConfig.guildId = :guildId AND c.key = :key")
+    CommandConfig findByKey(@Param("guildId") long guildId, @Param("key") String key);
 
-    private String key;
-
-    private boolean enabled;
-
-    private Set<String> allowedRoles;
-
-    private Set<String> ignoredRoles;
-
-    private Set<String> ignoredChannels;
 }
