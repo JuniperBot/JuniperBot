@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.moderation.listeners;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
 @Component
-public class SlowModeListener extends DiscordEventListener {
+public class ModerationListener extends DiscordEventListener {
 
     @Autowired
     private ModerationService moderationService;
@@ -41,5 +42,10 @@ public class SlowModeListener extends DiscordEventListener {
     @Override
     public void onTextChannelDelete(TextChannelDeleteEvent event) {
         moderationService.slowOff(event.getChannel());
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        moderationService.refreshMute(event.getMember());
     }
 }

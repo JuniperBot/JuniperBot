@@ -16,17 +16,14 @@
  */
 package ru.caramel.juniperbot.core.model;
 
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.BrandingService;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
@@ -34,8 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractCommand implements Command {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
 
     private static final Pattern MENTION_PATTERN = Pattern.compile("<@!?[0-9]+>\\s*(.*)");
 
@@ -48,50 +43,32 @@ public abstract class AbstractCommand implements Command {
     @Autowired
     protected BrandingService brandingService;
 
+    @Autowired
+    protected CommandsService commandsService;
+
     @Override
     public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
         return true;
     }
 
     protected boolean ok(MessageReceivedEvent message) {
-        sendEmotion(message, "✅", null);
+        commandsService.resultEmotion(message, "✅", null);
         return true;
     }
 
     protected boolean fail(MessageReceivedEvent message) {
-        sendEmotion(message, "❌", null);
+        commandsService.resultEmotion(message, "❌", null);
         return false;
     }
 
     protected boolean ok(MessageReceivedEvent message, String messageCode, Object... args) {
-        sendEmotion(message, "✅", messageCode, args);
+        commandsService.resultEmotion(message, "✅", messageCode, args);
         return true;
     }
 
     protected boolean fail(MessageReceivedEvent message, String messageCode, Object... args) {
-        sendEmotion(message, "❌", messageCode, args);
+        commandsService.resultEmotion(message, "❌", messageCode, args);
         return false;
-    }
-
-    private void sendEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
-        try {
-            if (message.getGuild() == null || message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
-                    Permission.MESSAGE_ADD_REACTION)) {
-                try {
-                    message.getMessage().addReaction(emoji).queue();
-                    return;
-                } catch (InsufficientPermissionException e) {
-                    // fall down and add emoticon as message
-                }
-            }
-            String text = emoji;
-            if (StringUtils.isNotEmpty(messageCode) && messageService.hasMessage(messageCode)) {
-                text = messageService.getMessage(messageCode, args);
-            }
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, text);
-        } catch (Exception e) {
-            LOGGER.error("Add emotion error", e);
-        }
     }
 
     protected Member getMentioned(MessageReceivedEvent event) {

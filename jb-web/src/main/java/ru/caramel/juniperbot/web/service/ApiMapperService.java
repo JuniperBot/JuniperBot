@@ -24,6 +24,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
@@ -93,8 +94,7 @@ public interface ApiMapperService {
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "name", ignore = true),
-            @Mapping(target = "iconUrl", ignore = true),
-            @Mapping(target = "disabledCommands", ignore = true)
+            @Mapping(target = "iconUrl", ignore = true)
     })
     void updateCommon(CommonConfigDto source, @MappingTarget GuildConfig target);
 
@@ -154,22 +154,21 @@ public interface ApiMapperService {
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
 
+    @Mappings({
+            @Mapping(target = "enabled", ignore = true),
+            @Mapping(target = "allowedRoles", ignore = true),
+            @Mapping(target = "ignoredRoles", ignore = true),
+            @Mapping(target = "ignoredChannels", ignore = true),
+    })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
 
     List<CustomCommandDto> getCustomCommandsDto(List<CustomCommand> command);
 
     @Mappings({
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true),
-    })
-    CustomCommand getCustomCommand(CustomCommandDto command);
-
-    List<CustomCommand> getCustomCommands(List<CustomCommandDto> command);
-
-    @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true)
+            @Mapping(target = "config", ignore = true),
+            @Mapping(target = "commandConfig", ignore = true)
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 
@@ -194,6 +193,33 @@ public interface ApiMapperService {
             @Mapping(target = "guild", ignore = true)
     })
     PlaylistDto getPlaylistDto(Playlist playlist);
+
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedRoles()))", target = "allowedRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
+    })
+    CommandDto getCommandDto(CommandConfig source);
+
+    @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedRoles()))", target = "allowedRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
+    })
+    void updateCommandDto(CommandConfig source, @MappingTarget CommandDto target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedRoles()))", target = "allowedRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(!source.isEnabled())", target = "disabled")
+    })
+    void updateCommandConfig(CommandDto source, @MappingTarget CommandConfig target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

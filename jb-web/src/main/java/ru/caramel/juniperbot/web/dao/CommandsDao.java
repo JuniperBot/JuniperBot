@@ -20,7 +20,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.CommandConfigService;
 import ru.caramel.juniperbot.core.service.CommandsHolderService;
 import ru.caramel.juniperbot.web.dto.config.CommandDto;
 import ru.caramel.juniperbot.web.dto.config.CommandGroupDto;
@@ -34,20 +36,25 @@ public class CommandsDao extends AbstractDao {
     @Autowired
     private CommandsHolderService holderService;
 
+    @Autowired
+    private CommandConfigService commandConfigService;
+
     @Transactional
     public List<CommandGroupDto> get(long guildId) {
-        GuildConfig config = configService.getOrCreate(guildId);
-        Set<String> disabledSet = config.getDisabledCommands() != null
-                ? new HashSet<>(Arrays.asList(config.getDisabledCommands())) : Collections.emptySet();
+        Map<String, CommandConfig> commandConfigs = commandConfigService.findAllMap(guildId);
         return holderService.getDescriptors().entrySet().stream()
                 .filter(e -> CollectionUtils.isNotEmpty(e.getValue()))
                 .map(e -> {
                     CommandGroupDto groupDto = new CommandGroupDto();
                     groupDto.setKey(e.getKey());
                     groupDto.setCommands(e.getValue().stream().map(c -> {
+                        CommandConfig commandConfig = commandConfigs.get(c.key());
+                        if (commandConfig != null) {
+                            return apiMapper.getCommandDto(commandConfig);
+                        }
                         CommandDto commandDto = new CommandDto();
                         commandDto.setKey(c.key());
-                        commandDto.setEnabled(!disabledSet.contains(c.key()));
+                        commandDto.setEnabled(true);
                         return commandDto;
                     }).collect(Collectors.toList()));
                     return groupDto;
@@ -56,51 +63,45 @@ public class CommandsDao extends AbstractDao {
 
     @Transactional
     public void save(CommandGroupDto dto, long guildId) {
-        saveAll(Collections.singletonList(dto), guildId, true);
+        saveAll(Collections.singletonList(dto), guildId);
     }
 
     @Transactional
     public void save(CommandDto dto, long guildId) {
-        saveAllCommands(Collections.singletonList(dto), guildId, true);
+        saveAllCommands(Collections.singletonList(dto), guildId);
     }
 
     @Transactional
-    public void saveAll(Collection<CommandGroupDto> dto, long guildId, boolean differential) {
+    public void saveAll(Collection<CommandGroupDto> dto, long guildId) {
         if (CollectionUtils.isEmpty(dto)) {
             return;
         }
         saveAllCommands(dto.stream().filter(e -> CollectionUtils.isNotEmpty(e.getCommands()))
                 .flatMap(e -> e.getCommands().stream())
-                .collect(Collectors.toSet()), guildId, differential);
+                .collect(Collectors.toSet()), guildId);
 
     }
 
     @Transactional
-    public void saveAllCommands(Collection<CommandDto> dto, long guildId, boolean differential) {
+    public void saveAllCommands(Collection<CommandDto> dto, long guildId) {
         if (CollectionUtils.isEmpty(dto)) {
             return;
         }
-        GuildConfig config = configService.getOrCreate(guildId);
+        GuildConfig config = configService.getById(guildId);
+        Map<String, CommandConfig> commandConfigs = commandConfigService.findAllMap(guildId);
         Set<String> availableCommands = holderService.getPublicCommands().keySet();
-
-        Set<String> currentDisabled = config.getDisabledCommands() != null ?
-                new HashSet<>(Arrays.asList(config.getDisabledCommands()))
-                : new HashSet<>();
-
-        Set<String> toEnable = new HashSet<>();
-        Set<String> toDisable = new HashSet<>();
-        dto.stream()
+        List<CommandConfig> toSave = dto.stream()
                 .filter(e -> e.getKey() != null && availableCommands.contains(e.getKey()))
-                .forEach(e -> (e.isEnabled() ? toEnable : toDisable).add(e.getKey()));
-
-        if (differential) {
-            currentDisabled.removeAll(toEnable);
-            currentDisabled.addAll(toDisable);
-        } else {
-            currentDisabled = toDisable;
-        }
-
-        config.setDisabledCommands(currentDisabled.toArray(new String[0]));
-        configService.save(config);
+                .map(e -> {
+                    CommandConfig commandConfig = commandConfigs.get(e.getKey());
+                    if (commandConfig == null) {
+                        commandConfig = new CommandConfig();
+                        commandConfig.setGuildConfig(config);
+                    }
+                    apiMapper.updateCommandConfig(e, commandConfig);
+                    return commandConfig;
+                })
+                .collect(Collectors.toList());
+        commandConfigService.save(toSave);
     }
 }

@@ -45,6 +45,8 @@ public interface ModerationService {
 
     boolean unmute(TextChannel channel, Member member);
 
+    void refreshMute(Member member);
+
     void slowMode(TextChannel channel, int interval);
 
     boolean isRestricted(TextChannel channel, Member member);

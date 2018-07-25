@@ -53,10 +53,6 @@ public class GuildConfig extends BaseEntity {
     @Size(max = 20)
     private String prefix;
 
-    @Column(name = "disabled_commands", columnDefinition = "text[]")
-    @Type(type = "string-array")
-    private String[] disabledCommands;
-
     @Column(name = "is_help_private")
     private Boolean privateHelp;
 

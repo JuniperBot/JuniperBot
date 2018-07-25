@@ -42,7 +42,7 @@ public class CommandsController extends BaseRestController {
     @RequestMapping(value = "/commands/{guildId}", method = RequestMethod.POST)
     public void save(@GuildId @PathVariable long guildId,
                      @RequestBody @Validated List<CommandGroupDto> dto) {
-        commandsDao.saveAll(dto, guildId, false);
+        commandsDao.saveAll(dto, guildId);
     }
 
     @RequestMapping(value = "/commands/{guildId}/command", method = RequestMethod.POST)

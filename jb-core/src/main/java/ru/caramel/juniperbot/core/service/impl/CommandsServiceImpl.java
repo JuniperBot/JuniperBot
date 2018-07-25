@@ -22,7 +22,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +35,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.Command;
+import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 
@@ -55,6 +61,9 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Autowired
     private CommandsHolderService commandsHolderService;
+
+    @Autowired
+    private CommandConfigService commandConfigService;
 
     @Autowired
     private StatisticsService statisticsService;
@@ -147,14 +156,23 @@ public class CommandsServiceImpl implements CommandsService {
     @Override
     public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
         Command command = commandsHolderService.getByLocale(key);
-        if (command != null && !command.isApplicable(event, guildConfig)) {
+        if (command == null) {
             return false;
         }
-        if (command == null) {
+        String rawKey = command.getKey();
+        if (rawKey == null) {
+            return false;
+        }
+
+        CommandConfig commandConfig = guildConfig != null ? commandConfigService.findByKey(guildConfig.getGuildId(), rawKey) : null;
+        if (!isApplicable(event, command, guildConfig, commandConfig)) {
             return false;
         }
 
         if (event.getChannelType().isGuild()) {
+            if (commandConfig != null && isRestricted(event, commandConfig)) {
+                return true;
+            }
             Permission[] permissions = command.getPermissions();
             if (permissions != null && permissions.length > 0) {
                 Member self = event.getGuild().getSelfMember();
@@ -164,12 +182,7 @@ public class CommandsServiceImpl implements CommandsService {
                             .map(e -> messageService.getEnumTitle(e))
                             .collect(Collectors.joining("\n"));
                     if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
-                        if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
-                            messageService.onError(event.getChannel(), "discord.command.insufficient.permissions", list);
-                        } else {
-                            String message = messageService.getMessage("discord.command.insufficient.permissions");
-                            messageService.sendMessageSilent(event.getChannel()::sendMessage, message + "\n\n" + list);
-                        }
+                        restrictMessage(event.getTextChannel(), "discord.command.insufficient.permissions", list);
                     }
                     return true;
                 }
@@ -192,5 +205,78 @@ public class CommandsServiceImpl implements CommandsService {
             executions.mark();
         }
         return true;
+    }
+
+    @Override
+    public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
+        if (event.getTextChannel() != null && CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
+                && commandConfig.getIgnoredChannels().contains(event.getTextChannel().getIdLong())) {
+            resultEmotion(event, "❌", null);
+            return true;
+        }
+        if (event.getMember() != null) {
+            Member member = event.getMember();
+            if (CollectionUtils.isNotEmpty(commandConfig.getAllowedRoles())
+                    && member.getRoles().stream().noneMatch(e -> commandConfig.getAllowedRoles().contains(e.getIdLong()))) {
+                resultEmotion(event, "❌", null);
+                return true;
+            }
+            if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
+                    && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()))) {
+                resultEmotion(event, "❌", null);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void restrictMessage(TextChannel textChannel, String titleCode, String messageCode) {
+        if (textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
+            messageService.onError(textChannel, titleCode, messageCode);
+        } else {
+            String title = messageService.getMessage(titleCode);
+            String message = messageService.getMessage(messageCode);
+            messageService.sendMessageSilent(textChannel::sendMessage, title + "\n\n" + message);
+        }
+    }
+
+    @Override
+    public boolean isApplicable(MessageReceivedEvent event, Command command, GuildConfig config, CommandConfig commandConfig) {
+        if (!command.getClass().isAnnotationPresent(DiscordCommand.class)) {
+            return false;
+        }
+        DiscordCommand commandAnnotation = command.getClass().getAnnotation(DiscordCommand.class);
+
+        if (commandConfig != null && commandConfig.isDisabled()) {
+            return false;
+        }
+        if (!command.isAvailable(event, config)) {
+            return false;
+        }
+        if (commandAnnotation.source().length == 0) {
+            return true;
+        }
+        return ArrayUtils.contains(commandAnnotation.source(), event.getChannelType());
+    }
+
+    public void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
+        try {
+            if (message.getGuild() == null || message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+                    Permission.MESSAGE_ADD_REACTION)) {
+                try {
+                    message.getMessage().addReaction(emoji).queue();
+                    return;
+                } catch (InsufficientPermissionException e) {
+                    // fall down and add emoticon as message
+                }
+            }
+            String text = emoji;
+            if (StringUtils.isNotEmpty(messageCode) && messageService.hasMessage(messageCode)) {
+                text = messageService.getMessage(messageCode, args);
+            }
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, text);
+        } catch (Exception e) {
+            LOGGER.error("Add emotion error", e);
+        }
     }
 }

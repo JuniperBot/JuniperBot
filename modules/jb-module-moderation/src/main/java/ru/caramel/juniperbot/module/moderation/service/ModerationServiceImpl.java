@@ -23,6 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,8 +42,10 @@ import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
 import ru.caramel.juniperbot.module.moderation.model.SlowMode;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
 import ru.caramel.juniperbot.module.moderation.persistence.repository.MemberWarningRepository;
 import ru.caramel.juniperbot.module.moderation.persistence.repository.ModerationConfigRepository;
+import ru.caramel.juniperbot.module.moderation.persistence.repository.MuteStateRepository;
 
 import java.awt.*;
 import java.util.*;
@@ -63,6 +66,9 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private MemberWarningRepository warningRepository;
+
+    @Autowired
+    private MuteStateRepository muteStateRepository;
 
     @Autowired
     private ConfigService configService;
@@ -246,6 +252,10 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     public boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason) {
+        return mute(channel, member, global, duration, reason, false);
+    }
+
+    private boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason, boolean stateless) {
         // TODO reason will be implemented in audit
         if (global) {
             Role mutedRole = getMutedRole(member.getGuild());
@@ -255,9 +265,13 @@ public class ModerationServiceImpl implements ModerationService {
                         .addRolesToMember(member, mutedRole)
                         .queue();
                 member.getGuild().getController().setMute(member, true).queue(e -> {
-                    if (duration != null) {
-                        scheduleUnMute(channel, member, duration);
+                    if (!stateless) {
+                        if (duration != null) {
+                            scheduleUnMute(true, channel, member, duration);
+                        }
+                        storeState(true, channel, member, duration, reason);
                     }
+
                 });
                 return true;
             }
@@ -271,9 +285,13 @@ public class ModerationServiceImpl implements ModerationService {
                 channel.createPermissionOverride(member)
                         .setDeny(Permission.MESSAGE_WRITE)
                         .queue(e -> {
-                            if (duration != null) {
-                                scheduleUnMute(channel, member, duration);
+                            if (!stateless) {
+                                if (duration != null) {
+                                    scheduleUnMute(false, channel, member, duration);
+                                }
+                                storeState(false, channel, member, duration, reason);
                             }
+
                         });
                 return true;
             }
@@ -282,6 +300,7 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
+    @Transactional
     public boolean unmute(TextChannel channel, Member member) {
         boolean result = false;
         Role mutedRole = getMutedRole(member.getGuild());
@@ -300,14 +319,45 @@ public class ModerationServiceImpl implements ModerationService {
                 result = true;
             }
         }
+        muteStateRepository.deleteByMember(member);
         removeUnMuteSchedule(member);
         return result;
     }
 
-    private void scheduleUnMute(TextChannel channel, Member member, int duration) {
+    @Override
+    public void refreshMute(Member member) {
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        try {
+            List<MuteState> muteStates = muteStateRepository.findAllByMember(member);
+            if (CollectionUtils.isNotEmpty(muteStates)) {
+                muteStates.forEach(e -> processState(member, e));
+                return;
+            }
+
+            JobKey key = UnMuteJob.getKey(member);
+            if (!scheduler.checkExists(key)) {
+                return;
+            }
+            JobDetail detail = scheduler.getJobDetail(key);
+            if (detail == null) {
+                return;
+            }
+            JobDataMap data = detail.getJobDataMap();
+            boolean global = data.getBoolean(UnMuteJob.ATTR_GLOBAL_ID);
+            String channelId = data.getString(UnMuteJob.ATTR_CHANNEL_ID);
+            TextChannel textChannel = channelId != null ? member.getGuild().getTextChannelById(channelId) : null;
+            if (global || textChannel != null) {
+                mute(textChannel, member, global, null, null);
+            }
+        } catch (SchedulerException e) {
+            // fall down, we don't care
+        }
+    }
+
+    private void scheduleUnMute(boolean global, TextChannel channel, Member member, int duration) {
         try {
             removeUnMuteSchedule(member);
-            JobDetail job = UnMuteJob.createDetails(channel, member);
+            JobDetail job = UnMuteJob.createDetails(global, channel, member);
             Trigger trigger = TriggerBuilder
                     .newTrigger()
                     .startAt(DateTime.now().plusMinutes(duration).toDate())
@@ -317,6 +367,35 @@ public class ModerationServiceImpl implements ModerationService {
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void storeState(boolean global, TextChannel channel, Member member, Integer duration, String reason) {
+        MuteState state = new MuteState();
+        state.setGlobal(global);
+        state.setUserId(member.getUser().getId());
+        state.setGuildId(member.getGuild().getId());
+        state.setExpire(DateTime.now().plusMinutes(duration).toDate());
+        state.setReason(reason);
+        if (channel != null) {
+            state.setChannelId(channel.getId());
+        }
+        muteStateRepository.save(state);
+    }
+
+    private void processState(Member member, MuteState muteState) {
+        DateTime now = DateTime.now();
+        DateTime expire = muteState.getExpire() != null ? new DateTime(muteState.getExpire()) : null;
+        if (expire != null && now.isAfter(expire)) {
+            return;
+        }
+
+        TextChannel textChannel = muteState.getChannelId() != null ? member.getGuild().getTextChannelById(muteState.getChannelId()) : null;
+        if (!muteState.isGlobal() && textChannel == null) {
+            return;
+        }
+
+        Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
+        mute(textChannel, member, muteState.isGlobal(), duration, muteState.getReason(), true);
     }
 
     private void removeUnMuteSchedule(Member member) {

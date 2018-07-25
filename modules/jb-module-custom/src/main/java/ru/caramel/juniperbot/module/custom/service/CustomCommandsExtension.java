@@ -12,6 +12,7 @@ import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CustomCommandsExtension implements CommandExtension {
@@ -27,7 +28,9 @@ public class CustomCommandsExtension implements CommandExtension {
     public void extendHelp(MessageReceivedEvent event, BotContext context, EmbedBuilder embedBuilder) {
         // Пользовательские команды
         if (event.getChannelType().isGuild() && context.getConfig() != null) {
-            List<CustomCommand> commands = commandRepository.findByConfig(context.getConfig());
+            List<CustomCommand> commands = commandRepository.findByConfig(context.getConfig()).stream()
+                    .filter(e -> e.getCommandConfig() == null || !e.getCommandConfig().isDisabled())
+                    .collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(commands)) {
                 StringBuilder list = new StringBuilder();
                 commands.forEach(e -> {

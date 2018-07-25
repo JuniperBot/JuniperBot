@@ -14,26 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.module.moderation.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.io.Serializable;
-import java.util.Set;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
+import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
 
-@Getter
-@Setter
-public class CommandDto implements Serializable {
+@Repository
+public interface MuteStateRepository extends MemberRepository<MuteState> {
 
-    private static final long serialVersionUID = 6868784854320464983L;
-
-    private String key;
-
-    private boolean enabled;
-
-    private Set<String> allowedRoles;
-
-    private Set<String> ignoredRoles;
-
-    private Set<String> ignoredChannels;
 }

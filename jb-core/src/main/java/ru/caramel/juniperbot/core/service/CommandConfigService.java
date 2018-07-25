@@ -14,26 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.core.service;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.io.Serializable;
-import java.util.Set;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 
-@Getter
-@Setter
-public class CommandDto implements Serializable {
+import java.util.List;
+import java.util.Map;
 
-    private static final long serialVersionUID = 6868784854320464983L;
+public interface CommandConfigService {
 
-    private String key;
+    List<CommandConfig> findAll(long guildId);
 
-    private boolean enabled;
+    Map<String, CommandConfig> findAllMap(long guildId);
 
-    private Set<String> allowedRoles;
+    CommandConfig findByKey(long guildId, String key);
 
-    private Set<String> ignoredRoles;
+    CommandConfig save(CommandConfig config);
 
-    private Set<String> ignoredChannels;
+    Iterable<CommandConfig> save(Iterable<CommandConfig> config);
+
 }

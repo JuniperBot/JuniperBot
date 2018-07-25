@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -82,6 +83,14 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         if (command == null) {
             return false;
         }
+
+        if (command.getCommandConfig() != null) {
+            CommandConfig commandConfig = command.getCommandConfig();
+            if (commandConfig.isDisabled() || commandsService.isRestricted(event, commandConfig)) {
+                return true;
+            }
+        }
+
         String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
         switch (command.getType()) {
             case ALIAS:

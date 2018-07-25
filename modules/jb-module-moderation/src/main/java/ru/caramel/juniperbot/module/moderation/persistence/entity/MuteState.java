@@ -14,26 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.module.moderation.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.io.Serializable;
-import java.util.Set;
+import ru.caramel.juniperbot.core.persistence.entity.base.MemberEntity;
+
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.util.Date;
 
 @Getter
 @Setter
-public class CommandDto implements Serializable {
+@Entity
+@NoArgsConstructor
+@Table(name = "mute_state")
+public class MuteState extends MemberEntity {
 
-    private static final long serialVersionUID = 6868784854320464983L;
+    private static final long serialVersionUID = -7592224653192706689L;
 
-    private String key;
+    @Column
+    private boolean global;
 
-    private boolean enabled;
+    @Column(name = "channel_id")
+    private String channelId;
 
-    private Set<String> allowedRoles;
+    @Column
+    @Size(max = 2000)
+    private String reason;
 
-    private Set<String> ignoredRoles;
-
-    private Set<String> ignoredChannels;
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expire;
 }

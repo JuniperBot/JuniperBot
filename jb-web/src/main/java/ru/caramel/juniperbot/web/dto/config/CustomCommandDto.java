@@ -24,11 +24,12 @@ import ru.caramel.juniperbot.module.custom.model.CommandType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 
 @Getter
 @Setter
-public class CustomCommandDto implements Serializable {
+public class CustomCommandDto extends CommandDto {
+
+    private static final long serialVersionUID = 7586224126349916457L;
 
     private Long id;
 

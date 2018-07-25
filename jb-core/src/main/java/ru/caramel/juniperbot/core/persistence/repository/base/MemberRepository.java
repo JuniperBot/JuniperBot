@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.persistence.repository.base;
 
+import net.dv8tion.jda.core.entities.Member;
 import org.springframework.data.repository.NoRepositoryBean;
 import ru.caramel.juniperbot.core.persistence.entity.base.MemberEntity;
 
@@ -26,7 +27,21 @@ public interface MemberRepository<T extends MemberEntity> extends GuildRepositor
 
     List<T> findByGuildId(String guildId);
 
-    List<T> findByGuildIdAndUserId(String guildId, String userId);
+    List<T> findAllByGuildIdAndUserId(String guildId, String userId);
 
-    T findOneByGuildIdAndUserId(String guildId, String userId);
+    T findByGuildIdAndUserId(String guildId, String userId);
+
+    void deleteByGuildIdAndUserId(String guildId, String userId);
+
+    default List<T> findAllByMember(Member member) {
+        return findAllByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+    }
+
+    default T findByMember(Member member) {
+        return findByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+    }
+
+    default void deleteByMember(Member member) {
+        deleteByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+    }
 }
