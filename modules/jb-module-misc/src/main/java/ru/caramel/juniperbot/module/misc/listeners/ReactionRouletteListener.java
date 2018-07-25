@@ -61,7 +61,7 @@ public class ReactionRouletteListener extends DiscordEventListener {
 
             Emote emote = emotes.get(RandomUtils.nextInt(0, emotes.size() - 1));
             if (roulette.isReaction() && guild.getSelfMember().hasPermission(event.getChannel(),
-                    Permission.MESSAGE_ADD_REACTION)) {
+                    Permission.MESSAGE_ADD_REACTION) && emote.canInteract(event.getJDA().getSelfUser(), event.getChannel())) {
                 event.getMessage().addReaction(emote).queue();
             } else if (guild.getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_WRITE)) {
                 event.getChannel().sendMessage(emote.getAsMention()).queue();
