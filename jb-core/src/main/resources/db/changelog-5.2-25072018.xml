@@ -90,4 +90,33 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5.2-25072018-5" author="caramel">
+        <createTable tableName="mute_state">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_mute_state"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="global" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="VARCHAR(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expire" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+        <createIndex tableName="mute_state" indexName="idx_mute_state_member">
+            <column name="guild_id"/>
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

@@ -29,10 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 public class UnMuteJob extends AbstractJob {
 
-    private static final String ATTR_USER_ID = "userId";
-    private static final String ATTR_GUILD_ID = "guildId";
-    private static final String ATTR_CHANNEL_ID = "channelId";
-    private static final String GROUP = "UnMuteJob-group";
+    public static final String ATTR_USER_ID = "userId";
+    public static final String ATTR_GUILD_ID = "guildId";
+    public static final String ATTR_GLOBAL_ID = "global";
+    public static final String ATTR_CHANNEL_ID = "channelId";
+    public static final String GROUP = "UnMuteJob-group";
 
     @Autowired
     private DiscordService discordService;
@@ -68,11 +69,12 @@ public class UnMuteJob extends AbstractJob {
         }
     }
 
-    public static JobDetail createDetails(TextChannel channel, Member member) {
+    public static JobDetail createDetails(boolean global, TextChannel channel, Member member) {
         return JobBuilder
                 .newJob(UnMuteJob.class)
                 .withIdentity(getKey(member))
                 .usingJobData(ATTR_GUILD_ID, member.getGuild().getId())
+                .usingJobData(ATTR_GLOBAL_ID, String.valueOf(global))
                 .usingJobData(ATTR_USER_ID, member.getUser().getId())
                 .usingJobData(ATTR_CHANNEL_ID, channel != null ? channel.getId() : null)
                 .build();
