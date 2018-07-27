@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.moderation.persistence.repository;
 
+import net.dv8tion.jda.core.entities.Member;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.repository.base.MemberRepository;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
@@ -23,4 +24,9 @@ import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
 @Repository
 public interface MuteStateRepository extends MemberRepository<MuteState> {
 
+    void deleteByGuildIdAndUserIdAndChannelId(String guildId, String userId, String channelId);
+
+    default void deleteByMember(Member member, String channelId) {
+        deleteByGuildIdAndUserIdAndChannelId(member.getGuild().getId(), member.getUser().getId(), channelId);
+    }
 }

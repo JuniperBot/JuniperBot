@@ -319,18 +319,18 @@ public class ModerationServiceImpl implements ModerationService {
                 result = true;
             }
         }
-        muteStateRepository.deleteByMember(member);
-        removeUnMuteSchedule(member);
+        removeUnMuteSchedule(member, channel);
         return result;
     }
 
     @Override
+    @Transactional
     public void refreshMute(Member member) {
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
         try {
             List<MuteState> muteStates = muteStateRepository.findAllByMember(member);
             if (CollectionUtils.isNotEmpty(muteStates)) {
-                muteStates.forEach(e -> processState(member, e));
+                muteStates.stream().filter(e -> !processState(member, e)).forEach(muteStateRepository::delete);
                 return;
             }
 
@@ -356,7 +356,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     private void scheduleUnMute(boolean global, TextChannel channel, Member member, int duration) {
         try {
-            removeUnMuteSchedule(member);
+            removeUnMuteSchedule(member, channel);
             JobDetail job = UnMuteJob.createDetails(global, channel, member);
             Trigger trigger = TriggerBuilder
                     .newTrigger()
@@ -382,28 +382,37 @@ public class ModerationServiceImpl implements ModerationService {
         muteStateRepository.save(state);
     }
 
-    private void processState(Member member, MuteState muteState) {
+    private boolean processState(Member member, MuteState muteState) {
         DateTime now = DateTime.now();
         DateTime expire = muteState.getExpire() != null ? new DateTime(muteState.getExpire()) : null;
         if (expire != null && now.isAfter(expire)) {
-            return;
+            return false;
         }
 
         TextChannel textChannel = muteState.getChannelId() != null ? member.getGuild().getTextChannelById(muteState.getChannelId()) : null;
         if (!muteState.isGlobal() && textChannel == null) {
-            return;
+            return false;
         }
 
         Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
         mute(textChannel, member, muteState.isGlobal(), duration, muteState.getReason(), true);
+        return true;
     }
 
-    private void removeUnMuteSchedule(Member member) {
+    private void removeUnMuteSchedule(Member member, TextChannel channel) {
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
         try {
             JobKey key = UnMuteJob.getKey(member);
             if (scheduler.checkExists(key)) {
                 scheduler.deleteJob(key);
+                muteStateRepository.deleteByMember(member);
+            }
+            if (channel != null) {
+                key = UnMuteJob.getKey(member, channel);
+                if (scheduler.checkExists(key)) {
+                    scheduler.deleteJob(key);
+                }
+                muteStateRepository.deleteByMember(member, channel.getId()); // remove it even if job non exists
             }
         } catch (SchedulerException e) {
             // fall down, we don't care
@@ -533,6 +542,12 @@ public class ModerationServiceImpl implements ModerationService {
         Objects.requireNonNull(warning, "No warning specified to remove");
         warning.setActive(false);
         warningRepository.save(warning);
+    }
+
+    @Override
+    @Transactional
+    public void clearState(String guildId, String userId, String channelId) {
+        muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
     }
 
     private void notifyUserAction(Consumer<Void> consumer, Member member, String code, String reason, Object... objects) {

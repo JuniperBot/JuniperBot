@@ -55,6 +55,10 @@ public class UnMuteJob extends AbstractJob {
         String guildId = data.getString(ATTR_GUILD_ID);
         String channelId = data.getString(ATTR_CHANNEL_ID);
 
+        if (guildId != null && userId != null && channelId != null) {
+            moderationService.clearState(guildId, userId, channelId);
+        }
+
         Guild guild = shardManager.getGuildById(guildId);
         if (guild != null) {
             if (!guild.isAvailable()) {
@@ -72,7 +76,7 @@ public class UnMuteJob extends AbstractJob {
     public static JobDetail createDetails(boolean global, TextChannel channel, Member member) {
         return JobBuilder
                 .newJob(UnMuteJob.class)
-                .withIdentity(getKey(member))
+                .withIdentity(channel != null ? getKey(member,channel) : getKey(member))
                 .usingJobData(ATTR_GUILD_ID, member.getGuild().getId())
                 .usingJobData(ATTR_GLOBAL_ID, String.valueOf(global))
                 .usingJobData(ATTR_USER_ID, member.getUser().getId())
@@ -82,6 +86,15 @@ public class UnMuteJob extends AbstractJob {
 
     public static JobKey getKey(Member member) {
         String identity = String.format("%s-%s-%s", GROUP, member.getGuild().getId(), member.getUser().getId());
+        return new JobKey(identity, GROUP);
+    }
+
+    public static JobKey getKey(Member member, TextChannel channel) {
+        String identity = String.format("%s-%s-%s-%s",
+                GROUP,
+                member.getGuild().getId(),
+                member.getUser().getId(),
+                channel.getId());
         return new JobKey(identity, GROUP);
     }
 }
