@@ -60,19 +60,20 @@ public class InfoCommand extends AbstractInfoCommand {
 
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
-        builder.setImage(brandingService.getAvatarUrl());
+        builder.setThumbnail(brandingService.getAvatarUrl());
         builder.setDescription(messageService.getMessage("discord.command.info.description", prefix));
 
         builder.addField(
                 messageService.getMessage("discord.command.info.author.title"),
                 messageService.getMessage("about.support.owner"), true);
 
-        DateTimeFormatter formatter = DateTimeFormat.shortDateTime().withLocale(contextService.getLocale());
+        DateTimeFormatter formatter = DateTimeFormat
+                .fullDateTime()
+                .withLocale(contextService.getLocale())
+                .withZone(context.getTimeZone());
         builder.addField(
                 messageService.getMessage("discord.command.info.version.title"),
                 String.format("%s (%s)", appVersion, formatter.print(buildTimestamp)), true);
-
-        builder.addBlankField(true);
 
         builder.addField(
                 messageService.getMessage("discord.command.info.links.title"),

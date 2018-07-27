@@ -61,6 +61,9 @@ public class GuildConfig extends BaseEntity {
     @Size(max = 10)
     private String locale;
 
+    @Column(name = "time_zone")
+    private String timeZone;
+
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.quartz.*;
@@ -33,7 +32,7 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.reminder.jobs.ReminderJob;
 import ru.caramel.juniperbot.module.reminder.utils.TimeSequenceParser;
 
@@ -46,8 +45,6 @@ import java.util.regex.Pattern;
         group = "discord.command.group.utility",
         priority = 1)
 public class RemindCommand extends AbstractCommand {
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(DateTimeZone.forID("Europe/Moscow"));
 
     private static final Pattern PATTERN = Pattern.compile("^(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(\\d{2}:\\d{2})\\s+(.*)$");
 
@@ -68,7 +65,7 @@ public class RemindCommand extends AbstractCommand {
             String reminder = null;
             Matcher m = PATTERN.matcher(content);
             if (m.find()) {
-                date = FORMATTER.parseDateTime(String.format("%s %s", m.group(1), m.group(2)));
+                date = getFormatter(context).parseDateTime(String.format("%s %s", m.group(1), m.group(2)));
                 reminder = m.group(3);
                 if (DateTime.now().isAfter(date)) {
                     messageService.onError(message.getChannel(), "discord.command.remind.error.future");
@@ -101,13 +98,17 @@ public class RemindCommand extends AbstractCommand {
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.remind.help.title"));
         builder.addField(
-                messageService.getMessage("discord.command.remind.help.field1.title"),
-                messageService.getMessage("discord.command.remind.help.field1.value", prefix, FORMATTER.print(current)), false);
+                messageService.getMessage("discord.command.remind.help.field1.title", CommonUtils.getUTCOffset(context.getTimeZone())),
+                messageService.getMessage("discord.command.remind.help.field1.value", prefix, getFormatter(context).print(current)), false);
         builder.addField(
                 messageService.getMessage("discord.command.remind.help.field2.title"),
                 messageService.getMessage("discord.command.remind.help.field2.value", prefix), false);
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return false;
+    }
+
+    private DateTimeFormatter getFormatter(BotContext context) {
+        return DateTimeFormat.forPattern("dd.MM.yyyy HH:mm").withZone(context.getTimeZone());
     }
 
     private void createReminder(MessageChannel channel, Member member, String message, Date date) {

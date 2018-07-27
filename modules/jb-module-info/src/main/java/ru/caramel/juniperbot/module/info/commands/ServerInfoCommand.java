@@ -49,7 +49,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
         builder.addField(getVerificationLevel(guild));
         builder.addField(getRegion(guild));
         builder.addField(getOwner(guild));
-        builder.addField(getCreatedAt(guild));
+        builder.addField(getCreatedAt(guild, context));
 
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
@@ -70,8 +70,10 @@ public class ServerInfoCommand extends AbstractInfoCommand {
                 messageService.getEnumTitle(guild.getRegion()), true);
     }
 
-    private MessageEmbed.Field getCreatedAt(Guild guild) {
-        DateTimeFormatter formatter = DateTimeFormat.fullDateTime().withLocale(contextService.getLocale());
+    private MessageEmbed.Field getCreatedAt(Guild guild, BotContext context) {
+        DateTimeFormatter formatter = DateTimeFormat.fullDateTime()
+                .withLocale(contextService.getLocale())
+                .withZone(context.getTimeZone());
         return getDateField(guild.getCreationTime().toEpochSecond(), "discord.command.server.createdAt",
                 formatter);
     }
@@ -94,12 +96,12 @@ public class ServerInfoCommand extends AbstractInfoCommand {
     private MessageEmbed.Field getMemberListField(Guild guild) {
         List<Member> memberList = guild.getMembers();
         class Info {
-            long userCount = 0;
-            long botCount = 0;
-            long online = 0;
-            long offline = 0;
-            long dnd = 0;
-            long idle = 0;
+            private long userCount = 0;
+            private long botCount = 0;
+            private long online = 0;
+            private long offline = 0;
+            private long dnd = 0;
+            private long idle = 0;
         }
         Info memberInfo = new Info();
         guild.getMembers().forEach(member -> {

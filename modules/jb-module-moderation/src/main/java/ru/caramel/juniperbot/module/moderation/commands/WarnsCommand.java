@@ -28,6 +28,7 @@ import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class WarnsCommand extends ModeratorCommandAsync {
 
         DateTimeFormatter formatter = DateTimeFormat
                 .shortDateTime()
-                .withZone(DateTimeZone.UTC)
+                .withZone(context.getTimeZone())
                 .withLocale(contextService.getLocale());
 
         int i = 1;
@@ -72,7 +73,9 @@ public class WarnsCommand extends ModeratorCommandAsync {
             entryBuilder
                     .append(String.format("`%2s. ", i++))
                     .append(formatter.print(new DateTime(warning.getDate())))
-                    .append(" UTC` ")
+                    .append(" ")
+                    .append(CommonUtils.getUTCOffset(context.getTimeZone()))
+                    .append("` ")
                     .append(warning.getModerator().getEffectiveName());
             if (StringUtils.isNotEmpty(warning.getReason())) {
                 entryBuilder.append(": ").append(warning.getReason());

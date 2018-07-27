@@ -27,4 +27,15 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5.3-26072018-2" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="time_zone" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5.3-26072018-3" author="caramel">
+        <sql>UPDATE guild_config SET time_zone = 'Etc/Greenwich'</sql>
+        <addNotNullConstraint tableName="guild_config" columnName="time_zone"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -40,6 +40,9 @@ public class CommonConfigDto implements Serializable {
     @NotBlank
     private String locale;
 
+    @NotBlank
+    private String timeZone;
+
     private boolean privateHelp;
 
     @Valid

@@ -37,8 +37,7 @@ public class ModerationConfigDto implements Serializable {
 
     private boolean publicColors;
 
-    @Min(ModerationConfig.DEFAULT_MAX_WARNINGS)
-    @Max(20)
+    @Min(2)
     private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
 
     @NotNull

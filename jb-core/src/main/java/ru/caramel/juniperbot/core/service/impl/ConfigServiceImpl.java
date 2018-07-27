@@ -112,6 +112,7 @@ public class ConfigServiceImpl implements ConfigService {
             config = new GuildConfig(serverId);
             config.setPrefix(defaultPrefix);
             config.setLocale(ContextService.DEFAULT_LOCALE);
+            config.setTimeZone("Etc/Greenwich");
             repository.save(config);
         }
         return config;

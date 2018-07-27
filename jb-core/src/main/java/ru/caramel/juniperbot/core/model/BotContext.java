@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
+import org.joda.time.DateTimeZone;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 import java.util.Map;
@@ -58,5 +59,16 @@ public class BotContext {
     public <T> T removeAttribute(Class<T> type, String key) {
         Object value = removeAttribute(key);
         return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;
+    }
+
+    public DateTimeZone getTimeZone() {
+        if (config != null) {
+            try {
+                return DateTimeZone.forID(config.getTimeZone());
+            } catch (IllegalArgumentException e) {
+                // fall down
+            }
+        }
+        return DateTimeZone.UTC;
     }
 }

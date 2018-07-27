@@ -35,6 +35,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -243,5 +244,14 @@ public final class CommonUtils {
         value = value.replace("@everyone", "@\u2063everyone");
         value = value.replace("@here", "@\u2063here");
         return value;
+    }
+
+    public static String getUTCOffset(DateTimeZone zone) {
+        int offset = zone.getOffset(DateTime.now());
+
+        long hours = TimeUnit.MILLISECONDS.toHours(offset);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(offset - TimeUnit.HOURS.toMillis(hours));
+
+        return String.format("UTC%s%d:%02d", hours > 0 ? '+' : '-', hours, minutes);
     }
 }

@@ -18,16 +18,13 @@ package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
-import ru.caramel.juniperbot.core.service.ContextService;
 
 public abstract class AbstractInfoCommand extends AbstractCommand {
 
     protected MessageEmbed.Field getDateField(long epochSecond, String nameKey, DateTimeFormatter formatter) {
-        DateTime dateTime = new DateTime(epochSecond * 1000).withZone(DateTimeZone.UTC);
+        DateTime dateTime = new DateTime(epochSecond * 1000);
         return new MessageEmbed.Field(messageService.getMessage(nameKey),
                 String.format("**%s**", formatter.print(dateTime)), true);
     }

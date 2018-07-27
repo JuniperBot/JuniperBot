@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.common.validation;
 
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -44,6 +45,12 @@ public class ConfigValidator implements Validator {
         CommonConfigDto configDto = (CommonConfigDto) target;
         if (!contextService.isSupported(configDto.getLocale())) {
             errors.rejectValue("locale", "validation.config.locale.message");
+        }
+
+        try {
+            DateTimeZone.forID(configDto.getTimeZone());
+        } catch (IllegalArgumentException e) {
+            errors.rejectValue("timeZone", "validation.config.timezone.message");
         }
     }
 }
