@@ -197,6 +197,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedRoles()))", target = "allowedRoles"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedChannels()))", target = "allowedChannels"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
             @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
     })
@@ -205,6 +206,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedRoles()))", target = "allowedRoles"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedChannels()))", target = "allowedChannels"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
             @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
     })
@@ -216,6 +218,7 @@ public interface ApiMapperService {
             @Mapping(target = "guildConfig", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedRoles()))", target = "allowedRoles"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredRoles()))", target = "ignoredRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedChannels()))", target = "allowedChannels"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
             @Mapping(expression = "java(!source.isEnabled())", target = "disabled")
     })

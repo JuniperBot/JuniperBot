@@ -35,6 +35,10 @@ public class CommandConfig extends GuildOwnedEntity {
     private List<Long> ignoredRoles;
 
     @Type(type = "jsonb")
+    @Column(name = "allowed_channels", columnDefinition = "json")
+    private List<Long> allowedChannels;
+
+    @Type(type = "jsonb")
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
 

@@ -35,5 +35,7 @@ public class CommandDto implements Serializable {
 
     private Set<String> ignoredRoles;
 
+    private Set<String> allowedChannels;
+
     private Set<String> ignoredChannels;
 }

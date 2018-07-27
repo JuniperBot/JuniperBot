@@ -209,11 +209,19 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
-        if (event.getTextChannel() != null && CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
-                && commandConfig.getIgnoredChannels().contains(event.getTextChannel().getIdLong())) {
-            resultEmotion(event, "❌", null);
-            return true;
+        if (event.getTextChannel() != null) {
+            if (CollectionUtils.isNotEmpty(commandConfig.getAllowedChannels())
+                    && !commandConfig.getAllowedChannels().contains(event.getTextChannel().getIdLong())) {
+                resultEmotion(event, "❌", null);
+                return true;
+            }
+            if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
+                    && commandConfig.getIgnoredChannels().contains(event.getTextChannel().getIdLong())) {
+                resultEmotion(event, "❌", null);
+                return true;
+            }
         }
+
         if (event.getMember() != null) {
             Member member = event.getMember();
             if (CollectionUtils.isNotEmpty(commandConfig.getAllowedRoles())
