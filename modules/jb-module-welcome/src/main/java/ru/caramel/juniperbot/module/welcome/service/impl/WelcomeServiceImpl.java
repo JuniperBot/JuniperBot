@@ -28,7 +28,7 @@ import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 @Service
 public class WelcomeServiceImpl implements WelcomeService {
 
-    private static final String CACHE_NAME = "rouletteByGuildId";
+    private static final String CACHE_NAME = "welcomeByGuildId";
 
     @Autowired
     private WelcomeMessageRepository repository;
