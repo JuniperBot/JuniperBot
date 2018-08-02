@@ -25,6 +25,7 @@
     <!--<metrics:health-check-registry id="health" />-->
     <metrics:annotation-driven metric-registry="metricRegistry" />
     <metrics:reporter type="console" metric-registry="metricRegistry" period="1d" />
+    <metrics:reporter type="jmx" metric-registry="metricRegistry" />
 
     <metrics:register metric-registry="metricRegistry">
         <bean metrics:name="jvm" class="com.codahale.metrics.JvmAttributeGaugeSet" />

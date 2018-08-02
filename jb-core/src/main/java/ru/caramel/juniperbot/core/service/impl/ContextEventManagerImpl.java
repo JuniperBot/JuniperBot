@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import com.codahale.metrics.Timer;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.StatisticsService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
@@ -44,6 +46,9 @@ public class ContextEventManagerImpl implements IEventManager {
 
     @Autowired
     private CommandsService commandsService;
+
+    @Autowired
+    private StatisticsService statisticsService;
 
     @Autowired
     @Qualifier(RequestScopedCacheManager.NAME)
@@ -67,29 +72,47 @@ public class ContextEventManagerImpl implements IEventManager {
         try {
             cacheManager.clear();
             contextService.initContext(event);
-            if (event instanceof MessageReceivedEvent) {
-                try {
-                    commandsService.onMessageReceived((MessageReceivedEvent) event);
-                } catch (Exception e) {
-                    LOGGER.error("Could not process command", e);
-                }
+            if (statisticsService.isDetailed()) {
+                statisticsService.doWithTimer(getTimer(event), () -> {
+                    handleInternal(event);
+                });
+            } else {
+                handleInternal(event);
             }
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Handle event: " + event);
-            }
-            for (EventListener listener : listeners) {
-                try {
-                    listener.onEvent(event);
-                } catch (Throwable throwable) {
-                    LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
-                }
-            }
-            contextService.resetContext();
         } catch (Exception e) {
             LOGGER.error("Event manager caused an uncaught exception", e);
         } finally {
+            contextService.resetContext();
             cacheManager.clear();
+        }
+    }
+
+    private Timer getTimer(Event event) {
+        int shard = -1;
+        if (event.getJDA() != null && event.getJDA().getShardInfo() != null) {
+            shard = event.getJDA().getShardInfo().getShardId();
+        }
+        return statisticsService.getTimer(String.format("event/shard.%d/%s", shard, event.getClass().getName()));
+    }
+
+    private void handleInternal(Event event) {
+        if (event instanceof MessageReceivedEvent) {
+            try {
+                commandsService.onMessageReceived((MessageReceivedEvent) event);
+            } catch (Exception e) {
+                LOGGER.error("Could not process command", e);
+            }
+        }
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Handle event: " + event);
+        }
+        for (EventListener listener : listeners) {
+            try {
+                listener.onEvent(event);
+            } catch (Throwable throwable) {
+                LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
+            }
         }
     }
 

@@ -18,9 +18,12 @@ package ru.caramel.juniperbot.core.service;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import net.dv8tion.jda.core.JDA;
 
 public interface StatisticsService {
+
+    Timer getTimer(String name);
 
     Meter getMeter(String name);
 
@@ -29,4 +32,12 @@ public interface StatisticsService {
     void notifyProviders(JDA shard);
 
     void persistMetrics();
+
+    boolean isDetailed();
+
+    void setDetailed(boolean detailed);
+
+    void doWithTimer(String name, Runnable action);
+
+    void doWithTimer(Timer timer, Runnable action);
 }
