@@ -60,41 +60,42 @@ public class GuildListener extends DiscordEventListener {
         if (member.getUser().isBot() || playerService.isActive(guild)) {
             return;
         }
+        contextService.withContextAsync(guild, () -> {
+            MusicConfig config = musicConfigService.getConfig(guild);
 
-        MusicConfig config = musicConfigService.getConfig(guild);
-
-        VoiceChannel targetChannel = null;
-        if (config.getChannelId() != null) {
-            targetChannel = guild.getVoiceChannelById(config.getChannelId());
-        }
-        if (!hasPermission(targetChannel)) {
-            for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
-                if (hasPermission(voiceChannel)) {
-                    targetChannel = voiceChannel;
-                    break;
-                }
+            VoiceChannel targetChannel = null;
+            if (config.getChannelId() != null) {
+                targetChannel = guild.getVoiceChannelById(config.getChannelId());
             }
-        }
-
-        if (joinedChannel.equals(targetChannel) && targetChannel.getMembers().size() < 2 && StringUtils.isNotEmpty(config.getAutoPlay())) {
-            TextChannel channel = null;
-            if (config.getTextChannelId() != null) {
-                channel = guild.getTextChannelById(config.getTextChannelId());
-            }
-
-            if (!hasPermission(channel)) {
-                for (TextChannel textChannel : guild.getTextChannels()) {
-                    if (hasPermission(textChannel)) {
-                        channel = textChannel;
+            if (!hasPermission(targetChannel)) {
+                for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
+                    if (hasPermission(voiceChannel)) {
+                        targetChannel = voiceChannel;
                         break;
                     }
                 }
             }
 
-            if (channel != null) {
-                playerService.loadAndPlay(channel, member, config.getAutoPlay());
+            if (joinedChannel.equals(targetChannel) && targetChannel.getMembers().size() < 2 && StringUtils.isNotEmpty(config.getAutoPlay())) {
+                TextChannel channel = null;
+                if (config.getTextChannelId() != null) {
+                    channel = guild.getTextChannelById(config.getTextChannelId());
+                }
+
+                if (!hasPermission(channel)) {
+                    for (TextChannel textChannel : guild.getTextChannels()) {
+                        if (hasPermission(textChannel)) {
+                            channel = textChannel;
+                            break;
+                        }
+                    }
+                }
+
+                if (channel != null) {
+                    playerService.loadAndPlay(channel, member, config.getAutoPlay());
+                }
             }
-        }
+        });
     }
 
     private boolean hasPermission(TextChannel channel) {

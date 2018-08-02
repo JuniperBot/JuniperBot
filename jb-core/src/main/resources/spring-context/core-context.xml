@@ -60,7 +60,7 @@
     </bean>
 
     <cache:annotation-driven />
-    <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager"/>
+    <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
     <bean id="requestScopeCacheManager" class="ru.caramel.juniperbot.core.support.RequestScopedCacheManager"/>
 
     <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="/core-jbmessages"/>

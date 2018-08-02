@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
+import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
 public class ReactionRouletteListener extends DiscordEventListener {
 
     @Autowired
-    private ReactionRouletteRepository reactionRouletteRepository;
+    private ReactionRouletteService reactionRouletteService;
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -43,7 +44,7 @@ public class ReactionRouletteListener extends DiscordEventListener {
         if (event.getAuthor() == null || event.getAuthor().isBot() || guild.getSelfMember().equals(event.getMember())) {
             return;
         }
-        ReactionRoulette roulette = reactionRouletteRepository.findByGuild(guild);
+        ReactionRoulette roulette = reactionRouletteService.get(guild.getIdLong());
         if (roulette == null || !roulette.isEnabled()) {
             return;
         }

@@ -29,7 +29,7 @@ public abstract class AbstractCommandAsync extends AbstractCommand {
 
     @Override
     public final boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        contextService.execute(message.getGuild(), () -> {
+        contextService.withContextAsync(message.getGuild(), () -> {
             try {
                 doCommandAsync(message, context, content);
             } catch (ValidationException e) {

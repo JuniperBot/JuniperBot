@@ -26,7 +26,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +64,8 @@ public class ModerationServiceImpl implements ModerationService {
 
     private final static String COLOR_ROLE_NAME = "JB-CLR-";
 
+    private final static String CACHE_NAME = "moderationConfigByGuildId";
+
     @Autowired
     private ModerationConfigRepository configRepository;
 
@@ -85,6 +90,9 @@ public class ModerationServiceImpl implements ModerationService {
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
     @Transactional
@@ -95,21 +103,29 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Transactional
     @Override
-    public ModerationConfig getConfig(long serverId) {
-        ModerationConfig config = configRepository.findByGuildId(serverId);
+    public ModerationConfig getConfig(long guildId) {
+        Cache cache = cacheManager.getCache(CACHE_NAME);
+        Cache.ValueWrapper valueWrapper = cache.get(guildId);
+        if (valueWrapper != null && valueWrapper.get() != null) {
+            return (ModerationConfig) valueWrapper.get();
+        }
+        ModerationConfig config = configRepository.findByGuildId(guildId);
         if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(serverId);
+            GuildConfig guildConfig = configService.getOrCreate(guildId);
             config = new ModerationConfig();
             config.setGuildConfig(guildConfig);
             configRepository.save(config);
         }
+        cache.put(guildId, config);
         return config;
     }
 
     @Transactional
     @Override
     public ModerationConfig save(ModerationConfig config) {
-        return configRepository.save(config);
+        config = configRepository.save(config);
+        cacheManager.getCache(CACHE_NAME).evict(config.getGuildConfig().getGuildId());
+        return config;
     }
 
     @Override
@@ -325,6 +341,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
+    @Async
     public void refreshMute(Member member) {
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
         try {
@@ -431,7 +448,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     public boolean isRestricted(TextChannel channel, Member member) {
-        if (member == null || isModerator(member) || member.getUser().isBot()) {
+        if (member == null || member.getUser().isBot() || isModerator(member)) {
             return false;
         }
         SlowMode slowMode = slowModeMap.get(channel.getIdLong());

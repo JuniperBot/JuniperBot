@@ -14,35 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dao;
+package ru.caramel.juniperbot.module.welcome.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
+import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
-import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
 
 @Service
-public class WelcomeDao extends AbstractDao {
+public class WelcomeServiceImpl implements WelcomeService {
+
+    private static final String CACHE_NAME = "rouletteByGuildId";
 
     @Autowired
-    private WelcomeService welcomeService;
+    private WelcomeMessageRepository repository;
 
-    @Transactional
-    public WelcomeDto get(long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.get(guildId);
-        return welcomeMessage != null ? apiMapper.getWelcomeDto(welcomeMessage) : new WelcomeDto();
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CACHE_NAME)
+    public WelcomeMessage get(long guildId) {
+        return repository.findByGuildId(guildId);
     }
 
+    @Override
     @Transactional
-    public void save(WelcomeDto dto, long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.get(guildId);
-        if (welcomeMessage == null) {
-            welcomeMessage = new WelcomeMessage();
-            welcomeMessage.setGuildConfig(configService.getOrCreate(guildId));
-        }
-        apiMapper.updateWelcome(dto, welcomeMessage);
-        welcomeService.save(welcomeMessage);
+    public WelcomeMessage save(WelcomeMessage reactionRoulette) {
+        reactionRoulette = repository.save(reactionRoulette);
+        cacheManager.getCache(CACHE_NAME).evict(reactionRoulette.getGuildConfig().getGuildId()); // evict it manually because of transaction
+        return reactionRoulette;
     }
 }

@@ -137,8 +137,8 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
         if (usingMention) {
             String input = content.substring(mention.length()).trim();
             if (StringUtils.isNotBlank(input)) {
-                contextService.execute(event.getGuild(), () -> {
-                    event.getChannel().sendTyping().complete();
+                contextService.withContextAsync(event.getGuild(), () -> {
+                    event.getChannel().sendTyping().queue();
                     Chat chatSession = getSession("juniper_en", event.getAuthor());
                     if (chatSession != null) {
                         String respond = chatSession.multisentenceRespond(createRequest(event, input));

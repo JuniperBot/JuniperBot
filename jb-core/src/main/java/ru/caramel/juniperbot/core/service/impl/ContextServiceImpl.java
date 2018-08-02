@@ -27,7 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.SourceResolverService;
@@ -68,6 +72,9 @@ public class ContextServiceImpl implements ContextService {
     @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @PostConstruct
     public void init() {
@@ -186,13 +193,14 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void execute(long serverId, Runnable action) {
-        taskExecutor.execute(() -> withContext(serverId, action));
-    }
-
-    @Override
-    public void execute(Guild guild, Runnable action) {
-        taskExecutor.execute(() -> withContext(guild, action));
+    @Async
+    public void withContextAsync(Guild guild, Runnable action) {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                withContext(guild, action);
+            }
+        });
     }
 
     @Override
