@@ -42,10 +42,12 @@ public class RankingListener extends DiscordEventListener {
 
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-        RankingConfig config = rankingService.getConfig(event.getGuild());
-        if (config != null && config.isResetOnLeave()) {
-            rankingService.setLevel(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0);
-        }
+        taskExecutor.execute(() -> {
+            RankingConfig config = rankingService.getConfig(event.getGuild());
+            if (config != null && config.isResetOnLeave()) {
+                rankingService.setLevel(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0);
+            }
+        });
     }
 
     @Override

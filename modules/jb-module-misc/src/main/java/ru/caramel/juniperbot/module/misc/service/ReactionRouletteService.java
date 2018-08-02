@@ -14,20 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.module.misc.service;
 
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 
-public abstract class DiscordEventListener extends ListenerAdapter {
+public interface ReactionRouletteService {
 
-    @Autowired
-    @Qualifier("executor")
-    protected TaskExecutor taskExecutor;
+    ReactionRoulette get(long guildId);
 
-    @Autowired
-    protected ContextService contextService;
+    ReactionRoulette save(ReactionRoulette reactionRoulette);
 }

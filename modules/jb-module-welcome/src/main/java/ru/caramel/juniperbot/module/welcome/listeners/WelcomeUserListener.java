@@ -35,6 +35,7 @@ import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
+import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,45 +55,48 @@ public class WelcomeUserListener extends DiscordEventListener {
     private ContextService contextService;
 
     @Autowired
-    private WelcomeMessageRepository welcomeMessageRepository;
+    private WelcomeService welcomeService;
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (event.getUser().isBot()) {
             return;
         }
-        WelcomeMessage message = welcomeMessageRepository.findByGuild(event.getGuild());
-        if (message == null) {
-            return;
-        }
-
-        if (CollectionUtils.isNotEmpty(message.getJoinRoles()) && event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-            List<Role> roleList = message.getJoinRoles().stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> event.getGuild().getRoleById(e))
-                    .filter(e -> e != null && event.getGuild().getSelfMember().canInteract(e) && !e.isManaged())
-                    .collect(Collectors.toList());
-            if (!roleList.isEmpty()) {
-                event.getGuild().getController().addRolesToMember(event.getMember(), roleList).queue();
+        Guild guild = event.getGuild();
+        contextService.withContextAsync(guild, () -> {
+            WelcomeMessage message = welcomeService.get(guild.getIdLong());
+            if (message == null) {
+                return;
             }
-        }
 
-        if (!message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
-            return;
-        }
-
-        if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
-            User user = event.getUser();
-            try {
-                contextService.queue(event.getGuild(), user.openPrivateChannel(),
-                        c -> send(event, c, message.getJoinMessage(), message.isJoinRichEnabled()));
-            } catch (Exception e) {
-                LOGGER.error("Could not open private channel for user {}", user, e);
+            if (CollectionUtils.isNotEmpty(message.getJoinRoles()) && guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                List<Role> roleList = message.getJoinRoles().stream()
+                        .filter(Objects::nonNull)
+                        .map(guild::getRoleById)
+                        .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())
+                        .collect(Collectors.toList());
+                if (!roleList.isEmpty()) {
+                    guild.getController().addRolesToMember(event.getMember(), roleList).queue();
+                }
             }
-        } else {
-            MessageChannel channel = event.getGuild().getTextChannelById(message.getJoinChannelId());
-            send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
-        }
+
+            if (!message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
+                return;
+            }
+
+            if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
+                User user = event.getUser();
+                try {
+                    contextService.queue(guild, user.openPrivateChannel(),
+                            c -> send(event, c, message.getJoinMessage(), message.isJoinRichEnabled()));
+                } catch (Exception e) {
+                    LOGGER.error("Could not open private channel for user {}", user, e);
+                }
+            } else {
+                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
+                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
+            }
+        });
     }
 
     @Override
@@ -100,13 +104,16 @@ public class WelcomeUserListener extends DiscordEventListener {
         if (event.getUser().isBot()) {
             return;
         }
-        WelcomeMessage message = welcomeMessageRepository.findByGuildId(event.getGuild().getIdLong());
-        if (message == null || !message.isLeaveEnabled() || message.getLeaveChannelId() == null) {
-            return;
-        }
+        Guild guild = event.getGuild();
+        contextService.withContextAsync(guild, () -> {
+            WelcomeMessage message = welcomeService.get(event.getGuild().getIdLong());
+            if (message == null || !message.isLeaveEnabled() || message.getLeaveChannelId() == null) {
+                return;
+            }
 
-        MessageChannel channel = event.getGuild().getTextChannelById(message.getLeaveChannelId());
-        send(event, channel, message.getLeaveMessage(), message.isLeaveRichEnabled());
+            MessageChannel channel = event.getGuild().getTextChannelById(message.getLeaveChannelId());
+            send(event, channel, message.getLeaveMessage(), message.isLeaveRichEnabled());
+        });
     }
 
     private void send(GenericGuildMemberEvent event, MessageChannel channel, String message, boolean rich) {

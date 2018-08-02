@@ -47,10 +47,6 @@ public interface RankingService {
 
     void setLevel(long serverId, String userId, int level);
 
-    void sync(Guild guild);
-
-    long importRanking(Guild guild);
-
     void resetAll(long serverId);
 
     boolean isBanned(RankingConfig config, Member member);

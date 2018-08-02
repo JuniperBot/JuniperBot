@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
+    @Async
     public void notifyProviders(JDA shard) {
         ProviderStats stats = new ProviderStats(shard);
         notifyProvider(stats, ORG_ENDPOINT, orgToken);

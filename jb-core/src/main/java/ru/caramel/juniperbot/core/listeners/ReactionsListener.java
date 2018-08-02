@@ -16,14 +16,12 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.DiscordService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,40 +40,27 @@ public class ReactionsListener extends DiscordEventListener {
     @Autowired
     private ContextService contextService;
 
-    @Autowired
-    private DiscordService discordService;
-
     @Override
     public void onGenericMessageReaction(GenericMessageReactionEvent event) {
-        boolean contextInitialized = false;
-
         BiFunction<GenericMessageReactionEvent, Boolean, Boolean> handler = listeners.get(event.getMessageId());
         boolean add = event instanceof MessageReactionAddEvent;
         if (handler != null) {
-            if (event.getGuild() != null) {
-                contextService.initContext(event.getGuild());
-                contextInitialized = true;
-            }
-            if (Boolean.TRUE.equals(handler.apply(event, add))) {
-                listeners.remove(event.getMessageId());
-            }
+            contextService.withContextAsync(event.getGuild(), () -> {
+                if (Boolean.TRUE.equals(handler.apply(event, add))) {
+                    listeners.remove(event.getMessageId());
+                }
+            });
         }
 
         if (add) {
             Function<MessageReactionAddEvent, Boolean> addHandler = addListeners.get(event.getMessageId());
             if (addHandler != null) {
-                if (!contextInitialized && event.getGuild() != null) {
-                    contextService.initContext(event.getGuild());
-                    contextInitialized = true;
-                }
-                if (Boolean.TRUE.equals(addHandler.apply((MessageReactionAddEvent) event))) {
-                    addListeners.remove(event.getMessageId());
-                }
+                contextService.withContextAsync(event.getGuild(), () -> {
+                    if (Boolean.TRUE.equals(addHandler.apply((MessageReactionAddEvent) event))) {
+                        addListeners.remove(event.getMessageId());
+                    }
+                });
             }
-        }
-
-        if (contextInitialized) {
-            contextService.resetContext();
         }
     }
 

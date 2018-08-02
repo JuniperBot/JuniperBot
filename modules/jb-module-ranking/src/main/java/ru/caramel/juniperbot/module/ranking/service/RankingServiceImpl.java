@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,9 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
-import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
@@ -55,7 +54,6 @@ import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,11 +63,10 @@ public class RankingServiceImpl implements RankingService {
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
-    @Autowired
-    private LocalMemberRepository memberRepository;
+    private final static String CACHE_NAME = "rankingConfigByGuildId";
 
     @Autowired
-    private LocalUserRepository userRepository;
+    private LocalMemberRepository memberRepository;
 
     @Autowired
     private RankingRepository rankingRepository;
@@ -87,9 +84,6 @@ public class RankingServiceImpl implements RankingService {
     private ConfigService configService;
 
     @Autowired
-    private ImportProvider importProvider;
-
-    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -97,6 +91,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     private static Object DUMMY = new Object();
 
@@ -115,27 +112,35 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     @Override
+    public RankingConfig getConfig(long guildId) {
+        org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
+        org.springframework.cache.Cache.ValueWrapper valueWrapper = cache.get(guildId);
+        if (valueWrapper != null && valueWrapper.get() != null) {
+            return (RankingConfig) valueWrapper.get();
+        }
+        RankingConfig config = rankingConfigRepository.findByGuildId(guildId);
+        if (config == null) {
+            GuildConfig guildConfig = configService.getOrCreate(guildId);
+            config = new RankingConfig();
+            config.setGuildConfig(guildConfig);
+            rankingConfigRepository.save(config);
+        }
+        cache.put(guildId, config);
+        return config;
+    }
+
+    @Transactional
+    @Override
     public RankingConfig save(RankingConfig config) {
-        return rankingConfigRepository.save(config);
+        config = rankingConfigRepository.save(config);
+        cacheManager.getCache(CACHE_NAME).evict(config.getGuildConfig().getGuildId());
+        return config;
     }
 
     @Transactional(readOnly = true)
     @Override
     public boolean isEnabled(long serverId) {
         return rankingConfigRepository.isEnabled(serverId);
-    }
-
-    @Transactional
-    @Override
-    public RankingConfig getConfig(long serverId) {
-        RankingConfig config = rankingConfigRepository.findByGuildId(serverId);
-        if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(serverId);
-            config = new RankingConfig();
-            config.setGuildConfig(guildConfig);
-            rankingConfigRepository.save(config);
-        }
-        return config;
     }
 
     @Transactional
@@ -165,58 +170,63 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public void onMessage(GuildMessageReceivedEvent event) {
-        String memberKey = String.format("%s_%s", event.getGuild().getId(), event.getAuthor().getId());
-
-        RankingConfig config = getConfig(event.getGuild());
+        Guild guild = event.getGuild();
+        RankingConfig config = getConfig(guild);
         if (!memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
             return;
         }
 
-        Ranking ranking = getRanking(event.getMember());
 
+        String memberKey = String.format("%s_%s", guild.getId(), event.getAuthor().getId());
         if (coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())) {
-            int level = RankingUtils.getLevelFromExp(ranking.getExp());
-            ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
-            rankingRepository.save(ranking);
-            calculateQueue.add(event.getGuild().getId());
-            coolDowns.put(memberKey, DUMMY);
+            contextService.withContextAsync(guild, () -> {
+                Ranking ranking = getRanking(event.getMember());
+                int level = RankingUtils.getLevelFromExp(ranking.getExp());
+                ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
+                rankingRepository.save(ranking);
+                calculateQueue.add(guild.getId());
+                coolDowns.put(memberKey, DUMMY);
 
-            int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-            if (newLevel < 1000 && level != newLevel) {
-                if (config.isAnnouncementEnabled()) {
-                    if (config.isWhisper()) {
-                        try {
-                            contextService.queue(event.getGuild(), event.getAuthor().openPrivateChannel(), c -> {
-                                String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
-                                sendAnnounce(config, c, content);
-                            });
-                        } catch (Exception e) {
-                            LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
+                int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
+                if (newLevel < 1000 && level != newLevel) {
+                    if (config.isAnnouncementEnabled()) {
+                        if (config.isWhisper()) {
+                            try {
+                                contextService.queue(guild, event.getAuthor().openPrivateChannel(), c -> {
+                                    String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
+                                    sendAnnounce(config, c, content);
+                                });
+                            } catch (Exception e) {
+                                LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
+                            }
+                        } else {
+                            MessageChannel channel = config.getAnnouncementChannelId() != null ?
+                                    guild.getTextChannelById(config.getAnnouncementChannelId()) : null;
+                            String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
+                            sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
                         }
-                    } else {
-                        MessageChannel channel = config.getAnnouncementChannelId() != null ?
-                                event.getGuild().getTextChannelById(config.getAnnouncementChannelId()) : null;
-                        String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
-                        sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
                     }
+                    updateRewards(config, event.getMember(), ranking);
                 }
-                updateRewards(config, event.getMember(), ranking);
-            }
+            });
         }
 
         if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
                 && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE)) {
-            Date checkDate = getCookieCoolDown();
-            for (User user : event.getMessage().getMentionedUsers()) {
-                if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
-                    Member recipientMember = event.getGuild().getMember(user);
-                    if (recipientMember != null && memberService.isApplicable(recipientMember)) {
-                        LocalMember recipient = memberService.getOrCreate(recipientMember);
-                        giveCookie(ranking.getMember(), recipient, checkDate);
+            contextService.withContextAsync(null, () -> {
+                Date checkDate = getCookieCoolDown();
+                for (User user : event.getMessage().getMentionedUsers()) {
+                    if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
+                        Member recipientMember = guild.getMember(user);
+                        if (recipientMember != null && memberService.isApplicable(recipientMember)) {
+                            LocalMember sender = memberService.getOrCreate(event.getMember());
+                            LocalMember recipient = memberService.getOrCreate(recipientMember);
+                            giveCookie(sender, recipient, checkDate);
+                        }
                     }
                 }
-            }
+            });
         }
     }
 
@@ -278,72 +288,6 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
         }
-    }
-
-    @Transactional
-    @Override
-    public void sync(Guild guild) {
-        List<LocalMember> members = memberService.syncMembers(guild);
-        RankingConfig rankingConfig = getConfig(guild);
-        members.forEach(e -> {
-            Member member = guild.getMemberById(e.getUser().getUserId());
-            if (member != null) {
-                if (memberService.isApplicable(member)) {
-                    memberService.updateIfRequired(member, e);
-                    updateRewards(rankingConfig, member, getRanking(e));
-                }
-            } else if (rankingConfig.isResetOnLeave()) {
-                rankingRepository.resetMember(e);
-            }
-        });
-        memberRepository.save(members);
-        rankingRepository.recalculateRank(guild.getId());
-    }
-
-    @Transactional
-    @Override
-    public long importRanking(Guild guild) {
-        List<LocalMember> members = memberService.syncMembers(guild);
-        Map<String, LocalMember> membersMap = members.stream()
-                .collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
-
-        AtomicLong count = new AtomicLong();
-
-        importProvider.export(guild.getIdLong(), e -> {
-            for (RankingInfo info : e) {
-                try {
-                    LocalMember member = membersMap.get(info.getId());
-                    if (member == null) {
-                        member = new LocalMember();
-                        member.setGuildId(guild.getId());
-                        member.setEffectiveName(info.getNick());
-
-                        LocalUser user = userRepository.findByUserId(info.getId());
-                        if (user == null) {
-                            user = new LocalUser();
-                            user.setUserId(info.getId());
-                        }
-                        if (StringUtils.isNotEmpty(info.getAvatarUrl())) {
-                            user.setAvatarUrl(info.getAvatarUrl());
-                        }
-                        user.setName(info.getName());
-                        user.setDiscriminator(info.getDiscriminator());
-                        userRepository.save(user);
-                        member.setUser(user);
-                        memberRepository.save(member);
-                    }
-                    Ranking ranking = getRanking(member);
-                    ranking.setExp(info.getTotalExp());
-                    rankingRepository.save(ranking);
-                    count.incrementAndGet();
-                } catch (Exception ex) {
-                    LOGGER.error("Import batch failed", ex);
-                }
-            }
-        });
-
-        sync(guild);
-        return count.longValue();
     }
 
     @Transactional
@@ -442,21 +386,6 @@ public class RankingServiceImpl implements RankingService {
             ranking.setMember(localMember);
             ranking.setRank(rankingRepository.countByGuildId(member.getGuild().getId()) + 1);
             rankingRepository.save(ranking);
-        }
-        return ranking;
-    }
-
-    @Transactional
-    public Ranking getRanking(String guildId, String userId) {
-        Ranking ranking = rankingRepository.findByGuildIdAndUserId(guildId, userId);
-        if (ranking == null) {
-            LocalMember localMember = memberRepository.findByGuildIdAndUserId(guildId, userId);
-            if (localMember != null) {
-                ranking = new Ranking();
-                ranking.setMember(localMember);
-                ranking.setRank(rankingRepository.countByGuildId(guildId) + 1);
-                rankingRepository.save(ranking);
-            }
         }
         return ranking;
     }

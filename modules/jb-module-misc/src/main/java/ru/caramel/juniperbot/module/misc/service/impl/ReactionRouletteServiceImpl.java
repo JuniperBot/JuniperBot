@@ -14,38 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dao;
+package ru.caramel.juniperbot.module.misc.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
+import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
-import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
 
 @Service
-public class ReactionRouletteDao extends AbstractDao {
+public class ReactionRouletteServiceImpl implements ReactionRouletteService {
+
+    private static final String CACHE_NAME = "rouletteByGuildId";
 
     @Autowired
-    private ReactionRouletteService rouletteService;
+    private ReactionRouletteRepository repository;
 
-    @Transactional
-    public ReactionRouletteDto get(long guildId) {
-        ReactionRoulette roulette = rouletteService.get(guildId);
-        if (roulette == null) {
-            return new ReactionRouletteDto();
-        }
-        return apiMapper.getReactionRouletteDto(roulette);
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CACHE_NAME)
+    public ReactionRoulette get(long guildId) {
+        return repository.findByGuildId(guildId);
     }
 
+    @Override
     @Transactional
-    public void save(ReactionRouletteDto dto, long guildId) {
-        ReactionRoulette roulette = rouletteService.get(guildId);
-        if (roulette == null) {
-            roulette = new ReactionRoulette();
-            roulette.setGuildConfig(configService.getOrCreate(guildId));
-        }
-        apiMapper.updateReactionRoulette(dto, roulette);
-        rouletteService.save(roulette);
+    public ReactionRoulette save(ReactionRoulette reactionRoulette) {
+        reactionRoulette = repository.save(reactionRoulette);
+        cacheManager.getCache(CACHE_NAME).evict(reactionRoulette.getGuildConfig().getGuildId()); // evict it manually because of transaction
+        return reactionRoulette;
     }
 }

@@ -53,16 +53,13 @@ public interface ContextService {
 
     void withContext(Guild guild, Runnable action);
 
+    void withContextAsync(Guild guild, Runnable action);
+
     void initContext(User user);
 
     void initContext(long serverId);
 
     void resetContext();
 
-    void execute(long serverId, Runnable action);
-
-    void execute(Guild guild, Runnable action);
-
     <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success);
-
 }
