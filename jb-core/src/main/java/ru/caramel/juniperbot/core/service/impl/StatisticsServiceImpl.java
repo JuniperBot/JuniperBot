@@ -17,6 +17,8 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import com.codahale.metrics.*;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,11 +61,21 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Value("${discord.stats.bots.discord.pw.token:}")
     private String pwToken;
 
+    @Getter
+    @Setter
+    @Value("${metrics.detailed:true}")
+    private boolean detailed;
+
     @Autowired
     private MetricRegistry metricRegistry;
 
     @Autowired
     private StoredMetricRepository metricRepository;
+
+    @Override
+    public Timer getTimer(String name) {
+        return metricRegistry.timer(name);
+    }
 
     @Override
     public Meter getMeter(String name) {
@@ -139,6 +151,21 @@ public class StatisticsServiceImpl implements StatisticsService {
                 storedMetric.setCount(counter.getCount());
                 metricRepository.save(storedMetric);
             });
+        }
+    }
+
+    @Override
+    public void doWithTimer(String name, Runnable action) {
+        doWithTimer(getTimer(name), action);
+    }
+
+    @Override
+    public void doWithTimer(Timer timer, Runnable action) {
+        final Timer.Context context = timer.time();
+        try {
+            action.run();
+        } finally {
+            context.stop();
         }
     }
 

@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
@@ -192,18 +193,21 @@ public class CommandsServiceImpl implements CommandsService {
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
         context.setConfig(guildConfig);
         context.setGuild(event.getGuild());
-        try {
-            command.doCommand(event, context, content);
-            counter.inc();
-        } catch (ValidationException e) {
-            messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
-        } catch (DiscordException e) {
-            messageService.onError(event.getChannel(),
-                    messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
-            LOGGER.error("Command {} execution error", key, e);
-        } finally {
-            executions.mark();
-        }
+
+        statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
+            try {
+                command.doCommand(event, context, content);
+                counter.inc();
+            } catch (ValidationException e) {
+                messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
+            } catch (DiscordException e) {
+                messageService.onError(event.getChannel(),
+                        messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
+                LOGGER.error("Command {} execution error", key, e);
+            } finally {
+                executions.mark();
+            }
+        });
         return true;
     }
 
@@ -286,5 +290,13 @@ public class CommandsServiceImpl implements CommandsService {
         } catch (Exception e) {
             LOGGER.error("Add emotion error", e);
         }
+    }
+
+    private Timer getTimer(JDA jda, Command command) {
+        int shard = -1;
+        if (jda != null && jda.getShardInfo() != null) {
+            shard = jda.getShardInfo().getShardId();
+        }
+        return statisticsService.getTimer(String.format("commands/shard.%d/%s", shard, command.getKey()));
     }
 }
