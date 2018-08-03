@@ -50,53 +50,55 @@ public class YouTubeCommand extends PlayCommand {
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        message.getTextChannel().sendTyping().queue();
-        List<Video> results = youTubeService.searchDetailed(content, 10L);
-        if (results.isEmpty()) {
-            messageManager.onNoMatches(message.getChannel(), content);
-            return false;
-        }
-
-        EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(messageService.getMessage("discord.command.audio.search.results"));
-
-        List<String> urls = new ArrayList<>();
-        for (int i = 0; i < results.size(); i++) {
-            Video result = results.get(i);
-            long duration = Duration.parse(result.getContentDetails().getDuration()).toMillis();
-            String url = youTubeService.getUrl(result);
-            String title = String.format("%d. `[%s]` [%s](%s)", i + 1, CommonUtils.formatDuration(duration), result.getSnippet().getTitle(),
-                    url);
-            builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
-            urls.add(url);
-        }
-
-        builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
-                context.getConfig().getPrefix()), false);
-
-        message.getChannel().sendMessage(builder.build()).queue(e -> {
-            List<RequestFuture<Void>> actions = new ArrayList<>(10);
-            try {
-                for (int i = 0; i < results.size(); i++) {
-                    actions.add(e.addReaction(ReactionsListener.CHOICES[i]).submit());
-                }
-            } catch (Exception ex) {
-                // ignore
+        contextService.withContextAsync(message.getGuild(), () -> {
+            message.getTextChannel().sendTyping().queue();
+            List<Video> results = youTubeService.searchDetailed(content, 10L);
+            if (results.isEmpty()) {
+                messageManager.onNoMatches(message.getChannel(), content);
+                return;
             }
-            context.putAttribute(ATTR_SEARCH_RESULTS, urls);
-            context.putAttribute(ATTR_SEARCH_MESSAGE, e);
-            context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
-            reactionsListener.onReactionAdd(e.getId(), event -> {
-                if (!event.getUser().equals(event.getJDA().getSelfUser())) {
-                    String emote = event.getReaction().getReactionEmote().getName();
-                    int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
-                    if (index >= 0 && playerService.isInChannel(event.getMember())) {
-                        String query = getChoiceUrl(context, index);
-                        playerService.loadAndPlay(message.getTextChannel(), event.getMember(), query);
-                        return true;
+
+            EmbedBuilder builder = messageService.getBaseEmbed();
+            builder.setTitle(messageService.getMessage("discord.command.audio.search.results"));
+
+            List<String> urls = new ArrayList<>();
+            for (int i = 0; i < results.size(); i++) {
+                Video result = results.get(i);
+                long duration = Duration.parse(result.getContentDetails().getDuration()).toMillis();
+                String url = youTubeService.getUrl(result);
+                String title = String.format("%d. `[%s]` [%s](%s)", i + 1, CommonUtils.formatDuration(duration), result.getSnippet().getTitle(),
+                        url);
+                builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
+                urls.add(url);
+            }
+
+            builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
+                    context.getConfig().getPrefix()), false);
+
+            message.getChannel().sendMessage(builder.build()).queue(e -> {
+                List<RequestFuture<Void>> actions = new ArrayList<>(10);
+                try {
+                    for (int i = 0; i < results.size(); i++) {
+                        actions.add(e.addReaction(ReactionsListener.CHOICES[i]).submit());
                     }
+                } catch (Exception ex) {
+                    // ignore
                 }
-                return false;
+                context.putAttribute(ATTR_SEARCH_RESULTS, urls);
+                context.putAttribute(ATTR_SEARCH_MESSAGE, e);
+                context.putAttribute(ATTR_SEARCH_ACTIONS, actions);
+                reactionsListener.onReactionAdd(e.getId(), event -> {
+                    if (!event.getUser().equals(event.getJDA().getSelfUser())) {
+                        String emote = event.getReaction().getReactionEmote().getName();
+                        int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
+                        if (index >= 0 && playerService.isInChannel(event.getMember())) {
+                            String query = getChoiceUrl(context, index);
+                            playerService.loadAndPlay(message.getTextChannel(), event.getMember(), query);
+                            return true;
+                        }
+                    }
+                    return false;
+                });
             });
         });
         return true;

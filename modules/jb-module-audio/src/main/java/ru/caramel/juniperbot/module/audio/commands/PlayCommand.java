@@ -66,7 +66,10 @@ public class PlayCommand extends AudioCommand {
             }
         }
         message.getTextChannel().sendTyping().queue();
-        playerService.loadAndPlay(message.getTextChannel(), message.getMember(), query);
+        final String finalQuery = query;
+        contextService.withContextAsync(message.getGuild(), () -> {
+            playerService.loadAndPlay(message.getTextChannel(), message.getMember(), finalQuery);
+        });
         return true;
     }
 
