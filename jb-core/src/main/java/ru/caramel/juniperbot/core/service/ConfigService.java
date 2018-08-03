@@ -33,6 +33,8 @@ public interface ConfigService {
 
     GuildConfig getOrCreate(Guild guild);
 
+    GuildConfig getOrCreateCached(Guild guild);
+
     String getPrefix(long serverId);
 
     String getLocale(Guild guild);

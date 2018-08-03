@@ -508,7 +508,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public long warnCount(Member member) {
-        GuildConfig config = configService.getOrCreate(member.getGuild());
+        GuildConfig config = configService.getOrCreateCached(member.getGuild());
         LocalMember memberLocal = memberService.getOrCreate(member);
         return warningRepository.countActiveByViolator(config, memberLocal);
     }
@@ -516,7 +516,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public boolean warn(Member author, Member member, String reason) {
-        GuildConfig config = configService.getOrCreate(member.getGuild());
+        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
         ModerationConfig moderationConfig = getConfig(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);

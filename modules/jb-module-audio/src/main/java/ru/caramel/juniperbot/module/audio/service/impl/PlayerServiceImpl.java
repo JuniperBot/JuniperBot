@@ -383,12 +383,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Transactional
     public boolean shuffle(Guild guild) {
         PlaybackInstance instance = getInstance(guild);
-        boolean result;
-        synchronized (instance) {
-            result = instance.shuffle();
-            if (result) {
-                playlistService.refreshStoredPlaylist(instance);
-            }
+        boolean result = instance.shuffle();
+        if (result) {
+            playlistService.refreshStoredPlaylist(instance);
         }
         return result;
     }
