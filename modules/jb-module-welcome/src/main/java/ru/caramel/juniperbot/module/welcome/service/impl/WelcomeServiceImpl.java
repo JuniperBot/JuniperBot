@@ -17,10 +17,9 @@
 package ru.caramel.juniperbot.module.welcome.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
@@ -28,26 +27,21 @@ import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 @Service
 public class WelcomeServiceImpl implements WelcomeService {
 
-    private static final String CACHE_NAME = "welcomeByGuildId";
-
     @Autowired
     private WelcomeMessageRepository repository;
 
     @Autowired
-    private CacheManager cacheManager;
+    private JbCacheManager cacheManager;
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(CACHE_NAME)
     public WelcomeMessage get(long guildId) {
-        return repository.findByGuildId(guildId);
+        return cacheManager.get(WelcomeMessage.class, guildId, repository::findByGuildId);
     }
 
     @Override
     @Transactional
     public WelcomeMessage save(WelcomeMessage reactionRoulette) {
-        reactionRoulette = repository.save(reactionRoulette);
-        cacheManager.getCache(CACHE_NAME).evict(reactionRoulette.getGuildConfig().getGuildId()); // evict it manually because of transaction
-        return reactionRoulette;
+        return repository.save(reactionRoulette);
     }
 }

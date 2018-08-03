@@ -24,9 +24,7 @@ import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.NamedThreadLocal;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -68,10 +66,6 @@ public class ContextServiceImpl implements ContextService {
 
     @Autowired
     private SourceResolverService resolverService;
-
-    @Autowired
-    @Qualifier("executor")
-    private TaskExecutor taskExecutor;
 
     @Autowired
     private TransactionTemplate transactionTemplate;

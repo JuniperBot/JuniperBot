@@ -29,7 +29,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -40,6 +39,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
@@ -62,8 +62,6 @@ public class RankingServiceImpl implements RankingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RankingServiceImpl.class);
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
-
-    private final static String CACHE_NAME = "rankingConfigByGuildId";
 
     @Autowired
     private LocalMemberRepository memberRepository;
@@ -93,7 +91,7 @@ public class RankingServiceImpl implements RankingService {
     private ContextService contextService;
 
     @Autowired
-    private CacheManager cacheManager;
+    private JbCacheManager cacheManager;
 
     private static Object DUMMY = new Object();
 
@@ -113,28 +111,22 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public RankingConfig getConfig(long guildId) {
-        org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
-        org.springframework.cache.Cache.ValueWrapper valueWrapper = cache.get(guildId);
-        if (valueWrapper != null && valueWrapper.get() != null) {
-            return (RankingConfig) valueWrapper.get();
-        }
-        RankingConfig config = rankingConfigRepository.findByGuildId(guildId);
-        if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(guildId);
-            config = new RankingConfig();
-            config.setGuildConfig(guildConfig);
-            rankingConfigRepository.save(config);
-        }
-        cache.put(guildId, config);
-        return config;
+        return cacheManager.get(RankingConfig.class, guildId, e -> {
+            RankingConfig config = rankingConfigRepository.findByGuildId(guildId);
+            if (config == null) {
+                GuildConfig guildConfig = configService.getOrCreate(guildId);
+                config = new RankingConfig();
+                config.setGuildConfig(guildConfig);
+                rankingConfigRepository.save(config);
+            }
+            return config;
+        });
     }
 
     @Transactional
     @Override
     public RankingConfig save(RankingConfig config) {
-        config = rankingConfigRepository.save(config);
-        cacheManager.getCache(CACHE_NAME).evict(config.getGuildConfig().getGuildId());
-        return config;
+        return rankingConfigRepository.save(config);
     }
 
     @Transactional(readOnly = true)

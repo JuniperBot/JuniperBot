@@ -55,7 +55,7 @@ public class CommonDao extends AbstractDao {
         ModerationConfig modConfig = moderationService.getConfig(guildId);
         apiMapper.updateModerationConfig(modConfigDto, modConfig);
         moderationService.save(modConfig);
-
+        cacheManager.evict(ModerationConfig.class, guildId);
         repository.save(config);
     }
 }

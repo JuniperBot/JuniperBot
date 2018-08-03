@@ -38,10 +38,11 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
 
     protected abstract void onTrackException(PlaybackInstance instance, FriendlyException exception);
 
-    protected void registerInstance(PlaybackInstance instance) {
+    protected PlaybackInstance registerInstance(PlaybackInstance instance) {
         IPlayer player = instance.getPlayer();
         player.addListener(this);
         instancesByPlayer.put(player, instance);
+        return instance;
     }
 
     protected void clearInstance(PlaybackInstance instance) {

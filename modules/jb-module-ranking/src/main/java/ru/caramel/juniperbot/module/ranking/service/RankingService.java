@@ -33,21 +33,21 @@ public interface RankingService {
 
     RankingConfig getConfig(Guild guild);
 
-    RankingConfig getConfig(long serverId);
+    RankingConfig getConfig(long guildId);
 
     RankingConfig save(RankingConfig config);
 
-    boolean isEnabled(long serverId);
+    boolean isEnabled(long guildId);
 
     RankingInfo getRankingInfo(Member member);
 
-    long countRankings(String serverId);
+    long countRankings(String guildId);
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
-    void setLevel(long serverId, String userId, int level);
+    void setLevel(long guildId, String userId, int level);
 
-    void resetAll(long serverId);
+    void resetAll(long guildId);
 
     boolean isBanned(RankingConfig config, Member member);
 

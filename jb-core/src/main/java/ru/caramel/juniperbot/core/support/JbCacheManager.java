@@ -14,25 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.core.support;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import org.springframework.cache.CacheManager;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-public interface MusicConfigService {
+import java.util.function.Function;
 
-    MusicConfig getConfig(long guildId);
+public interface JbCacheManager extends CacheManager {
 
-    MusicConfig getConfig(Guild guild);
+    <T extends BaseEntity> T get(Class<T> clazz, Long id, Function<Long, T> supplier);
 
-    void save(MusicConfig config);
+    <T extends BaseEntity>  void evict(Class<T> clazz, Long id);
 
-    boolean hasAccess(Member member);
+    <T, K> T get(String cacheName, K key, Function<K, T> supplier);
 
-    VoiceChannel getDesiredChannel(Member member);
-
-    void updateVolume(long guildId, int volume);
-
+    <K> void evict(String cacheName, K key);
 }

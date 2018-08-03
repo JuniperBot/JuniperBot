@@ -108,19 +108,12 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public PlaybackInstance getInstance(long guildId, boolean create) {
-        synchronized (instances) {
-            PlaybackInstance instance = instances.get(guildId);
-            if (instance == null && create) {
-                MusicConfig config = musicConfigService.getConfig(guildId);
-                instance = instances.computeIfAbsent(guildId, e -> {
-                    IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
-                    player.setVolume(config.getVoiceVolume());
-                    return new PlaybackInstance(e, player);
-                });
-                registerInstance(instance);
-            }
-            return instance;
-        }
+        return create ? instances.computeIfAbsent(guildId, e -> {
+            MusicConfig config = musicConfigService.getConfig(guildId);
+            IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
+            player.setVolume(config.getVoiceVolume());
+            return registerInstance(new PlaybackInstance(e, player));
+        }) : instances.get(guildId);
     }
 
     @Override
@@ -128,7 +121,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (!lavaAudioService.isConnected(guild) || lavaAudioService.getConnectedChannel(guild) == null) {
             return false;
         }
-        PlaybackInstance instance = instances.get(guild.getIdLong());
+        PlaybackInstance instance = getInstance(guild.getIdLong(), false);
         return instance != null && instance.getPlayer().getPlayingTrack() != null;
     }
 

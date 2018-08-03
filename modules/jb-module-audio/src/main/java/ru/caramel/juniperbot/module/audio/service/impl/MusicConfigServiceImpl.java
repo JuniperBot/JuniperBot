@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
@@ -43,19 +44,8 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     @Autowired
     private ConfigService configService;
 
-    @Override
-    @Transactional
-    public MusicConfig getConfig(long serverId) {
-        MusicConfig config = musicConfigRepository.findByGuildId(serverId);
-        if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(serverId);
-            config = new MusicConfig();
-            config.setGuildConfig(guildConfig);
-            config.setVoiceVolume(100);
-            musicConfigRepository.save(config);
-        }
-        return config;
-    }
+    @Autowired
+    private JbCacheManager cacheManager;
 
     @Override
     @Transactional
@@ -64,6 +54,23 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     }
 
     @Override
+    @Transactional
+    public MusicConfig getConfig(long guildId) {
+        return cacheManager.get(MusicConfig.class, guildId, e -> {
+            MusicConfig config = musicConfigRepository.findByGuildId(e);
+            if (config == null) {
+                GuildConfig guildConfig = configService.getOrCreate(e);
+                config = new MusicConfig();
+                config.setGuildConfig(guildConfig);
+                config.setVoiceVolume(100);
+                musicConfigRepository.save(config);
+            }
+            return config;
+        });
+    }
+
+    @Override
+    @Transactional
     public void save(MusicConfig config) {
         if (config != null) {
             musicConfigRepository.save(config);
@@ -104,5 +111,6 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     @Transactional
     public void updateVolume(long guildId, int volume) {
         musicConfigRepository.updateVolume(guildId, volume);
+        cacheManager.evict(MusicConfig.class, guildId);
     }
 }
