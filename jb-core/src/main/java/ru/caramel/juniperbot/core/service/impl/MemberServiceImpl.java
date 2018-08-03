@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -27,10 +26,7 @@ import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.UserService;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -84,25 +80,6 @@ public class MemberServiceImpl implements MemberService {
             // it's ok to ignore optlock here, anyway it will be updated later
         }
         return localMember;
-    }
-
-    @Transactional
-    public List<LocalMember> syncMembers(Guild guild) {
-        List<LocalMember> members = memberRepository.findByGuildId(guild.getId());
-        Map<String, LocalMember> membersMap = members.stream().collect(Collectors.toMap(u -> u.getUser().getUserId(), e -> e));
-        for (Member member : guild.getMembers()) {
-            if (isApplicable(member)) {
-                LocalMember localMember = membersMap.get(member.getUser().getId());
-                if (localMember == null) {
-                    localMember = new LocalMember();
-                    localMember.setGuildId(member.getGuild().getId());
-                    localMember.setUser(userService.getOrCreate(member.getUser()));
-                    members.add(localMember);
-                }
-                updateIfRequired(member, localMember);
-            }
-        }
-        return members;
     }
 
     @Override

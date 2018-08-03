@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 import java.util.Objects;
 
@@ -41,6 +42,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
     private GuildConfigRepository repository;
+
+    @Autowired
+    private JbCacheManager cacheManager;
 
     @Override
     @Transactional
@@ -74,6 +78,17 @@ public class ConfigServiceImpl implements ConfigService {
             }
         } catch (ObjectOptimisticLockingFailureException e) {
             // it's ok to ignore optlock here, anyway it will be updated later
+        }
+        return config;
+    }
+
+    @Override
+    public GuildConfig getOrCreateCached(Guild guild) {
+        GuildConfig config = cacheManager.get(GuildConfig.class, guild.getIdLong(), this::getOrCreate);
+        if (!Objects.equals(config.getName(), guild.getName())
+                || !Objects.equals(config.getIconUrl(), guild.getIconUrl())) {
+            config = getOrCreate(guild);
+            cacheManager.evict(GuildConfig.class, guild.getIdLong());
         }
         return config;
     }

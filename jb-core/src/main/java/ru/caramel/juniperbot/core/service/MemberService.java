@@ -16,11 +16,8 @@
  */
 package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-
-import java.util.List;
 
 public interface MemberService {
 
@@ -29,8 +26,6 @@ public interface MemberService {
     LocalMember save(LocalMember member);
 
     LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    List<LocalMember> syncMembers(Guild guild);
 
     boolean isApplicable(Member member);
 }

@@ -30,4 +30,26 @@
     <metrics:register metric-registry="metricRegistry">
         <bean metrics:name="jvm" class="com.codahale.metrics.JvmAttributeGaugeSet" />
     </metrics:register>
+
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+        <property name="autodetect" value="true" />
+        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="assembler" ref="assembler" />
+        <property name="ensureUniqueRuntimeObjectNames" value="false" />
+    </bean>
+
+    <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+
+    <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+        <property name="attributeSource" ref="jmxAttributeSource" />
+    </bean>
+
+    <bean id="namingStrategy" class="ru.caramel.juniperbot.core.support.jmx.JbMetadataNamingStrategy">
+        <property name="attributeSource" ref="jmxAttributeSource" />
+    </bean>
+
+    <bean id="taskExecutorMBean" class="ru.caramel.juniperbot.core.support.jmx.ThreadPoolTaskExecutorMBean" >
+        <constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="executor"/>
+    </bean>
+
 </beans>

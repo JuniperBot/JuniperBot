@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 
 public abstract class AbstractDao {
@@ -31,5 +32,8 @@ public abstract class AbstractDao {
 
     @Autowired
     protected DiscordService discordService;
+
+    @Autowired
+    protected JbCacheManager cacheManager;
 
 }

@@ -23,7 +23,7 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
 public interface MusicConfigService {
 
-    MusicConfig getConfig(long serverId);
+    MusicConfig getConfig(long guildId);
 
     MusicConfig getConfig(Guild guild);
 

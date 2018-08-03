@@ -17,10 +17,9 @@
 package ru.caramel.juniperbot.module.misc.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
@@ -28,26 +27,21 @@ import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 @Service
 public class ReactionRouletteServiceImpl implements ReactionRouletteService {
 
-    private static final String CACHE_NAME = "rouletteByGuildId";
-
     @Autowired
     private ReactionRouletteRepository repository;
 
     @Autowired
-    private CacheManager cacheManager;
+    private JbCacheManager cacheManager;
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(CACHE_NAME)
     public ReactionRoulette get(long guildId) {
-        return repository.findByGuildId(guildId);
+        return cacheManager.get(ReactionRoulette.class, guildId, repository::findByGuildId);
     }
 
     @Override
     @Transactional
     public ReactionRoulette save(ReactionRoulette reactionRoulette) {
-        reactionRoulette = repository.save(reactionRoulette);
-        cacheManager.getCache(CACHE_NAME).evict(reactionRoulette.getGuildConfig().getGuildId()); // evict it manually because of transaction
-        return reactionRoulette;
+        return repository.save(reactionRoulette);
     }
 }

@@ -14,30 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.support;
 
-import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import org.springframework.cache.CacheManager;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-public interface ConfigService {
+import java.util.function.Function;
 
-    String getDefaultPrefix();
+public interface JbCacheManager extends CacheManager {
 
-    boolean exists(long serverId);
+    <T extends BaseEntity> T get(Class<T> clazz, Long id, Function<Long, T> supplier);
 
-    void save(GuildConfig config);
+    <T extends BaseEntity>  void evict(Class<T> clazz, Long id);
 
-    GuildConfig getById(long serverId);
+    <T, K> T get(String cacheName, K key, Function<K, T> supplier);
 
-    GuildConfig getOrCreate(long serverId);
-
-    GuildConfig getOrCreate(Guild guild);
-
-    GuildConfig getOrCreateCached(Guild guild);
-
-    String getPrefix(long serverId);
-
-    String getLocale(Guild guild);
-
-    String getLocale(long serverId);
+    <K> void evict(String cacheName, K key);
 }

@@ -14,30 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.support.jmx;
 
-import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+public interface JmxNamedResource {
 
-public interface ConfigService {
+    String getJmxName();
 
-    String getDefaultPrefix();
-
-    boolean exists(long serverId);
-
-    void save(GuildConfig config);
-
-    GuildConfig getById(long serverId);
-
-    GuildConfig getOrCreate(long serverId);
-
-    GuildConfig getOrCreate(Guild guild);
-
-    GuildConfig getOrCreateCached(Guild guild);
-
-    String getPrefix(long serverId);
-
-    String getLocale(Guild guild);
-
-    String getLocale(long serverId);
+    String[] getJmxPath();
 }

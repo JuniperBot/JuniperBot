@@ -34,9 +34,9 @@
                                   location="${juniperbot-config-location:classpath:}application.properties"/>
     <context:component-scan base-package="ru.caramel.juniperbot.core"/>
 
-    <task:executor id="executor" pool-size="25"/>
+    <task:executor id="executor" pool-size="${core.threadPool:5}"/>
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
-    <task:scheduler id="scheduler" pool-size="10"/>
+    <task:scheduler id="scheduler" pool-size="${core.schedulerPool:10}"/>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource"
           p:overwriteExistingJobs="true">
@@ -60,7 +60,7 @@
     </bean>
 
     <cache:annotation-driven />
-    <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
+    <bean id="cacheManager" class="ru.caramel.juniperbot.core.support.JbCacheManagerImpl"/>
     <bean id="requestScopeCacheManager" class="ru.caramel.juniperbot.core.support.RequestScopedCacheManager"/>
 
     <bean class="ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl" p:basenames="/core-jbmessages"/>

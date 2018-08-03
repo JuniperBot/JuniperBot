@@ -26,8 +26,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -35,10 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MemberService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
@@ -64,8 +60,6 @@ public class ModerationServiceImpl implements ModerationService {
 
     private final static String COLOR_ROLE_NAME = "JB-CLR-";
 
-    private final static String CACHE_NAME = "moderationConfigByGuildId";
-
     @Autowired
     private ModerationConfigRepository configRepository;
 
@@ -88,10 +82,10 @@ public class ModerationServiceImpl implements ModerationService {
     private ContextService contextService;
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private JbCacheManager cacheManager;
 
     @Autowired
-    private CacheManager cacheManager;
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
@@ -104,28 +98,22 @@ public class ModerationServiceImpl implements ModerationService {
     @Transactional
     @Override
     public ModerationConfig getConfig(long guildId) {
-        Cache cache = cacheManager.getCache(CACHE_NAME);
-        Cache.ValueWrapper valueWrapper = cache.get(guildId);
-        if (valueWrapper != null && valueWrapper.get() != null) {
-            return (ModerationConfig) valueWrapper.get();
-        }
-        ModerationConfig config = configRepository.findByGuildId(guildId);
-        if (config == null) {
-            GuildConfig guildConfig = configService.getOrCreate(guildId);
-            config = new ModerationConfig();
-            config.setGuildConfig(guildConfig);
-            configRepository.save(config);
-        }
-        cache.put(guildId, config);
-        return config;
+        return cacheManager.get(ModerationConfig.class, guildId, e -> {
+            ModerationConfig config = configRepository.findByGuildId(guildId);
+            if (config == null) {
+                GuildConfig guildConfig = configService.getOrCreate(guildId);
+                config = new ModerationConfig();
+                config.setGuildConfig(guildConfig);
+                configRepository.save(config);
+            }
+            return config;
+        });
     }
 
     @Transactional
     @Override
     public ModerationConfig save(ModerationConfig config) {
-        config = configRepository.save(config);
-        cacheManager.getCache(CACHE_NAME).evict(config.getGuildConfig().getGuildId());
-        return config;
+        return configRepository.save(config);
     }
 
     @Override
@@ -520,7 +508,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public long warnCount(Member member) {
-        GuildConfig config = configService.getOrCreate(member.getGuild());
+        GuildConfig config = configService.getOrCreateCached(member.getGuild());
         LocalMember memberLocal = memberService.getOrCreate(member);
         return warningRepository.countActiveByViolator(config, memberLocal);
     }
@@ -528,7 +516,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public boolean warn(Member author, Member member, String reason) {
-        GuildConfig config = configService.getOrCreate(member.getGuild());
+        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
         ModerationConfig moderationConfig = getConfig(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
