@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.support;
+package ru.caramel.juniperbot.core.support.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -22,7 +22,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import java.util.Objects;
 
 @ManagedResource
-public class ThreadPoolTaskExecutorMBean {
+public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
 
     private final org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor taskExecutor;
 
@@ -106,5 +106,15 @@ public class ThreadPoolTaskExecutorMBean {
     @ManagedAttribute(description = "Returns the total number of tasks that have ever been scheduled for execution ")
     public long getTaskCount() {
         return taskExecutor.getThreadPoolExecutor().getTaskCount();
+    }
+
+    @Override
+    public String getJmxName() {
+        return "Spring TaskExecutor Pool";
+    }
+
+    @Override
+    public String[] getJmxPath() {
+        return new String[] { };
     }
 }

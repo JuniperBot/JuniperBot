@@ -35,6 +35,7 @@
         <property name="autodetect" value="true" />
         <property name="namingStrategy" ref="namingStrategy" />
         <property name="assembler" ref="assembler" />
+        <property name="ensureUniqueRuntimeObjectNames" value="false" />
     </bean>
 
     <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
@@ -43,11 +44,11 @@
         <property name="attributeSource" ref="jmxAttributeSource" />
     </bean>
 
-    <bean id="namingStrategy" class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+    <bean id="namingStrategy" class="ru.caramel.juniperbot.core.support.jmx.JbMetadataNamingStrategy">
         <property name="attributeSource" ref="jmxAttributeSource" />
     </bean>
 
-    <bean id="taskExecutorMBean" class="ru.caramel.juniperbot.core.support.ThreadPoolTaskExecutorMBean" >
+    <bean id="taskExecutorMBean" class="ru.caramel.juniperbot.core.support.jmx.ThreadPoolTaskExecutorMBean" >
         <constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="executor"/>
     </bean>
 

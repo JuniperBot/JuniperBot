@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -54,6 +55,7 @@ import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.support.DiscordHttpRequestFactory;
 import ru.caramel.juniperbot.core.support.ModuleListener;
+import ru.caramel.juniperbot.core.support.jmx.JmxJDAMBean;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -100,6 +102,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Autowired(required = false)
     private AudioService audioService;
+
+    @Autowired
+    private MBeanExporter mBeanExporter;
 
     private Map<JDA, TimeWindowChart> pingCharts = new HashMap<>();
 
@@ -148,6 +153,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             shardManager.setGame(Game.playing(playingStatus));
         }
         pingCharts.put(event.getJDA(), new TimeWindowChart(10, TimeUnit.MINUTES));
+        mBeanExporter.registerManagedResource(new JmxJDAMBean(event.getJDA()));
     }
 
     @Override
