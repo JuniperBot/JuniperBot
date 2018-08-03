@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.module.junipost.model.InstagramMedia;
 import ru.caramel.juniperbot.module.junipost.model.InstagramProfile;
@@ -142,6 +143,8 @@ public class InstagramService {
                     }
                 }
             }
+        } catch (ResourceAccessException e) {
+            // skip
         } catch (Exception e) {
             LOGGER.error("Could not get Instagram data", e);
         }

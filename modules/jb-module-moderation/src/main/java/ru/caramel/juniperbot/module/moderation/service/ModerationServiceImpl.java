@@ -391,7 +391,13 @@ public class ModerationServiceImpl implements ModerationService {
         state.setGlobal(global);
         state.setUserId(member.getUser().getId());
         state.setGuildId(member.getGuild().getId());
-        state.setExpire(DateTime.now().plusMinutes(duration).toDate());
+        DateTime dateTime = DateTime.now();
+        if (duration != null) {
+            dateTime = dateTime.plusMinutes(duration);
+        } else {
+            dateTime = dateTime.plusYears(100);
+        }
+        state.setExpire(dateTime.toDate());
         state.setReason(reason);
         if (channel != null) {
             state.setChannelId(channel.getId());
