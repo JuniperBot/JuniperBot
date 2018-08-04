@@ -17,29 +17,38 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import com.codahale.metrics.Timer;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.IEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.JbEventManager;
 import ru.caramel.juniperbot.core.service.StatisticsService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
 
 @Service
-public class ContextEventManagerImpl implements IEventManager {
+public class ContextEventManagerImpl implements JbEventManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContextEventManagerImpl.class);
 
     private final Set<EventListener> listeners = Collections.synchronizedSet(new HashSet<>());
+
+    @Getter
+    @Setter
+    @Value("${eventManager.async:true}")
+    private boolean async;
 
     @Autowired
     private ContextService contextService;
@@ -54,30 +63,29 @@ public class ContextEventManagerImpl implements IEventManager {
     @Qualifier(RequestScopedCacheManager.NAME)
     private RequestScopedCacheManager cacheManager;
 
-    @Override
-    public void register(Object listener) {
-        if (!(listener instanceof EventListener)) {
-            throw new IllegalArgumentException("Listener must implement EventListener");
-        }
-        listeners.add(((EventListener) listener));
-    }
-
-    @Override
-    public void unregister(Object listener) {
-        listeners.remove(listener);
-    }
+    @Autowired
+    @Qualifier("eventManagerExecutor")
+    private TaskExecutor taskExecutor;
 
     @Override
     public void handle(Event event) {
+        if (async) {
+            taskExecutor.execute(() -> handleEvent(event));
+        } else {
+            handleEvent(event);
+        }
+    }
+
+    private void handleEvent(Event event) {
         try {
             cacheManager.clear();
             contextService.initContext(event);
             if (statisticsService.isDetailed()) {
                 statisticsService.doWithTimer(getTimer(event), () -> {
-                    handleInternal(event);
+                    loopListeners(event);
                 });
             } else {
-                handleInternal(event);
+                loopListeners(event);
             }
         } catch (Exception e) {
             LOGGER.error("Event manager caused an uncaught exception", e);
@@ -87,15 +95,7 @@ public class ContextEventManagerImpl implements IEventManager {
         }
     }
 
-    private Timer getTimer(Event event) {
-        int shard = -1;
-        if (event.getJDA() != null && event.getJDA().getShardInfo() != null) {
-            shard = event.getJDA().getShardInfo().getShardId();
-        }
-        return statisticsService.getTimer(String.format("event/shard.%d/%s", shard, event.getClass().getName()));
-    }
-
-    private void handleInternal(Event event) {
+    private void loopListeners(Event event) {
         if (event instanceof MessageReceivedEvent) {
             try {
                 commandsService.onMessageReceived((MessageReceivedEvent) event);
@@ -114,6 +114,27 @@ public class ContextEventManagerImpl implements IEventManager {
                 LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
             }
         }
+    }
+
+    private Timer getTimer(Event event) {
+        int shard = -1;
+        if (event.getJDA() != null && event.getJDA().getShardInfo() != null) {
+            shard = event.getJDA().getShardInfo().getShardId();
+        }
+        return statisticsService.getTimer(String.format("event/shard.%d/%s", shard, event.getClass().getName()));
+    }
+
+    @Override
+    public void register(Object listener) {
+        if (!(listener instanceof EventListener)) {
+            throw new IllegalArgumentException("Listener must implement EventListener");
+        }
+        listeners.add(((EventListener) listener));
+    }
+
+    @Override
+    public void unregister(Object listener) {
+        listeners.remove(listener);
     }
 
     @Autowired
