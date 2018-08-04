@@ -24,13 +24,13 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.function.Function;
 
-@Service
+@DiscordEvent(priority = 10)
 public class WelcomeGuildListener extends DiscordEventListener {
 
     private static final String NEW_LINE = "\n" + EmbedBuilder.ZERO_WIDTH_SPACE;

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.JbEventManager;
@@ -43,7 +44,7 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContextEventManagerImpl.class);
 
-    private final Set<EventListener> listeners = Collections.synchronizedSet(new HashSet<>());
+    private final List<EventListener> listeners = new ArrayList<>();
 
     @Getter
     @Setter
@@ -124,26 +125,48 @@ public class ContextEventManagerImpl implements JbEventManager {
         return statisticsService.getTimer(String.format("event/shard.%d/%s", shard, event.getClass().getName()));
     }
 
+    private int compareListeners(EventListener first, EventListener second) {
+        return getPriority(first) - getPriority(second);
+    }
+
+    private int getPriority(EventListener eventListener) {
+        return eventListener != null && eventListener.getClass().isAnnotationPresent(DiscordEvent.class)
+                ? eventListener.getClass().getAnnotation(DiscordEvent.class).priority()
+                : Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void unregister(Object listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+
     @Override
     public void register(Object listener) {
         if (!(listener instanceof EventListener)) {
             throw new IllegalArgumentException("Listener must implement EventListener");
         }
-        listeners.add(((EventListener) listener));
-    }
-
-    @Override
-    public void unregister(Object listener) {
-        listeners.remove(listener);
+        registerListeners(Collections.singletonList((EventListener) listener));
     }
 
     @Autowired
     public void registerContext(List<DiscordEventListener> listeners) {
-        this.listeners.addAll(listeners);
+        registerListeners(listeners);
+    }
+
+    private void registerListeners(List<? extends EventListener> listeners) {
+        synchronized (this.listeners) {
+            Set<EventListener> listenerSet = new HashSet<>(this.listeners);
+            listenerSet.addAll(listeners);
+            this.listeners.clear();
+            this.listeners.addAll(listenerSet);
+            this.listeners.sort(this::compareListeners);
+        }
     }
 
     @Override
     public List<Object> getRegisteredListeners() {
-        return Collections.unmodifiableList(new LinkedList<>(listeners));
+        return Collections.unmodifiableList(listeners);
     }
 }

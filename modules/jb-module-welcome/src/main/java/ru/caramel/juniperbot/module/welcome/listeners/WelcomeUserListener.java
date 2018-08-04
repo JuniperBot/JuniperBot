@@ -27,21 +27,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+@DiscordEvent(priority = 10)
 public class WelcomeUserListener extends DiscordEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeUserListener.class);

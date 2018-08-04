@@ -23,16 +23,15 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
-import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@DiscordEvent
 public class ReactionRouletteListener extends DiscordEventListener {
 
     @Autowired
