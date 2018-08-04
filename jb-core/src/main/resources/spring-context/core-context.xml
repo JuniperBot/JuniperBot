@@ -38,6 +38,8 @@
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
     <task:scheduler id="scheduler" pool-size="${core.schedulerPool:10}"/>
 
+    <task:executor id="eventManagerExecutor" pool-size="${eventManager.threadPool:5}"/>
+
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" p:dataSource-ref="dataSource"
           p:overwriteExistingJobs="true">
         <property name="jobFactory">

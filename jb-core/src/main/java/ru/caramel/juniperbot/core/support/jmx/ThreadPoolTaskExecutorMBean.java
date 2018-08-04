@@ -16,19 +16,27 @@
  */
 package ru.caramel.juniperbot.core.support.jmx;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Objects;
 
 @ManagedResource
 public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
 
-    private final org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor taskExecutor;
+    private final ThreadPoolTaskExecutor taskExecutor;
+    private final String objectName;
 
-    public ThreadPoolTaskExecutorMBean(org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor taskExecutor) {
+    public ThreadPoolTaskExecutorMBean(ThreadPoolTaskExecutor taskExecutor) {
+        this(null, taskExecutor);
+    }
+
+    public ThreadPoolTaskExecutorMBean(String name, ThreadPoolTaskExecutor taskExecutor) {
         Objects.requireNonNull(taskExecutor);
         this.taskExecutor = taskExecutor;
+        this.objectName = StringUtils.isNoneBlank(name) ? name : getClass().getSimpleName();
     }
 
     @ManagedAttribute(description = "Returns the number of threads that execute tasks")
@@ -110,7 +118,7 @@ public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
 
     @Override
     public String getJmxName() {
-        return "Spring TaskExecutor Pool";
+        return objectName;
     }
 
     @Override

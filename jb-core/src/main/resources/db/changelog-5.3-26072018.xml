@@ -38,4 +38,9 @@
         <addNotNullConstraint tableName="guild_config" columnName="time_zone"/>
     </changeSet>
 
+    <changeSet id="5.3-04082018-3" author="caramel">
+        <dropNotNullConstraint tableName="mute_state" columnName="channel_id"/>
+        <dropNotNullConstraint tableName="mute_state" columnName="reason"/>
+    </changeSet>
+
 </databaseChangeLog>
