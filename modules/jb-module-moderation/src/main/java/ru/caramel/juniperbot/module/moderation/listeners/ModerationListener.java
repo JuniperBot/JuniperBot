@@ -21,11 +21,11 @@ import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.module.moderation.service.ModerationService;
 
-@Component
+@DiscordEvent
 public class ModerationListener extends DiscordEventListener {
 
     @Autowired
