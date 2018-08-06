@@ -40,7 +40,7 @@ public class PlaylistDao extends AbstractDao {
         }
         PlaylistDto dto = apiMapper.getPlaylistDto(playlist);
         if (withGuild) {
-            dto.setGuild(guildDao.getGuild(playlist.getGuildConfig()));
+            dto.setGuild(guildDao.getGuild(playlist.getGuildId()));
         }
         return dto;
     }

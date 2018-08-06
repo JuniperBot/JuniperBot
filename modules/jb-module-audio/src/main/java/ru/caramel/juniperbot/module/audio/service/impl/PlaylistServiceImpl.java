@@ -135,7 +135,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
     }
 
     private void onError(Playlist playlist, String messageCode) throws FriendlyException {
-        contextService.withContext(playlist.getGuildConfig().getGuildId(), () -> {
+        contextService.withContext(playlist.getGuildId(), () -> {
             throw new FriendlyException(messageService.getMessage(messageCode), COMMON, null);
         });
     }
@@ -252,7 +252,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             playlist.setUuid(String.valueOf(UUID.randomUUID()).toLowerCase());
             playlist.setItems(new ArrayList<>());
             playlist.setDate(new Date());
-            playlist.setGuildConfig(configService.getOrCreate(instance.getGuildId()));
+            playlist.setGuildId(instance.getGuildId());
             playlistRepository.save(playlist);
             instance.setPlaylistId(playlist.getId());
             instance.setPlaylistUuid(playlist.getUuid());

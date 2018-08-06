@@ -162,4 +162,26 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.4-06082018-5" author="caramel">
+        <!-- Migrate Playlist -->
+        <addColumn tableName="playlist">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE playlist AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="playlist" columnName="guild_id"/>
+
+        <dropIndex tableName="playlist" indexName="idx_playlist_guild_config_id"/>
+        <dropColumn tableName="playlist">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="playlist" indexName="idx_playlist_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

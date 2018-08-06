@@ -17,11 +17,11 @@
 package ru.caramel.juniperbot.module.audio.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 
 @Repository
-public interface PlaylistRepository extends GuildOwnedRepository<Playlist> {
+public interface PlaylistRepository extends GuildRepository<Playlist> {
 
     Playlist findByUuid(String uuid);
 
