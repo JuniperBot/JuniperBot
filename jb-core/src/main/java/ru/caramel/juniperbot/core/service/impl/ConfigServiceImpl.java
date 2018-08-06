@@ -49,8 +49,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Override
     @Transactional
     public GuildConfig getOrCreate(Guild guild) {
-        Assert.notNull(guild, "Guild cannot be null");
-        GuildConfig config = getOrCreate(guild.getIdLong());
+        GuildConfig config = super.getOrCreate(guild);
         try {
             boolean shouldSave = false;
             if (!Objects.equals(config.getName(), guild.getName())) {

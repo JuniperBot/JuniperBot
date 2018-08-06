@@ -16,13 +16,18 @@
  */
 package ru.caramel.juniperbot.core.service;
 
+import net.dv8tion.jda.core.entities.Guild;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 public interface DomainService<T extends GuildEntity> {
 
+    T get(Guild guild);
+
     T get(long id);
 
     T getByGuildId(long guildId);
+
+    T getOrCreate(Guild guild);
 
     T getOrCreate(long guildId);
 

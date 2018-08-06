@@ -106,7 +106,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
     })
     void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);

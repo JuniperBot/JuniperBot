@@ -20,22 +20,17 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 import java.util.List;
 
-public interface ModerationService {
-
-    ModerationConfig getConfig(Guild guild);
-
-    ModerationConfig getConfig(long serverId);
-
-    ModerationConfig save(ModerationConfig config);
+public interface ModerationService extends DomainService<ModerationConfig> {
 
     boolean isModerator(Member member);
 
-    boolean isPublicColor(long serverId);
+    boolean isPublicColor(long guildId);
 
     boolean setColor(Member member, String color);
 

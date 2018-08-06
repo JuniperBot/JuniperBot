@@ -31,9 +31,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -54,23 +54,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
-public class ModerationServiceImpl implements ModerationService {
+public class ModerationServiceImpl
+        extends AbstractDomainServiceImpl<ModerationConfig, ModerationConfigRepository>
+        implements ModerationService {
 
     private final static String MUTED_ROLE_NAME = "JB-MUTED";
 
     private final static String COLOR_ROLE_NAME = "JB-CLR-";
 
     @Autowired
-    private ModerationConfigRepository configRepository;
-
-    @Autowired
     private MemberWarningRepository warningRepository;
 
     @Autowired
     private MuteStateRepository muteStateRepository;
-
-    @Autowired
-    private ConfigService configService;
 
     @Autowired
     private MemberService memberService;
@@ -89,31 +85,25 @@ public class ModerationServiceImpl implements ModerationService {
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
-    @Transactional
-    @Override
-    public ModerationConfig getConfig(Guild guild) {
-        return getConfig(guild.getIdLong());
+    public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
+        super(repository);
     }
 
-    @Transactional
     @Override
-    public ModerationConfig getConfig(long guildId) {
-        return cacheManager.get(ModerationConfig.class, guildId, e -> {
-            ModerationConfig config = configRepository.findByGuildId(guildId);
-            if (config == null) {
-                GuildConfig guildConfig = configService.getOrCreate(guildId);
-                config = new ModerationConfig();
-                config.setGuildConfig(guildConfig);
-                configRepository.save(config);
-            }
-            return config;
-        });
+    @Transactional
+    public ModerationConfig getOrCreate(Guild guild) {
+        return getOrCreate(guild.getIdLong()); // to make it cacheable
     }
 
-    @Transactional
     @Override
-    public ModerationConfig save(ModerationConfig config) {
-        return configRepository.save(config);
+    @Transactional
+    public ModerationConfig getOrCreate(long guildId) {
+        return cacheManager.get(ModerationConfig.class, guildId, super::getOrCreate);
+    }
+
+    @Override
+    protected ModerationConfig createNew(long guildId) {
+        return new ModerationConfig(guildId);
     }
 
     @Override
@@ -125,14 +115,14 @@ public class ModerationServiceImpl implements ModerationService {
         if (member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner()) {
             return true;
         }
-        ModerationConfig config = getConfig(member.getGuild());
-        return CollectionUtils.isNotEmpty(config.getRoles())
+        ModerationConfig config = getOrCreate(member.getGuild());
+        return config != null && CollectionUtils.isNotEmpty(config.getRoles())
                 && member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
 
     @Override
-    public boolean isPublicColor(long serverId) {
-        ModerationConfig config = getConfig(serverId);
+    public boolean isPublicColor(long guildId) {
+        ModerationConfig config = getByGuildId(guildId);
         return config != null && config.isPublicColors();
     }
 
@@ -516,7 +506,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Transactional
     public boolean warn(Member author, Member member, String reason) {
         long guildId = member.getGuild().getIdLong();
-        ModerationConfig moderationConfig = getConfig(member.getGuild());
+        ModerationConfig moderationConfig = getOrCreate(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 

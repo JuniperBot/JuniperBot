@@ -184,4 +184,26 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.4-06082018-6" author="caramel">
+        <!-- Migrate ModerationConfig -->
+        <addColumn tableName="mod_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE mod_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="mod_config" columnName="guild_id"/>
+
+        <dropIndex tableName="mod_config" indexName="idx_mod_config_guild_config_id"/>
+        <dropColumn tableName="mod_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="mod_config" indexName="idx_mod_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

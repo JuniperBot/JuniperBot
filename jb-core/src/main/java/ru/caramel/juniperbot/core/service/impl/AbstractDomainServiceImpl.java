@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.core.service.DomainService;
@@ -30,15 +32,22 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public T getByGuildId(long guildId) {
         return repository.findByGuildId(guildId);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public T get(long id) {
         return repository.findOne(id);
+    }
+
+    @Override
+    @Transactional
+    public T get(Guild guild) {
+        Assert.notNull(guild, "Guild cannot be null");
+        return getByGuildId(guild.getIdLong());
     }
 
     @Override
@@ -51,6 +60,12 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Override
     public boolean exists(long guildId) {
         return repository.existsByGuildId(guildId);
+    }
+
+    @Override
+    @Transactional
+    public T getOrCreate(Guild guild) {
+        return getOrCreate(guild.getIdLong());
     }
 
     @Override

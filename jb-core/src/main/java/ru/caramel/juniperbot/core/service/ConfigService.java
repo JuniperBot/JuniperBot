@@ -23,8 +23,6 @@ public interface ConfigService extends DomainService<GuildConfig> {
 
     String getDefaultPrefix();
 
-    GuildConfig getOrCreate(Guild guild);
-
     GuildConfig getOrCreateCached(Guild guild);
 
     String getPrefix(long guildId);
