@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBotJ.
+
+ JuniperBotJ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBotJ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="5.4-06082018-1" author="caramel">
+        <!-- Remove holiday features, we can't handle them -->
+        <dropTable tableName="new_year_notification"/>
+
+        <!-- Update member -->
+        <dropIndex tableName="member" indexName="idx_member_guild_id"/>
+        <modifyDataType tableName="member"
+                        columnName="guild_id"
+                        newDataType="BIGINT"/>
+        <createIndex tableName="member" indexName="idx_member_guild_id">
+            <column name="guild_id" type="BIGINT"/>
+        </createIndex>
+        <createIndex tableName="member" indexName="uq_member_composite" unique="true">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createIndex>
+
+        <!-- Update Mute State -->
+        <dropIndex tableName="mute_state" indexName="idx_mute_state_member"/>
+        <modifyDataType tableName="mute_state"
+                        columnName="guild_id"
+                        newDataType="BIGINT"/>
+        <createIndex tableName="mute_state" indexName="idx_mute_state_member">
+            <column name="guild_id"/>
+            <column name="user_id"/>
+        </createIndex>
+
+        <createProcedure>
+            DROP FUNCTION recalculate_rank(p_guild_id VARCHAR(255));
+            CREATE OR REPLACE FUNCTION recalculate_rank(p_guild_id BIGINT)
+              RETURNS integer AS $$
+              BEGIN
+                UPDATE ranking r
+                SET rank = r2.rank
+                FROM (
+                  SELECT r.id, r.exp, row_number() over (order by r.exp DESC) as rank FROM ranking r JOIN member m ON m.id = r.member_id AND m.guild_id = p_guild_id
+                ) r2
+                WHERE r.id = r2.id;
+                RETURN 1;
+              END;
+            $$ LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-2" author="caramel">
+
+        <!-- Migrate junipost -->
+        <addColumn tableName="junipost">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE junipost AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="junipost" columnName="guild_id"/>
+        <createIndex tableName="junipost" indexName="idx_junipost_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+
+        <dropIndex tableName="junipost" indexName="idx_junipost_guild_config_id"/>
+        <dropColumn tableName="junipost">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <!-- Migrate VkConnection -->
+        <addColumn tableName="vk_connection">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE vk_connection AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="vk_connection" columnName="guild_id"/>
+        <createIndex tableName="vk_connection" indexName="idx_vk_connection_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+
+        <dropColumn tableName="vk_connection">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+    </changeSet>
+
+    <changeSet id="5.4-06082018-3" author="caramel">
+
+        <!-- Migrate CommandConfig -->
+        <addColumn tableName="command_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE command_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="command_config" columnName="guild_id"/>
+        <createIndex tableName="command_config" indexName="idx_command_config_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+        <createIndex tableName="command_config" indexName="idx_command_config_guild_id_key">
+            <column name="guild_id"/>
+            <column name="key"/>
+        </createIndex>
+
+        <dropIndex tableName="command_config" indexName="idx_command_config_guild_config_id_key"/>
+        <dropIndex tableName="command_config" indexName="idx_command_config_guild_config_id"/>
+        <dropColumn tableName="command_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+    </changeSet>
+
+    <changeSet id="5.4-06082018-4" author="caramel">
+        <!-- Migrate MemberWarning -->
+        <addColumn tableName="member_warning">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE member_warning AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="member_warning" columnName="guild_id"/>
+
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_active_guild_violator"/>
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_guild_config_id"/>
+        <dropColumn tableName="member_warning">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="member_warning" indexName="idx_member_warning_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_active_guild_violator">
+            <column name="guild_id"/>
+            <column name="violator_id"/>
+            <column name="active"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-5" author="caramel">
+        <!-- Migrate Playlist -->
+        <addColumn tableName="playlist">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE playlist AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="playlist" columnName="guild_id"/>
+
+        <dropIndex tableName="playlist" indexName="idx_playlist_guild_config_id"/>
+        <dropColumn tableName="playlist">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="playlist" indexName="idx_playlist_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-6" author="caramel">
+        <!-- Migrate ModerationConfig -->
+        <addColumn tableName="mod_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE mod_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="mod_config" columnName="guild_id"/>
+
+        <dropIndex tableName="mod_config" indexName="idx_mod_config_guild_config_id"/>
+        <dropColumn tableName="mod_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="mod_config" indexName="idx_mod_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-7" author="caramel">
+        <!-- Migrate MusicConfig -->
+        <addColumn tableName="music_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE music_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="music_config" columnName="guild_id"/>
+
+        <dropIndex tableName="music_config" indexName="idx_music_config_guild_config_id"/>
+        <dropColumn tableName="music_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="music_config" indexName="idx_music_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-8" author="caramel">
+        <!-- Migrate RankingConfig -->
+        <addColumn tableName="ranking_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE ranking_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="ranking_config" columnName="guild_id"/>
+
+        <dropIndex tableName="ranking_config" indexName="idx_ranking_config_guild_config_id"/>
+        <dropColumn tableName="ranking_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="ranking_config" indexName="idx_ranking_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-9" author="caramel">
+        <!-- Migrate ReactionRoulette -->
+        <addColumn tableName="reaction_roulette">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE reaction_roulette AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="reaction_roulette" columnName="guild_id"/>
+
+        <dropIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_config_id"/>
+        <dropColumn tableName="reaction_roulette">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-10" author="caramel">
+        <!-- Migrate WelcomeMessage -->
+        <addColumn tableName="welcome_message">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE welcome_message AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="welcome_message" columnName="guild_id"/>
+
+        <dropIndex tableName="welcome_message" indexName="idx_welcome_message_guild_config_id"/>
+        <dropColumn tableName="welcome_message">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="welcome_message" indexName="idx_welcome_message_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-11" author="caramel">
+        <!-- Migrate CustomCommand -->
+        <addColumn tableName="custom_command">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE custom_command AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="custom_command" columnName="guild_id"/>
+
+        <dropIndex tableName="custom_command" indexName="idx_custom_command_entry"/>
+        <dropColumn tableName="custom_command">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="custom_command" indexName="idx_custom_command_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+        <createIndex tableName="custom_command" indexName="idx_custom_command_entry" unique="true">
+            <column name="guild_id"/>
+            <column name="key"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

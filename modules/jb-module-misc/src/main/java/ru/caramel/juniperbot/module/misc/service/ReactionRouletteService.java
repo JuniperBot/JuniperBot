@@ -16,11 +16,8 @@
  */
 package ru.caramel.juniperbot.module.misc.service;
 
+import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 
-public interface ReactionRouletteService {
-
-    ReactionRoulette get(long guildId);
-
-    ReactionRoulette save(ReactionRoulette reactionRoulette);
+public interface ReactionRouletteService extends DomainService<ReactionRoulette> {
 }

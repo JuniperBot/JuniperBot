@@ -17,13 +17,11 @@
 package ru.caramel.juniperbot.module.vk.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 
-import java.util.List;
-
 @Repository
-public interface VkConnectionRepository extends GuildOwnedRepository<VkConnection> {
+public interface VkConnectionRepository extends GuildRepository<VkConnection> {
 
     VkConnection findByToken(String token);
 }

@@ -21,6 +21,8 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 
 public interface UserService {
 
+    LocalUser get(User user);
+
     LocalUser getOrCreate(User user);
 
     LocalUser updateIfRequired(User user, LocalUser localUser);

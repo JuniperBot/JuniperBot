@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -47,7 +46,7 @@ public abstract class AbstractCommand implements Command {
     protected CommandsService commandsService;
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
+    public boolean isAvailable(MessageReceivedEvent event) {
         return true;
     }
 

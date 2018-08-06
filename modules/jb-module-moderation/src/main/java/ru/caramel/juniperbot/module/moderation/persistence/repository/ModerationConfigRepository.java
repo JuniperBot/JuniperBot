@@ -17,9 +17,9 @@
 package ru.caramel.juniperbot.module.moderation.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 
 @Repository
-public interface ModerationConfigRepository extends GuildOwnedRepository<ModerationConfig> {
+public interface ModerationConfigRepository extends GuildRepository<ModerationConfig> {
 }

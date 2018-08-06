@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
@@ -42,7 +41,7 @@ public class CustomCommandsDao extends AbstractDao {
             if (commandConfig == null) {
                 commandConfig = new CommandConfig();
                 commandConfig.setKey(e.getKey());
-                commandConfig.setGuildConfig(e.getConfig());
+                commandConfig.setGuildId(guildId);
                 e.setCommandConfig(commandConfig);
             }
             apiMapper.updateCommandDto(e.getCommandConfig(), dto);
@@ -52,7 +51,6 @@ public class CustomCommandsDao extends AbstractDao {
 
     @Transactional
     public void save(List<CustomCommandDto> dtos, long guildId) {
-        GuildConfig config = configService.getOrCreate(guildId);
         List<CustomCommand> customCommands = commandRepository.findAllByGuildId(guildId);
         if (dtos == null) {
             dtos = Collections.emptyList();
@@ -68,7 +66,7 @@ public class CustomCommandsDao extends AbstractDao {
             if (command != null) {
                 if (command.getCommandConfig() == null) {
                     CommandConfig commandConfig = new CommandConfig();
-                    commandConfig.setGuildConfig(config);
+                    commandConfig.setGuildId(guildId);
                 }
                 apiMapper.updateCommandConfig(e, command.getCommandConfig());
                 apiMapper.updateCustomCommand(e, command);
@@ -80,9 +78,9 @@ public class CustomCommandsDao extends AbstractDao {
         Set<String> keys = customCommands.stream().map(CustomCommand::getKey).collect(Collectors.toSet());
         result.addAll(dtos.stream().filter(e -> e.getId() == null && !keys.contains(e.getKey())).map(e -> {
             CustomCommand customCommand = new CustomCommand();
-            customCommand.setConfig(config);
+            customCommand.setGuildId(guildId);
             CommandConfig commandConfig = new CommandConfig();
-            commandConfig.setGuildConfig(config);
+            commandConfig.setGuildId(guildId);
             customCommand.setCommandConfig(commandConfig);
             apiMapper.updateCommandConfig(e, commandConfig);
             apiMapper.updateCustomCommand(e, customCommand);

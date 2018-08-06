@@ -19,13 +19,12 @@ package ru.caramel.juniperbot.core.model;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 public interface Command {
 
     boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
-    boolean isAvailable(MessageReceivedEvent event, GuildConfig config);
+    boolean isAvailable(MessageReceivedEvent event);
 
     default String getKey() {
         if (!getClass().isAnnotationPresent(DiscordCommand.class)) {

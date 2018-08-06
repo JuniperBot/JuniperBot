@@ -102,8 +102,8 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public Locale getLocale(long serverId) {
-        return supportedLocales.getOrDefault(configService.getLocale(serverId), getDefaultLocale());
+    public Locale getLocale(long guildId) {
+        return supportedLocales.getOrDefault(configService.getLocale(guildId), getDefaultLocale());
     }
 
     @Override
@@ -159,10 +159,10 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void withContext(long serverId, Runnable action) {
+    public void withContext(long guildId, Runnable action) {
         ContextHolder currentContext = getContext();
         resetContext();
-        initContext(serverId);
+        initContext(guildId);
         try {
             action.run();
         } finally {
@@ -210,9 +210,9 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void initContext(long serverId) {
-        MDC.put(MDC_GUILD, serverId);
-        guildHolder.set(serverId);
+    public void initContext(long guildId) {
+        MDC.put(MDC_GUILD, guildId);
+        guildHolder.set(guildId);
     }
 
     @Override

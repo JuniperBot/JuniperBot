@@ -20,11 +20,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 
 @Repository
-public interface CommandConfigRepository extends GuildOwnedRepository<CommandConfig> {
+public interface CommandConfigRepository extends GuildRepository<CommandConfig> {
 
-    @Query("SELECT c FROM CommandConfig c WHERE c.guildConfig.guildId = :guildId AND c.key = :key")
+    @Query("SELECT c FROM CommandConfig c WHERE c.guildId = :guildId AND c.key = :key")
     CommandConfig findByKey(@Param("guildId") long guildId, @Param("key") String key);
 
 }

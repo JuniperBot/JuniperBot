@@ -42,12 +42,13 @@ public class GuildDao extends AbstractDao {
 
     @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
-        GuildConfig config = configService.getById(request.getId());
+        GuildConfig config = configService.getByGuildId(request.getId());
         return getGuild(config, request.getParts());
     }
 
     @Transactional
-    public GuildDto getGuild(GuildConfig config) {
+    public GuildDto getGuild(long guildId) {
+        GuildConfig config = configService.getByGuildId(guildId);
         return getGuild(config, null);
     }
 

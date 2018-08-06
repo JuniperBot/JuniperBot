@@ -40,7 +40,7 @@ public class RankingDao extends AbstractDao {
 
     @Transactional
     public RankingDto get(long guildId) {
-        RankingConfig config = rankingService.getConfig(guildId);
+        RankingConfig config = rankingService.getOrCreate(guildId);
         RankingDto dto = apiMapper.getRankingDto(config);
         if (config.isWhisper()) {
             dto.setAnnouncementChannelId(WHISPER_CHANNEL);
@@ -52,7 +52,7 @@ public class RankingDao extends AbstractDao {
 
     @Transactional
     public void save(RankingDto dto, long guildId) {
-        RankingConfig config = rankingService.getConfig(guildId);
+        RankingConfig config = rankingService.getOrCreate(guildId);
         config.setAnnouncementEnabled(dto.isAnnouncementEnabled());
         config.setEnabled(dto.isEnabled());
         config.setAnnouncement(dto.getAnnouncement());
@@ -77,6 +77,5 @@ public class RankingDao extends AbstractDao {
             config.setRewards(null);
         }
         rankingService.save(config);
-        cacheManager.evict(RankingConfig.class, guildId);
     }
 }

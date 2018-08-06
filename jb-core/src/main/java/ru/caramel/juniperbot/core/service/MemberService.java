@@ -21,6 +21,8 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 
 public interface MemberService {
 
+    LocalMember get(Member member);
+
     LocalMember getOrCreate(Member member);
 
     LocalMember save(LocalMember member);

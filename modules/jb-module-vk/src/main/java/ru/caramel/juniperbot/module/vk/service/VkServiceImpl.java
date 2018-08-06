@@ -133,9 +133,9 @@ public class VkServiceImpl implements VkService {
 
     @Override
     @Transactional
-    public VkConnection create(GuildConfig config, String name, String code) {
+    public VkConnection create(long guildId, String name, String code) {
         VkConnection connection = new VkConnection();
-        connection.setGuildConfig(config);
+        connection.setGuildId(guildId);
         connection.setStatus(VkConnectionStatus.CONFIRMATION);
         connection.setToken(UUID.randomUUID().toString());
         connection.setName(name);
@@ -160,7 +160,7 @@ public class VkServiceImpl implements VkService {
     @Override
     @Transactional
     public void delete(VkConnection connection) {
-        webHookService.delete(connection.getGuildConfig().getGuildId(), connection.getWebHook());
+        webHookService.delete(connection.getGuildId(), connection.getWebHook());
         repository.delete(connection);
     }
 
@@ -182,7 +182,7 @@ public class VkServiceImpl implements VkService {
         if (!connection.getWebHook().isValid()) {
             return;
         }
-        contextService.withContext(connection.getGuildConfig().getGuildId(), () -> {
+        contextService.withContext(connection.getGuildId(), () -> {
             discordService.executeWebHook(connection.getWebHook(), createMessage(connection, message), e -> {
                 e.setEnabled(false);
                 hookRepository.save(e);

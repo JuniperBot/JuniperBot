@@ -37,21 +37,37 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private UserService userService;
 
+    @Override
+    @Transactional
+    public LocalMember get(Member member) {
+        return memberRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(),
+                member.getUser().getId());
+    }
+
+    @Override
     @Transactional
     public LocalMember getOrCreate(Member member) {
         if (!isApplicable(member)) {
             return null;
         }
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(member.getGuild().getId(),
-                member.getUser().getId());
+        LocalMember localMember = get(member);
         if (localMember == null) {
-            localMember = new LocalMember();
-            localMember.setGuildId(member.getGuild().getId());
-            localMember.setUser(userService.getOrCreate(member.getUser()));
+            synchronized (this) {
+                localMember = get(member);
+                if (localMember == null) {
+                    localMember = new LocalMember();
+                    localMember.setGuildId(member.getGuild().getIdLong());
+                    localMember.setUser(userService.getOrCreate(member.getUser()));
+                    updateIfRequired(member, localMember);
+                    memberRepository.flush();
+                    return localMember;
+                }
+            }
         }
         return updateIfRequired(member, localMember);
     }
 
+    @Override
     @Transactional
     public LocalMember save(LocalMember member) {
         return memberRepository.save(member);

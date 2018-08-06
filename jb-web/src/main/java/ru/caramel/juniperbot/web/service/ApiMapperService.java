@@ -106,7 +106,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
     })
     void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);
@@ -121,7 +121,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "voiceVolume", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getChannelId()))", target = "channelId"),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getTextChannelId()))", target = "textChannelId"),
@@ -147,7 +147,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getJoinChannelId()))", target = "joinChannelId"),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getLeaveChannelId()))", target = "leaveChannelId"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
@@ -158,6 +158,7 @@ public interface ApiMapperService {
             @Mapping(target = "enabled", ignore = true),
             @Mapping(target = "allowedRoles", ignore = true),
             @Mapping(target = "ignoredRoles", ignore = true),
+            @Mapping(target = "allowedChannels", ignore = true),
             @Mapping(target = "ignoredChannels", ignore = true),
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
@@ -167,7 +168,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "config", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "commandConfig", ignore = true)
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
@@ -180,7 +181,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
     })
     void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);
@@ -215,7 +216,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedRoles()))", target = "allowedRoles"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredRoles()))", target = "ignoredRoles"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedChannels()))", target = "allowedChannels"),

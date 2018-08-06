@@ -19,25 +19,13 @@ package ru.caramel.juniperbot.core.service;
 import net.dv8tion.jda.core.entities.Guild;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
-public interface ConfigService {
+public interface ConfigService extends DomainService<GuildConfig> {
 
     String getDefaultPrefix();
 
-    boolean exists(long serverId);
-
-    void save(GuildConfig config);
-
-    GuildConfig getById(long serverId);
-
-    GuildConfig getOrCreate(long serverId);
-
-    GuildConfig getOrCreate(Guild guild);
-
-    GuildConfig getOrCreateCached(Guild guild);
-
-    String getPrefix(long serverId);
+    String getPrefix(long guildId);
 
     String getLocale(Guild guild);
 
-    String getLocale(long serverId);
+    String getLocale(long guildId);
 }

@@ -19,10 +19,7 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.WebHook;
-import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
-import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
+import ru.caramel.juniperbot.module.junipost.service.JuniPostService;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
@@ -39,7 +36,7 @@ public class SubscriptionDao extends AbstractDao {
     private VkConnectionRepository vkConnectionRepository;
 
     @Autowired
-    private JuniPostRepository juniPostRepository;
+    private JuniPostService juniPostService;
 
     private Map<Class<?>, SubscriptionHandler<?>> handlersByClass = new HashMap<>();
 
@@ -47,10 +44,9 @@ public class SubscriptionDao extends AbstractDao {
 
     @Transactional
     public List<SubscriptionDto> getSubscriptions(long guildId) {
-        GuildConfig config = configService.getOrCreate(guildId);
         List<SubscriptionDto> result = new ArrayList<>();
 
-        SubscriptionDto dto = getJuniSubscription(config);
+        SubscriptionDto dto = getSubscription(juniPostService.getOrCreate(guildId));
         if (dto != null) {
             result.add(dto);
         }
@@ -58,18 +54,6 @@ public class SubscriptionDao extends AbstractDao {
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(guildId);
         vkConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
         return result;
-    }
-
-    @javax.transaction.Transactional
-    public SubscriptionDto getJuniSubscription(GuildConfig config) {
-        JuniPost juniPost = juniPostRepository.findByGuildConfig(config);
-        if (juniPost == null) {
-            juniPost = new JuniPost();
-            juniPost.setGuildConfig(config);
-            juniPost.setWebHook(new WebHook());
-            juniPostRepository.save(juniPost);
-        }
-        return getSubscription(juniPost);
     }
 
     @Transactional

@@ -14,21 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.entity;
+package ru.caramel.juniperbot.module.junipost.service;
 
-import lombok.Getter;
-import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.service.DomainService;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 
-import javax.persistence.*;
-
-@Getter
-@Setter
-@MappedSuperclass
-public abstract class GuildOwnedEntity extends BaseEntity {
-
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "guild_config_id")
-    protected GuildConfig guildConfig;
-
+public interface JuniPostService extends DomainService<JuniPost> {
 }

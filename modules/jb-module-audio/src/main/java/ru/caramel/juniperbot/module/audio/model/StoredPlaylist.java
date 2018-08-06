@@ -42,6 +42,6 @@ public class StoredPlaylist extends BasicAudioPlaylist {
         super(playlist.getUuid(), tracks, null, false);
         this.playlistId = playlist.getId();
         this.playlistUuid = playlist.getUuid();
-        this.guildId = playlist.getGuildConfig().getGuildId();
+        this.guildId = playlist.getGuildId();
     }
 }

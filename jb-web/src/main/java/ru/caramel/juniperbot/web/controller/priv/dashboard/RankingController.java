@@ -49,8 +49,8 @@ public class RankingController extends BaseRestController {
 
     @RequestMapping(value = "/ranking/reset/{guildId}", method = RequestMethod.POST)
     public void resetAll(
-            @GuildId @PathVariable("guildId") long serverId) {
-        rankingService.resetAll(serverId);
+            @GuildId @PathVariable("guildId") long guildId) {
+        rankingService.resetAll(guildId);
     }
 
     @RequestMapping(value = "/ranking/update/{guildId}", method = RequestMethod.POST)

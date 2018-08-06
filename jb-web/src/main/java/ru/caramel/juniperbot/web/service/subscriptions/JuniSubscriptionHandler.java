@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
-import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
+import ru.caramel.juniperbot.module.junipost.service.JuniPostService;
 import ru.caramel.juniperbot.module.junipost.service.PostService;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
@@ -36,11 +36,11 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
     private PostService postService;
 
     @Autowired
-    private JuniPostRepository juniPostRepository;
+    private JuniPostService juniPostService;
 
     @Override
     public SubscriptionDto getSubscription(JuniPost juniPost) {
-        SubscriptionDto dto = getDtoForHook(juniPost.getGuildConfig().getGuildId(), juniPost.getWebHook());
+        SubscriptionDto dto = getDtoForHook(juniPost.getGuildId(), juniPost.getWebHook());
         dto.setId(juniPost.getId());
         dto.setName(postService.getAccountName());
         if (postService.getIconUrl() != null) {
@@ -54,12 +54,12 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
     @Override
     @Transactional
     public boolean update(SubscriptionDto subscription) {
-        JuniPost post = juniPostRepository.findOne(subscription.getId());
+        JuniPost post = juniPostService.get(subscription.getId());
         if (!check(post)) {
             return false;
         }
         updateWebHook(post, subscription);
-        juniPostRepository.save(post);
+        juniPostService.save(post);
         return true;
     }
 

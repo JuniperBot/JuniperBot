@@ -53,7 +53,7 @@ public class WarnCommand extends ModeratorCommandAsync {
             return;
         }
         if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
-            ModerationConfig config = moderationService.getConfig(event.getGuild());
+            ModerationConfig config = moderationService.getOrCreate(event.getGuild());
             String messageCode = "discord.command.mod.warn.exceeded.message." + config.getWarnExceedAction().name();
 
             String argument = "";
@@ -69,7 +69,7 @@ public class WarnCommand extends ModeratorCommandAsync {
             messageService.onEmbedMessage(event.getChannel(), messageCode, mentioned.getEffectiveName(), argument);
             return;
         }
-        ModerationConfig config = moderationService.getConfig(event.getGuild());
+        ModerationConfig config = moderationService.getOrCreate(event.getGuild());
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.message",
                 mentioned.getEffectiveName(), moderationService.warnCount(mentioned), config.getMaxWarnings());
     }

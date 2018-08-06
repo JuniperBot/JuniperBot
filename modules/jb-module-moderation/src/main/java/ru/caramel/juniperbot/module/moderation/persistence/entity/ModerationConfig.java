@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.module.moderation.model.WarnExceedAction;
 
 import javax.persistence.*;
@@ -32,7 +32,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "mod_config")
-public class ModerationConfig extends GuildOwnedEntity {
+public class ModerationConfig extends GuildEntity {
 
     private static final long serialVersionUID = 7052650749958531237L;
 
@@ -58,4 +58,7 @@ public class ModerationConfig extends GuildOwnedEntity {
     @Column(name = "mute_count")
     private int muteCount = DEFAULT_MUTE_COUNT;
 
+    public ModerationConfig(long guildId) {
+        this.guildId = guildId;
+    }
 }

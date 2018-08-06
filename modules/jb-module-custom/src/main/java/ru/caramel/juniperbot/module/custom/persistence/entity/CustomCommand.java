@@ -19,8 +19,7 @@ package ru.caramel.juniperbot.module.custom.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.module.custom.model.CommandType;
 
 import javax.persistence.*;
@@ -31,13 +30,9 @@ import javax.validation.constraints.Size;
 @Setter
 @Entity
 @Table(name = "custom_command")
-public class CustomCommand extends BaseEntity {
+public class CustomCommand extends GuildEntity {
 
     private static final long serialVersionUID = -8582315203089732918L;
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "guild_config_id")
-    private GuildConfig config;
 
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinColumn(name = "command_config_id")

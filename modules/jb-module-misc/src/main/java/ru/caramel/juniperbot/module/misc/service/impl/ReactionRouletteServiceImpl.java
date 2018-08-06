@@ -18,30 +18,25 @@ package ru.caramel.juniperbot.module.misc.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 
 @Service
-public class ReactionRouletteServiceImpl implements ReactionRouletteService {
+public class ReactionRouletteServiceImpl extends AbstractDomainServiceImpl<ReactionRoulette, ReactionRouletteRepository> implements ReactionRouletteService {
 
-    @Autowired
-    private ReactionRouletteRepository repository;
-
-    @Autowired
-    private JbCacheManager cacheManager;
-
-    @Override
-    @Transactional(readOnly = true)
-    public ReactionRoulette get(long guildId) {
-        return cacheManager.get(ReactionRoulette.class, guildId, repository::findByGuildId);
+    public ReactionRouletteServiceImpl(@Autowired ReactionRouletteRepository repository) {
+        super(repository, true);
     }
 
     @Override
-    @Transactional
-    public ReactionRoulette save(ReactionRoulette reactionRoulette) {
-        return repository.save(reactionRoulette);
+    protected ReactionRoulette createNew(long guildId) {
+        return new ReactionRoulette(guildId);
+    }
+
+    @Override
+    protected Class<ReactionRoulette> getDomainClass() {
+        return ReactionRoulette.class;
     }
 }

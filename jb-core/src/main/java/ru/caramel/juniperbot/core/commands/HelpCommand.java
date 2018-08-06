@@ -68,7 +68,7 @@ public class HelpCommand extends AbstractCommand {
                 : Collections.emptyMap();
 
         List<DiscordCommand> discordCommands = holderService.getCommands().entrySet().stream()
-                .filter(e -> commandsService.isApplicable(message, e.getValue(), context.getConfig(),
+                .filter(e -> commandsService.isApplicable(message, e.getValue(),
                         configMap.get(e.getValue().getClass().getAnnotation(DiscordCommand.class).key())))
                 .map(e -> e.getValue().getClass().getAnnotation(DiscordCommand.class))
                 .filter(e -> !e.hidden())

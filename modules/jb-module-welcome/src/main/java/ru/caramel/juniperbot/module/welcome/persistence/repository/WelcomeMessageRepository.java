@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.welcome.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 
 @Repository
-public interface WelcomeMessageRepository extends GuildOwnedRepository<WelcomeMessage> {
+public interface WelcomeMessageRepository extends GuildRepository<WelcomeMessage> {
 
 }

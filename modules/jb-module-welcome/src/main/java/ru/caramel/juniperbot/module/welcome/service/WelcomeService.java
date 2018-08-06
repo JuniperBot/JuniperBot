@@ -16,11 +16,9 @@
  */
 package ru.caramel.juniperbot.module.welcome.service;
 
+import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 
-public interface WelcomeService {
+public interface WelcomeService extends DomainService<WelcomeMessage> {
 
-    WelcomeMessage get(long guildId);
-
-    WelcomeMessage save(WelcomeMessage reactionRoulette);
 }

@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.audio.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -30,7 +30,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "playlist")
-public class Playlist extends GuildOwnedEntity {
+public class Playlist extends GuildEntity {
 
     private static final long serialVersionUID = -6922210268108996339L;
 

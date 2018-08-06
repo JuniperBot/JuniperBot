@@ -24,63 +24,34 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 
 @Service
-public class MusicConfigServiceImpl implements MusicConfigService {
-
-    @Autowired
-    private MusicConfigRepository musicConfigRepository;
+public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfig, MusicConfigRepository> implements MusicConfigService {
 
     @Autowired
     private DiscordService discordService;
 
-    @Autowired
-    private ConfigService configService;
-
-    @Autowired
-    private JbCacheManager cacheManager;
-
-    @Override
-    @Transactional
-    public MusicConfig getConfig(Guild guild) {
-        return getConfig(guild.getIdLong());
+    public MusicConfigServiceImpl(@Autowired MusicConfigRepository repository) {
+        super(repository, true);
     }
 
     @Override
-    @Transactional
-    public MusicConfig getConfig(long guildId) {
-        return cacheManager.get(MusicConfig.class, guildId, e -> {
-            MusicConfig config = musicConfigRepository.findByGuildId(e);
-            if (config == null) {
-                GuildConfig guildConfig = configService.getOrCreate(e);
-                config = new MusicConfig();
-                config.setGuildConfig(guildConfig);
-                config.setVoiceVolume(100);
-                musicConfigRepository.save(config);
-            }
-            return config;
-        });
-    }
-
-    @Override
-    @Transactional
-    public void save(MusicConfig config) {
-        if (config != null) {
-            musicConfigRepository.save(config);
-        }
+    protected MusicConfig createNew(long guildId) {
+        MusicConfig config = new MusicConfig(guildId);
+        config.setVoiceVolume(100);
+        return config;
     }
 
     @Override
     @Transactional
     public boolean hasAccess(Member member) {
-        MusicConfig config = getConfig(member.getGuild());
+        MusicConfig config = get(member.getGuild());
         return config == null
                 || CollectionUtils.isEmpty(config.getRoles())
                 || member.isOwner()
@@ -91,7 +62,7 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     @Override
     @Transactional
     public VoiceChannel getDesiredChannel(Member member) {
-        MusicConfig musicConfig = getConfig(member.getGuild());
+        MusicConfig musicConfig = get(member.getGuild());
         VoiceChannel channel = null;
         if (musicConfig != null) {
             if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
@@ -110,7 +81,12 @@ public class MusicConfigServiceImpl implements MusicConfigService {
     @Override
     @Transactional
     public void updateVolume(long guildId, int volume) {
-        musicConfigRepository.updateVolume(guildId, volume);
+        repository.updateVolume(guildId, volume);
         cacheManager.evict(MusicConfig.class, guildId);
+    }
+
+    @Override
+    protected Class<MusicConfig> getDomainClass() {
+        return MusicConfig.class;
     }
 }

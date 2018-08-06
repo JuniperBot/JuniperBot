@@ -87,7 +87,6 @@ public class CommandsDao extends AbstractDao {
         if (CollectionUtils.isEmpty(dto)) {
             return;
         }
-        GuildConfig config = configService.getById(guildId);
         Map<String, CommandConfig> commandConfigs = commandConfigService.findAllMap(guildId);
         Set<String> availableCommands = holderService.getPublicCommands().keySet();
         List<CommandConfig> toSave = dto.stream()
@@ -96,7 +95,7 @@ public class CommandsDao extends AbstractDao {
                     CommandConfig commandConfig = commandConfigs.get(e.getKey());
                     if (commandConfig == null) {
                         commandConfig = new CommandConfig();
-                        commandConfig.setGuildConfig(config);
+                        commandConfig.setGuildId(guildId);
                     }
                     apiMapper.updateCommandConfig(e, commandConfig);
                     return commandConfig;

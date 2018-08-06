@@ -53,7 +53,7 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
         if (entity == null) {
             return false;
         }
-        long guildId = entity.getGuildConfig().getGuildId();
+        long guildId = entity.getGuildId();
         if (!tokenServices.hasPermission(guildId)) {
             throw new AccessDeniedException();
         }
@@ -85,8 +85,8 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
         WebHook webHook = entity.getWebHook();
         webHook.setEnabled(dto.isEnabled());
         if (webHook.isEnabled() && dto.getChannelId() != null) {
-            webHookService.updateWebHook(entity.getGuildConfig().getGuildId(), Long.valueOf(dto.getChannelId()), webHook, dto.getName());
-            webHookService.invalidateCache(entity.getGuildConfig().getGuildId());
+            webHookService.updateWebHook(entity.getGuildId(), Long.valueOf(dto.getChannelId()), webHook, dto.getName());
+            webHookService.invalidateCache(entity.getGuildId());
         }
         webHookRepository.save(webHook);
     }

@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +32,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "music_config")
-public class MusicConfig extends GuildOwnedEntity {
+public class MusicConfig extends GuildEntity {
     private static final long serialVersionUID = 7052650749958531237L;
 
     @Column(name = "channel_id")
@@ -68,4 +68,8 @@ public class MusicConfig extends GuildOwnedEntity {
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
     private List<Long> roles;
+
+    public MusicConfig(long guildId) {
+        this.guildId = guildId;
+    }
 }

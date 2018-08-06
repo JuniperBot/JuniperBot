@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 public interface MemberBioRepository extends JpaRepository<MemberBio, Long> {
 
     @Query("SELECT r FROM MemberBio r WHERE r.member = (SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId)")
-    MemberBio findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    MemberBio findByGuildIdAndUserId(@Param("guildId") long guildId, @Param("userId") String userId);
 
     MemberBio findByMember(LocalMember member);
 

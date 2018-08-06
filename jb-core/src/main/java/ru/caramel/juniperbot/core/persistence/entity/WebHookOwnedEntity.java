@@ -18,13 +18,14 @@ package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class WebHookOwnedEntity extends GuildOwnedEntity {
+public abstract class WebHookOwnedEntity extends GuildEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "web_hook_id")

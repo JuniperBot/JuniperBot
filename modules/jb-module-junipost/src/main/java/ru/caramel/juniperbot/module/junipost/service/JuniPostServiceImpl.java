@@ -14,29 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.welcome.service.impl;
+package ru.caramel.juniperbot.module.junipost.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
-import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 
 @Service
-public class WelcomeServiceImpl extends AbstractDomainServiceImpl<WelcomeMessage, WelcomeMessageRepository> implements WelcomeService {
+public class JuniPostServiceImpl extends AbstractDomainServiceImpl<JuniPost, JuniPostRepository> implements JuniPostService {
 
-    public WelcomeServiceImpl(@Autowired WelcomeMessageRepository repository) {
-        super(repository, true);
+    public JuniPostServiceImpl(@Autowired JuniPostRepository repository) {
+        super(repository);
     }
 
     @Override
-    protected WelcomeMessage createNew(long guildId) {
-        return new WelcomeMessage(guildId);
+    protected JuniPost createNew(long guildId) {
+        JuniPost juniPost = new JuniPost();
+        juniPost.setGuildId(guildId);
+        juniPost.setWebHook(new WebHook());
+        return juniPost;
     }
 
     @Override
-    protected Class<WelcomeMessage> getDomainClass() {
-        return WelcomeMessage.class;
+    protected Class<JuniPost> getDomainClass() {
+        return JuniPost.class;
     }
 }

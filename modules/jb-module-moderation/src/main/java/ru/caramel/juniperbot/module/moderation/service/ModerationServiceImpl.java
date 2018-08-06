@@ -31,10 +31,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
@@ -54,23 +53,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
-public class ModerationServiceImpl implements ModerationService {
+public class ModerationServiceImpl
+        extends AbstractDomainServiceImpl<ModerationConfig, ModerationConfigRepository>
+        implements ModerationService {
 
     private final static String MUTED_ROLE_NAME = "JB-MUTED";
 
     private final static String COLOR_ROLE_NAME = "JB-CLR-";
 
     @Autowired
-    private ModerationConfigRepository configRepository;
-
-    @Autowired
     private MemberWarningRepository warningRepository;
 
     @Autowired
     private MuteStateRepository muteStateRepository;
-
-    @Autowired
-    private ConfigService configService;
 
     @Autowired
     private MemberService memberService;
@@ -82,38 +77,17 @@ public class ModerationServiceImpl implements ModerationService {
     private ContextService contextService;
 
     @Autowired
-    private JbCacheManager cacheManager;
-
-    @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
-    @Transactional
-    @Override
-    public ModerationConfig getConfig(Guild guild) {
-        return getConfig(guild.getIdLong());
+    public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
+        super(repository, true);
     }
 
-    @Transactional
     @Override
-    public ModerationConfig getConfig(long guildId) {
-        return cacheManager.get(ModerationConfig.class, guildId, e -> {
-            ModerationConfig config = configRepository.findByGuildId(guildId);
-            if (config == null) {
-                GuildConfig guildConfig = configService.getOrCreate(guildId);
-                config = new ModerationConfig();
-                config.setGuildConfig(guildConfig);
-                configRepository.save(config);
-            }
-            return config;
-        });
-    }
-
-    @Transactional
-    @Override
-    public ModerationConfig save(ModerationConfig config) {
-        return configRepository.save(config);
+    protected ModerationConfig createNew(long guildId) {
+        return new ModerationConfig(guildId);
     }
 
     @Override
@@ -125,14 +99,14 @@ public class ModerationServiceImpl implements ModerationService {
         if (member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner()) {
             return true;
         }
-        ModerationConfig config = getConfig(member.getGuild());
-        return CollectionUtils.isNotEmpty(config.getRoles())
+        ModerationConfig config = get(member.getGuild());
+        return config != null && CollectionUtils.isNotEmpty(config.getRoles())
                 && member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
 
     @Override
-    public boolean isPublicColor(long serverId) {
-        ModerationConfig config = getConfig(serverId);
+    public boolean isPublicColor(long guildId) {
+        ModerationConfig config = getByGuildId(guildId);
         return config != null && config.isPublicColors();
     }
 
@@ -378,7 +352,7 @@ public class ModerationServiceImpl implements ModerationService {
         MuteState state = new MuteState();
         state.setGlobal(global);
         state.setUserId(member.getUser().getId());
-        state.setGuildId(member.getGuild().getId());
+        state.setGuildId(member.getGuild().getIdLong());
         DateTime dateTime = DateTime.now();
         if (duration != null) {
             dateTime = dateTime.plusMinutes(duration);
@@ -508,24 +482,23 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public long warnCount(Member member) {
-        GuildConfig config = configService.getOrCreateCached(member.getGuild());
         LocalMember memberLocal = memberService.getOrCreate(member);
-        return warningRepository.countActiveByViolator(config, memberLocal);
+        return warningRepository.countActiveByViolator(member.getGuild().getIdLong(), memberLocal);
     }
 
     @Override
     @Transactional
     public boolean warn(Member author, Member member, String reason) {
-        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
-        ModerationConfig moderationConfig = getConfig(member.getGuild());
+        long guildId = member.getGuild().getIdLong();
+        ModerationConfig moderationConfig = getOrCreate(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 
-        long count = warningRepository.countActiveByViolator(config, memberLocal);
+        long count = warningRepository.countActiveByViolator(guildId, memberLocal);
         boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
-        MemberWarning warning = new MemberWarning(config, authorLocal, memberLocal, reason);
+        MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
         if (exceed) {
-            warningRepository.flushWarnings(config, memberLocal);
+            warningRepository.flushWarnings(guildId, memberLocal);
             warning.setActive(false);
             reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
             switch (moderationConfig.getWarnExceedAction()) {
@@ -557,7 +530,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public void clearState(String guildId, String userId, String channelId) {
+    public void clearState(long guildId, String userId, String channelId) {
         muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
     }
 
@@ -583,5 +556,10 @@ public class ModerationServiceImpl implements ModerationService {
         } catch (Exception e) {
             consumer.accept(null);
         }
+    }
+
+    @Override
+    protected Class<ModerationConfig> getDomainClass() {
+        return ModerationConfig.class;
     }
 }

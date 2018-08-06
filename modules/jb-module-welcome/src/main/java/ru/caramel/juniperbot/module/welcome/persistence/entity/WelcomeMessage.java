@@ -17,10 +17,11 @@
 package ru.caramel.juniperbot.module.welcome.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,8 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-public class WelcomeMessage extends GuildOwnedEntity {
+@NoArgsConstructor
+public class WelcomeMessage extends GuildEntity {
     private static final long serialVersionUID = -3872054410668142206L;
 
     @Column(name = "join_enabled")
@@ -69,4 +71,7 @@ public class WelcomeMessage extends GuildOwnedEntity {
     @Column(name = "leave_channel_id")
     private Long leaveChannelId;
 
+    public WelcomeMessage(long guildId) {
+        this.guildId = guildId;
+    }
 }

@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
@@ -34,14 +33,15 @@ public abstract class RankingCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RankingConfig rankingConfig = rankingService.getConfig(message.getGuild());
-        return rankingConfig.isEnabled()
+        RankingConfig rankingConfig = rankingService.get(message.getGuild());
+        return rankingConfig != null
+                && rankingConfig.isEnabled()
                 && !rankingService.isBanned(rankingConfig, message.getMember())
                 && doInternal(message, context, content);
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent message, GuildConfig config) {
-        return config != null && rankingService.isEnabled(config.getGuildId());
+    public boolean isAvailable(MessageReceivedEvent message) {
+        return message.getGuild() != null && rankingService.isEnabled(message.getGuild().getIdLong());
     }
 }

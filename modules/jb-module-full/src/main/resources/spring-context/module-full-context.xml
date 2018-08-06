@@ -20,7 +20,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
         <import resource="classpath:spring-context/module-audio-context.xml" />
         <import resource="classpath:spring-context/module-custom-context.xml" />
-        <import resource="classpath:spring-context/module-holiday-context.xml" />
         <import resource="classpath:spring-context/module-junipost-context.xml" />
         <import resource="classpath:spring-context/module-reminder-context.xml" />
         <import resource="classpath:spring-context/module-misc-context.xml" />

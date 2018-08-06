@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 
 import javax.persistence.Column;
@@ -34,7 +34,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "ranking_config")
-public class RankingConfig extends GuildOwnedEntity {
+public class RankingConfig extends GuildEntity {
     private static final long serialVersionUID = -2380208935931616881L;
 
     @Column
@@ -71,4 +71,7 @@ public class RankingConfig extends GuildOwnedEntity {
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
 
+    public RankingConfig(long guildId) {
+        this.guildId = guildId;
+    }
 }

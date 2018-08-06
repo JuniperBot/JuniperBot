@@ -28,6 +28,6 @@ public abstract class GuildEntity extends BaseEntity {
     @Setter
     @Getter
     @Column(name = "guild_id")
-    protected String guildId;
+    protected long guildId;
 
 }

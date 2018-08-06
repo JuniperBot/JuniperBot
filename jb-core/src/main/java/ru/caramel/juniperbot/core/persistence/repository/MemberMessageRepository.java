@@ -25,5 +25,5 @@ import java.util.List;
 @NoRepositoryBean
 public interface MemberMessageRepository<T extends MemberMessageEntity> extends MemberRepository<T> {
 
-    List<T> findByGuildIdAndChannelIdAndUserId(String guildId, String channelId, String userId);
+    List<T> findByGuildIdAndChannelIdAndUserId(long guildId, String channelId, String userId);
 }

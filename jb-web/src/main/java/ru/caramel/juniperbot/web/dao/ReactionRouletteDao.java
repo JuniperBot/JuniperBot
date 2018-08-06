@@ -31,7 +31,7 @@ public class ReactionRouletteDao extends AbstractDao {
 
     @Transactional
     public ReactionRouletteDto get(long guildId) {
-        ReactionRoulette roulette = rouletteService.get(guildId);
+        ReactionRoulette roulette = rouletteService.getByGuildId(guildId);
         if (roulette == null) {
             return new ReactionRouletteDto();
         }
@@ -40,13 +40,8 @@ public class ReactionRouletteDao extends AbstractDao {
 
     @Transactional
     public void save(ReactionRouletteDto dto, long guildId) {
-        ReactionRoulette roulette = rouletteService.get(guildId);
-        if (roulette == null) {
-            roulette = new ReactionRoulette();
-            roulette.setGuildConfig(configService.getOrCreate(guildId));
-        }
+        ReactionRoulette roulette = rouletteService.getOrCreate(guildId);
         apiMapper.updateReactionRoulette(dto, roulette);
         rouletteService.save(roulette);
-        cacheManager.evict(ReactionRoulette.class, guildId);
     }
 }

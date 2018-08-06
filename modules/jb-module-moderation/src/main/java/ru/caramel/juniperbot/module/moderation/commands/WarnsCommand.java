@@ -22,12 +22,10 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 
@@ -86,7 +84,7 @@ public class WarnsCommand extends ModeratorCommandAsync {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
+    public boolean isAvailable(MessageReceivedEvent event) {
         return true; // to everyone
     }
 }

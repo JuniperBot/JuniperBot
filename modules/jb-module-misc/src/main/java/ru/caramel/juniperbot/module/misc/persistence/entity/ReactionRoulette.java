@@ -17,10 +17,11 @@
 package ru.caramel.juniperbot.module.misc.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -30,7 +31,8 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-public class ReactionRoulette extends GuildOwnedEntity {
+@NoArgsConstructor
+public class ReactionRoulette extends GuildEntity {
 
     private static final long serialVersionUID = -302896048638134104L;
 
@@ -47,4 +49,7 @@ public class ReactionRoulette extends GuildOwnedEntity {
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
 
+    public ReactionRoulette(long guildId) {
+        this.guildId = guildId;
+    }
 }
