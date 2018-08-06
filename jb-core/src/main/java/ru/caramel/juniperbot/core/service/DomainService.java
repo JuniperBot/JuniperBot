@@ -34,4 +34,8 @@ public interface DomainService<T extends GuildEntity> {
     T save(T entity);
 
     boolean exists(long guildId);
+
+    boolean isCacheable();
+
+    void setCacheable(boolean cacheable);
 }

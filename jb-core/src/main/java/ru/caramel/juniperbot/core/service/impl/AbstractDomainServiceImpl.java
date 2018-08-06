@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.core.service.DomainService;
@@ -31,7 +31,9 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     protected final R repository;
 
-    protected final boolean cacheable;
+    @Getter
+    @Setter
+    protected boolean cacheable;
 
     @Autowired
     protected JbCacheManager cacheManager;
