@@ -24,9 +24,9 @@ import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
 @Repository
 public interface MuteStateRepository extends MemberRepository<MuteState> {
 
-    void deleteByGuildIdAndUserIdAndChannelId(String guildId, String userId, String channelId);
+    void deleteByGuildIdAndUserIdAndChannelId(long guildId, String userId, String channelId);
 
     default void deleteByMember(Member member, String channelId) {
-        deleteByGuildIdAndUserIdAndChannelId(member.getGuild().getId(), member.getUser().getId(), channelId);
+        deleteByGuildIdAndUserIdAndChannelId(member.getGuild().getIdLong(), member.getUser().getId(), channelId);
     }
 }

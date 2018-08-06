@@ -96,7 +96,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
                     rankCommand.addFields(builder, info, member.getGuild());
                 }
             }
-            MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getId(), user.getId());
+            MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), user.getId());
             String bio = memberBio != null ? memberBio.getBio() : null;
             if (StringUtils.isEmpty(bio) && Objects.equals(author, user)) {
                 bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix());

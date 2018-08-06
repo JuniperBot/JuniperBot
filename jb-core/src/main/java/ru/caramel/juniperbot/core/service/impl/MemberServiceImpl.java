@@ -42,11 +42,11 @@ public class MemberServiceImpl implements MemberService {
         if (!isApplicable(member)) {
             return null;
         }
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(member.getGuild().getId(),
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(),
                 member.getUser().getId());
         if (localMember == null) {
             localMember = new LocalMember();
-            localMember.setGuildId(member.getGuild().getId());
+            localMember.setGuildId(member.getGuild().getIdLong());
             localMember.setUser(userService.getOrCreate(member.getUser()));
         }
         return updateIfRequired(member, localMember);

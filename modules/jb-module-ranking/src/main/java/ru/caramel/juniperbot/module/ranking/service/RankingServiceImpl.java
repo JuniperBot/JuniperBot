@@ -100,7 +100,7 @@ public class RankingServiceImpl implements RankingService {
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
-    private final Set<String> calculateQueue = Sets.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private final Set<Long> calculateQueue = Sets.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
 
     @Transactional
     @Override
@@ -148,14 +148,14 @@ public class RankingServiceImpl implements RankingService {
     }
 
     @Override
-    public long countRankings(String serverId) {
+    public long countRankings(long serverId) {
         return rankingRepository.countByGuildId(serverId);
     }
 
     @Transactional
     @Override
     public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
-        Page<Ranking> rankings = rankingRepository.findByGuildId(String.valueOf(guildId), search != null ? search.toLowerCase() : "", pageable);
+        Page<Ranking> rankings = rankingRepository.findByGuildId(guildId, search != null ? search.toLowerCase() : "", pageable);
         return rankings.map(RankingUtils::calculateInfo);
     }
 
@@ -176,7 +176,7 @@ public class RankingServiceImpl implements RankingService {
                 int level = RankingUtils.getLevelFromExp(ranking.getExp());
                 ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
                 rankingRepository.save(ranking);
-                calculateQueue.add(guild.getId());
+                calculateQueue.add(guild.getIdLong());
                 coolDowns.put(memberKey, DUMMY);
 
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
@@ -261,14 +261,14 @@ public class RankingServiceImpl implements RankingService {
         } else if (level < 0) {
             level = 0;
         }
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(String.valueOf(serverId), userId);
+        LocalMember localMember = memberRepository.findByGuildIdAndUserId(serverId, userId);
 
         Ranking ranking = getRanking(localMember);
 
         if (ranking != null) {
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
             rankingRepository.save(ranking);
-            rankingRepository.recalculateRank(String.valueOf(serverId));
+            rankingRepository.recalculateRank(serverId);
             RankingConfig config = getConfig(serverId);
             if (discordService.isConnected(serverId)) {
                 Guild guild = discordService.getShardManager().getGuildById(serverId);
@@ -285,9 +285,8 @@ public class RankingServiceImpl implements RankingService {
     @Transactional
     @Override
     public void resetAll(long serverId) {
-        String server = String.valueOf(serverId);
-        rankingRepository.resetAll(server);
-        rankingRepository.recalculateRank(server);
+        rankingRepository.resetAll(serverId);
+        rankingRepository.recalculateRank(serverId);
     }
 
     private void updateRewards(RankingConfig config, Member member, Ranking ranking) {
@@ -371,12 +370,12 @@ public class RankingServiceImpl implements RankingService {
 
     @Transactional
     public Ranking getRanking(Member member) {
-        Ranking ranking = rankingRepository.findByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+        Ranking ranking = rankingRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
         if (ranking == null) {
             LocalMember localMember = memberService.getOrCreate(member);
             ranking = new Ranking();
             ranking.setMember(localMember);
-            ranking.setRank(rankingRepository.countByGuildId(member.getGuild().getId()) + 1);
+            ranking.setRank(rankingRepository.countByGuildId(member.getGuild().getIdLong()) + 1);
             rankingRepository.save(ranking);
         }
         return ranking;
@@ -385,7 +384,7 @@ public class RankingServiceImpl implements RankingService {
     @Scheduled(fixedDelay = 300000)
     @Override
     public void calculateQueue() {
-        Set<String> queue;
+        Set<Long> queue;
         synchronized (calculateQueue) {
             queue = new HashSet<>(calculateQueue);
             calculateQueue.clear();

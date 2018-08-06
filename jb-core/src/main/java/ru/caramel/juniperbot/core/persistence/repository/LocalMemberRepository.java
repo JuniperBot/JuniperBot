@@ -26,6 +26,6 @@ import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 public interface LocalMemberRepository extends GuildRepository<LocalMember> {
 
     @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId")
-    LocalMember findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    LocalMember findByGuildIdAndUserId(@Param("guildId") long guildId, @Param("userId") String userId);
 
 }

@@ -25,7 +25,9 @@ import java.util.List;
 @NoRepositoryBean
 public interface GuildRepository<T extends GuildEntity> extends JpaRepository<T, Long> {
 
-    List<T> findByGuildId(String guildId);
+    T findByGuildId(long guildId);
 
-    T findOneByGuildId(String guildId);
+    List<T> findAllByGuildId(long guildId);
+
+    boolean existsByGuildId(long guildId);
 }

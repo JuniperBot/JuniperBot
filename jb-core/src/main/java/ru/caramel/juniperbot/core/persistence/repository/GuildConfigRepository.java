@@ -16,25 +16,18 @@
  */
 package ru.caramel.juniperbot.core.persistence.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 
 @Repository
-public interface GuildConfigRepository extends JpaRepository<GuildConfig, Long> {
-
-    GuildConfig findByGuildId(@Param("guildId") long guildId);
-
-    boolean existsByGuildId(long guildId);
+public interface GuildConfigRepository extends GuildRepository<GuildConfig> {
 
     @Query("SELECT e.prefix FROM GuildConfig e WHERE e.guildId = :guildId")
     String findPrefixByGuildId(@Param("guildId") long guildId);
 
     @Query("SELECT e.locale FROM GuildConfig e WHERE e.guildId = :guildId")
     String findLocaleByGuildId(@Param("guildId") long guildId);
-
-    @Query("SELECT e.name FROM GuildConfig e WHERE e.guildId = :guildId")
-    String findNameByGuildId(@Param("guildId") long guildId);
 }

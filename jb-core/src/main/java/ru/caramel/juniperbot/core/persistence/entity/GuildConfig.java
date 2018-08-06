@@ -19,9 +19,8 @@ package ru.caramel.juniperbot.core.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.NotEmpty;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,12 +33,9 @@ import javax.validation.constraints.Size;
 @Entity
 @NoArgsConstructor
 @Table(name = "guild_config")
-public class GuildConfig extends BaseEntity {
+public class GuildConfig extends GuildEntity {
 
     private static final long serialVersionUID = 1599157155969887890L;
-
-    @Column(name = "guild_id")
-    private long guildId;
 
     @Basic
     @Size(max = 100)

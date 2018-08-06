@@ -26,13 +26,11 @@ import java.util.List;
 @NoRepositoryBean
 public interface TextChannelRepository<T extends TextChannelEntity> extends GuildRepository<T> {
 
-    List<T> findByGuildIdAndChannelId(String guildId, String channelId);
+    List<T> findByGuildIdAndChannelId(long guildId, String channelId);
 
     @Query("SELECT count(e) > 0 FROM #{#entityName} e WHERE e.channelId = :channelId AND e.guildId = :guildId")
-    boolean exists(@Param("guildId") String guildId, @Param("channelId") String channelId);
+    boolean exists(@Param("guildId") long guildId, @Param("channelId") String channelId);
 
-    Long deleteByGuildIdAndChannelId(String guildId, String channelId);
-
-    Long deleteByGuildId(String guildId);
+    Long deleteByGuildIdAndChannelId(long guildId, String channelId);
 
 }

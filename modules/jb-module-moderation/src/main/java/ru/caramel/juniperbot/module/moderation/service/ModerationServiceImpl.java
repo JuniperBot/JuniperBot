@@ -378,7 +378,7 @@ public class ModerationServiceImpl implements ModerationService {
         MuteState state = new MuteState();
         state.setGlobal(global);
         state.setUserId(member.getUser().getId());
-        state.setGuildId(member.getGuild().getId());
+        state.setGuildId(member.getGuild().getIdLong());
         DateTime dateTime = DateTime.now();
         if (duration != null) {
             dateTime = dateTime.plusMinutes(duration);
@@ -557,7 +557,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public void clearState(String guildId, String userId, String channelId) {
+    public void clearState(long guildId, String userId, String channelId) {
         muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
     }
 

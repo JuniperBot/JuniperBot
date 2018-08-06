@@ -94,7 +94,6 @@
         <module>jb-core</module>
         <module>modules/jb-module-audio</module>
         <module>modules/jb-module-custom</module>
-        <module>modules/jb-module-holiday</module>
         <module>modules/jb-module-junipost</module>
         <module>modules/jb-module-reminder</module>
         <module>modules/jb-module-misc</module>

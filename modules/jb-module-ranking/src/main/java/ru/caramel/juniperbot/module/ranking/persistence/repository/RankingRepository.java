@@ -31,17 +31,14 @@ import java.util.List;
 @Repository
 public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
-    @Query("SELECT count(r) FROM Ranking r, LocalMember m WHERE r.member.id = m.id AND m.guildId = :guildId AND (lower(m.effectiveName) like %:name% OR lower(m.user.name) like %:name%)")
-    long countByGuildId(@Param("guildId") String guildId, @Param("name") String name);
-
     @Query("SELECT count(r) FROM Ranking r, LocalMember m WHERE r.member.id = m.id AND m.guildId = :guildId")
-    long countByGuildId(@Param("guildId") String guildId);
+    long countByGuildId(@Param("guildId") long guildId);
 
     @Query("SELECT r FROM Ranking r, LocalMember m WHERE r.member.id = m.id AND m.guildId = :guildId AND (lower(m.effectiveName) like %:name% OR lower(m.user.name) like %:name%)")
-    Page<Ranking> findByGuildId(@Param("guildId") String guildId, @Param("name") String name, Pageable pageable);
+    Page<Ranking> findByGuildId(@Param("guildId") long guildId, @Param("name") String name, Pageable pageable);
 
     @Query("SELECT r FROM Ranking r, LocalMember m WHERE r.member = m.id AND m.guildId = :guildId AND m.user.userId = :userId")
-    Ranking findByGuildIdAndUserId(@Param("guildId") String guildId, @Param("userId") String userId);
+    Ranking findByGuildIdAndUserId(@Param("guildId") long guildId, @Param("userId") String userId);
 
     Ranking findByMember(LocalMember member);
 
@@ -51,8 +48,8 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
     @Modifying
     @Query("UPDATE Ranking r SET r.exp = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
-    int resetAll(@Param("guildId") String guildId);
+    int resetAll(@Param("guildId") long guildId);
 
     @Query(value = "SELECT recalculate_rank(?1)", nativeQuery = true)
-    int recalculateRank(String guildId);
+    int recalculateRank(long guildId);
 }

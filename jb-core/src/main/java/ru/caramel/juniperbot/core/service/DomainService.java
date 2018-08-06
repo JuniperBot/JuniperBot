@@ -14,33 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.holiday.persistence.entity;
+package ru.caramel.juniperbot.core.service;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.TextChannelEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
+import java.util.function.Function;
 
-@Getter
-@Setter
-@Entity
-@NoArgsConstructor
-@Table(name = "new_year_notification")
-public class NewYearNotification extends TextChannelEntity {
+public interface DomainService<T extends GuildEntity> {
 
-    @Column
-    private boolean enabled;
+    T get(long guildId);
 
-    @Size(max = 1800)
-    @Column
-    private String message;
+    T save(T entity);
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
+    T getOrCreate(long guildId, Function<Long, T> instanceFactory);
 }

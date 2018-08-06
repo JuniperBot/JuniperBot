@@ -73,6 +73,6 @@ public interface ModerationService {
 
     void removeWarn(MemberWarning warning);
 
-    void clearState(String guildId, String userId, String channelId);
+    void clearState(long guildId, String userId, String channelId);
 
 }

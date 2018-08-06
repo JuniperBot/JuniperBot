@@ -41,7 +41,7 @@ public interface RankingService {
 
     RankingInfo getRankingInfo(Member member);
 
-    long countRankings(String guildId);
+    long countRankings(long guildId);
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 

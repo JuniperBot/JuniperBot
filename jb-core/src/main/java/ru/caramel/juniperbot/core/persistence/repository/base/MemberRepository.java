@@ -25,23 +25,21 @@ import java.util.List;
 @NoRepositoryBean
 public interface MemberRepository<T extends MemberEntity> extends GuildRepository<T> {
 
-    List<T> findByGuildId(String guildId);
+    List<T> findAllByGuildIdAndUserId(long guildId, String userId);
 
-    List<T> findAllByGuildIdAndUserId(String guildId, String userId);
+    T findByGuildIdAndUserId(long guildId, String userId);
 
-    T findByGuildIdAndUserId(String guildId, String userId);
-
-    void deleteByGuildIdAndUserId(String guildId, String userId);
+    void deleteByGuildIdAndUserId(long guildId, String userId);
 
     default List<T> findAllByMember(Member member) {
-        return findAllByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+        return findAllByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
     }
 
     default T findByMember(Member member) {
-        return findByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+        return findByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
     }
 
     default void deleteByMember(Member member) {
-        deleteByGuildIdAndUserId(member.getGuild().getId(), member.getUser().getId());
+        deleteByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
     }
 }
