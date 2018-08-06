@@ -28,7 +28,7 @@ public class CustomCommandsExtension implements CommandExtension {
     public void extendHelp(MessageReceivedEvent event, BotContext context, EmbedBuilder embedBuilder) {
         // Пользовательские команды
         if (event.getChannelType().isGuild() && context.getConfig() != null) {
-            List<CustomCommand> commands = commandRepository.findByConfig(context.getConfig()).stream()
+            List<CustomCommand> commands = commandRepository.findAllByGuildId(context.getConfig().getGuildId()).stream()
                     .filter(e -> e.getCommandConfig() == null || !e.getCommandConfig().isDisabled())
                     .collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(commands)) {

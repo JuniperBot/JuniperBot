@@ -75,11 +75,14 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
             return false;
         }
         String key = input.replaceFirst("^" + Pattern.quote(prefix), "");
-        return commandRepository.existsByKeyAndConfigGuildId(key, event.getGuild().getIdLong());
+        return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
     }
 
     public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig config) {
-        CustomCommand command = commandRepository.findByKeyAndConfig(key, config);
+        if (event.getGuild() == null) {
+            return false;
+        }
+        CustomCommand command = commandRepository.findByKeyAndGuildId(key, event.getGuild().getIdLong());
         if (command == null) {
             return false;
         }

@@ -16,24 +16,14 @@
  */
 package ru.caramel.juniperbot.module.custom.persistence.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 
-import java.util.List;
-
 @Repository
-public interface CustomCommandRepository extends JpaRepository<CustomCommand, Long> {
-    CustomCommand findByKeyAndConfig(String key, GuildConfig config);
+public interface CustomCommandRepository extends GuildRepository<CustomCommand> {
+    CustomCommand findByKeyAndGuildId(String key, long guildId);
 
-    boolean existsByKeyAndConfigGuildId(String key, long guildId);
-
-    List<CustomCommand> findByConfig(GuildConfig config);
-
-    @Query("SELECT e FROM CustomCommand e WHERE e.config.guildId = :guildId")
-    List<CustomCommand> findAllByGuildId(@Param("guildId") long guildId);
+    boolean existsByKeyAndGuildId(String key, long guildId);
 
 }

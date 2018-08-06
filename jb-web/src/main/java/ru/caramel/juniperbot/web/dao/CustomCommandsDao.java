@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
@@ -52,7 +51,6 @@ public class CustomCommandsDao extends AbstractDao {
 
     @Transactional
     public void save(List<CustomCommandDto> dtos, long guildId) {
-        GuildConfig config = configService.getOrCreate(guildId);
         List<CustomCommand> customCommands = commandRepository.findAllByGuildId(guildId);
         if (dtos == null) {
             dtos = Collections.emptyList();
@@ -80,7 +78,7 @@ public class CustomCommandsDao extends AbstractDao {
         Set<String> keys = customCommands.stream().map(CustomCommand::getKey).collect(Collectors.toSet());
         result.addAll(dtos.stream().filter(e -> e.getId() == null && !keys.contains(e.getKey())).map(e -> {
             CustomCommand customCommand = new CustomCommand();
-            customCommand.setConfig(config);
+            customCommand.setGuildId(guildId);
             CommandConfig commandConfig = new CommandConfig();
             commandConfig.setGuildId(guildId);
             customCommand.setCommandConfig(commandConfig);
