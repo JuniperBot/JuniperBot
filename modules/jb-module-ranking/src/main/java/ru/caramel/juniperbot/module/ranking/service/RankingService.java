@@ -16,26 +16,20 @@
  */
 package ru.caramel.juniperbot.module.ranking.service;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
-public interface RankingService {
+public interface RankingService extends DomainService<RankingConfig> {
 
     String COOKIE_EMOTE = "\uD83C\uDF6A";
 
     void onMessage(GuildMessageReceivedEvent event);
-
-    RankingConfig getConfig(Guild guild);
-
-    RankingConfig getConfig(long guildId);
-
-    RankingConfig save(RankingConfig config);
 
     boolean isEnabled(long guildId);
 

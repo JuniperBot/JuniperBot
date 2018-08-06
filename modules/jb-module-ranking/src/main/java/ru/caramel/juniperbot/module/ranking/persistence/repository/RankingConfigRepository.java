@@ -19,12 +19,12 @@ package ru.caramel.juniperbot.module.ranking.persistence.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
 @Repository
-public interface RankingConfigRepository extends GuildOwnedRepository<RankingConfig> {
+public interface RankingConfigRepository extends GuildRepository<RankingConfig> {
 
-    @Query("select count(r) > 0 FROM RankingConfig r WHERE r.guildConfig.guildId = :guildId AND r.enabled = true")
+    @Query("select count(r) > 0 FROM RankingConfig r WHERE r.guildId = :guildId AND r.enabled = true")
     boolean isEnabled(@Param("guildId") long guildId);
 }

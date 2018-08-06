@@ -207,7 +207,7 @@
     </changeSet>
 
     <changeSet id="5.4-06082018-7" author="caramel">
-        <!-- Migrate ModerationConfig -->
+        <!-- Migrate MusicConfig -->
         <addColumn tableName="music_config">
             <column name="guild_id" type="BIGINT"/>
         </addColumn>
@@ -224,6 +224,28 @@
         </dropColumn>
 
         <createIndex tableName="music_config" indexName="idx_music_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="5.4-06082018-8" author="caramel">
+        <!-- Migrate RankingConfig -->
+        <addColumn tableName="ranking_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE ranking_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="ranking_config" columnName="guild_id"/>
+
+        <dropIndex tableName="ranking_config" indexName="idx_ranking_config_guild_config_id"/>
+        <dropColumn tableName="ranking_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="ranking_config" indexName="idx_ranking_config_guild_id" unique="true">
             <column name="guild_id"/>
         </createIndex>
     </changeSet>

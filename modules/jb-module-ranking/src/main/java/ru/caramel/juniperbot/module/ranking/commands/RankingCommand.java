@@ -34,7 +34,7 @@ public abstract class RankingCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RankingConfig rankingConfig = rankingService.getConfig(message.getGuild());
+        RankingConfig rankingConfig = rankingService.getOrCreate(message.getGuild());
         return rankingConfig.isEnabled()
                 && !rankingService.isBanned(rankingConfig, message.getMember())
                 && doInternal(message, context, content);
