@@ -33,4 +33,9 @@ public class JuniPostServiceImpl extends AbstractDomainServiceImpl<JuniPost, Jun
     protected JuniPost createNew(long guildId) {
         return null;
     }
+
+    @Override
+    protected Class<JuniPost> getDomainClass() {
+        return JuniPost.class;
+    }
 }

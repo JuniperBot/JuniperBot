@@ -37,23 +37,8 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     @Autowired
     private DiscordService discordService;
 
-    @Autowired
-    private JbCacheManager cacheManager;
-
     public MusicConfigServiceImpl(@Autowired MusicConfigRepository repository) {
-        super(repository);
-    }
-
-    @Override
-    @Transactional
-    public MusicConfig getOrCreate(Guild guild) {
-        return getOrCreate(guild.getIdLong()); // to make it cacheable
-    }
-
-    @Override
-    @Transactional
-    public MusicConfig getOrCreate(long guildId) {
-        return cacheManager.get(MusicConfig.class, guildId, super::getOrCreate);
+        super(repository, true);
     }
 
     @Override
@@ -98,5 +83,10 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     public void updateVolume(long guildId, int volume) {
         repository.updateVolume(guildId, volume);
         cacheManager.evict(MusicConfig.class, guildId);
+    }
+
+    @Override
+    protected Class<MusicConfig> getDomainClass() {
+        return MusicConfig.class;
     }
 }

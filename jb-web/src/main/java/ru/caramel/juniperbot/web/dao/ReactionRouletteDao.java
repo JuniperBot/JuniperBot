@@ -43,6 +43,5 @@ public class ReactionRouletteDao extends AbstractDao {
         ReactionRoulette roulette = rouletteService.getOrCreate(guildId);
         apiMapper.updateReactionRoulette(dto, roulette);
         rouletteService.save(roulette);
-        cacheManager.evict(ReactionRoulette.class, guildId);
     }
 }

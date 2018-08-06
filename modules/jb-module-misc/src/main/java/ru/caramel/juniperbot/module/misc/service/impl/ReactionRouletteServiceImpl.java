@@ -16,12 +16,9 @@
  */
 package ru.caramel.juniperbot.module.misc.service.impl;
 
-import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
@@ -30,32 +27,16 @@ import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 public class ReactionRouletteServiceImpl extends AbstractDomainServiceImpl<ReactionRoulette, ReactionRouletteRepository> implements ReactionRouletteService {
 
     public ReactionRouletteServiceImpl(@Autowired ReactionRouletteRepository repository) {
-        super(repository);
-    }
-
-    @Autowired
-    private JbCacheManager cacheManager;
-
-    @Override
-    @Transactional(readOnly = true)
-    public ReactionRoulette getByGuildId(long guildId) {
-        return cacheManager.get(ReactionRoulette.class, guildId, super::getByGuildId);
-    }
-
-    @Override
-    @Transactional
-    public ReactionRoulette getOrCreate(Guild guild) {
-        return getOrCreate(guild.getIdLong()); // to make it cacheable
-    }
-
-    @Override
-    @Transactional
-    public ReactionRoulette getOrCreate(long guildId) {
-        return cacheManager.get(ReactionRoulette.class, guildId, super::getOrCreate);
+        super(repository, true);
     }
 
     @Override
     protected ReactionRoulette createNew(long guildId) {
         return new ReactionRoulette(guildId);
+    }
+
+    @Override
+    protected Class<ReactionRoulette> getDomainClass() {
+        return ReactionRoulette.class;
     }
 }

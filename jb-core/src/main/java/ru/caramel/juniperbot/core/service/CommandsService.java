@@ -35,7 +35,7 @@ public interface CommandsService extends CommandSender {
 
     void registerHandler(CommandHandler sender);
 
-    boolean isApplicable(MessageReceivedEvent event, Command command, GuildConfig config, CommandConfig commandConfig);
+    boolean isApplicable(MessageReceivedEvent event, Command command, CommandConfig commandConfig);
 
     void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args);
 

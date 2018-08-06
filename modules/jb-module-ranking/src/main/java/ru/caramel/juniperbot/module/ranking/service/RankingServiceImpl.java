@@ -39,7 +39,6 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
@@ -84,9 +83,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Autowired
     private ContextService contextService;
 
-    @Autowired
-    private JbCacheManager cacheManager;
-
     private static Object DUMMY = new Object();
 
     private Cache<String, Object> coolDowns = CacheBuilder.newBuilder()
@@ -97,19 +93,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     private final Set<Long> calculateQueue = Sets.newSetFromMap(new ConcurrentHashMap<>());
 
     public RankingServiceImpl(@Autowired RankingConfigRepository repository) {
-        super(repository);
-    }
-
-    @Override
-    @Transactional
-    public RankingConfig getOrCreate(Guild guild) {
-        return getOrCreate(guild.getIdLong());
-    }
-
-    @Override
-    @Transactional
-    public RankingConfig getOrCreate(long guildId) {
-        return cacheManager.get(RankingConfig.class, guildId, super::getOrCreate);
+        super(repository, true);
     }
 
     @Override
@@ -380,5 +364,10 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     private static Date getCookieCoolDown() {
         return DateTime.now().minusMinutes(10).toDate();
+    }
+
+    @Override
+    protected Class<RankingConfig> getDomainClass() {
+        return RankingConfig.class;
     }
 }

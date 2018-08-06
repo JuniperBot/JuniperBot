@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
@@ -53,11 +52,11 @@ public class HereCommand extends AudioCommand {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent message, GuildConfig config) {
-        if (config == null) {
+    public boolean isAvailable(MessageReceivedEvent message) {
+        if (message.getGuild() == null) {
             return false;
         }
-        MusicConfig musicConfig = musicConfigService.getOrCreate(config.getGuildId());
+        MusicConfig musicConfig = musicConfigService.getOrCreate(message.getGuild().getIdLong());
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 

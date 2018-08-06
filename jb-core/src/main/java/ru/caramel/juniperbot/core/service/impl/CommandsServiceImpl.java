@@ -165,8 +165,8 @@ public class CommandsServiceImpl implements CommandsService {
             return false;
         }
 
-        CommandConfig commandConfig = guildConfig != null ? commandConfigService.findByKey(guildConfig.getGuildId(), rawKey) : null;
-        if (!isApplicable(event, command, guildConfig, commandConfig)) {
+        CommandConfig commandConfig = event.getGuild() != null ? commandConfigService.findByKey(event.getGuild().getIdLong(), rawKey) : null;
+        if (!isApplicable(event, command, commandConfig)) {
             return false;
         }
 
@@ -253,7 +253,7 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    public boolean isApplicable(MessageReceivedEvent event, Command command, GuildConfig config, CommandConfig commandConfig) {
+    public boolean isApplicable(MessageReceivedEvent event, Command command, CommandConfig commandConfig) {
         if (!command.getClass().isAnnotationPresent(DiscordCommand.class)) {
             return false;
         }
@@ -262,7 +262,7 @@ public class CommandsServiceImpl implements CommandsService {
         if (commandConfig != null && commandConfig.isDisabled()) {
             return false;
         }
-        if (!command.isAvailable(event, config)) {
+        if (!command.isAvailable(event)) {
             return false;
         }
         if (commandAnnotation.source().length == 0) {

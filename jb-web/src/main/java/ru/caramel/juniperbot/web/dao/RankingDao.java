@@ -77,6 +77,5 @@ public class RankingDao extends AbstractDao {
             config.setRewards(null);
         }
         rankingService.save(config);
-        cacheManager.evict(RankingConfig.class, guildId);
     }
 }

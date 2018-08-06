@@ -49,6 +49,5 @@ public class MusicDao extends AbstractDao {
         MusicConfig musicConfig = musicConfigService.getOrCreate(guildId);
         apiMapper.updateMusicConfig(dto, musicConfig);
         musicConfigService.save(musicConfig);
-        cacheManager.evict(MusicConfig.class, guildId);
     }
 }

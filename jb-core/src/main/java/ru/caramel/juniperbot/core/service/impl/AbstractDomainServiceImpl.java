@@ -17,23 +17,40 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.entities.Guild;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.core.service.DomainService;
+import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends GuildRepository<T>> implements DomainService<T> {
 
     protected final R repository;
 
+    protected final boolean cacheable;
+
+    @Autowired
+    protected JbCacheManager cacheManager;
+
     protected AbstractDomainServiceImpl(R repository) {
+        this(repository, false);
+    }
+
+    protected AbstractDomainServiceImpl(R repository, boolean cacheable) {
         this.repository = repository;
+        this.cacheable = cacheable;
     }
 
     @Override
     @Transactional(readOnly = true)
     public T getByGuildId(long guildId) {
+        if (cacheable) {
+            return cacheManager.get(getDomainClass(), guildId, repository::findByGuildId);
+        }
         return repository.findByGuildId(guildId);
     }
 
@@ -53,7 +70,11 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Override
     @Transactional
     public T save(T entity) {
-        return repository.save(entity);
+        T result = repository.save(entity);
+        if (cacheable) {
+            cacheManager.evict(getDomainClass(), entity.getGuildId());
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -85,4 +106,6 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     }
 
     protected abstract T createNew(long guildId);
+
+    protected abstract Class<T> getDomainClass();
 }

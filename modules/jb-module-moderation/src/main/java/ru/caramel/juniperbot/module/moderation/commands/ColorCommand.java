@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,8 +85,8 @@ public class ColorCommand extends ModeratorCommandAsync {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event, GuildConfig config) {
-        return super.isAvailable(event, config) || (event.getGuild() != null &&
+    public boolean isAvailable(MessageReceivedEvent event) {
+        return super.isAvailable(event) || (event.getGuild() != null &&
                 moderationService.isPublicColor(event.getGuild().getIdLong()));
     }
 }

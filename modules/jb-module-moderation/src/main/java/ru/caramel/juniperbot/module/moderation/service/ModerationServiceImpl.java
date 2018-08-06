@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
@@ -78,27 +77,12 @@ public class ModerationServiceImpl
     private ContextService contextService;
 
     @Autowired
-    private JbCacheManager cacheManager;
-
-    @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
     private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
     public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
-        super(repository);
-    }
-
-    @Override
-    @Transactional
-    public ModerationConfig getOrCreate(Guild guild) {
-        return getOrCreate(guild.getIdLong()); // to make it cacheable
-    }
-
-    @Override
-    @Transactional
-    public ModerationConfig getOrCreate(long guildId) {
-        return cacheManager.get(ModerationConfig.class, guildId, super::getOrCreate);
+        super(repository, true);
     }
 
     @Override
@@ -572,5 +556,10 @@ public class ModerationServiceImpl
         } catch (Exception e) {
             consumer.accept(null);
         }
+    }
+
+    @Override
+    protected Class<ModerationConfig> getDomainClass() {
+        return ModerationConfig.class;
     }
 }

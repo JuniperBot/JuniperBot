@@ -40,6 +40,5 @@ public class WelcomeDao extends AbstractDao {
         WelcomeMessage welcomeMessage = welcomeService.getOrCreate(guildId);
         apiMapper.updateWelcome(dto, welcomeMessage);
         welcomeService.save(welcomeMessage);
-        cacheManager.evict(WelcomeMessage.class, guildId);
     }
 }

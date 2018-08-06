@@ -39,11 +39,8 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Value("${commands.defaultPrefix:!}")
     private String defaultPrefix;
 
-    @Autowired
-    private JbCacheManager cacheManager;
-
     public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {
-        super(repository);
+        super(repository, true);
     }
 
     @Override
@@ -107,5 +104,10 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
         config.setLocale(ContextService.DEFAULT_LOCALE);
         config.setTimeZone("Etc/Greenwich");
         return config;
+    }
+
+    @Override
+    protected Class<GuildConfig> getDomainClass() {
+        return GuildConfig.class;
     }
 }
