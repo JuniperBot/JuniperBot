@@ -63,7 +63,7 @@ public class WelcomeUserListener extends DiscordEventListener {
         }
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
-            WelcomeMessage message = welcomeService.get(guild.getIdLong());
+            WelcomeMessage message = welcomeService.getByGuildId(guild.getIdLong());
             if (message == null) {
                 return;
             }
@@ -105,7 +105,7 @@ public class WelcomeUserListener extends DiscordEventListener {
         }
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
-            WelcomeMessage message = welcomeService.get(event.getGuild().getIdLong());
+            WelcomeMessage message = welcomeService.getByGuildId(event.getGuild().getIdLong());
             if (message == null || !message.isLeaveEnabled() || message.getLeaveChannelId() == null) {
                 return;
             }

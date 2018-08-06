@@ -272,4 +272,26 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.4-06082018-10" author="caramel">
+        <!-- Migrate WelcomeMessage -->
+        <addColumn tableName="welcome_message">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE welcome_message AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="welcome_message" columnName="guild_id"/>
+
+        <dropIndex tableName="welcome_message" indexName="idx_welcome_message_guild_config_id"/>
+        <dropColumn tableName="welcome_message">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="welcome_message" indexName="idx_welcome_message_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

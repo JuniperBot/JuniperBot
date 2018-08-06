@@ -19,29 +19,36 @@ package ru.caramel.juniperbot.module.welcome.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
 @Service
-public class WelcomeServiceImpl implements WelcomeService {
+public class WelcomeServiceImpl extends AbstractDomainServiceImpl<WelcomeMessage, WelcomeMessageRepository> implements WelcomeService {
 
-    @Autowired
-    private WelcomeMessageRepository repository;
+    public WelcomeServiceImpl(@Autowired WelcomeMessageRepository repository) {
+        super(repository);
+    }
 
     @Autowired
     private JbCacheManager cacheManager;
 
     @Override
     @Transactional(readOnly = true)
-    public WelcomeMessage get(long guildId) {
-        return cacheManager.get(WelcomeMessage.class, guildId, repository::findByGuildId);
+    public WelcomeMessage getByGuildId(long guildId) {
+        return cacheManager.get(WelcomeMessage.class, guildId, super::getByGuildId);
     }
 
     @Override
     @Transactional
-    public WelcomeMessage save(WelcomeMessage reactionRoulette) {
-        return repository.save(reactionRoulette);
+    public WelcomeMessage getOrCreate(long guildId) {
+        return cacheManager.get(WelcomeMessage.class, guildId, super::getOrCreate);
+    }
+
+    @Override
+    protected WelcomeMessage createNew(long guildId) {
+        return new WelcomeMessage(guildId);
     }
 }

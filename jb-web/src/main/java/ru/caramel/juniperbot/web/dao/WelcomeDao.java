@@ -31,17 +31,13 @@ public class WelcomeDao extends AbstractDao {
 
     @Transactional
     public WelcomeDto get(long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.get(guildId);
+        WelcomeMessage welcomeMessage = welcomeService.getByGuildId(guildId);
         return welcomeMessage != null ? apiMapper.getWelcomeDto(welcomeMessage) : new WelcomeDto();
     }
 
     @Transactional
     public void save(WelcomeDto dto, long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.get(guildId);
-        if (welcomeMessage == null) {
-            welcomeMessage = new WelcomeMessage();
-            welcomeMessage.setGuildConfig(configService.getOrCreate(guildId));
-        }
+        WelcomeMessage welcomeMessage = welcomeService.getOrCreate(guildId);
         apiMapper.updateWelcome(dto, welcomeMessage);
         welcomeService.save(welcomeMessage);
         cacheManager.evict(WelcomeMessage.class, guildId);
