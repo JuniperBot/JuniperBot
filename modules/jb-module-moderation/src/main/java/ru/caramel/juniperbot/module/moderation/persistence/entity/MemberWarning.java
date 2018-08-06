@@ -19,9 +19,8 @@ package ru.caramel.juniperbot.module.moderation.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildOwnedEntity;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -32,7 +31,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @Table(name = "member_warning")
-public class MemberWarning extends GuildOwnedEntity {
+public class MemberWarning extends GuildEntity {
 
     private static final long serialVersionUID = 9200793551394006363L;
 
@@ -55,8 +54,8 @@ public class MemberWarning extends GuildOwnedEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    public MemberWarning(GuildConfig config, LocalMember moderator, LocalMember violator, String reason) {
-        this.guildConfig = config;
+    public MemberWarning(long guildId, LocalMember moderator, LocalMember violator, String reason) {
+        this.guildId = guildId;
         this.moderator = moderator;
         this.violator = violator;
         this.reason = reason;

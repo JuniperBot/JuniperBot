@@ -508,24 +508,23 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public long warnCount(Member member) {
-        GuildConfig config = configService.getOrCreateCached(member.getGuild());
         LocalMember memberLocal = memberService.getOrCreate(member);
-        return warningRepository.countActiveByViolator(config, memberLocal);
+        return warningRepository.countActiveByViolator(member.getGuild().getIdLong(), memberLocal);
     }
 
     @Override
     @Transactional
     public boolean warn(Member author, Member member, String reason) {
-        GuildConfig config = configService.getOrCreate(member.getGuild().getIdLong());
+        long guildId = member.getGuild().getIdLong();
         ModerationConfig moderationConfig = getConfig(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 
-        long count = warningRepository.countActiveByViolator(config, memberLocal);
+        long count = warningRepository.countActiveByViolator(guildId, memberLocal);
         boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
-        MemberWarning warning = new MemberWarning(config, authorLocal, memberLocal, reason);
+        MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
         if (exceed) {
-            warningRepository.flushWarnings(config, memberLocal);
+            warningRepository.flushWarnings(guildId, memberLocal);
             warning.setActive(false);
             reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
             switch (moderationConfig.getWarnExceedAction()) {
