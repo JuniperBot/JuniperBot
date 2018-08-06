@@ -121,7 +121,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "voiceVolume", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getChannelId()))", target = "channelId"),
             @Mapping(expression = "java(ApiMapperService.toLong(source.getTextChannelId()))", target = "textChannelId"),

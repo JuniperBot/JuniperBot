@@ -16,18 +16,12 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
-public interface MusicConfigService {
-
-    MusicConfig getConfig(long guildId);
-
-    MusicConfig getConfig(Guild guild);
-
-    void save(MusicConfig config);
+public interface MusicConfigService extends DomainService<MusicConfig> {
 
     boolean hasAccess(Member member);
 

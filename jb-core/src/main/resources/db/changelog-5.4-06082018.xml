@@ -206,4 +206,26 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.4-06082018-7" author="caramel">
+        <!-- Migrate ModerationConfig -->
+        <addColumn tableName="music_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE music_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="music_config" columnName="guild_id"/>
+
+        <dropIndex tableName="music_config" indexName="idx_music_config_guild_config_id"/>
+        <dropColumn tableName="music_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="music_config" indexName="idx_music_config_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

@@ -32,7 +32,7 @@ public class MusicDao extends AbstractDao {
 
     @Transactional
     public MusicConfigDto getConfig(long guildId) {
-        MusicConfig musicConfig = musicConfigService.getConfig(guildId);
+        MusicConfig musicConfig = musicConfigService.getOrCreate(guildId);
         MusicConfigDto musicConfigDto = apiMapper.getMusicDto(musicConfig);
         if (discordService.isConnected(guildId) && (musicConfigDto.getChannelId() == null ||
                 discordService.getShardManager().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
@@ -46,7 +46,7 @@ public class MusicDao extends AbstractDao {
 
     @Transactional
     public void saveConfig(MusicConfigDto dto, long guildId) {
-        MusicConfig musicConfig = musicConfigService.getConfig(guildId);
+        MusicConfig musicConfig = musicConfigService.getOrCreate(guildId);
         apiMapper.updateMusicConfig(dto, musicConfig);
         musicConfigService.save(musicConfig);
         cacheManager.evict(MusicConfig.class, guildId);

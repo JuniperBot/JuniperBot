@@ -109,7 +109,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     public PlaybackInstance getInstance(long guildId, boolean create) {
         return create ? instances.computeIfAbsent(guildId, e -> {
-            MusicConfig config = musicConfigService.getConfig(guildId);
+            MusicConfig config = musicConfigService.getOrCreate(guildId);
             IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
             player.setVolume(config.getVoiceVolume());
             return registerInstance(new PlaybackInstance(e, player));
