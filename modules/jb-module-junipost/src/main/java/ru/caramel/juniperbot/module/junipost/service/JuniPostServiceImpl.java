@@ -14,18 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.junipost.persistence.repository;
+package ru.caramel.juniperbot.module.junipost.service;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
+import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
 
-import java.util.List;
+@Service
+public class JuniPostServiceImpl extends AbstractDomainServiceImpl<JuniPost, JuniPostRepository> implements JuniPostService {
 
-@Repository
-public interface JuniPostRepository extends GuildRepository<JuniPost> {
+    public JuniPostServiceImpl(@Autowired JuniPostRepository repository) {
+        super(repository);
+    }
 
-    @Query("SELECT j FROM JuniPost j WHERE j.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
-    List<JuniPost> findActive();
+    @Override
+    protected JuniPost createNew(long guildId) {
+        return null;
+    }
 }

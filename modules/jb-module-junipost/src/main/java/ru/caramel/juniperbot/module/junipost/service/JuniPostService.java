@@ -14,14 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.persistence.repository;
+package ru.caramel.juniperbot.module.junipost.service;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+import ru.caramel.juniperbot.core.service.DomainService;
+import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 
-@Repository
-public interface VkConnectionRepository extends GuildRepository<VkConnection> {
-
-    VkConnection findByToken(String token);
+public interface JuniPostService extends DomainService<JuniPost> {
 }

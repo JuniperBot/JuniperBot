@@ -20,7 +20,9 @@ import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 public interface DomainService<T extends GuildEntity> {
 
-    T get(long guildId);
+    T get(long id);
+
+    T getByGuildId(long guildId);
 
     T getOrCreate(long guildId);
 

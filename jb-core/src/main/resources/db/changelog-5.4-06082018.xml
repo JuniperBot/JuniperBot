@@ -65,4 +65,45 @@
         </createProcedure>
     </changeSet>
 
+    <changeSet id="5.4-06082018-2" author="caramel">
+
+        <!-- Migrate junipost -->
+        <addColumn tableName="junipost">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE junipost AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="junipost" columnName="guild_id"/>
+        <createIndex tableName="junipost" indexName="idx_junipost_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+
+        <dropIndex tableName="junipost" indexName="idx_junipost_guild_config_id"/>
+        <dropColumn tableName="junipost">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <!-- Migrate VkConnection -->
+        <addColumn tableName="vk_connection">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE vk_connection AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="vk_connection" columnName="guild_id"/>
+        <createIndex tableName="vk_connection" indexName="idx_vk_connection_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+
+        <dropColumn tableName="vk_connection">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+    </changeSet>
+
 </databaseChangeLog>

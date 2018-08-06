@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
@@ -45,7 +44,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         attributes.put("vk.token", connection.getToken());
         attributes.put("vk.groupId", connection.getGroupId());
         attributes.put("vk.groupOnlyPosts", connection.isGroupOnlyPosts());
-        SubscriptionDto dto = getDtoForHook(connection.getGuildConfig().getGuildId(), connection.getWebHook());
+        SubscriptionDto dto = getDtoForHook(connection.getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
         dto.setType(SubscriptionType.VK);
@@ -58,14 +57,13 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     }
 
     @Override
-    public SubscriptionDto create(long fuildId, Map<String, ?> data) {
-        GuildConfig config = configService.getOrCreate(fuildId);
+    public SubscriptionDto create(long guildId, Map<String, ?> data) {
         String name = getValue(data, "name", String.class);
         String code = getValue(data, "code", String.class);
         if (StringUtils.isEmpty(name) || StringUtils.isEmpty(code)) {
             throw new IllegalArgumentException("Wrong data");
         }
-        VkConnection connection = vkService.create(config, name, code);
+        VkConnection connection = vkService.create(guildId, name, code);
         return getSubscription(connection);
     }
 

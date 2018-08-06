@@ -19,14 +19,13 @@ package ru.caramel.juniperbot.module.vk.service;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 
 import java.util.List;
 
 public interface VkService {
 
-    VkConnection create(GuildConfig config, String name, String code);
+    VkConnection create(long guildId, String name, String code);
 
     VkConnection find(long id);
 
