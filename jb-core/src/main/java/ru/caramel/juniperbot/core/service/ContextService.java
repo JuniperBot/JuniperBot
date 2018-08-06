@@ -39,7 +39,7 @@ public interface ContextService {
 
     Locale getLocale(Guild guild);
 
-    Locale getLocale(long serverId);
+    Locale getLocale(long guildId);
 
     Map<String, Locale> getSupportedLocales();
 
@@ -49,7 +49,7 @@ public interface ContextService {
 
     void initContext(Guild guild);
 
-    void withContext(long serverId, Runnable action);
+    void withContext(long guildId, Runnable action);
 
     void withContext(Guild guild, Runnable action);
 
@@ -57,7 +57,7 @@ public interface ContextService {
 
     void initContext(User user);
 
-    void initContext(long serverId);
+    void initContext(long guildId);
 
     void resetContext();
 
