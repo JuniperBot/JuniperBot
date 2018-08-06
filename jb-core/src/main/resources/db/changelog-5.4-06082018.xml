@@ -106,4 +106,32 @@
 
     </changeSet>
 
+    <changeSet id="5.4-06082018-3" author="caramel">
+
+        <!-- Migrate CommandConfig -->
+        <addColumn tableName="command_config">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE command_config AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="command_config" columnName="guild_id"/>
+        <createIndex tableName="command_config" indexName="idx_command_config_guild_id">
+            <column name="guild_id"/>
+        </createIndex>
+        <createIndex tableName="command_config" indexName="idx_command_config_guild_id_key">
+            <column name="guild_id"/>
+            <column name="key"/>
+        </createIndex>
+
+        <dropIndex tableName="command_config" indexName="idx_command_config_guild_config_id_key"/>
+        <dropIndex tableName="command_config" indexName="idx_command_config_guild_config_id"/>
+        <dropColumn tableName="command_config">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+    </changeSet>
+
 </databaseChangeLog>

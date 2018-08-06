@@ -158,6 +158,7 @@ public interface ApiMapperService {
             @Mapping(target = "enabled", ignore = true),
             @Mapping(target = "allowedRoles", ignore = true),
             @Mapping(target = "ignoredRoles", ignore = true),
+            @Mapping(target = "allowedChannels", ignore = true),
             @Mapping(target = "ignoredChannels", ignore = true),
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
@@ -215,7 +216,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedRoles()))", target = "allowedRoles"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredRoles()))", target = "ignoredRoles"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getAllowedChannels()))", target = "allowedChannels"),

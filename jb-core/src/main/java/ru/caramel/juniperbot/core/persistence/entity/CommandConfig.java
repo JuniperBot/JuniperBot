@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "command_config")
-public class CommandConfig extends GuildOwnedEntity {
+public class CommandConfig extends GuildEntity {
     private static final long serialVersionUID = -816775204006628349L;
 
     @Column
