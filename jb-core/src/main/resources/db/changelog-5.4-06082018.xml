@@ -250,4 +250,26 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.4-06082018-9" author="caramel">
+        <!-- Migrate ReactionRoulette -->
+        <addColumn tableName="reaction_roulette">
+            <column name="guild_id" type="BIGINT"/>
+        </addColumn>
+        <sql>
+            UPDATE reaction_roulette AS o SET guild_id = c.guild_id
+            FROM guild_config c
+            WHERE o.guild_config_id = c.id;
+        </sql>
+        <addNotNullConstraint tableName="reaction_roulette" columnName="guild_id"/>
+
+        <dropIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_config_id"/>
+        <dropColumn tableName="reaction_roulette">
+            <column name="guild_config_id"/>
+        </dropColumn>
+
+        <createIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_id" unique="true">
+            <column name="guild_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

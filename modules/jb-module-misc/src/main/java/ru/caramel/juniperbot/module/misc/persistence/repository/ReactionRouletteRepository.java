@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.misc.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.GuildOwnedRepository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 
 @Repository
-public interface ReactionRouletteRepository extends GuildOwnedRepository<ReactionRoulette> {
+public interface ReactionRouletteRepository extends GuildRepository<ReactionRoulette> {
 
 }

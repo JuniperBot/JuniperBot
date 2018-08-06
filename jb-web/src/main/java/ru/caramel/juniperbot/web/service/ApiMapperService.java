@@ -181,7 +181,7 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
-            @Mapping(target = "guildConfig", ignore = true),
+            @Mapping(target = "guildId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getIgnoredChannels()))", target = "ignoredChannels"),
     })
     void updateReactionRoulette(ReactionRouletteDto source, @MappingTarget ReactionRoulette target);

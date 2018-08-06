@@ -43,7 +43,7 @@ public class ReactionRouletteListener extends DiscordEventListener {
         if (event.getAuthor() == null || event.getAuthor().isBot() || guild.getSelfMember().equals(event.getMember())) {
             return;
         }
-        ReactionRoulette roulette = reactionRouletteService.get(guild.getIdLong());
+        ReactionRoulette roulette = reactionRouletteService.getByGuildId(guild.getIdLong());
         if (roulette == null || !roulette.isEnabled()) {
             return;
         }
