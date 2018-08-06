@@ -16,38 +16,52 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.core.service.DomainService;
 
-import java.util.function.Function;
+public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends GuildRepository<T>> implements DomainService<T> {
 
-public abstract class AbstractDomainServiceImpl<T extends GuildEntity> implements DomainService<T> {
+    protected final R repository;
+
+    protected AbstractDomainServiceImpl(R repository) {
+        this.repository = repository;
+    }
 
     @Override
+    @Transactional
     public T get(long guildId) {
-        return getRepository().findByGuildId(guildId);
+        return repository.findByGuildId(guildId);
     }
 
     @Override
+    @Transactional
     public T save(T entity) {
-        return getRepository().save(entity);
+        return repository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean exists(long guildId) {
+        return repository.existsByGuildId(guildId);
     }
 
     @Override
-    public T getOrCreate(long guildId, Function<Long, T> instanceFactory) {
+    @Transactional
+    public T getOrCreate(long guildId) {
         T result = get(guildId);
         if (result == null) {
             synchronized (this) {
                 result = get(guildId);
                 if (result == null) {
-                    result = instanceFactory.apply(guildId);
-                    getRepository().saveAndFlush(result);
+                    result = createNew(guildId);
+                    repository.saveAndFlush(result);
                 }
             }
         }
         return result;
     }
 
-    protected abstract GuildRepository<T> getRepository();
+    protected abstract T createNew(long guildId);
 }

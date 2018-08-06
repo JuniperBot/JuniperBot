@@ -18,13 +18,13 @@ package ru.caramel.juniperbot.core.service;
 
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
-import java.util.function.Function;
-
 public interface DomainService<T extends GuildEntity> {
 
     T get(long guildId);
 
+    T getOrCreate(long guildId);
+
     T save(T entity);
 
-    T getOrCreate(long guildId, Function<Long, T> instanceFactory);
+    boolean exists(long guildId);
 }

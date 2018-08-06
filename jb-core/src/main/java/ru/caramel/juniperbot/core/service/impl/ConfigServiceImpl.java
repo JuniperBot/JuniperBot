@@ -28,34 +28,22 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 import java.util.Objects;
 
 @Service
-public class ConfigServiceImpl implements ConfigService {
+public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, GuildConfigRepository> implements ConfigService {
 
     @Getter
     @Value("${commands.defaultPrefix:!}")
     private String defaultPrefix;
 
     @Autowired
-    private GuildConfigRepository repository;
-
-    @Autowired
     private JbCacheManager cacheManager;
 
-    @Override
-    @Transactional
-    public void save(GuildConfig config) {
-        repository.save(config);
-    }
-
-    @Override
-    @Transactional
-    public GuildConfig getOrCreate(long serverId) {
-        return createIfMissing(getById(serverId), serverId);
+    public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {
+        super(repository);
     }
 
     @Override
@@ -83,6 +71,7 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    @Transactional
     public GuildConfig getOrCreateCached(Guild guild) {
         GuildConfig config = cacheManager.get(GuildConfig.class, guild.getIdLong(), this::getOrCreate);
         if (!Objects.equals(config.getName(), guild.getName())
@@ -95,41 +84,29 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional
-    public GuildConfig getById(long serverId) {
-        return repository.findByGuildId(serverId);
+    public String getPrefix(long guildId) {
+        String prefix = repository.findPrefixByGuildId(guildId);
+        return prefix != null ? prefix : getOrCreate(guildId).getPrefix();
     }
 
     @Override
-    public String getPrefix(long serverId) {
-        String prefix = repository.findPrefixByGuildId(serverId);
-        return prefix != null ? prefix : getOrCreate(serverId).getPrefix();
-    }
-
     @Transactional(readOnly = true)
-    @Override
-    public boolean exists(long serverId) {
-        return repository.existsByGuildId(serverId);
-    }
-
-    @Override
     public String getLocale(Guild guild) {
         return getLocale(guild.getIdLong());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public String getLocale(long serverId) {
-        return repository.findLocaleByGuildId(serverId);
+    public String getLocale(long guildId) {
+        return repository.findLocaleByGuildId(guildId);
     }
 
-    private GuildConfig createIfMissing(GuildConfig config, long serverId) {
-        if (config == null) {
-            config = new GuildConfig(serverId);
-            config.setPrefix(defaultPrefix);
-            config.setLocale(ContextService.DEFAULT_LOCALE);
-            config.setTimeZone("Etc/Greenwich");
-            repository.save(config);
-        }
+    @Override
+    protected GuildConfig createNew(long guildId) {
+        GuildConfig config = new GuildConfig(guildId);
+        config.setPrefix(defaultPrefix);
+        config.setLocale(ContextService.DEFAULT_LOCALE);
+        config.setTimeZone("Etc/Greenwich");
         return config;
     }
 }
