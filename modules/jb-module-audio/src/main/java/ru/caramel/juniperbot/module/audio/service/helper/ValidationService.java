@@ -62,13 +62,13 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.getOrCreate(requestedBy.getGuild());
-        Long queueLimit = config.getQueueLimit();
-        Long durationLimit = config.getDurationLimit();
-        Long duplicateLimit = config.getDuplicateLimit();
+        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
+        Long queueLimit = config != null ? config.getQueueLimit() : null;
+        Long durationLimit = config != null ? config.getDurationLimit() : null;
+        Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
         PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
 
-        if (track.getInfo().isStream && !config.isStreamsEnabled()) {
+        if (track.getInfo().isStream && (config == null || !config.isStreamsEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.streams");
         }
 
@@ -90,13 +90,13 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.getOrCreate(requestedBy.getGuild());
-        Long queueLimit = config.getQueueLimit();
-        Long durationLimit = config.getDurationLimit();
-        Long duplicateLimit = config.getDuplicateLimit();
+        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
+        Long queueLimit = config != null ? config.getQueueLimit() : null;
+        Long durationLimit = config != null ? config.getDurationLimit() : null;
+        Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
         PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
 
-        if (!Boolean.TRUE.equals(config.getPlaylistEnabled())) {
+        if (config == null || !Boolean.TRUE.equals(config.getPlaylistEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.playlists");
         }
 

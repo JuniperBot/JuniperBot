@@ -129,7 +129,7 @@ public class CommandsServiceImpl implements CommandsService {
 
         GuildConfig guildConfig = null;
         if (event.getChannelType().isGuild() && event.getGuild() != null) {
-            guildConfig = configService.getOrCreateCached(event.getGuild());
+            guildConfig = configService.getOrCreate(event.getGuild());
         }
 
         if (!usingMention) {

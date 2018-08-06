@@ -99,7 +99,7 @@ public class ModerationServiceImpl
         if (member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner()) {
             return true;
         }
-        ModerationConfig config = getOrCreate(member.getGuild());
+        ModerationConfig config = get(member.getGuild());
         return config != null && CollectionUtils.isNotEmpty(config.getRoles())
                 && member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }

@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.junipost.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.junipost.persistence.repository.JuniPostRepository;
@@ -31,7 +32,10 @@ public class JuniPostServiceImpl extends AbstractDomainServiceImpl<JuniPost, Jun
 
     @Override
     protected JuniPost createNew(long guildId) {
-        return null;
+        JuniPost juniPost = new JuniPost();
+        juniPost.setGuildId(guildId);
+        juniPost.setWebHook(new WebHook());
+        return juniPost;
     }
 
     @Override

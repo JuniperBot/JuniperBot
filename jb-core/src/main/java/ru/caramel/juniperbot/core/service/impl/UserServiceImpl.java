@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
 import ru.caramel.juniperbot.core.service.UserService;
@@ -33,14 +34,28 @@ public class UserServiceImpl implements UserService {
     private LocalUserRepository repository;
 
     @Override
+    public LocalUser get(User user) {
+        return repository.findByUserId(user.getId());
+    }
+
+    @Override
+    @Transactional
     public LocalUser getOrCreate(User user) {
         if (!isApplicable(user)) {
             return null;
         }
-        LocalUser localUser = repository.findByUserId(user.getId());
+        LocalUser localUser = get(user);
         if (localUser == null) {
-            localUser = new LocalUser();
-            localUser.setUserId(user.getId());
+            synchronized (this) {
+                localUser = get(user);
+                if (localUser == null) {
+                    localUser = new LocalUser();
+                    localUser.setUserId(user.getId());
+                    updateIfRequired(user, localUser);
+                    repository.flush();
+                    return localUser;
+                }
+            }
         }
         return updateIfRequired(user, localUser);
     }

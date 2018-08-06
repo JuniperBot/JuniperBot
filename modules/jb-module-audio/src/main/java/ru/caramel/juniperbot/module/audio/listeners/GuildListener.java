@@ -61,7 +61,10 @@ public class GuildListener extends DiscordEventListener {
             return;
         }
         contextService.withContextAsync(guild, () -> {
-            MusicConfig config = musicConfigService.getOrCreate(guild);
+            MusicConfig config = musicConfigService.get(guild);
+            if (config == null) {
+                return;
+            }
 
             VoiceChannel targetChannel = null;
             if (config.getChannelId() != null) {

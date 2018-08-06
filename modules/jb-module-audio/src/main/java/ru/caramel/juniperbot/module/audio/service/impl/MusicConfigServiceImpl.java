@@ -51,7 +51,7 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     @Override
     @Transactional
     public boolean hasAccess(Member member) {
-        MusicConfig config = getOrCreate(member.getGuild());
+        MusicConfig config = get(member.getGuild());
         return config == null
                 || CollectionUtils.isEmpty(config.getRoles())
                 || member.isOwner()
@@ -62,7 +62,7 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     @Override
     @Transactional
     public VoiceChannel getDesiredChannel(Member member) {
-        MusicConfig musicConfig = getOrCreate(member.getGuild());
+        MusicConfig musicConfig = get(member.getGuild());
         VoiceChannel channel = null;
         if (musicConfig != null) {
             if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {

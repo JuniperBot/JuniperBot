@@ -68,21 +68,9 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
 
     @Override
     @Transactional
-    public GuildConfig getOrCreateCached(Guild guild) {
-        GuildConfig config = cacheManager.get(GuildConfig.class, guild.getIdLong(), this::getOrCreate);
-        if (!Objects.equals(config.getName(), guild.getName())
-                || !Objects.equals(config.getIconUrl(), guild.getIconUrl())) {
-            config = getOrCreate(guild);
-            cacheManager.evict(GuildConfig.class, guild.getIdLong());
-        }
-        return config;
-    }
-
-    @Override
-    @Transactional
     public String getPrefix(long guildId) {
         String prefix = repository.findPrefixByGuildId(guildId);
-        return prefix != null ? prefix : getOrCreate(guildId).getPrefix();
+        return prefix != null ? prefix : defaultPrefix;
     }
 
     @Override

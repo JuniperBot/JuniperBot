@@ -135,8 +135,8 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Override
     public void onMessage(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        RankingConfig config = getOrCreate(guild);
-        if (!memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
+        RankingConfig config = get(guild);
+        if (config == null || !memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
             return;
         }
 
@@ -244,7 +244,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 if (guild != null) {
                     Member member = guild.getMemberById(userId);
                     if (member != null) {
-                        RankingConfig config = getOrCreate(guildId);
+                        RankingConfig config = getByGuildId(guildId);
                         updateRewards(config, member, ranking);
                     }
                 }
