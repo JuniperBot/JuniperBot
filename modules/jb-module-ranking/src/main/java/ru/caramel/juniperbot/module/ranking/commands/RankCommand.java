@@ -52,7 +52,10 @@ public class RankCommand extends RankingCommand {
         if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);
             addFields(builder, info, member.getGuild());
-            String url = String.format("https://juniperbot.ru/ranking/%s#%s", member.getGuild().getId(), member.getUser().getId());
+
+            long desiredPage = (info.getRank() / 50) + 1;
+            String url = String.format("https://juniperbot.ru/ranking/%s?page=%s#%s", member.getGuild().getId(),
+                    desiredPage, member.getUser().getId());
             builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
             messageService.sendMessageSilent(message.getTextChannel()::sendMessage, builder.build());
         } else {
