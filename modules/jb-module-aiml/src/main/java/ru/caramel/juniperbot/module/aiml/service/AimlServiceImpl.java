@@ -21,6 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.goldrenard.jb.core.Bot;
@@ -114,13 +115,10 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             return false;
         }
         JDA jda = event.getJDA();
-        if (event.getChannelType() != ChannelType.TEXT) {
-            return false;
-        }
-        if (ignoredGuilds.contains(event.getGuild().getIdLong())) {
-            return false;
-        }
-        if (!event.getMessage().isMentioned(event.getJDA().getSelfUser())) {
+        if (event.getChannelType() != ChannelType.TEXT
+                || ignoredGuilds.contains(event.getGuild().getIdLong())
+                || !event.getMessage().isMentioned(event.getJDA().getSelfUser())
+                || !event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
             return false;
         }
         String content = event.getMessage().getContentRaw().trim();

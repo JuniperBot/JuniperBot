@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.mafia.listeners;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class MafiaListener extends DiscordEventListener {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
+            return;
+        }
         switch (event.getChannelType()) {
             case PRIVATE:
             case TEXT:

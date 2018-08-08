@@ -48,15 +48,15 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     boolean slowOff(TextChannel channel);
 
-    void kick(Member author, Member member);
+    boolean kick(Member author, Member member);
 
-    void kick(Member author, Member member, String reason);
+    boolean kick(Member author, Member member, String reason);
 
-    void ban(Member author, Member member);
+    boolean ban(Member author, Member member);
 
-    void ban(Member author, Member member, String reason);
+    boolean ban(Member author, Member member, String reason);
 
-    void ban(Member author, Member member, int dayDel, String reason);
+    boolean ban(Member author, Member member, int dayDel, String reason);
 
     List<MemberWarning> getWarnings(Member member);
 

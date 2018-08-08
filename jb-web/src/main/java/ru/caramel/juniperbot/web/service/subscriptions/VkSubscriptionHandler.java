@@ -44,6 +44,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         attributes.put("vk.token", connection.getToken());
         attributes.put("vk.groupId", connection.getGroupId());
         attributes.put("vk.groupOnlyPosts", connection.isGroupOnlyPosts());
+        attributes.put("vk.showPostLink", connection.isShowPostLink());
         SubscriptionDto dto = getDtoForHook(connection.getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
@@ -88,6 +89,9 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
 
         Boolean groupOnlyPosts = getValue(subscription.getAttributes(), "vk.groupOnlyPosts", Boolean.class);
         connection.setGroupOnlyPosts(groupOnlyPosts != null ? groupOnlyPosts : false);
+
+        Boolean showPostLink = getValue(subscription.getAttributes(), "vk.showPostLink", Boolean.class);
+        connection.setShowPostLink(showPostLink != null ? showPostLink : true);
         vkService.save(connection);
         return true;
     }

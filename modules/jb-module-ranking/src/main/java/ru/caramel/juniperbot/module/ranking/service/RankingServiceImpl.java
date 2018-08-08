@@ -110,13 +110,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Transactional
     @Override
     public RankingInfo getRankingInfo(Member member) {
-        Ranking ranking = getRanking(member);
-        if (ranking != null) {
-            RankingInfo info = RankingUtils.calculateInfo(ranking);
-            info.setCookies(cookieRepository.countByRecipient(ranking.getMember()));
-            return info;
-        }
-        return null;
+        return RankingUtils.calculateInfo(getRanking(member));
     }
 
     @Override
@@ -212,14 +206,16 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         giveCookie(sender, recipient, getCookieCoolDown());
     }
 
-    @Override
-    public void giveCookie(LocalMember sender, LocalMember recipient) {
-        giveCookie(sender, recipient, getCookieCoolDown());
-    }
-
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
         if (!cookieRepository.isFull(sender, recipient, checkDate)) {
-            cookieRepository.save(new Cookie(sender, recipient));
+            inTransaction(() -> {
+                cookieRepository.save(new Cookie(sender, recipient));
+                Ranking recipientRanking = getRanking(recipient);
+                if (recipientRanking != null) {
+                    recipientRanking.incrementCookies();
+                    rankingRepository.save(recipientRanking);
+                }
+            });
         }
     }
 

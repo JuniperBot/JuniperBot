@@ -56,4 +56,7 @@ public class VkConnection extends WebHookOwnedEntity {
     @Column(name = "group_only_posts")
     private boolean groupOnlyPosts;
 
+    @Column(name = "show_post_link")
+    private boolean showPostLink;
+
 }

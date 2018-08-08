@@ -23,8 +23,11 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.log4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -43,6 +46,8 @@ import java.util.function.Consumer;
 
 @Service
 public class ContextServiceImpl implements ContextService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContextServiceImpl.class);
 
     private static class ContextHolder {
         private Locale locale;
@@ -189,12 +194,16 @@ public class ContextServiceImpl implements ContextService {
     @Override
     @Async
     public void withContextAsync(Guild guild, Runnable action) {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                withContext(guild, action);
-            }
-        });
+        try {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    withContext(guild, action);
+                }
+            });
+        } catch (ObjectOptimisticLockingFailureException e) {
+            LOGGER.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+        }
     }
 
     @Override

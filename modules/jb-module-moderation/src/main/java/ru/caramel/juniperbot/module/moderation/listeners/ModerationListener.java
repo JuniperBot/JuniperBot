@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.moderation.listeners;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -33,7 +34,8 @@ public class ModerationListener extends DiscordEventListener {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
+        if (event.getMessage().getType() == MessageType.DEFAULT
+                && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
                 && moderationService.isRestricted(event.getChannel(), event.getMember())) {
             event.getMessage().delete().queue();
         }
