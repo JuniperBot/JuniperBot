@@ -227,7 +227,7 @@ public class VkServiceImpl implements VkService {
                 contentEmbed.setTimestamp(new Date(((long) post.getDate()) * 1000).toInstant());
             }
             String url = String.format(WALL_URL, message.getGroupId(), post.getId());
-            setText(contentEmbed, post.getText(), url);
+            setText(connection, contentEmbed, post.getText(), url);
             content = null; // show it on embed instead
         }
 
@@ -295,7 +295,7 @@ public class VkServiceImpl implements VkService {
                     return;
                 }
                 builder = initBuilder(message, builders);
-                setPhoto(images, builder, message, photo, true);
+                setPhoto(connection, images, builder, message, photo, true);
                 break;
             case POSTED_PHOTO:
                 PostedPhoto postedPhoto = attachment.getPostedPhoto();
@@ -317,7 +317,7 @@ public class VkServiceImpl implements VkService {
                         video.getId());
 
                 builder = initBuilder(message, builders);
-                setText(builder, video.getTitle(), url);
+                setText(connection, builder, video.getTitle(), url);
                 setPhoto(images, builder, video.getPhoto800(), video.getPhoto320(), video.getPhoto130());
                 if (video.getDate() != null) {
                     builder.setTimestamp(new Date(((long) video.getDate()) * 1000).toInstant());
@@ -406,7 +406,7 @@ public class VkServiceImpl implements VkService {
 
                 if (!hasImage && link.getPhoto() != null) {
                     builder = initBuilder(message, builders);
-                    setPhoto(images, builder, message, link.getPhoto(), false);
+                    setPhoto(connection, images, builder, message, link.getPhoto(), false);
                 }
                 if (hasImage) {
                     initBuilder(message, builders);
@@ -462,7 +462,7 @@ public class VkServiceImpl implements VkService {
 
                 builder = initBuilder(message, builders);
                 if (album.getThumb() != null) {
-                    setPhoto(images, builder, message, album.getThumb(), false);
+                    setPhoto(connection, images, builder, message, album.getThumb(), false);
                 }
                 builder.setDescription(trimTo(HtmlUtils.htmlUnescape(album.getDescription()), MessageEmbed.TEXT_MAX_LENGTH));
 
@@ -482,7 +482,7 @@ public class VkServiceImpl implements VkService {
         }
     }
 
-    private void setPhoto(Set<String> images, EmbedBuilder builder, CallbackMessage<Wallpost> message, Photo photo, boolean showText) {
+    private void setPhoto(VkConnection connection, Set<String> images, EmbedBuilder builder, CallbackMessage<Wallpost> message, Photo photo, boolean showText) {
         String imageUrl = coalesce(photo.getPhoto2560(),
                 photo.getPhoto1280(),
                 photo.getPhoto807(),
@@ -497,7 +497,7 @@ public class VkServiceImpl implements VkService {
                     photo.getId());
 
             if (showText) {
-                setText(builder, photo.getText(), url);
+                setText(connection, builder, photo.getText(), url);
             }
 
             builder.setImage(imageUrl);
@@ -507,9 +507,11 @@ public class VkServiceImpl implements VkService {
         }
     }
 
-    private void setText(EmbedBuilder builder, String text, String url) {
+    private void setText(VkConnection connection, EmbedBuilder builder, String text, String url) {
         if (StringUtils.isNotEmpty(text)) {
-            builder.setTitle(messageService.getMessage("vk.message.open"), url);
+            if (connection.isShowPostLink()) {
+                builder.setTitle(messageService.getMessage("vk.message.open"), url);
+            }
             builder.setDescription(trimTo(CommonUtils.parseVkLinks(HtmlUtils.htmlUnescape(text)), MessageEmbed.TEXT_MAX_LENGTH));
         }
     }

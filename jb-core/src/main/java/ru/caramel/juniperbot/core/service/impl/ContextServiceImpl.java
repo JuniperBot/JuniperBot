@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 @Service
 public class ContextServiceImpl implements ContextService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContextServiceImpl.class);
 
     private static class ContextHolder {
         private Locale locale;

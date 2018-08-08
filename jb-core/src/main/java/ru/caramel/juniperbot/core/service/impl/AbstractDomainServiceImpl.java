@@ -19,8 +19,14 @@ package ru.caramel.juniperbot.core.service.impl;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
@@ -28,6 +34,8 @@ import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends GuildRepository<T>> implements DomainService<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDomainServiceImpl.class);
 
     protected final R repository;
 
@@ -37,6 +45,9 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     @Autowired
     protected JbCacheManager cacheManager;
+
+    @Autowired
+    protected TransactionTemplate transactionTemplate;
 
     protected AbstractDomainServiceImpl(R repository) {
         this(repository, false);
@@ -105,6 +116,19 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
             }
         }
         return result;
+    }
+
+    protected void inTransaction(Runnable action) {
+        try {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    action.run();
+                }
+            });
+        } catch (ObjectOptimisticLockingFailureException e) {
+            LOGGER.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+        }
     }
 
     protected abstract T createNew(long guildId);

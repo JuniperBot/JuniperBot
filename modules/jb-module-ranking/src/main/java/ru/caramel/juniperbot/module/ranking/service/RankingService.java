@@ -47,7 +47,5 @@ public interface RankingService extends DomainService<RankingConfig> {
 
     void calculateQueue();
 
-    void giveCookie(LocalMember sender, LocalMember recipient);
-
     void giveCookie(Member senderMember, Member recipientMember);
 }

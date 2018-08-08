@@ -31,6 +31,8 @@ import javax.persistence.*;
 @Table(name = "ranking")
 public class Ranking extends BaseEntity {
 
+    private static final long serialVersionUID = -1815192299879652747L;
+
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "member_id")
     private LocalMember member;
@@ -41,4 +43,11 @@ public class Ranking extends BaseEntity {
     @Column
     private long rank;
 
+    @Column
+    private long cookies;
+
+    @Transient
+    public void incrementCookies() {
+        cookies++;
+    }
 }
