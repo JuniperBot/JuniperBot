@@ -429,42 +429,48 @@ public class ModerationServiceImpl
     }
 
     @Override
-    public void kick(Member author, Member member) {
-        kick(author, member, null);
+    public boolean kick(Member author, Member member) {
+        return kick(author, member, null);
     }
 
     @Override
-    public void kick(Member author, Member member, final String reason) {
-        if (member.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
+    public boolean kick(Member author, Member member, final String reason) {
+        Member self = member.getGuild().getSelfMember();
+        if (self.hasPermission(Permission.KICK_MEMBERS) && self.canInteract(member)) {
             String reasonAuthor = StringUtils.isNotEmpty(reason)
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
             notifyUserAction(e -> {
                 member.getGuild().getController().kick(member, reasonAuthor).queue();
             }, member, "discord.command.mod.action.message.kick", reason);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void ban(Member author, Member member) {
-        ban(author, member, null);
+    public boolean ban(Member author, Member member) {
+        return ban(author, member, null);
     }
 
     @Override
-    public void ban(Member author, Member member, String reason) {
-        ban(author, member, 0, reason);
+    public boolean ban(Member author, Member member, String reason) {
+        return ban(author, member, 0, reason);
     }
 
     @Override
-    public void ban(Member author, Member member, int delDays, final String reason) {
-        if (member.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
+    public boolean ban(Member author, Member member, int delDays, final String reason) {
+        Member self = member.getGuild().getSelfMember();
+        if (self.hasPermission(Permission.BAN_MEMBERS) && self.canInteract(member)) {
             String reasonAuthor = StringUtils.isNotEmpty(reason)
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
             notifyUserAction(e -> {
                 member.getGuild().getController().ban(member, delDays, reasonAuthor).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -498,19 +504,22 @@ public class ModerationServiceImpl
         boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
         MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
         if (exceed) {
-            warningRepository.flushWarnings(guildId, memberLocal);
-            warning.setActive(false);
             reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
+            boolean success = true;
             switch (moderationConfig.getWarnExceedAction()) {
                 case BAN:
-                    ban(author, member, reason);
+                    success = ban(author, member, reason);
                     break;
                 case KICK:
-                    kick(author, member, reason);
+                    success = kick(author, member, reason);
                     break;
                 case MUTE:
                     mute(null, member, true, moderationConfig.getMuteCount(), reason);
                     break;
+            }
+            if (success) {
+                warningRepository.flushWarnings(guildId, memberLocal);
+                warning.setActive(false);
             }
         } else {
             notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,

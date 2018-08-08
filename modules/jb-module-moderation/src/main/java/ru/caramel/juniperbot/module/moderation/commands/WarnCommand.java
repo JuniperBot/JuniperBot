@@ -54,6 +54,17 @@ public class WarnCommand extends ModeratorCommandAsync {
         }
         if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
             ModerationConfig config = moderationService.getOrCreate(event.getGuild());
+            if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
+                switch (config.getWarnExceedAction()) {
+                    case BAN:
+                        messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
+                        return;
+                    case KICK:
+                        messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
+                        return;
+                }
+            }
+
             String messageCode = "discord.command.mod.warn.exceeded.message." + config.getWarnExceedAction().name();
 
             String argument = "";
