@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -86,7 +87,7 @@ public class CommandsServiceImpl implements CommandsService {
     @Override
     @Transactional
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) {
+        if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
             return;
         }
         if (!sendMessage(event, this, commandsHolderService::isAnyCommand)) {

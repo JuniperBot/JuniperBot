@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.misc.listeners;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -40,7 +41,10 @@ public class ReactionRouletteListener extends DiscordEventListener {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        if (event.getAuthor() == null || event.getAuthor().isBot() || guild.getSelfMember().equals(event.getMember())) {
+        if (event.getAuthor() == null
+                || event.getAuthor().isBot()
+                || event.getMessage().getType() != MessageType.DEFAULT
+                || guild.getSelfMember().equals(event.getMember())) {
             return;
         }
         ReactionRoulette roulette = reactionRouletteService.getByGuildId(guild.getIdLong());
