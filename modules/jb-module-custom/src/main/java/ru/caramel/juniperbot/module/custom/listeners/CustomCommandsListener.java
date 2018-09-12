@@ -95,6 +95,9 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         }
 
         String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
+        if (StringUtils.isEmpty(commandContent)) {
+            return false;
+        }
         switch (command.getType()) {
             case ALIAS:
                 String[] args = commandContent.split("\\s+");
