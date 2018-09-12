@@ -201,7 +201,8 @@ public class PlaybackInstance extends FeatureInstance {
 
     public synchronized long getPosition() {
         try {
-            return player.getTrackPosition();
+            long position = player.getTrackPosition();
+            return position >= 0 ? position : 0;
         } catch (IllegalStateException e) {
             return 0;
         }
