@@ -70,7 +70,7 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Override
     @Transactional(readOnly = true)
     public T get(long id) {
-        return repository.findOne(id);
+        return repository.findById(id).orElse(null);
     }
 
     @Override

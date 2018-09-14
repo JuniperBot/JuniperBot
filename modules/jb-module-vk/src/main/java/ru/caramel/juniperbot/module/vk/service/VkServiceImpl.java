@@ -149,7 +149,7 @@ public class VkServiceImpl implements VkService {
 
     @Override
     public VkConnection find(long id) {
-        return repository.findOne(id);
+        return repository.findById(id).orElse(null);
     }
 
     @Override
@@ -337,23 +337,13 @@ public class VkServiceImpl implements VkService {
                 String artist = null;
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
                     artist = HtmlUtils.htmlUnescape(audio.getArtist());
-                    String artistUrl = artist;
-                    try {
-                        artistUrl = CommonUtils.makeLink(artist, String.format(AUDIO_URL, UriUtils.encode(artist, "UTF-8")));
-                    } catch (UnsupportedEncodingException e) {
-                        // fall down
-                    }
+                    String artistUrl = CommonUtils.makeLink(artist, String.format(AUDIO_URL, UriUtils.encode(artist, "UTF-8")));;
                     addField(message, builders, messageService.getMessage("vk.message.audio.artist"), artistUrl, true);
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {
                     String title = HtmlUtils.htmlUnescape(audio.getTitle());
-                    String titleUrl = title;
-                    try {
-                        String fullTitle = (artist != null ? (artist + " - ") : "") + title;
-                        titleUrl = CommonUtils.makeLink(title, String.format(AUDIO_URL, UriUtils.encode(fullTitle, "UTF-8")));
-                    } catch (UnsupportedEncodingException e) {
-                        // fall down
-                    }
+                    String fullTitle = (artist != null ? (artist + " - ") : "") + title;
+                    String titleUrl = CommonUtils.makeLink(title, String.format(AUDIO_URL, UriUtils.encode(fullTitle, "UTF-8")));
                     addField(message, builders, messageService.getMessage("vk.message.audio.title"), titleUrl, true);
                 }
                 break;

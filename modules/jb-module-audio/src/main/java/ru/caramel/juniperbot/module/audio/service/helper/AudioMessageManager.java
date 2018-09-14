@@ -55,7 +55,7 @@ public class AudioMessageManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioMessageManager.class);
 
-    @Value("${audio.play.message.refreshInterval}")
+    @Value("${discord.audio.ui.refreshInterval:5000}")
     private Long playRefreshInterval;
 
     @Autowired

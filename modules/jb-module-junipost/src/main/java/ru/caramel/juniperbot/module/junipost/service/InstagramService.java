@@ -71,7 +71,6 @@ public class InstagramService {
 
     private long latestUpdate;
 
-    @Autowired
     private RestTemplate restTemplate;
 
     @PostConstruct

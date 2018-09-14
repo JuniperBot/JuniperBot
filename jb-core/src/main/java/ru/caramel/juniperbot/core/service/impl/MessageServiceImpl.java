@@ -160,7 +160,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,
-                                                             Consumer<Message> messageConsumer) {
+                                           Consumer<Message> messageConsumer) {
         try {
             action.apply(embed).queue(messageConsumer);
         } catch (PermissionException e) {
@@ -190,7 +190,7 @@ public class MessageServiceImpl implements MessageService {
         return getMessage(String.format("%s[%s]", code, key));
     }
 
-    @Value("${message.accentColor:#FFA550}")
+    @Value("${discord.accentColor:#FFA550}")
     public void setAccentColor(String color) {
         accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }

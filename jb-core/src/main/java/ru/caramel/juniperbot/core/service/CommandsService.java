@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.core.service;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 
 import java.util.function.Function;
 

@@ -48,7 +48,7 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     @Getter
     @Setter
-    @Value("${eventManager.async:true}")
+    @Value("${discord.asyncEvents:true}")
     private boolean async;
 
     @Autowired

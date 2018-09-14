@@ -48,9 +48,9 @@ public class SteamServiceImpl implements SteamService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SteamServiceImpl.class);
 
-    private static final String APPS_ENDPOINT = "http://api.steampowered.com/ISteamApps/GetAppList/v2/";
+    private static final String APPS_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
 
-    private static final String DETAILS_ENDPOINT = "http://store.steampowered.com/api/appdetails?appids=%s&l=%s";
+    private static final String DETAILS_ENDPOINT = "https://store.steampowered.com/api/appdetails?appids=%s&l=%s";
 
     @Autowired
     private SteamAppRepository appRepository;
@@ -96,7 +96,7 @@ public class SteamServiceImpl implements SteamService {
                     app.setName(newMap.get(e));
                     return app;
                 }).collect(Collectors.toList());
-                appRepository.save(appsToAdd);
+                appRepository.saveAll(appsToAdd);
             }
 
             // Apps to remove

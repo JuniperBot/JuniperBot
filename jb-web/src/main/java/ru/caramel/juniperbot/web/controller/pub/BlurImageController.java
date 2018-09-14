@@ -58,13 +58,13 @@ public class BlurImageController extends BasePublicRestController {
     @Autowired
     private OpenCVService openCVService;
 
-    @Value("${blur.image.opencv:true}")
+    @Value("${features.blur.opencv.enabled:true}")
     private boolean useOpenCV;
 
-    @Value("${blur.image.opencv.radius:201}")
+    @Value("${features.blur.opencv.radius:201}")
     private int blurRadius;
 
-    @Value("${blur.image.cache:}")
+    @Value("${features.blur.cache:}")
     private String cacheFolder;
 
     private static class ImageInfo {

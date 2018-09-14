@@ -16,10 +16,11 @@
  */
 package ru.caramel.juniperbot.web.common;
 
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.web.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
@@ -29,6 +30,7 @@ import java.io.IOException;
 
 import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
+@Component
 public class InfoMdcFilter implements Filter {
 
     @Override

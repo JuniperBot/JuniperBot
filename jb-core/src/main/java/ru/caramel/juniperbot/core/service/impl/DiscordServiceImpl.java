@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -97,7 +98,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Getter
     private ShardManager shardManager;
 
-    @Autowired
+    @Autowired(required = false)
     private List<ModuleListener> moduleListeners;
 
     @Autowired(required = false)
@@ -137,13 +138,15 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @PreDestroy
     public void destroy() {
         // destroy every service manually before discord shutdown
-        moduleListeners.forEach(listener -> {
-            try {
-                listener.onShutdown();
-            } catch (Exception e) {
-                LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
-            }
-        });
+        if (CollectionUtils.isNotEmpty(moduleListeners)) {
+            moduleListeners.forEach(listener -> {
+                try {
+                    listener.onShutdown();
+                } catch (Exception e) {
+                    LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
+                }
+            });
+        }
         shardManager.shutdown();
     }
 

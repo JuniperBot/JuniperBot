@@ -23,12 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.repository.GuildConfigRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 import java.util.Objects;
 
@@ -36,7 +34,7 @@ import java.util.Objects;
 public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, GuildConfigRepository> implements ConfigService {
 
     @Getter
-    @Value("${commands.defaultPrefix:!}")
+    @Value("${discord.defaultPrefix:!}")
     private String defaultPrefix;
 
     public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {

@@ -52,12 +52,12 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AimlServiceImpl.class);
 
-    @Value("${aiml.bots.path}")
+    @Value("${integrations.aiml.path:}")
     private String path;
 
     @Getter
     @Setter
-    @Value("${aiml.bots.enabled:true}")
+    @Value("${integrations.aiml.enabled:true}")
     private boolean enabled;
 
     @Getter
@@ -111,7 +111,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Override
     public boolean handleMessage(MessageReceivedEvent event) {
-        if (!enabled || event.getAuthor() == null) {
+        if (!enabled || StringUtils.isEmpty(path) || event.getAuthor() == null) {
             return false;
         }
         JDA jda = event.getJDA();

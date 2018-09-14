@@ -27,10 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -81,18 +77,14 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
 
     @Setter
     @Getter
-    private AuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
-
-    @Setter
-    @Getter
-    private PrincipalExtractor principalExtractor = new FixedPrincipalExtractor();
+    private FixedAuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
 
     private LoadingCache<String, List<DiscordGuildDetails>> guilds = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
             .maximumSize(10000)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build(
-                    new CacheLoader<String, List<DiscordGuildDetails>>() {
+                    new CacheLoader<>() {
                         public List<DiscordGuildDetails> load(String accessToken) {
                             List<Map<Object, Object>> list = executeRequest(List.class, guildsInfoEndpointUrl, accessToken);
                             return list.stream().map(DiscordGuildDetails::create).collect(Collectors.toList());
@@ -104,10 +96,10 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
             .maximumSize(10000)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build(
-                    new CacheLoader<String, OAuth2Authentication>() {
+                    new CacheLoader<>() {
                         public OAuth2Authentication load(String accessToken) {
                             Map map = executeRequest(Map.class, userInfoEndpointUrl, accessToken);
-                            Object principal = principalExtractor.extractPrincipal(map);
+                            Object principal = map.get("username");
                             principal = (principal == null ? "unknown" : principal);
                             List<GrantedAuthority> authorities = authoritiesExtractor.extractAuthorities(map);
                             OAuth2Request request = new OAuth2Request(null, clientId, null, true, null,

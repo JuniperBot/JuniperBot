@@ -237,7 +237,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
     @Override
     @Transactional
     public Playlist find(Long id) {
-        return validateItems(playlistRepository.findOne(id));
+        return validateItems(playlistRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -316,7 +316,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             playlist.setItems(newItems);
             playlistRepository.save(playlist);
             if (!toRemove.isEmpty()) {
-                playlistItemRepository.delete(toRemove);
+                playlistItemRepository.deleteAll(toRemove);
             }
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not update playlist", e);
@@ -334,7 +334,7 @@ public class PlaylistServiceImpl implements PlaylistService, AudioSourceManager 
             playlist.setItems(existentItems);
             playlistRepository.save(playlist);
             if (!toRemove.isEmpty()) {
-                playlistItemRepository.delete(toRemove.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+                playlistItemRepository.deleteAll(toRemove.stream().filter(Objects::nonNull).collect(Collectors.toList()));
             }
         } catch (Exception e) {
             LOGGER.warn("[shuffle] Could not clear playlist", e);

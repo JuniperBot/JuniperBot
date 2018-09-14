@@ -16,7 +16,10 @@
  */
 package ru.caramel.juniperbot.core.model;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.SlidingTimeWindowReservoir;
+import com.codahale.metrics.Snapshot;
+import com.codahale.metrics.UniformSnapshot;
 
 import java.util.Collections;
 import java.util.Map;

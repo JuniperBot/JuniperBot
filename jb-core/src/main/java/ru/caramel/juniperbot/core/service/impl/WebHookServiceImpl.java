@@ -30,7 +30,6 @@ import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +47,6 @@ public class WebHookServiceImpl implements WebHookService {
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build(
                     new CacheLoader<Guild, List<Webhook>>() {
-                        @ParametersAreNonnullByDefault
                         public List<Webhook> load(Guild guild) {
                             return guild.getWebhooks().complete();
                         }

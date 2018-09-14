@@ -1,0 +1,50 @@
+spring:
+  http:
+    encoding:
+      enabled: "true"
+      charset: "UTF-8"
+      force: "true"
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: "false"
+    formcontent:
+      filter:
+        enabled: "false"
+
+  application:
+    version: "@project.version@"
+    formatted-version: "(v@project.version@)"
+    timestamp: "@build.timestamp@"
+    name: "JuniperBot"
+  jpa:
+    generate-ddl: "false"
+    open-in-view: "false"
+    hibernate:
+      ddl-auto: "none"
+    properties:
+      hibernate:
+        dialect: "ru.caramel.juniperbot.core.persistence.support.ExPostgreSQLDialect"
+        jdbc:
+          lob:
+            non_contextual_creation: "true"
+  liquibase:
+    change-log: "classpath:db/master.xml"
+  quartz:
+    overwriteExistingJobs: "true"
+    properties:
+      org.quartz.scheduler.instanceName: "juniperbot-spring-boot-quartz"
+      org.quartz.scheduler.instanceId: "AUTO"
+      org.quartz.threadPool.threadCount: "15"
+      org.quartz.jobStore.class: "org.quartz.impl.jdbcjobstore.JobStoreTX"
+      org.quartz.jobStore.driverDelegateClass: "org.quartz.impl.jdbcjobstore.PostgreSQLDelegate"
+      org.quartz.jobStore.useProperties: "true"
+      org.quartz.jobStore.misfireThreshold: "60000"
+      org.quartz.jobStore.tablePrefix: "qrtz_"
+      org.quartz.jobStore.isClustered: "false"
+      org.quartz.jobStore.clusterCheckinInterval: "20000"
+
+dependencies:
+  jda.version: "@JDA.version@"
+  lavaPlayer.version: "@lavaplayer.version@"
+  spring.version: "@spring.version@"

@@ -56,15 +56,15 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Value("${discord.oauth.clientId}")
     private String clientId;
 
-    @Value("${discord.stats.discordbots.org.token:}")
+    @Value("${discord.stats.discordbotsOrgToken:}")
     private String orgToken;
 
-    @Value("${discord.stats.bots.discord.pw.token:}")
+    @Value("${discord.stats.botsDiscordPwToken:}")
     private String pwToken;
 
     @Getter
     @Setter
-    @Value("${metrics.detailed:true}")
+    @Value("${discord.stats.detailedMetrics:true}")
     private boolean detailed;
 
     @Autowired

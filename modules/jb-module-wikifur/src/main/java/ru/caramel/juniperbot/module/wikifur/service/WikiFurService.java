@@ -46,7 +46,7 @@ public class WikiFurService {
 
     private WtEngineImpl engine = new WtEngineImpl(config);
 
-    @Value("${app.version}")
+    @Value("${spring.application.version}")
     private String version;
 
     @Autowired
@@ -62,11 +62,7 @@ public class WikiFurService {
     }
 
     public String getUrl(String article) {
-        try {
-            return WIKI_URL + UriUtils.encode(article, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return WIKI_URL + UriUtils.encode(article, "UTF-8");
     }
 
     public Article getArticle(String search) {
@@ -114,11 +110,7 @@ public class WikiFurService {
         }
 
         EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-        try {
-            embedBuilder.setTitle(article.getTitle(), WIKI_URL + UriUtils.encode(article.getTitle(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        embedBuilder.setTitle(article.getTitle(), WIKI_URL + UriUtils.encode(article.getTitle(), "UTF-8"));
         TextConverter converter = new TextConverter(config, embedBuilder);
         return (MessageEmbed) converter.go(processedPage.getPage());
     }

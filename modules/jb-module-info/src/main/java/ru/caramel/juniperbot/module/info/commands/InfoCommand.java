@@ -40,16 +40,16 @@ public class InfoCommand extends AbstractInfoCommand {
     @Autowired
     private ConfigService configService;
 
-    @Value("${jda.version}")
+    @Value("${dependencies.jda.version}")
     private String jdaVersion;
 
-    @Value("${lavaPlayer.version}")
+    @Value("${dependencies.lavaPlayer.version}")
     private String lavaPlayerVersion;
 
-    @Value("${spring.version}")
+    @Value("${dependencies.spring.version}")
     private String springVersion;
 
-    @Value("${app.version}")
+    @Value("${spring.application.version}")
     private String appVersion;
 
     private DateTime buildTimestamp;
@@ -89,7 +89,7 @@ public class InfoCommand extends AbstractInfoCommand {
         return true;
     }
 
-    @Value("${build.timestamp}")
+    @Value("${spring.application.timestamp}")
     public void setBuildTimestamp(String value) {
         buildTimestamp = new DateTime(StringUtils.isNumeric(value) ? Long.parseLong(value) : new Date())
                 .withZone(DateTimeZone.UTC);
