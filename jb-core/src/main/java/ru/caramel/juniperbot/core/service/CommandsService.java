@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.service;
 
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
@@ -39,5 +41,9 @@ public interface CommandsService extends CommandSender {
     void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args);
 
     boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig);
+
+    boolean isRestricted(CommandConfig commandConfig, TextChannel channel);
+
+    boolean isRestricted(CommandConfig commandConfig, Member member);
 
 }

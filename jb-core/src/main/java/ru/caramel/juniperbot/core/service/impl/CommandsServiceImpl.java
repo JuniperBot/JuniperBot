@@ -214,31 +214,47 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
-        if (event.getTextChannel() != null) {
-            if (CollectionUtils.isNotEmpty(commandConfig.getAllowedChannels())
-                    && !commandConfig.getAllowedChannels().contains(event.getTextChannel().getIdLong())) {
-                resultEmotion(event, "❌", null);
-                return true;
-            }
-            if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
-                    && commandConfig.getIgnoredChannels().contains(event.getTextChannel().getIdLong())) {
-                resultEmotion(event, "❌", null);
-                return true;
-            }
+        if (isRestricted(commandConfig, event.getTextChannel())) {
+            resultEmotion(event, "✋", null);
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.channel");
+            return true;
         }
+        if (isRestricted(commandConfig, event.getMember())) {
+            resultEmotion(event, "✋", null);
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.roles");
+            return true;
+        }
+        return false;
+    }
 
-        if (event.getMember() != null) {
-            Member member = event.getMember();
-            if (CollectionUtils.isNotEmpty(commandConfig.getAllowedRoles())
-                    && member.getRoles().stream().noneMatch(e -> commandConfig.getAllowedRoles().contains(e.getIdLong()))) {
-                resultEmotion(event, "❌", null);
-                return true;
-            }
-            if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
-                    && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()))) {
-                resultEmotion(event, "❌", null);
-                return true;
-            }
+    @Override
+    public boolean isRestricted(CommandConfig commandConfig, TextChannel channel) {
+        if (channel == null || commandConfig == null) {
+            return false;
+        }
+        if (CollectionUtils.isNotEmpty(commandConfig.getAllowedChannels())
+                && !commandConfig.getAllowedChannels().contains(channel.getIdLong())) {
+            return true;
+        }
+        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
+                && commandConfig.getIgnoredChannels().contains(channel.getIdLong())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isRestricted(CommandConfig commandConfig, Member member) {
+        if (member == null || commandConfig == null) {
+            return false;
+        }
+        if (CollectionUtils.isNotEmpty(commandConfig.getAllowedRoles())
+                && member.getRoles().stream().noneMatch(e -> commandConfig.getAllowedRoles().contains(e.getIdLong()))) {
+            return true;
+        }
+        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
+                && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()))) {
+            return true;
         }
         return false;
     }
