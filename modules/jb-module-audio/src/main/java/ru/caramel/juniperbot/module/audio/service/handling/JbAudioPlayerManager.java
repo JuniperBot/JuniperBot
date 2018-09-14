@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.module.audio.service.handling;
 
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-public interface AudioService {
+public interface JbAudioPlayerManager extends AudioPlayerManager {
 
-    void configure(DiscordService discordService, DefaultShardManagerBuilder builder);
+    byte[] encodeTrack(AudioTrack track);
+
+    AudioTrack decodeTrack(byte[] data);
 }

@@ -48,6 +48,8 @@ public class SchedulerConfiguration implements SchedulerFactoryBeanCustomizer {
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(schedulerPoolSize);
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(30);
         scheduler.setThreadNamePrefix("taskScheduler");
         return scheduler;
     }

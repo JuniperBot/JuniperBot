@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
@@ -71,7 +72,11 @@ public class ContextEventManagerImpl implements JbEventManager {
     @Override
     public void handle(Event event) {
         if (async) {
-            taskExecutor.execute(() -> handleEvent(event));
+            try {
+                taskExecutor.execute(() -> handleEvent(event));
+            } catch (TaskRejectedException e) {
+                LOGGER.debug("Event rejected: {}", event);
+            }
         } else {
             handleEvent(event);
         }

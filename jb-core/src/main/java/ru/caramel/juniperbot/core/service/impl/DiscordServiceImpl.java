@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
@@ -127,7 +128,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                     .setShards(0, shardsNum - 1)
                     .setEnableShutdownHook(false);
             if (audioService != null) {
-                audioService.configure(builder);
+                audioService.configure(this, builder);
             }
             shardManager = builder.build();
         } catch (LoginException e) {

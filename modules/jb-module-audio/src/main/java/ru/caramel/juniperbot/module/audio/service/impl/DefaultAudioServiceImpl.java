@@ -68,32 +68,17 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     private Map<URI, String> lavaLinkNodes;
 
-    @Value("${discord.audio.resamplingQuality:MEDIUM}")
-    private AudioConfiguration.ResamplingQuality resamplingQuality;
-
-    @Value("${discord.audio.frameBufferDuration:2000}")
-    private int frameBufferDuration;
-
-    @Value("${discord.audio.itemLoaderThreadPoolSize:500}")
-    private int itemLoaderThreadPoolSize;
-
-    @Autowired
-    private DiscordService discordService;
-
     @Autowired(required = false)
     private IAudioSendFactory audioSendFactory;
 
     @Autowired
-    private List<AudioSourceManager> audioSourceManagers;
-
-    @Getter
     private AudioPlayerManager playerManager;
 
     @Getter
     private Lavalink lavaLink = null;
 
     @Override
-    public void configure(DefaultShardManagerBuilder builder) {
+    public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
         if (jdaNAS) {
             builder.setAudioSendFactory(new NativeAudioSendFactory());
         } else if (audioSendFactory != null) {
@@ -113,24 +98,6 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
             }
         }
     }
-
-    @PostConstruct
-    public void init() {
-        playerManager = new DefaultAudioPlayerManager();
-        playerManager.getConfiguration().setResamplingQuality(resamplingQuality);
-        playerManager.setFrameBufferDuration(frameBufferDuration);
-        playerManager.setItemLoaderThreadPoolSize(itemLoaderThreadPoolSize);
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true));
-        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
-        playerManager.registerSourceManager(new BandcampAudioSourceManager());
-        playerManager.registerSourceManager(new VimeoAudioSourceManager());
-        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-        playerManager.registerSourceManager(new BeamAudioSourceManager());
-        if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
-            audioSourceManagers.forEach(playerManager::registerSourceManager);
-        }
-    }
-
 
     @Value("${discord.audio.engine.lavaLink.nodes:}")
     public void setLavaLinkNodes(String value) {
@@ -183,26 +150,11 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     }
 
     @Override
-    public VoiceChannel getConnectedChannel(Guild guild) {
-        //NOTE: never use the local audio manager, since the audio connection may be remote
-        // there is also no reason to look the channel up remotely from lavalink, if we have access to a real guild
-        // object here, since we can use the voice state of ourselves (and lavalink 1.x is buggy in keeping up with the
-        // current voice channel if the bot is moved around in the client)
-        return guild.getSelfMember().getVoiceState().getChannel();
-    }
-
-    @Override
-    public VoiceChannel getConnectedChannel(long guildId) {
-        return getConnectedChannel(discordService.getShardManager().getGuildById(guildId));
-    }
-
-    @Override
     public void shutdown() {
         if (lavaLink != null) {
             lavaLink.shutdown();
-        } else {
-            playerManager.shutdown();
         }
+        playerManager.shutdown();
     }
 
     @Override

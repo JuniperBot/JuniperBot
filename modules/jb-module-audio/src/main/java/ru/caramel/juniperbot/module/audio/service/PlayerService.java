@@ -56,6 +56,10 @@ public interface PlayerService {
 
     VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException;
 
+    VoiceChannel getConnectedChannel(Guild guild);
+
+    VoiceChannel getConnectedChannel(long guildId);
+
     void monitor();
 
     long getActiveCount();

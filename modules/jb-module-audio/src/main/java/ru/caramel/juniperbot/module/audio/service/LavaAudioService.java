@@ -25,17 +25,11 @@ import ru.caramel.juniperbot.core.service.AudioService;
 
 public interface LavaAudioService extends AudioService {
 
-    AudioPlayerManager getPlayerManager();
-
     IPlayer createPlayer(String guildId);
 
     void openConnection(IPlayer player, VoiceChannel channel);
 
     void closeConnection(Guild guild);
-
-    VoiceChannel getConnectedChannel(Guild guild);
-
-    VoiceChannel getConnectedChannel(long guildId);
 
     Lavalink getLavaLink();
 

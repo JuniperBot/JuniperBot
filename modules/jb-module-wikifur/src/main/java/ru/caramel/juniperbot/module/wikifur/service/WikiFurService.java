@@ -8,6 +8,7 @@ import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import net.sourceforge.jwbf.mediawiki.actions.queries.RandomPageTitle;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,9 +55,12 @@ public class WikiFurService {
 
     @PostConstruct
     public void init() {
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        httpClientBuilder.setUserAgent("JuniperBot DiscordBot (https://github.com/goldrenard/JuniperBot, 1.0)");
         HttpActionClient httpActionClient = HttpActionClient.builder()
                 .withUrl(SCRIPT_ENDPOINT)
                 .withUserAgent("JuniperBot", version, "goldrenard@gmail.com")
+                .withClient(httpClientBuilder.build())
                 .build();
         client = new MediaWikiBot(httpActionClient);
     }

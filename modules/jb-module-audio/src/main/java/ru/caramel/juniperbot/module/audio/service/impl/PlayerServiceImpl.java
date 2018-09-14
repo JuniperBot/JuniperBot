@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.codahale.metrics.annotation.Gauge;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -87,6 +88,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     private YouTubeService youTubeService;
 
     @Autowired
+    private AudioPlayerManager audioPlayerManager;
+
+    @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
 
@@ -118,7 +122,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean isActive(Guild guild) {
-        if (!lavaAudioService.isConnected(guild) || lavaAudioService.getConnectedChannel(guild) == null) {
+        if (!lavaAudioService.isConnected(guild) || getConnectedChannel(guild) == null) {
             return false;
         }
         PlaybackInstance instance = getInstance(guild.getIdLong(), false);
@@ -133,7 +137,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
         return guild != null
                 && lavaAudioService.isConnected(guild)
-                && lavaAudioService.getConnectedChannel(guild) != null
+                && getConnectedChannel(guild) != null
                 && instance.getPlayer().getPlayingTrack() != null;
     }
 
@@ -237,7 +241,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         final String query = trackUrl;
 
         PlaybackInstance instance = getInstance(channel.getGuild());
-        lavaAudioService.getPlayerManager().loadItemOrdered(instance, query, new AudioLoadResultHandler() {
+        audioPlayerManager.loadItemOrdered(instance, query, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 contextService.withContext(channel.getGuild(), () -> {
@@ -423,6 +427,20 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     @Override
+    public VoiceChannel getConnectedChannel(Guild guild) {
+        //NOTE: never use the local audio manager, since the audio connection may be remote
+        // there is also no reason to look the channel up remotely from lavalink, if we have access to a real guild
+        // object here, since we can use the voice state of ourselves (and lavalink 1.x is buggy in keeping up with the
+        // current voice channel if the bot is moved around in the client)
+        return guild.getSelfMember().getVoiceState().getChannel();
+    }
+
+    @Override
+    public VoiceChannel getConnectedChannel(long guildId) {
+        return getConnectedChannel(discordService.getShardManager().getGuildById(guildId));
+    }
+
+    @Override
     public boolean isInChannel(Member member) {
         PlaybackInstance instance = getInstance(member.getGuild().getIdLong(), false);
         VoiceChannel channel = getChannel(member, instance);
@@ -437,7 +455,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
         return isActive(instance)
-                ? lavaAudioService.getConnectedChannel(instance.getGuildId())
+                ? getConnectedChannel(instance.getGuildId())
                 : musicConfigService.getDesiredChannel(member);
     }
 
@@ -484,7 +502,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     private long countListeners(PlaybackInstance instance) {
         if (isActive(instance)) {
-            return lavaAudioService.getConnectedChannel(instance.getGuildId()).getMembers()
+            return getConnectedChannel(instance.getGuildId()).getMembers()
                     .stream()
                     .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
         }
