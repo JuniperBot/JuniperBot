@@ -86,7 +86,7 @@ public class RankCommand extends RankingCommand {
     public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
         long totalMembers = rankingService.countRankings(guild.getIdLong());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
-                String.format("%d/%d", info.getRank(), totalMembers), true);
+                String.format("# %d/%d", info.getRank(), totalMembers), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),
                 String.valueOf(info.getLevel()), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),

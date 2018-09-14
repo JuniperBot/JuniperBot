@@ -341,10 +341,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean stop(Member member, Guild guild) {
-        if (!isActive(guild)) {
+        PlaybackInstance instance = getInstance(guild.getIdLong(), false);
+        if (instance == null) {
             return false;
         }
-        PlaybackInstance instance = getInstance(guild);
         if (instance.getCurrent() != null) {
             instance.getCurrent().setEndReason(EndReason.STOPPED);
             instance.getCurrent().setEndMember(member);
@@ -424,7 +424,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean isInChannel(Member member) {
-        PlaybackInstance instance = getInstance(member.getGuild());
+        PlaybackInstance instance = getInstance(member.getGuild().getIdLong(), false);
         VoiceChannel channel = getChannel(member, instance);
         return channel != null && channel.getMembers().contains(member);
     }
