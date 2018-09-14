@@ -45,6 +45,8 @@ public final class CommonUtils {
 
     public final static String EMPTY_SYMBOL = "\u2800";
 
+    public final static String EVERYONE = "@everyone";
+
     private final static DateTimeFormatter HOURS_FORMAT = DateTimeFormat.forPattern("HH:mm:ss").withZone(DateTimeZone.UTC);
 
     private final static DateTimeFormatter MINUTES_FORMAT = DateTimeFormat.forPattern("mm:ss").withZone(DateTimeZone.UTC);

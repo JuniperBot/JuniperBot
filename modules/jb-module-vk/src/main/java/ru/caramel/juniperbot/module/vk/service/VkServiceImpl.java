@@ -41,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -54,7 +53,6 @@ import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -231,6 +229,10 @@ public class VkServiceImpl implements VkService {
             content = null; // show it on embed instead
         }
 
+        if (connection.isMentionEveryone()) {
+            content = CommonUtils.trimTo(content != null ? CommonUtils.EVERYONE + content : CommonUtils.EVERYONE,
+                    2000);
+        }
         WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(content);
         if (!embeds.isEmpty()) {
             builder.addEmbeds(embeds.stream().map(EmbedBuilder::build).collect(Collectors.toList()));
