@@ -79,6 +79,10 @@ public class SteamServiceImpl implements SteamService {
         if (!HttpStatus.OK.equals(response.getStatusCode())) {
             LOGGER.warn("Could not get app list, endpoint returned {}", response.getStatusCode());
         }
+        if (response.getBody() == null) {
+            LOGGER.warn("Empty Apps list returned");
+            return;
+        }
         SteamAppEntry[] apps = response.getBody().getApps();
         long count = appRepository.count();
         if (apps != null && apps.length != count) {
@@ -114,7 +118,7 @@ public class SteamServiceImpl implements SteamService {
 
     @Override
     public SteamApp findOne(String query) {
-        List<SteamApp> result = appRepository.search(query, new PageRequest(0, 1));
+        List<SteamApp> result = appRepository.search(query, PageRequest.of(0, 1));
         return result.isEmpty() ? null : result.get(0);
     }
 

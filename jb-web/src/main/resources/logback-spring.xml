@@ -69,11 +69,11 @@
         </encoder>
     </appender>
 
-    <!--<appender name="SENTRY" class="io.sentry.logback.SentryAppender">
+    <appender name="SENTRY" class="io.sentry.logback.SentryAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>WARN</level>
         </filter>
-    </appender>-->
+    </appender>
 
     <logger name="juniperbot" level="DEBUG" additivity="true">
         <appender-ref ref="DEBUG"/>
@@ -83,7 +83,7 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
-        <!--<appender-ref ref="SENTRY"/>-->
+        <appender-ref ref="SENTRY"/>
     </root>
 
 </configuration>

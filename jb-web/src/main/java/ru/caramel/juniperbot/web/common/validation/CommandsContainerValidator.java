@@ -46,6 +46,7 @@ public class CommandsContainerValidator implements Validator {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
         if (target instanceof List) {

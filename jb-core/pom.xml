@@ -142,6 +142,12 @@
             <version>${jda-nas.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-logback</artifactId>
+            <version>${sentry.version}</version>
+        </dependency>
+
         <!-- DATABASE DEPENDENCIES -->
 
         <dependency>
@@ -151,7 +157,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
         </dependency>

@@ -79,6 +79,7 @@ public class MafiaInstance extends FeatureInstance {
         return channel.getGuild();
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T putAttribute(String key, T value) {
         return (T) attributes.put(key, value);
     }

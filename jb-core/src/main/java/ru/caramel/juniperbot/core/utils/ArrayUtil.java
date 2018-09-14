@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unchecked")
 public class ArrayUtil {
 
     public static <T> T deepCopy(Object objectArray) {
@@ -268,7 +269,6 @@ public class ArrayUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T[] reverse(Class<T[]> clazz, T[] source, Collection<T> collection) {
         if (source == null || source.length == 0) {
             T[] array = (T[]) Array.newInstance(clazz.getComponentType(), collection.size());

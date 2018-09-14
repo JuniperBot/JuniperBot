@@ -50,7 +50,7 @@ public class RankingRestController extends BasePublicRestController {
         if (page < 0) {
             page = 0;
         }
-        Pageable pageRequest = new PageRequest(page, size, new Sort("rank"));
+        Pageable pageRequest = PageRequest.of(page, size, Sort.by("rank"));
         return new PageDto<>(rankingService.getRankingInfos(guildId, search, pageRequest)
                 .map(apiMapperService::getRankingInfoDto));
     }

@@ -56,6 +56,7 @@ public class JacksonUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T clone(T value) {
         return fromString(toString(value), (Class<T>) value.getClass());
     }

@@ -91,6 +91,7 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
         webHookRepository.save(webHook);
     }
 
+    @SuppressWarnings("unchecked")
     protected <V> V getValue(Map<String, ?> data, String key, Class<V> type) {
         if (data == null) {
             return null;
