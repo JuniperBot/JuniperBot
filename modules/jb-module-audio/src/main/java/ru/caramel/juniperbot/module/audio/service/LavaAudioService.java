@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import lavalink.client.io.Lavalink;
+import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -31,7 +30,7 @@ public interface LavaAudioService extends AudioService {
 
     void closeConnection(Guild guild);
 
-    Lavalink getLavaLink();
+    JdaLavalink getLavaLink();
 
     void shutdown();
 

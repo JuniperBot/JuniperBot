@@ -17,18 +17,9 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import lavalink.client.io.Lavalink;
 import lavalink.client.io.Link;
+import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
@@ -37,7 +28,6 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -49,7 +39,6 @@ import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
-import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -75,7 +64,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     private AudioPlayerManager playerManager;
 
     @Getter
-    private Lavalink lavaLink = null;
+    private JdaLavalink lavaLink = null;
 
     @Override
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
@@ -86,7 +75,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
         }
         if (lavaLinkEnabled) {
             if (MapUtils.isNotEmpty(lavaLinkNodes)) {
-                lavaLink = new Lavalink(
+                lavaLink = new JdaLavalink(
                         discordService.getUserId(),
                         discordService.getShardsNum(),
                         discordService::getShardById
