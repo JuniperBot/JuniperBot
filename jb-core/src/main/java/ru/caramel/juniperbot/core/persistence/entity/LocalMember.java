@@ -19,9 +19,11 @@ package ru.caramel.juniperbot.core.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,6 +38,10 @@ public class LocalMember extends GuildEntity {
 
     @Column(name = "effective_name")
     private String effectiveName;
+
+    @Type(type = "jsonb")
+    @Column(name = "last_known_roles", columnDefinition = "json")
+    private List<Long> lastKnownRoles;
 
     @Transient
     public String getAsMention() {

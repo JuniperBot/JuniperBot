@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
@@ -64,6 +66,9 @@ public class WelcomeUserListener extends DiscordEventListener {
     @Autowired
     private RankingService rankingService;
 
+    @Autowired
+    private MemberService memberService;
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (event.getUser().isBot()) {
@@ -76,24 +81,36 @@ public class WelcomeUserListener extends DiscordEventListener {
                 return;
             }
 
+            Set<Long> roleIdsToAdd = new HashSet<>();
+            if (CollectionUtils.isNotEmpty(message.getJoinRoles())) {
+                message.getJoinRoles().stream()
+                        .filter(Objects::nonNull)
+                        .forEach(roleIdsToAdd::add);
+            }
+
+            RankingConfig rankingInfo = rankingService.get(guild);
+            if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
+                rankingInfo.getRewards().stream()
+                        .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
+                        .map(Reward::getRoleId)
+                        .filter(StringUtils::isNumeric)
+                        .map(Long::valueOf)
+                        .forEach(roleIdsToAdd::add);
+            }
+
+            LocalMember localMember = memberService.get(event.getMember());
+            if (message.isRestoreState() && localMember != null) {
+                if (CollectionUtils.isNotEmpty(localMember.getLastKnownRoles())) {
+                    roleIdsToAdd.addAll(localMember.getLastKnownRoles());
+                }
+
+                if (StringUtils.isNotEmpty(localMember.getEffectiveName())
+                        && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
+                    guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
+                }
+            }
+
             if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                Set<Long> roleIdsToAdd = new HashSet<>();
-                if (CollectionUtils.isNotEmpty(message.getJoinRoles())) {
-                    message.getJoinRoles().stream()
-                            .filter(Objects::nonNull)
-                            .forEach(roleIdsToAdd::add);
-                }
-
-                RankingConfig rankingInfo = rankingService.get(guild);
-                if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
-                    rankingInfo.getRewards().stream()
-                            .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
-                            .map(Reward::getRoleId)
-                            .filter(StringUtils::isNumeric)
-                            .map(Long::valueOf)
-                            .forEach(roleIdsToAdd::add);
-                }
-
                 Set<Role> roles = roleIdsToAdd.stream()
                         .map(guild::getRoleById)
                         .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())

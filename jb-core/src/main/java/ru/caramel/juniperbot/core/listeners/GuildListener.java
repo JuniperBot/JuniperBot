@@ -15,22 +15,17 @@
 package ru.caramel.juniperbot.core.listeners;
 
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MemberService;
 
 @DiscordEvent(priority = 0)
-public class GuildJoinListener extends DiscordEventListener {
+public class GuildListener extends DiscordEventListener {
 
     @Autowired
     private ConfigService configService;
-
-    @Autowired
-    private MemberService memberService;
 
     @Autowired
     private ContextService contextService;
@@ -50,8 +45,4 @@ public class GuildJoinListener extends DiscordEventListener {
         contextService.initContext(event.getGuild()); // reinit context with updated locale
     }
 
-    @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        memberService.getOrCreate(event.getMember());
-    }
 }

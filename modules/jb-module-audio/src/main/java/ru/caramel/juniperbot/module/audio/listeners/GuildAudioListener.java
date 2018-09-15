@@ -33,7 +33,7 @@ import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
 @DiscordEvent
-public class GuildListener extends DiscordEventListener {
+public class GuildAudioListener extends DiscordEventListener {
 
     @Autowired
     private PlayerService playerService;

@@ -38,6 +38,13 @@ import java.util.List;
 public class WelcomeMessage extends GuildEntity {
     private static final long serialVersionUID = -3872054410668142206L;
 
+    @Type(type = "jsonb")
+    @Column(name = "join_roles", columnDefinition = "json")
+    private List<Long> joinRoles;
+
+    @Column(name = "restore_state_enabled")
+    private boolean restoreState;
+
     @Column(name = "join_enabled")
     private boolean joinEnabled;
 
@@ -50,10 +57,6 @@ public class WelcomeMessage extends GuildEntity {
 
     @Column(name = "join_channel_id")
     private Long joinChannelId;
-
-    @Type(type = "jsonb")
-    @Column(name = "join_roles", columnDefinition = "json")
-    private List<Long> joinRoles;
 
     @Column(name = "join_dm_enabled")
     private boolean joinDmEnabled;
