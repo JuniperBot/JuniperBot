@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
@@ -43,7 +44,11 @@ public class ChoosingHandler extends AbstractStateHandler {
         instance.tick();
         String delayText = getEndTimeText(instance, choosingDelay);
         EmbedBuilder builder = getBaseEmbed("mafia.start.message");
-        builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix()), null);
+
+        GuildConfig config = configService.get(instance.getGuild());
+        String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
+
+        builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix(), nextCommand), null);
         Message message = instance.getChannel().sendMessage(builder.build()).complete();
         message.addReaction(CHOOSE).queue();
         instance.getListenedMessages().add(message.getId());

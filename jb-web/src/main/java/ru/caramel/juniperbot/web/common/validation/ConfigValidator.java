@@ -46,7 +46,9 @@ public class ConfigValidator implements Validator {
         if (!contextService.isSupported(configDto.getLocale())) {
             errors.rejectValue("locale", "validation.config.locale.message");
         }
-
+        if (!contextService.isSupported(configDto.getCommandLocale())) {
+            errors.rejectValue("commandLocale", "validation.config.locale.message");
+        }
         try {
             DateTimeZone.forID(configDto.getTimeZone());
         } catch (IllegalArgumentException e) {

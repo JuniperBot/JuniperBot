@@ -102,6 +102,11 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    public Locale getLocale(String localeName) {
+        return supportedLocales.getOrDefault(localeName, getDefaultLocale());
+    }
+
+    @Override
     public Locale getLocale(Guild guild) {
         return getLocale(guild.getIdLong());
     }

@@ -57,15 +57,33 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
 
     @Override
     public Command getByLocale(String localizedKey) {
+        return getByLocale(localizedKey, contextService.getLocale());
+    }
+
+    @Override
+    public Command getByLocale(String localizedKey, String locale) {
+        return getByLocale(localizedKey, contextService.getLocale(locale));
+    }
+
+    @Override
+    public Command getByLocale(String localizedKey, Locale locale) {
         if (localizedKey != null) {
             localizedKey = localizedKey.toLowerCase();
         }
-        Map<String, Command> commandMap = getLocalizedMap();
+        Map<String, Command> commandMap = getLocalizedMap(locale);
         return commandMap != null ? commandMap.get(localizedKey) : null;
     }
 
     private Map<String, Command> getLocalizedMap() {
-        return MapUtils.isNotEmpty(localizedCommands) ? localizedCommands.get(contextService.getLocale()) : Collections.emptyMap();
+        return MapUtils.isNotEmpty(localizedCommands)
+                ? localizedCommands.get(contextService.getLocale())
+                : Collections.emptyMap();
+    }
+
+    private Map<String, Command> getLocalizedMap(Locale locale) {
+        return MapUtils.isNotEmpty(localizedCommands)
+                ? localizedCommands.get(locale)
+                : Collections.emptyMap();
     }
 
     @Override
@@ -107,7 +125,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
             }
             for (Locale locale : locales) {
                 Map<String, Command> localeCommands = localizedCommands.computeIfAbsent(locale, e2 -> new HashMap<>());
-                String localizedKey = messageService.getMessage(rawKey, locale);
+                String localizedKey = messageService.getMessageByLocale(rawKey, locale);
                 reverseCommandKeys.add(StringUtils.reverse(localizedKey));
                 if (!annotation.hidden()) {
                     publicCommandKeys.add(localizedKey);

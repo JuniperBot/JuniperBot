@@ -88,6 +88,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
         GuildConfig config = new GuildConfig(guildId);
         config.setPrefix(defaultPrefix);
         config.setLocale(ContextService.DEFAULT_LOCALE);
+        config.setCommandLocale(ContextService.DEFAULT_LOCALE);
         config.setTimeZone("Etc/Greenwich");
         return config;
     }

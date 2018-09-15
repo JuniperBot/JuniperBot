@@ -57,6 +57,11 @@ public class GuildConfig extends GuildEntity {
     @Size(max = 10)
     private String locale;
 
+    @NotEmpty
+    @Size(max = 10)
+    @Column(name = "command_locale")
+    private String commandLocale;
+
     @Column(name = "time_zone")
     private String timeZone;
 

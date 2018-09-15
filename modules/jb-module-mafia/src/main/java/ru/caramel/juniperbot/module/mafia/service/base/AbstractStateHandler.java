@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -75,6 +76,9 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     @Autowired
     protected DiscordService discordService;
+
+    @Autowired
+    protected ConfigService configService;
 
     protected EmbedBuilder getBaseEmbed() {
         EmbedBuilder embed = messageService.getBaseEmbed();

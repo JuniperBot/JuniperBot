@@ -61,7 +61,11 @@ public class InfoCommand extends AbstractInfoCommand {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
         builder.setThumbnail(brandingService.getAvatarUrl());
-        builder.setDescription(messageService.getMessage("discord.command.info.description", prefix));
+
+        String helpCommand = messageService.getMessageByLocale("discord.command.help.key",
+                context.getConfig().getCommandLocale());
+
+        builder.setDescription(messageService.getMessage("discord.command.info.description", prefix, helpCommand));
 
         builder.addField(
                 messageService.getMessage("discord.command.info.author.title"),

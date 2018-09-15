@@ -36,9 +36,11 @@ public class GuildListener extends DiscordEventListener {
         switch (event.getGuild().getRegion()) {
             case RUSSIA:
                 config.setLocale(ContextService.RU_LOCALE);
+                config.setCommandLocale(ContextService.RU_LOCALE);
                 break;
             default:
                 config.setLocale(ContextService.DEFAULT_LOCALE);
+                config.setCommandLocale(ContextService.DEFAULT_LOCALE);
                 break;
         }
         configService.save(config);

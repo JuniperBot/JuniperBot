@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 import ru.caramel.juniperbot.module.mafia.service.individual.BrokerHandler;
@@ -81,11 +82,15 @@ public class GoonHandler extends ChoiceStateHandler {
 
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         MessageBuilder builder = new MessageBuilder();
+
+        GuildConfig config = configService.get(instance.getGuild());
+        String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
+
         EmbedBuilder embed = getBaseEmbed("mafia.goon.choice");
         embed.addField(messageService.getMessage("mafia.start.playerList.title"),
                 getPlayerList(players), false);
         embed.setFooter(messageService.getMessage("mafia.goon.choice.footer",
-                getEndTimeText(instance, dayDelay), instance.getPrefix()), null);
+                getEndTimeText(instance, dayDelay), instance.getPrefix(), nextCommand), null);
         builder.setEmbed(embed.build());
         builder.setContent(instance.getGoonsMentions());
 

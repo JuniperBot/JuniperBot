@@ -260,10 +260,13 @@ public class AudioMessageManager {
                     getTitle(info), getUrl(info), request.getMember().getEffectiveName());
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
+
+        String queueCommand = messageService.getMessageByLocale("discord.command.queue.key", context.getConfig().getCommandLocale());
+
         builder.setFooter(totalPages > 1
                 ? messageService.getMessage("discord.command.audio.queue.list.pageFooter",
                 pageNum, totalPages, requests.size(), CommonUtils.formatDuration(totalDuration),
-                context.getConfig().getPrefix())
+                context.getConfig().getPrefix(), queueCommand)
                 : messageService.getMessage("discord.command.audio.queue.list.footer",
                 requests.size(), CommonUtils.formatDuration(totalDuration)), null);
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());

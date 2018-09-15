@@ -72,8 +72,10 @@ public class YouTubeCommand extends PlayCommand {
                 urls.add(url);
             }
 
+            String playCommand = messageService.getMessageByLocale("discord.command.play.key", context.getConfig().getCommandLocale());
+
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, messageService.getMessage("discord.command.audio.search.select",
-                    context.getConfig().getPrefix()), false);
+                    context.getConfig().getPrefix(), playCommand), false);
 
             message.getChannel().sendMessage(builder.build()).queue(e -> {
                 List<RequestFuture<Void>> actions = new ArrayList<>(10);

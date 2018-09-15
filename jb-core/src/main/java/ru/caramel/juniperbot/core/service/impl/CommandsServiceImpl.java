@@ -157,7 +157,7 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
-        Command command = commandsHolderService.getByLocale(key);
+        Command command = commandsHolderService.getByLocale(key, guildConfig.getCommandLocale());
         if (command == null) {
             return false;
         }

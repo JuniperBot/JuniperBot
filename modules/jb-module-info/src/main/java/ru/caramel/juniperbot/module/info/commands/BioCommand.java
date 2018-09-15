@@ -51,18 +51,27 @@ public class BioCommand extends AbstractInfoCommand {
             bio = new MemberBio();
             bio.setMember(localMember);
         }
+
+        String userCommand = messageService.getMessageByLocale("discord.command.user.key",
+                context.getConfig().getCommandLocale());
+        String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
+                context.getConfig().getCommandLocale());
+
         if (StringUtils.isEmpty(query)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);
             if (StringUtils.isNotEmpty(bio.getBio())) {
                 builder.appendDescription(bio.getBio()).appendDescription("\n\n--------\n");
             }
             builder.appendDescription(messageService.getMessage("discord.command.bio.info",
-                    context.getConfig().getPrefix()));
+                    context.getConfig().getPrefix(), bioCommand, userCommand));
             messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
             return true;
         }
         bio.setBio("-".equals(query) ? null : CommonUtils.trimTo(query.trim(), MessageEmbed.TEXT_MAX_LENGTH - 500));
         bioRepository.save(bio);
-        return ok(message, "discord.command.bio.updated", context.getConfig().getPrefix());
+
+        String updatedMsg = messageService.getMessage("discord.command.bio.updated",
+                context.getConfig().getPrefix(), userCommand);
+        return ok(message, updatedMsg);
     }
 }

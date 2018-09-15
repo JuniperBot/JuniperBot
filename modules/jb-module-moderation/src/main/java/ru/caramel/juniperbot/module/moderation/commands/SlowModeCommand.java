@@ -46,7 +46,10 @@ public class SlowModeCommand extends ModeratorCommand {
                     ? "discord.command.mod.slow.disabled" : "discord.command.mod.slow.disabled.already");
             return true;
         }
-        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.slow.help", context.getConfig().getPrefix());
+        String slowCommand = messageService.getMessageByLocale("discord.command.mod.slow.key",
+                context.getConfig().getCommandLocale());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.slow.help",
+                context.getConfig().getPrefix(), slowCommand);
         return false;
     }
 }

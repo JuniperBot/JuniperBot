@@ -92,17 +92,23 @@ public class RemindCommand extends AbstractCommand {
         }
 
         String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
+        String locale = context.getConfig() != null ? context.getConfig().getCommandLocale() : null;
+
+        String remindCommand = messageService.getMessageByLocale("discord.command.remind.key", locale);
 
         DateTime current = DateTime.now();
         current = current.plusMinutes(1);
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.remind.help.title"));
         builder.addField(
-                messageService.getMessage("discord.command.remind.help.field1.title", CommonUtils.getUTCOffset(context.getTimeZone())),
-                messageService.getMessage("discord.command.remind.help.field1.value", prefix, getFormatter(context).print(current)), false);
+                messageService.getMessage("discord.command.remind.help.field1.title",
+                        CommonUtils.getUTCOffset(context.getTimeZone())),
+                messageService.getMessage("discord.command.remind.help.field1.value", prefix, remindCommand,
+                        getFormatter(context).print(current)), false);
         builder.addField(
                 messageService.getMessage("discord.command.remind.help.field2.title"),
-                messageService.getMessage("discord.command.remind.help.field2.value", prefix), false);
+                messageService.getMessage("discord.command.remind.help.field2.value", prefix, remindCommand),
+                false);
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return false;
     }

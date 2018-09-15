@@ -72,4 +72,14 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5.6-14092018-7" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="command_locale" type="VARCHAR(10)"/>
+        </addColumn>
+        <sql>
+            UPDATE guild_config SET command_locale = locale;
+        </sql>
+        <addNotNullConstraint tableName="guild_config" columnName="command_locale"/>
+    </changeSet>
+
 </databaseChangeLog>
