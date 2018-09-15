@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.custom.listeners;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,6 +92,10 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
             CommandConfig commandConfig = command.getCommandConfig();
             if (commandConfig.isDisabled() || commandsService.isRestricted(event, commandConfig)) {
                 return true;
+            }
+            if (commandConfig.isDeleteSource()
+                    && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
+                event.getMessage().delete().queue();
             }
         }
 

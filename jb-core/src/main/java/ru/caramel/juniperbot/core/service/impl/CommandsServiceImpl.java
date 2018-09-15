@@ -199,6 +199,10 @@ public class CommandsServiceImpl implements CommandsService {
             try {
                 command.doCommand(event, context, content);
                 counter.inc();
+                if (commandConfig != null && commandConfig.isDeleteSource()
+                        && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
+                    event.getMessage().delete().queue();
+                }
             } catch (ValidationException e) {
                 messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
             } catch (DiscordException e) {
@@ -295,7 +299,7 @@ public class CommandsServiceImpl implements CommandsService {
                 try {
                     message.getMessage().addReaction(emoji).queue();
                     return;
-                } catch (InsufficientPermissionException e) {
+                } catch (Exception e) {
                     // fall down and add emoticon as message
                 }
             }

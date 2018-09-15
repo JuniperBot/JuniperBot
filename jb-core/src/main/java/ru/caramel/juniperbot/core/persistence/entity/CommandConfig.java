@@ -27,6 +27,9 @@ public class CommandConfig extends GuildEntity {
     @Column
     private boolean disabled;
 
+    @Column(name = "delete_source")
+    private boolean deleteSource;
+
     @Type(type = "jsonb")
     @Column(name = "allowed_roles", columnDefinition = "json")
     private List<Long> allowedRoles;
