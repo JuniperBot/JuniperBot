@@ -103,21 +103,21 @@ public class WelcomeUserListener extends DiscordEventListener {
                 }
             }
 
-            if (!message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
-                return;
+            if (message.isJoinEnabled()
+                    && StringUtils.isNotBlank(message.getJoinMessage())
+                    && message.getJoinChannelId() != null) {
+                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
+                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
             }
 
-            if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
+            if (message.isJoinDmEnabled() && StringUtils.isNotBlank(message.getJoinDmMessage())) {
                 User user = event.getUser();
                 try {
                     contextService.queue(guild, user.openPrivateChannel(),
-                            c -> send(event, c, message.getJoinMessage(), message.isJoinRichEnabled()));
+                            c -> send(event, c, message.getJoinDmMessage(), message.isJoinDmRichEnabled()));
                 } catch (Exception e) {
-                    LOGGER.error("Could not open private channel for user {}", user, e);
+                    LOGGER.debug("Could not open private channel for user {}", user, e);
                 }
-            } else {
-                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
-                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
             }
         });
     }

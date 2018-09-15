@@ -55,8 +55,15 @@ public class WelcomeMessage extends GuildEntity {
     @Column(name = "join_roles", columnDefinition = "json")
     private List<Long> joinRoles;
 
-    @Column(name = "join_to_dm")
-    private boolean joinToDM;
+    @Column(name = "join_dm_enabled")
+    private boolean joinDmEnabled;
+
+    @Column(name = "join_dm_rich_enabled")
+    private boolean joinDmRichEnabled;
+
+    @Column(name = "join_dm_message")
+    @Size(max = 1800)
+    private String joinDmMessage;
 
     @Column(name = "leave_enabled")
     private boolean leaveEnabled;

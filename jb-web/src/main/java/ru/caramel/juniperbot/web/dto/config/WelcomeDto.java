@@ -41,7 +41,12 @@ public class WelcomeDto implements Serializable {
 
     private Set<String> joinRoles = new HashSet<>();
 
-    private boolean joinToDM;
+    private boolean joinDmEnabled;
+
+    private boolean joinDmRichEnabled;
+
+    @Size(max = 1800)
+    private String joinDmMessage;
 
     private boolean leaveEnabled;
 
