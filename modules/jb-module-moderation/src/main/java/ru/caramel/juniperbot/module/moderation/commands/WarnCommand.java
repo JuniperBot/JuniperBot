@@ -45,7 +45,7 @@ public class WarnCommand extends ModeratorCommandAsync {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
             String warnCommand = messageService.getMessageByLocale("discord.command.mod.warn.key",
-                    context.getConfig().getCommandLocale());
+                    context.getCommandLocale());
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.help",
                     context.getConfig().getPrefix(), warnCommand);
             return;

@@ -31,7 +31,7 @@ public class WikiFurCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        message.getTextChannel().sendTyping().queue();
+        message.getChannel().sendTyping().queue();
         MessageEmbed embed = wikiFurService.renderArticle(content);
         if (embed != null) {
             messageService.sendMessageSilent(message.getChannel()::sendMessage, embed);

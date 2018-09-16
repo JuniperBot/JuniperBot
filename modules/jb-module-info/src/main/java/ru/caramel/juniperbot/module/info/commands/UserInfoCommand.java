@@ -100,7 +100,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
             String bio = memberBio != null ? memberBio.getBio() : null;
             if (StringUtils.isEmpty(bio) && Objects.equals(author, user)) {
                 String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
-                        context.getConfig().getCommandLocale());
+                        context.getCommandLocale());
                 bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
                         bioCommand);
             }

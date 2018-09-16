@@ -63,7 +63,7 @@ public class InfoCommand extends AbstractInfoCommand {
         builder.setThumbnail(brandingService.getAvatarUrl());
 
         String helpCommand = messageService.getMessageByLocale("discord.command.help.key",
-                context.getConfig().getCommandLocale());
+                context.getCommandLocale());
 
         builder.setDescription(messageService.getMessage("discord.command.info.description", prefix, helpCommand));
 
