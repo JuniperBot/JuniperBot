@@ -53,9 +53,9 @@ public class BioCommand extends AbstractInfoCommand {
         }
 
         String userCommand = messageService.getMessageByLocale("discord.command.user.key",
-                context.getConfig().getCommandLocale());
+                context.getCommandLocale());
         String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
-                context.getConfig().getCommandLocale());
+                context.getCommandLocale());
 
         if (StringUtils.isEmpty(query)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);

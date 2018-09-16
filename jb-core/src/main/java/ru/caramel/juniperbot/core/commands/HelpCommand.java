@@ -109,10 +109,9 @@ public class HelpCommand extends AbstractCommand {
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
 
         String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
-        String locale = context.getConfig() != null ? context.getConfig().getCommandLocale() : null;
 
         groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
-                prefix + messageService.getMessageByLocale(e.key(), locale),
+                prefix + messageService.getMessageByLocale(e.key(), context.getCommandLocale()),
                 messageService.getMessage(e.description()), false));
         if (COMMON_GROUP.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
@@ -120,9 +119,10 @@ public class HelpCommand extends AbstractCommand {
                 embedBuilder.addField(String.format("%s (%s%s %s):",
                         groupTitle,
                         prefix,
-                        messageService.getMessageByLocale("discord.command.help.key", locale),
+                        messageService.getMessageByLocale("discord.command.help.key", context.getCommandLocale()),
                         groupTitle.toLowerCase()),
-                        commands.stream().map(e -> '`' + prefix + messageService.getMessageByLocale(e.key(), locale) + '`')
+                        commands.stream().map(e -> '`' + prefix + messageService.getMessageByLocale(e.key(),
+                                context.getCommandLocale()) + '`')
                                 .collect(Collectors.joining(" ")), false);
             });
 

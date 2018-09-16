@@ -261,7 +261,7 @@ public class AudioMessageManager {
             builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
         }
 
-        String queueCommand = messageService.getMessageByLocale("discord.command.queue.key", context.getConfig().getCommandLocale());
+        String queueCommand = messageService.getMessageByLocale("discord.command.queue.key", context.getCommandLocale());
 
         builder.setFooter(totalPages > 1
                 ? messageService.getMessage("discord.command.audio.queue.list.pageFooter",

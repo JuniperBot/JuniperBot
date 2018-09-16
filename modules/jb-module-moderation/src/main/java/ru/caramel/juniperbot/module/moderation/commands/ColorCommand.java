@@ -64,7 +64,7 @@ public class ColorCommand extends ModeratorCommandAsync {
         Matcher matcher = COLOR_PATTERN.matcher(query);
         if (!matcher.find()) {
             String colorCommand = messageService.getMessageByLocale("discord.command.mod.color.key",
-                    context.getConfig().getCommandLocale());
+                    context.getCommandLocale());
             String message = messageService.getMessage("discord.command.mod.color.help",
                     context.getConfig().getPrefix(), colorCommand);
             if (moderator) {

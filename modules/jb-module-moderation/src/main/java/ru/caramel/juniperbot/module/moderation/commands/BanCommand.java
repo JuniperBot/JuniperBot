@@ -72,7 +72,7 @@ public class BanCommand extends ModeratorCommand {
             }
         }
         String banCommand = messageService.getMessageByLocale("discord.command.mod.ban.key",
-                context.getConfig().getCommandLocale());
+                context.getCommandLocale());
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.ban.help",
                 context.getConfig().getPrefix(), banCommand);
         return false;

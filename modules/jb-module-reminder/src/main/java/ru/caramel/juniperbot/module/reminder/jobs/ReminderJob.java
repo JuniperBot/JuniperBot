@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.reminder.jobs;
 
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.entities.*;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -62,7 +63,7 @@ public class ReminderJob extends AbstractJob {
         MessageChannel channel = null;
         User user = shardManager.getUserById(userId);
         StringBuilder message = new StringBuilder();
-        if (guildId != null) {
+        if (StringUtils.isNotEmpty(guildId)) {
             Guild guild = shardManager.getGuildById(guildId);
             if (guild != null && guild.isAvailable()) {
                 channel = guild.getTextChannelById(channelId);

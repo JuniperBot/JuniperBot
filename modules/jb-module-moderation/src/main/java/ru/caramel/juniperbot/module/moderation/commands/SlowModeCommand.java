@@ -47,7 +47,7 @@ public class SlowModeCommand extends ModeratorCommand {
             return true;
         }
         String slowCommand = messageService.getMessageByLocale("discord.command.mod.slow.key",
-                context.getConfig().getCommandLocale());
+                context.getCommandLocale());
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.slow.help",
                 context.getConfig().getPrefix(), slowCommand);
         return false;
