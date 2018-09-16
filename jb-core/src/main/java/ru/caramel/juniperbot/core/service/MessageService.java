@@ -37,7 +37,7 @@ public interface MessageService {
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
     <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,
-                                Consumer<Message> messageConsumer);
+                                    Consumer<Message> messageConsumer);
 
     void onMessage(MessageChannel sourceChannel, String code, Object... args);
 
@@ -55,7 +55,9 @@ public interface MessageService {
 
     String getMessage(String code, Object... args);
 
-    String getMessage(String code, Locale locale, Object... args);
+    String getMessageByLocale(String code, Locale locale, Object... args);
+
+    String getMessageByLocale(String key, String locale, Object... args);
 
     boolean hasMessage(String code);
 

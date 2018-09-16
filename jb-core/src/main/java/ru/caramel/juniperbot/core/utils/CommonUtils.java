@@ -28,7 +28,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.util.UriUtils;
 
 import java.awt.*;
@@ -45,6 +44,8 @@ import java.util.stream.Stream;
 public final class CommonUtils {
 
     public final static String EMPTY_SYMBOL = "\u2800";
+
+    public final static String EVERYONE = "@everyone";
 
     private final static DateTimeFormatter HOURS_FORMAT = DateTimeFormat.forPattern("HH:mm:ss").withZone(DateTimeZone.UTC);
 
@@ -147,17 +148,13 @@ public final class CommonUtils {
         string = sb.toString();
 
         if (!noLink) {
-            try {
-                m = VK_HASH_TAG.matcher(string);
-                sb = new StringBuffer(string.length());
-                while (m.find()) {
-                    m.appendReplacement(sb, noLink ? m.group(2)
-                            : String.format("[%s](https://vk.com/feed?section=search&q=%s)", m.group(1), UriUtils.encode(m.group(1), "UTF-8")));
-                }
-                m.appendTail(sb);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+            m = VK_HASH_TAG.matcher(string);
+            sb = new StringBuffer(string.length());
+            while (m.find()) {
+                m.appendReplacement(sb, noLink ? m.group(2)
+                        : String.format("[%s](https://vk.com/feed?section=search&q=%s)", m.group(1), UriUtils.encode(m.group(1), "UTF-8")));
             }
+            m.appendTail(sb);
             string = sb.toString();
         }
         return string;

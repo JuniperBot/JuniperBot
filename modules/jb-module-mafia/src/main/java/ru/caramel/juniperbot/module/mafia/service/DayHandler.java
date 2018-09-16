@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 
@@ -117,10 +118,13 @@ public class DayHandler extends ChoiceStateHandler {
         EmbedBuilder embedBuilder = getBaseEmbed();
         embedBuilder.setDescription(message);
         if (!endOfGame) {
+            GuildConfig config = configService.get(instance.getGuild());
+            String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
+
             embedBuilder.addField(messageService.getMessage("mafia.start.playerList.title"),
                     getPlayerList(instance.getAlive()), false);
             embedBuilder.setFooter(messageService.getMessage("mafia.day.start.footer",
-                    getEndTimeText(instance, dayDelay), instance.getPrefix()), null);
+                    getEndTimeText(instance, dayDelay), instance.getPrefix(), nextCommand), null);
         } else {
             instance.setIgnoredReason();
         }

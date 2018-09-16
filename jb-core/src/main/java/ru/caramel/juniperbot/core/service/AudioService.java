@@ -20,5 +20,5 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 
 public interface AudioService {
 
-    void configure(DefaultShardManagerBuilder builder);
+    void configure(DiscordService discordService, DefaultShardManagerBuilder builder);
 }

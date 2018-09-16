@@ -37,6 +37,8 @@ public interface ContextService {
 
     Locale getDefaultLocale();
 
+    Locale getLocale(String localeName);
+
     Locale getLocale(Guild guild);
 
     Locale getLocale(long guildId);

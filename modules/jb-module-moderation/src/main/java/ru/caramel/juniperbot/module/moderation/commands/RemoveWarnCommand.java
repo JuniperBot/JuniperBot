@@ -39,8 +39,12 @@ public class RemoveWarnCommand extends ModeratorCommandAsync {
         Member mentioned = getMentioned(event);
         query = removeMention(query);
         if (mentioned == null || !StringUtils.isNumeric(query)) {
+            String warnsCommand = messageService.getMessageByLocale("discord.command.mod.warns.key",
+                    context.getConfig().getCommandLocale());
+            String removeWarmCommand = messageService.getMessageByLocale("discord.command.mod.removeWarm.key",
+                    context.getConfig().getCommandLocale());
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.help",
-                    context.getConfig().getPrefix());
+                    context.getConfig().getPrefix(), warnsCommand, removeWarmCommand);
             return;
         }
         if (Objects.equals(mentioned, event.getMember())) {

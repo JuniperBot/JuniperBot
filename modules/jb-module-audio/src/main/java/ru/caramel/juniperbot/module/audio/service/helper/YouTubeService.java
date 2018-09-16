@@ -41,7 +41,7 @@ public class YouTubeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeService.class);
 
-    @Value("${youTube.apiKey}")
+    @Value("${integrations.youTube.apiKey}")
     private String apiKey;
 
     private YouTube youTube;

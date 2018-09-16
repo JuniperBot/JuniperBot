@@ -58,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
                     localMember = new LocalMember();
                     localMember.setGuildId(member.getGuild().getIdLong());
                     localMember.setUser(userService.getOrCreate(member.getUser()));
+                    localMember.setEffectiveName(member.getEffectiveName());
                     updateIfRequired(member, localMember);
                     memberRepository.flush();
                     return localMember;
@@ -80,15 +81,9 @@ public class MemberServiceImpl implements MemberService {
             if (localMember.getId() == null) {
                 shouldSave = true;
             }
-
             if (member != null) {
-                if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
-                    localMember.setEffectiveName(member.getEffectiveName());
-                    shouldSave = true;
-                }
                 userService.updateIfRequired(member.getUser(), localMember.getUser());
             }
-
             if (shouldSave) {
                 memberRepository.save(localMember);
             }

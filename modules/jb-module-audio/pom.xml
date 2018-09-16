@@ -54,14 +54,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.Frederikam</groupId>
-            <artifactId>Lavalink</artifactId>
+            <groupId>com.github.FredBoat</groupId>
+            <artifactId>Lavalink-Client</artifactId>
             <version>${lavalink.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>com.github.Frederikam.Lavalink</groupId>
-                    <artifactId>Lavalink-Server</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>com.sedmelluq</groupId>
                     <artifactId>lavaplayer</artifactId>

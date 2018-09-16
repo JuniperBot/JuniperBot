@@ -135,15 +135,23 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessage(String key, Object... args) {
-        return getMessage(key, contextService.getLocale(), args);
+        return getMessageByLocale(key, contextService.getLocale(), args);
     }
 
     @Override
-    public String getMessage(String key, Locale locale, Object... args) {
+    public String getMessageByLocale(String key, Locale locale, Object... args) {
         if (key == null) {
             return null;
         }
+        if (locale == null) {
+            locale = contextService.getLocale();
+        }
         return context.getMessage(key, args, key, locale);
+    }
+
+    @Override
+    public String getMessageByLocale(String key, String locale, Object... args) {
+        return getMessageByLocale(key, contextService.getLocale(locale), args);
     }
 
     @Override
@@ -160,7 +168,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,
-                                                             Consumer<Message> messageConsumer) {
+                                           Consumer<Message> messageConsumer) {
         try {
             action.apply(embed).queue(messageConsumer);
         } catch (PermissionException e) {
@@ -190,7 +198,7 @@ public class MessageServiceImpl implements MessageService {
         return getMessage(String.format("%s[%s]", code, key));
     }
 
-    @Value("${message.accentColor:#FFA550}")
+    @Value("${discord.accentColor:#FFA550}")
     public void setAccentColor(String color) {
         accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }

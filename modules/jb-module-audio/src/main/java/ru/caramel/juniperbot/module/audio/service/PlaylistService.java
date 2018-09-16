@@ -16,9 +16,11 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
+import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 
 import java.util.List;
 
@@ -28,9 +30,15 @@ public interface PlaylistService {
 
     Playlist getPlaylist(PlaybackInstance instance);
 
+    void refreshStoredPlaylist(Playlist playlist, List<AudioTrack> tracks);
+
     void refreshStoredPlaylist(PlaybackInstance instance);
 
     Playlist getPlaylist(String uuid);
 
     Playlist find(Long id);
+
+    Playlist save(Playlist playlist);
+
+    PlaylistItem save(PlaylistItem playlistItem);
 }

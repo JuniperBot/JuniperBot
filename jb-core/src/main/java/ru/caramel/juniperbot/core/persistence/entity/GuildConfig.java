@@ -19,13 +19,13 @@ package ru.caramel.juniperbot.core.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotEmpty;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -56,6 +56,11 @@ public class GuildConfig extends GuildEntity {
     @NotEmpty
     @Size(max = 10)
     private String locale;
+
+    @NotEmpty
+    @Size(max = 10)
+    @Column(name = "command_locale")
+    private String commandLocale;
 
     @Column(name = "time_zone")
     private String timeZone;

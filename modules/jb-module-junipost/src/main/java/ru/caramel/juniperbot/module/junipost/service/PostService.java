@@ -44,7 +44,7 @@ public class PostService {
 
     public static final int MAX_DETAILED = 3;
 
-    @Value("${instagram.post.userName:JuniperBot}")
+    @Value("${spring.application.name}")
     private String userName;
 
     @Autowired
@@ -62,7 +62,7 @@ public class PostService {
     private long latestId;
 
     @Getter
-    @Value("${instagram.accountName:JuniperFoxx}")
+    @Value("${instagram.pollUserName:juniperfoxx}")
     private String accountName;
 
     @Getter

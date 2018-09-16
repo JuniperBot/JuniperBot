@@ -30,6 +30,10 @@ public class WelcomeDto implements Serializable {
 
     private static final long serialVersionUID = -7504705178352675860L;
 
+    private boolean restoreState;
+
+    private Set<String> joinRoles = new HashSet<>();
+
     private boolean joinEnabled;
 
     private boolean joinRichEnabled;
@@ -39,9 +43,12 @@ public class WelcomeDto implements Serializable {
 
     private String joinChannelId;
 
-    private Set<String> joinRoles = new HashSet<>();
+    private boolean joinDmEnabled;
 
-    private boolean joinToDM;
+    private boolean joinDmRichEnabled;
+
+    @Size(max = 1800)
+    private String joinDmMessage;
 
     private boolean leaveEnabled;
 

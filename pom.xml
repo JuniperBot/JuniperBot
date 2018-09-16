@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- This file is part of JuniperBotJ.
-
- JuniperBotJ is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- JuniperBotJ is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -30,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>2.1.0.M3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -38,36 +22,36 @@
         <main.basedir>${project.basedir}</main.basedir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-compiler.version>3.6.1</maven-compiler.version>
-        <java.version>1.8</java.version>
-        <JDA.version>3.7.1_388</JDA.version>
-        <lavaplayer.version>1.3.7-jb</lavaplayer.version>
-        <lavalink.version>a013d25afa3754dbc541ec5ff620b200cc1eb2e9</lavalink.version>
-        <jda-nas.version>1.0.6</jda-nas.version>
-        <lombok.version>1.16.18</lombok.version>
+        <maven-compiler.version>3.8.0</maven-compiler.version>
+        <java.version>10</java.version>
+
+        <!-- Common Properties -->
+        <lombok.version>1.18.2</lombok.version>
         <json.version>20160810</json.version>
-        <apache.commons.lang3.version>3.6</apache.commons.lang3.version>
-        <apache.commons.io.version>2.5</apache.commons.io.version>
-        <joda-time.version>2.9.9</joda-time.version>
+        <commons-io.version>2.5</commons-io.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
+        <guava.version>18.0</guava.version>
+        <postgresql.version>42.2.5</postgresql.version>
+        <metrics-spring.version>3.1.3</metrics-spring.version>
+        <program-jb.version>1.0.13</program-jb.version>
+        <gson.version>2.8.1</gson.version>
         <joda-money.version>0.12</joda-money.version>
-        <google-api-services-youtube.version>v3-rev183-1.22.0</google-api-services-youtube.version>
-        <org.mapstruct.version>1.1.0.Final</org.mapstruct.version>
-        <postgresql.version>42.1.4</postgresql.version>
-        <liquibase.version>3.5.3</liquibase.version>
-        <vk.sdk.version>0.5.8</vk.sdk.version>
+        <prettytime.version>4.0.1.Final</prettytime.version>
+        <jsoup.version>1.11.2</jsoup.version>
+        <mapstruct.version>1.2.0.Final</mapstruct.version>
+        <opencv.version>3.2.0</opencv.version>
+        <sentry.version>1.7.9</sentry.version>
+
+        <!-- Integration Properties -->
+        <JDA.version>3.7.1_422</JDA.version>
+        <jda-nas.version>1.0.6</jda-nas.version>
+        <lavaplayer.version>1.3.7-jb</lavaplayer.version>
+        <lavalink.version>125b074065</lavalink.version>
+        <google-api-services-youtube.version>v3-rev205-1.25.0</google-api-services-youtube.version>
         <jwbf.version>4.0.0-SNAPSHOT</jwbf.version>
         <wikitext.version>3.1.6</wikitext.version>
-        <opencv.version>3.2.0</opencv.version>
-        <jsoup.version>1.11.2</jsoup.version>
-        <quartz.version>2.2.3</quartz.version>
-        <gson.version>2.8.1</gson.version>
-        <guava.version>18.0</guava.version>
-        <jackson.version>2.8.9</jackson.version>
-        <groovy.version>2.4.13</groovy.version>
-        <geoip2.version>2.10.0</geoip2.version>
-        <metrics-spring.version>3.1.3</metrics-spring.version>
-        <prettytime.version>4.0.1.Final</prettytime.version>
-        <program-jb.version>1.0.13</program-jb.version>
+        <vk.sdk.version>0.5.8</vk.sdk.version>
+
     </properties>
 
     <repositories>
@@ -88,7 +72,42 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <modules>
         <module>jb-core</module>

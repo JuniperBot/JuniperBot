@@ -44,8 +44,10 @@ public class WarnCommand extends ModeratorCommandAsync {
     public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
+            String warnCommand = messageService.getMessageByLocale("discord.command.mod.warn.key",
+                    context.getConfig().getCommandLocale());
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.help",
-                    context.getConfig().getPrefix());
+                    context.getConfig().getPrefix(), warnCommand);
             return;
         }
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {

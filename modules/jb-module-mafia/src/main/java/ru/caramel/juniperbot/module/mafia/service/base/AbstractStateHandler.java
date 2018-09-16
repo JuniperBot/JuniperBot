@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -40,19 +41,19 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     protected static final String CHOOSE = "✅";
 
-    @Value("${mafia.debug:false}")
+    @Value("${features.mafia.debug:false}")
     protected boolean debug;
 
-    @Value("${mafia.day.delay:300000}")
+    @Value("${features.mafia.dayDelay:300000}")
     protected Long dayDelay;
 
-    @Value("${mafia.choosing.delay:300000}")
+    @Value("${features.mafia.choosingDelay:300000}")
     protected Long choosingDelay;
 
-    @Value("${mafia.meeting.delay:30000}")
+    @Value("${features.mafia.meetingDelay:30000}")
     protected Long meetingDelay;
 
-    @Value("${mafia.individual.delay:120000}")
+    @Value("${features.mafia.individualDelay:120000}")
     protected Long individualDelay;
 
     @Autowired
@@ -75,6 +76,9 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     @Autowired
     protected DiscordService discordService;
+
+    @Autowired
+    protected ConfigService configService;
 
     protected EmbedBuilder getBaseEmbed() {
         EmbedBuilder embed = messageService.getBaseEmbed();

@@ -20,7 +20,10 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 
 @Getter
 @Setter

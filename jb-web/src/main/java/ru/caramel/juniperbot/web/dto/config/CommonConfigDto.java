@@ -18,9 +18,9 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -39,6 +39,10 @@ public class CommonConfigDto implements Serializable {
     @Size(max = 10)
     @NotBlank
     private String locale;
+
+    @Size(max = 10)
+    @NotBlank
+    private String commandLocale;
 
     @NotBlank
     private String timeZone;

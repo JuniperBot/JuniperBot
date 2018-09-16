@@ -24,20 +24,27 @@ import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.module.ranking.model.Reward;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @DiscordEvent(priority = 10)
@@ -56,6 +63,12 @@ public class WelcomeUserListener extends DiscordEventListener {
     @Autowired
     private WelcomeService welcomeService;
 
+    @Autowired
+    private RankingService rankingService;
+
+    @Autowired
+    private MemberService memberService;
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (event.getUser().isBot()) {
@@ -68,32 +81,60 @@ public class WelcomeUserListener extends DiscordEventListener {
                 return;
             }
 
-            if (CollectionUtils.isNotEmpty(message.getJoinRoles()) && guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                List<Role> roleList = message.getJoinRoles().stream()
+            Set<Long> roleIdsToAdd = new HashSet<>();
+            if (CollectionUtils.isNotEmpty(message.getJoinRoles())) {
+                message.getJoinRoles().stream()
                         .filter(Objects::nonNull)
-                        .map(guild::getRoleById)
-                        .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())
-                        .collect(Collectors.toList());
-                if (!roleList.isEmpty()) {
-                    guild.getController().addRolesToMember(event.getMember(), roleList).queue();
+                        .forEach(roleIdsToAdd::add);
+            }
+
+            RankingConfig rankingInfo = rankingService.get(guild);
+            if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
+                rankingInfo.getRewards().stream()
+                        .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
+                        .map(Reward::getRoleId)
+                        .filter(StringUtils::isNumeric)
+                        .map(Long::valueOf)
+                        .forEach(roleIdsToAdd::add);
+            }
+
+            LocalMember localMember = memberService.get(event.getMember());
+            if (message.isRestoreState() && localMember != null) {
+                if (CollectionUtils.isNotEmpty(localMember.getLastKnownRoles())) {
+                    roleIdsToAdd.addAll(localMember.getLastKnownRoles());
+                }
+
+                if (StringUtils.isNotEmpty(localMember.getEffectiveName())
+                        && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
+                    guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
                 }
             }
 
-            if (!message.isJoinEnabled() || (!message.isJoinToDM() && message.getJoinChannelId() == null)) {
-                return;
+            if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                Set<Role> roles = roleIdsToAdd.stream()
+                        .map(guild::getRoleById)
+                        .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())
+                        .collect(Collectors.toSet());
+                if (!roles.isEmpty()) {
+                    guild.getController().addRolesToMember(event.getMember(), roles).queue();
+                }
             }
 
-            if (message.isJoinToDM() && !event.getJDA().getSelfUser().equals(event.getUser())) {
+            if (message.isJoinEnabled()
+                    && StringUtils.isNotBlank(message.getJoinMessage())
+                    && message.getJoinChannelId() != null) {
+                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
+                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
+            }
+
+            if (message.isJoinDmEnabled() && StringUtils.isNotBlank(message.getJoinDmMessage())) {
                 User user = event.getUser();
                 try {
                     contextService.queue(guild, user.openPrivateChannel(),
-                            c -> send(event, c, message.getJoinMessage(), message.isJoinRichEnabled()));
+                            c -> send(event, c, message.getJoinDmMessage(), message.isJoinDmRichEnabled()));
                 } catch (Exception e) {
-                    LOGGER.error("Could not open private channel for user {}", user, e);
+                    LOGGER.debug("Could not open private channel for user {}", user, e);
                 }
-            } else {
-                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
-                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
             }
         });
     }

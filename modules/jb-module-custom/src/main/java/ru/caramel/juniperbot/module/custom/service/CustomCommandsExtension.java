@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.CommandExtension;
+import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
@@ -23,13 +25,21 @@ public class CustomCommandsExtension implements CommandExtension {
     private CustomCommandRepository commandRepository;
 
     @Autowired
+    private CommandsService commandsService;
+
+    @Autowired
     private MessageService messageService;
 
     public void extendHelp(MessageReceivedEvent event, BotContext context, EmbedBuilder embedBuilder) {
         // Пользовательские команды
         if (event.getChannelType().isGuild() && context.getConfig() != null) {
             List<CustomCommand> commands = commandRepository.findAllByGuildId(context.getConfig().getGuildId()).stream()
-                    .filter(e -> e.getCommandConfig() == null || !e.getCommandConfig().isDisabled())
+                    .filter(e -> {
+                        CommandConfig config = e.getCommandConfig();
+                        return config == null || !config.isDisabled()
+                                && !commandsService.isRestricted(config, event.getTextChannel())
+                                && !commandsService.isRestricted(config, event.getMember());
+                    })
                     .collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(commands)) {
                 StringBuilder list = new StringBuilder();

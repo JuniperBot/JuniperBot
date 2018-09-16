@@ -8,6 +8,7 @@ import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import net.sourceforge.jwbf.mediawiki.actions.queries.RandomPageTitle;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class WikiFurService {
 
     private WtEngineImpl engine = new WtEngineImpl(config);
 
-    @Value("${app.version}")
+    @Value("${spring.application.version}")
     private String version;
 
     @Autowired
@@ -54,19 +55,18 @@ public class WikiFurService {
 
     @PostConstruct
     public void init() {
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        httpClientBuilder.setUserAgent("JuniperBot DiscordBot (https://github.com/goldrenard/JuniperBot, 1.0)");
         HttpActionClient httpActionClient = HttpActionClient.builder()
                 .withUrl(SCRIPT_ENDPOINT)
                 .withUserAgent("JuniperBot", version, "goldrenard@gmail.com")
+                .withClient(httpClientBuilder.build())
                 .build();
         client = new MediaWikiBot(httpActionClient);
     }
 
     public String getUrl(String article) {
-        try {
-            return WIKI_URL + UriUtils.encode(article, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return WIKI_URL + UriUtils.encode(article, "UTF-8");
     }
 
     public Article getArticle(String search) {
@@ -114,11 +114,7 @@ public class WikiFurService {
         }
 
         EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-        try {
-            embedBuilder.setTitle(article.getTitle(), WIKI_URL + UriUtils.encode(article.getTitle(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        embedBuilder.setTitle(article.getTitle(), WIKI_URL + UriUtils.encode(article.getTitle(), "UTF-8"));
         TextConverter converter = new TextConverter(config, embedBuilder);
         return (MessageEmbed) converter.go(processedPage.getPage());
     }

@@ -22,9 +22,9 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -99,6 +99,11 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public Locale getDefaultLocale() {
         return supportedLocales.get(DEFAULT_LOCALE);
+    }
+
+    @Override
+    public Locale getLocale(String localeName) {
+        return supportedLocales.getOrDefault(localeName, getDefaultLocale());
     }
 
     @Override
@@ -214,13 +219,13 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void initContext(User user) {
         if (user != null) {
-            MDC.put(MDC_USER, user.getIdLong());
+            MDC.put(MDC_USER, user.getId());
         }
     }
 
     @Override
     public void initContext(long guildId) {
-        MDC.put(MDC_GUILD, guildId);
+        MDC.put(MDC_GUILD, String.valueOf(guildId));
         guildHolder.set(guildId);
     }
 
@@ -236,14 +241,14 @@ public class ContextServiceImpl implements ContextService {
         ContextHolder holder = new ContextHolder();
         holder.guildId = guildHolder.get();
         holder.locale = localeHolder.get();
-        holder.userId = (String) MDC.get(MDC_USER);
+        holder.userId = MDC.get(MDC_USER);
         return holder;
     }
 
     public void setContext(ContextHolder holder) {
         setLocale(holder.locale);
         setGuildId(holder.guildId);
-        MDC.put(MDC_GUILD, holder.guildId);
+        MDC.put(MDC_GUILD, String.valueOf(holder.guildId));
         MDC.put(MDC_USER, holder.userId);
     }
 

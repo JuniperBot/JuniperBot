@@ -17,36 +17,40 @@
 package ru.caramel.juniperbot.web;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import ru.caramel.juniperbot.core.configuration.CoreConfiguration;
+import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
+import ru.caramel.juniperbot.module.full.ModulesConfiguration;
 
-@SpringBootConfiguration
-@PropertySource(value = "${juniperbot-config-location:classpath:}application.properties", encoding = "UTF-8")
-@ImportResource("classpath:spring-context/application-context.xml")
-public class JuniperBotApplication extends SpringBootServletInitializer {
+@Import({CoreConfiguration.class, ModulesConfiguration.class})
+@ImportResource("classpath:security-context.xml")
+@EnableAutoConfiguration(exclude = {
+        SecurityAutoConfiguration.class,
+        SecurityFilterAutoConfiguration.class,
+        SecurityRequestMatcherProviderAutoConfiguration.class,
+        OAuth2ClientAutoConfiguration.class,
+        OAuth2ResourceServerAutoConfiguration.class
+})
+@SpringBootApplication
+public class JuniperBotApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(JuniperBotApplication.class, args);
     }
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(JuniperBotApplication.class);
-    }
-
     @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        characterEncodingFilter.setForceEncoding(true);
-        registrationBean.setFilter(characterEncodingFilter);
-        return registrationBean;
+    public ModuleMessageSourceImpl webMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("web-jbmessages");
+        return source;
     }
 }

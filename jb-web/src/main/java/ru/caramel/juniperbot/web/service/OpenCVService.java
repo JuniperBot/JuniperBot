@@ -44,7 +44,7 @@ public class OpenCVService {
     @PostConstruct
     public void init() {
         try {
-            nu.pattern.OpenCV.loadShared();
+            nu.pattern.OpenCV.loadLocally();
             initialized = true;
         } catch (Exception e) {
             LOGGER.info("OpenCV initialization failed", e);

@@ -31,6 +31,8 @@ public class CommandDto implements Serializable {
 
     private boolean enabled;
 
+    private boolean deleteSource;
+
     private Set<String> allowedRoles;
 
     private Set<String> ignoredRoles;

@@ -37,8 +37,10 @@ public class KickCommand extends ModeratorCommand {
     public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
+            String kickCommand = messageService.getMessageByLocale("discord.command.mod.kick.key",
+                    context.getConfig().getCommandLocale());
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.kick.help",
-                    context.getConfig().getPrefix());
+                    context.getConfig().getPrefix(), kickCommand);
             return false;
         }
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {

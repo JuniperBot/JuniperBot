@@ -87,10 +87,10 @@ public class CustomCommandsDao extends AbstractDao {
             return customCommand;
         }).collect(Collectors.toList()));
 
-        commandRepository.save(preventDuplicates(result));
+        commandRepository.saveAll(preventDuplicates(result));
 
         // delete old
-        commandRepository.delete(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
+        commandRepository.deleteAll(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
     }
 
     private List<CustomCommand> preventDuplicates(List<CustomCommand> commands) {

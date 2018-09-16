@@ -20,6 +20,7 @@ import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +33,10 @@ public interface CommandsHolderService {
     Map<String, List<DiscordCommand>> getDescriptors();
 
     Command getByLocale(String localizedKey);
+
+    Command getByLocale(String localizedKey, String locale);
+
+    Command getByLocale(String localizedKey, Locale locale);
 
     Command getByLocale(String localizedKey, boolean anyLocale);
 

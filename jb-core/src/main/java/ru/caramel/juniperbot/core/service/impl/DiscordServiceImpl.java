@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
@@ -97,7 +99,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Getter
     private ShardManager shardManager;
 
-    @Autowired
+    @Autowired(required = false)
     private List<ModuleListener> moduleListeners;
 
     @Autowired(required = false)
@@ -126,7 +128,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                     .setShards(0, shardsNum - 1)
                     .setEnableShutdownHook(false);
             if (audioService != null) {
-                audioService.configure(builder);
+                audioService.configure(this, builder);
             }
             shardManager = builder.build();
         } catch (LoginException e) {
@@ -137,13 +139,15 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @PreDestroy
     public void destroy() {
         // destroy every service manually before discord shutdown
-        moduleListeners.forEach(listener -> {
-            try {
-                listener.onShutdown();
-            } catch (Exception e) {
-                LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
-            }
-        });
+        if (CollectionUtils.isNotEmpty(moduleListeners)) {
+            moduleListeners.forEach(listener -> {
+                try {
+                    listener.onShutdown();
+                } catch (Exception e) {
+                    LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
+                }
+            });
+        }
         shardManager.shutdown();
     }
 

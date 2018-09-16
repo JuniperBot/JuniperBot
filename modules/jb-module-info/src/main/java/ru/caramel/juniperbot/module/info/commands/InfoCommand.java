@@ -40,16 +40,16 @@ public class InfoCommand extends AbstractInfoCommand {
     @Autowired
     private ConfigService configService;
 
-    @Value("${jda.version}")
+    @Value("${dependencies.jda.version}")
     private String jdaVersion;
 
-    @Value("${lavaPlayer.version}")
+    @Value("${dependencies.lavaPlayer.version}")
     private String lavaPlayerVersion;
 
-    @Value("${spring.version}")
+    @Value("${dependencies.spring.version}")
     private String springVersion;
 
-    @Value("${app.version}")
+    @Value("${spring.application.version}")
     private String appVersion;
 
     private DateTime buildTimestamp;
@@ -61,7 +61,11 @@ public class InfoCommand extends AbstractInfoCommand {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
         builder.setThumbnail(brandingService.getAvatarUrl());
-        builder.setDescription(messageService.getMessage("discord.command.info.description", prefix));
+
+        String helpCommand = messageService.getMessageByLocale("discord.command.help.key",
+                context.getConfig().getCommandLocale());
+
+        builder.setDescription(messageService.getMessage("discord.command.info.description", prefix, helpCommand));
 
         builder.addField(
                 messageService.getMessage("discord.command.info.author.title"),
@@ -89,7 +93,7 @@ public class InfoCommand extends AbstractInfoCommand {
         return true;
     }
 
-    @Value("${build.timestamp}")
+    @Value("${spring.application.timestamp}")
     public void setBuildTimestamp(String value) {
         buildTimestamp = new DateTime(StringUtils.isNumeric(value) ? Long.parseLong(value) : new Date())
                 .withZone(DateTimeZone.UTC);
