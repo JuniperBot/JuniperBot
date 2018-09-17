@@ -198,6 +198,10 @@ public class CommandsServiceImpl implements CommandsService {
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
             try {
+                LOGGER.info("Invoke command {} for userId={}, guildId={}",
+                        command.getClass().getSimpleName(),
+                        event.getAuthor() != null ? event.getAuthor().getId() : null,
+                        event.getGuild() != null ? event.getGuild().getId() : null);
                 command.doCommand(event, context, content);
                 counter.inc();
                 if (commandConfig != null && commandConfig.isDeleteSource()
