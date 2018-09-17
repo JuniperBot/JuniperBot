@@ -547,6 +547,9 @@ public class ModerationServiceImpl
         if (StringUtils.isEmpty(reason)) {
             code += ".noReason";
         }
+        if (member.getUser().isBot()) {
+            return; // do not notify bots
+        }
         String finalCode = code;
         try {
             member.getUser().openPrivateChannel().queue(e -> {
