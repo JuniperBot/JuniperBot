@@ -512,6 +512,6 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Gauge(name = ACTIVE_CONNECTIONS, absolute = true)
     @Override
     public long getActiveCount() {
-        return instances.size();
+        return instances.values().stream().filter(this::isActive).count();
     }
 }

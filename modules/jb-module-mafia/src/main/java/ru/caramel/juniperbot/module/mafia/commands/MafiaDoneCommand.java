@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.module.mafia.commands;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
@@ -23,6 +24,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.mafia.done.key",
         description = "discord.command.mafia.done.desc",
         group = "discord.command.group.mafia",
+        source = ChannelType.TEXT,
         priority = 5)
 public class MafiaDoneCommand extends MafiaCommandAsync {
 
@@ -30,7 +32,7 @@ public class MafiaDoneCommand extends MafiaCommandAsync {
     public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
         if (mafiaService.done(message.getAuthor(), message.getTextChannel())) {
             ok(message);
-        } else  {
+        } else {
             fail(message);
         }
     }
