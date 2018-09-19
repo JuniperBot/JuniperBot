@@ -41,9 +41,10 @@
         <mapstruct.version>1.2.0.Final</mapstruct.version>
         <opencv.version>3.2.0</opencv.version>
         <sentry.version>1.7.9</sentry.version>
+        <okhttp.version>3.11.0</okhttp.version>
 
         <!-- Integration Properties -->
-        <JDA.version>3.7.1_422</JDA.version>
+        <JDA.version>3.8.0_425</JDA.version>
         <jda-nas.version>1.0.6</jda-nas.version>
         <lavaplayer.version>1.3.7-jb</lavaplayer.version>
         <lavalink.version>125b074065</lavalink.version>

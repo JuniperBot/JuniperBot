@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.Requester;
@@ -153,11 +154,14 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onReady(ReadyEvent event) {
-        if (StringUtils.isNotEmpty(playingStatus)) {
-            shardManager.setGame(Game.playing(playingStatus));
-        }
         pingCharts.put(event.getJDA(), new TimeWindowChart(10, TimeUnit.MINUTES));
         mBeanExporter.registerManagedResource(new JmxJDAMBean(event.getJDA()));
+        setUpStatus();
+    }
+
+    @Override
+    public void onResume(ResumedEvent event) {
+        setUpStatus();
     }
 
     @Override
@@ -330,5 +334,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             throw new RuntimeException("Failed to retrieve my own userId from Discord");
         }
         return cachedUserId;
+    }
+
+    private void setUpStatus() {
+        if (StringUtils.isNotEmpty(playingStatus)) {
+            shardManager.setGame(Game.playing(playingStatus));
+        }
     }
 }
