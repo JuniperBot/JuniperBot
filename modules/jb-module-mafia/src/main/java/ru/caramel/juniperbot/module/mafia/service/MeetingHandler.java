@@ -18,10 +18,7 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +53,12 @@ public class MeetingHandler extends AbstractStateHandler {
                     getEndTimeText(instance, meetingDelay)), null);
         }
 
-        instance.getChannel().sendMessage(builder.build()).complete();
+        TextChannel channel = instance.getChannel();
+        if (channel == null) {
+            return true; // end for non existent channel instantly
+        }
+
+        channel.sendMessage(builder.build()).queue();
         instance.setGoonChannel(createGoonChannel(instance));
 
         if (!sendMessage(instance.getDoctor(), "mafia.meeting.doctor.welcome")) {
@@ -98,7 +100,10 @@ public class MeetingHandler extends AbstractStateHandler {
                 .addPermissionOverride(everyOne, null, permissionList)
                 .addPermissionOverride(guild.getSelfMember(), permissionList, null);
         for (MafiaPlayer goon : instance.getGoons()) {
-            action.addPermissionOverride(goon.getMember(), permissionList, null);
+            Member member = goon.getMember();
+            if (member != null) {
+                action.addPermissionOverride(member, permissionList, null);
+            }
         }
 
         TextChannel channel = (TextChannel) action.complete();

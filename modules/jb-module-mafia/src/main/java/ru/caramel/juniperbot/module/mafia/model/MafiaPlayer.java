@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.module.mafia.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
@@ -29,7 +31,11 @@ public class MafiaPlayer {
 
     private static final int MAX_HEALTH = 2;
 
-    private final Member member;
+    private final JDA jda;
+
+    private final long guildId;
+
+    private final long memberId;
 
     private MafiaRole role;
 
@@ -39,11 +45,18 @@ public class MafiaPlayer {
 
     public MafiaPlayer(Member member) {
         Objects.requireNonNull(member);
-        this.member = member;
+        this.jda = member.getJDA();
+        this.guildId = member.getGuild().getIdLong();
+        this.memberId = member.getUser().getIdLong();
+    }
+
+    public Member getMember() {
+        Guild guild = jda.getGuildById(guildId);
+        return guild != null ? guild.getMemberById(memberId) : null;
     }
 
     public User getUser() {
-        return member.getUser();
+        return jda.getUserById(memberId);
     }
 
     public void out() {
@@ -63,10 +76,19 @@ public class MafiaPlayer {
     }
 
     public String getName() {
-        return member.getEffectiveName();
+        Member member = getMember();
+        if (member != null) {
+            return member.getEffectiveName();
+        }
+        User user = jda.getUserById(memberId);
+        return user != null ? user.getName() : String.valueOf(memberId);
     }
 
     public String getAsMention() {
-        return member.getAsMention();
+        Member member = getMember();
+        if (member != null) {
+            return member.getAsMention();
+        }
+        return "<@" + memberId + ">";
     }
 }

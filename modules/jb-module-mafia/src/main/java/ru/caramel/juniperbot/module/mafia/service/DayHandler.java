@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.mafia.service;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Component
 public class DayHandler extends ChoiceStateHandler {
@@ -129,11 +131,20 @@ public class DayHandler extends ChoiceStateHandler {
             instance.setIgnoredReason();
         }
         instance.getDailyActions().clear();
-        Message resultMessage = instance.getChannel().sendMessage(embedBuilder.build()).complete();
 
-        if (!endOfGame) {
-            sendChoice(instance, resultMessage, instance.getAlive());
+        TextChannel channel = instance.getChannel();
+        if (channel == null) {
+            return true; // end for non existent channel instantly
         }
+
+        Consumer<? super Message> onMessage = null;
+        if (!endOfGame) {
+            onMessage = m -> {
+                sendChoice(instance, m, instance.getAlive());
+            };
+        }
+        channel.sendMessage(embedBuilder.build()).queue(onMessage);
+
         return endOfGame || scheduleEnd(instance, dayDelay);
     }
 

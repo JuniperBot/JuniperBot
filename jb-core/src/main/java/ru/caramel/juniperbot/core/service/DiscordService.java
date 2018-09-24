@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.service;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.webhook.WebhookMessage;
@@ -65,6 +66,8 @@ public interface DiscordService {
     boolean isSuperUser(User user);
 
     VoiceChannel getDefaultMusicChannel(long guildId);
+
+    Member getMember(long guildId, long userId);
 
     void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent);
 

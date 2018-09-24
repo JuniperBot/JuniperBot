@@ -23,10 +23,7 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
@@ -244,6 +241,15 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             }
         }
         return guild.getVoiceChannels().stream().findAny().orElse(null);
+    }
+
+    @Override
+    public Member getMember(long guildId, long userId) {
+        Guild guild = shardManager.getGuildById(guildId);
+        if (guild == null) {
+            return null;
+        }
+        return guild.getMemberById(userId);
     }
 
     @Scheduled(fixedDelay = 30000)

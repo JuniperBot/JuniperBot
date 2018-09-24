@@ -139,7 +139,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
                     .append(counter > 0 ? "\n" : "")
                     .append(++counter)
                     .append(". ")
-                    .append(player.getMember().getEffectiveName());
+                    .append(player.getName());
         }
         return builder.toString();
     }

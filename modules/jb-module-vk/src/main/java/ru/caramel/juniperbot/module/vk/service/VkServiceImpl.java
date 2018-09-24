@@ -221,7 +221,7 @@ public class VkServiceImpl implements VkService {
             embeds.add(contentEmbed);
         }
         if (contentEmbed != null) {
-            if (post.getDate() != null) {
+            if (connection.isShowDate() && post.getDate() != null) {
                 contentEmbed.setTimestamp(new Date(((long) post.getDate()) * 1000).toInstant());
             }
             String url = String.format(WALL_URL, message.getGroupId(), post.getId());
@@ -321,7 +321,7 @@ public class VkServiceImpl implements VkService {
                 builder = initBuilder(message, builders);
                 setText(connection, builder, video.getTitle(), url);
                 setPhoto(images, builder, video.getPhoto800(), video.getPhoto320(), video.getPhoto130());
-                if (video.getDate() != null) {
+                if (connection.isShowDate() && video.getDate() != null) {
                     builder.setTimestamp(new Date(((long) video.getDate()) * 1000).toInstant());
                 }
                 break;
@@ -493,7 +493,7 @@ public class VkServiceImpl implements VkService {
             }
 
             builder.setImage(imageUrl);
-            if (photo.getDate() != null) {
+            if (connection.isShowDate() && photo.getDate() != null) {
                 builder.setTimestamp(new Date(((long) photo.getDate()) * 1000).toInstant());
             }
         }

@@ -45,7 +45,13 @@ public class MafiaInstance extends FeatureInstance {
 
     private final Locale locale;
 
-    private final TextChannel channel;
+    private final JDA jda;
+
+    private final long channelId;
+
+    private final long guildId;
+
+    private Long goonChannelId;
 
     private List<MafiaPlayer> players = Collections.synchronizedList(new ArrayList<>(10));
 
@@ -59,8 +65,6 @@ public class MafiaInstance extends FeatureInstance {
 
     private Map<String, Object> attributes = new HashMap<>();
 
-    private TextChannel goonChannel;
-
     private String endReason;
 
     private Set<String> listenedMessages = Collections.synchronizedSet(new HashSet<String>());
@@ -69,14 +73,28 @@ public class MafiaInstance extends FeatureInstance {
 
     public MafiaInstance(TextChannel channel, Locale locale, String prefix) {
         Objects.requireNonNull(channel);
+        this.jda = channel.getJDA();
+        this.channelId = channel.getIdLong();
+        this.guildId = channel.getGuild().getIdLong();
         this.locale = locale;
-        this.channel = channel;
         this.prefix = prefix;
         tick();
     }
 
+    public TextChannel getChannel() {
+        return jda.getTextChannelById(channelId);
+    }
+
+    public TextChannel getGoonChannel() {
+        return goonChannelId != null ? jda.getTextChannelById(goonChannelId) : null;
+    }
+
+    public void setGoonChannel(TextChannel channel) {
+        this.goonChannelId = channel != null ? channel.getIdLong() : null;
+    }
+
     public Guild getGuild() {
-        return channel.getGuild();
+        return jda.getGuildById(guildId);
     }
 
     @SuppressWarnings("unchecked")
@@ -140,10 +158,6 @@ public class MafiaInstance extends FeatureInstance {
         return players.stream().filter(e -> e.isAlive() && Objects.equals(e.getRole(), role)).findFirst().orElse(null);
     }
 
-    public JDA getJDA() {
-        return channel.getJDA();
-    }
-
     public MafiaPlayer getCop() {
         return getPlayerByRole(MafiaRole.COP);
     }
@@ -173,7 +187,11 @@ public class MafiaInstance extends FeatureInstance {
     }
 
     public String getGoonsMentions() {
-        return getGoons().stream().map(e -> e.getMember().getAsMention()).collect(Collectors.joining(" "));
+        return getGoons().stream()
+                .map(MafiaPlayer::getMember)
+                .filter(Objects::nonNull)
+                .map(Member::getAsMention)
+                .collect(Collectors.joining(" "));
     }
 
     public MafiaState updateState(MafiaState state) {

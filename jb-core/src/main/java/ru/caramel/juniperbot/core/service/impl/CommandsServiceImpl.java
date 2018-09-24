@@ -194,7 +194,6 @@ public class CommandsServiceImpl implements CommandsService {
 
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
         context.setConfig(guildConfig);
-        context.setGuild(event.getGuild());
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
             try {
@@ -225,12 +224,12 @@ public class CommandsServiceImpl implements CommandsService {
     public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
         if (isRestricted(commandConfig, event.getTextChannel())) {
             resultEmotion(event, "✋", null);
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.channel");
+            messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.channel");
             return true;
         }
         if (isRestricted(commandConfig, event.getMember())) {
             resultEmotion(event, "✋", null);
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.roles");
+            messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.roles");
             return true;
         }
         return false;

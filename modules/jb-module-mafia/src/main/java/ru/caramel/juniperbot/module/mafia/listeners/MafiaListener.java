@@ -28,6 +28,8 @@ import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 import ru.caramel.juniperbot.module.mafia.service.MafiaService;
 
+import java.util.Objects;
+
 @DiscordEvent
 public class MafiaListener extends DiscordEventListener {
 
@@ -58,7 +60,7 @@ public class MafiaListener extends DiscordEventListener {
                         Member selfMember = event.getGuild().getSelfMember();
                         if (!event.getMember().equals(selfMember)
                                 && !instance.isInState(MafiaState.CHOOSING)
-                                && !event.getChannel().equals(instance.getGoonChannel())
+                                && !Objects.equals(event.getChannel().getIdLong(), instance.getGoonChannelId())
                                 && selfMember.hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                             if (instance.isInState(MafiaState.DAY)) {
                                 if (!isPlayer) {

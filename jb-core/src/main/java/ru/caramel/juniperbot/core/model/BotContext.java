@@ -31,8 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class BotContext {
 
-    private Guild guild;
-
     private GuildConfig config;
 
     @Getter(AccessLevel.PRIVATE)

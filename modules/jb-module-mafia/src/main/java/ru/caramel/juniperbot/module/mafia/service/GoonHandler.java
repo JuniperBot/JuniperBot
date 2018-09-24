@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,7 +70,13 @@ public class GoonHandler extends ChoiceStateHandler {
 
         EmbedBuilder embedBuilder = getBaseEmbed();
         embedBuilder.setDescription(stringBuilder.toString());
-        instance.getChannel().sendMessage(embedBuilder.build()).complete();
+
+        TextChannel channel = instance.getChannel();
+        if (channel == null) {
+            return true; // end for non existent channel instantly
+        }
+
+        channel.sendMessage(embedBuilder.build()).queue();
         if (endOfGame) {
             instance.setIgnoredReason();
             return true;
@@ -94,7 +100,11 @@ public class GoonHandler extends ChoiceStateHandler {
         builder.setEmbed(embed.build());
         builder.setContent(instance.getGoonsMentions());
 
-        Message message = instance.getGoonChannel().sendMessage(builder.build()).complete();
+        TextChannel goonChannel = instance.getGoonChannel();
+        if (goonChannel == null) {
+            return true; // goon channel non exists anymore
+        }
+        Message message = goonChannel.sendMessage(builder.build()).complete();
 
         sendChoice(instance, message, instance.getGoons());
 

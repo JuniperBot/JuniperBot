@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.mafia.service.individual;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
@@ -68,11 +69,16 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
         if (messageBuilder.length() > 0) {
             EmbedBuilder builder = getBaseEmbed();
             builder.setDescription(messageBuilder.toString());
-            instance.getChannel().sendMessage(builder.build()).complete();
+
+            TextChannel channel = instance.getChannel();
+            if (channel == null) {
+                return true; // end for non existent channel instantly
+            }
+            channel.sendMessage(builder.build()).queue();
         }
         if (!sendChoiceMessage(instance, individualRole.getChoiceMessage())) {
             instance.setEndReason(messageService.getMessage("mafia.end.reason.couldNotDM",
-                    individual.getMember().getEffectiveName()));
+                    individual.getName()));
             return true;
         }
         return scheduleEnd(instance, individualDelay);
