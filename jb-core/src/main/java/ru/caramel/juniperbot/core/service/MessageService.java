@@ -43,6 +43,8 @@ public interface MessageService {
 
     void onEmbedMessage(MessageChannel sourceChannel, String code, Object... args);
 
+    void onTempEmbedMessage(MessageChannel sourceChannel, int sec, String code, Object... args);
+
     void onTempMessage(MessageChannel sourceChannel, int sec, String code, Object... args);
 
     void onTempPlainMessage(MessageChannel sourceChannel, int sec, String message);

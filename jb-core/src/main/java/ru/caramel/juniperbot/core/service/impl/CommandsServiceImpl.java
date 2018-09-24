@@ -224,12 +224,12 @@ public class CommandsServiceImpl implements CommandsService {
     public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
         if (isRestricted(commandConfig, event.getTextChannel())) {
             resultEmotion(event, "✋", null);
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.channel");
+            messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.channel");
             return true;
         }
         if (isRestricted(commandConfig, event.getMember())) {
             resultEmotion(event, "✋", null);
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.restricted.roles");
+            messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.roles");
             return true;
         }
         return false;
