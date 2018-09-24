@@ -33,7 +33,7 @@
         </filter>
         <file>logs/juniperbot.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/juniperbot.%d{yyyyMMdd}.log</fileNamePattern>
+            <fileNamePattern>logs/juniperbot.%d{yyyyMMdd}.log.gz</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -61,7 +61,7 @@
             <level>ERROR</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/error.%d{yyyyMMdd}.log</fileNamePattern>
+            <fileNamePattern>logs/error.%d{yyyyMMdd}.log.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
