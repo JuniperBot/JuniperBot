@@ -186,7 +186,8 @@ public class PlaybackInstance extends FeatureInstance {
     }
 
     public synchronized List<TrackRequest> getQueue(Member member) {
-        return getQueue().stream().filter(e -> member.equals(e.getMember())).collect(Collectors.toList());
+        long memberId = member.getUser().getIdLong();
+        return getQueue().stream().filter(e -> memberId == e.getMemberId()).collect(Collectors.toList());
     }
 
     public synchronized boolean seek(long position) {

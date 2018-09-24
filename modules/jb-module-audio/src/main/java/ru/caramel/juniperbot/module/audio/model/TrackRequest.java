@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.audio.model;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -29,17 +30,21 @@ public class TrackRequest {
 
     private AudioTrack track;
 
-    private final Member member;
+    private final JDA jda;
 
-    private final TextChannel channel;
+    private final long guildId;
+
+    private final long channelId;
+
+    private final long memberId;
+
+    private Long endMemberId;
 
     private boolean resetMessage;
 
     private boolean resetOnResume;
 
     private EndReason endReason;
-
-    private Member endMember;
 
     private Long timeCode;
 
@@ -48,15 +53,17 @@ public class TrackRequest {
     }
 
     public TrackRequest(AudioTrack track, Member member, TextChannel channel, Long timeCode) {
+        this.jda = member.getJDA();
         this.track = track;
-        this.member = member;
-        this.channel = channel;
+        this.guildId = member.getGuild().getIdLong();
+        this.memberId = member.getUser().getIdLong();
+        this.channelId = channel.getIdLong();
         this.timeCode = timeCode;
     }
 
     public void reset() {
         endReason = null;
-        endMember = null;
+        endMemberId = null;
         if (track != null) {
             Object data = track.getUserData();
             track = track.makeClone();
@@ -64,13 +71,12 @@ public class TrackRequest {
         }
     }
 
-    public Guild getGuild() {
-        if (channel != null) {
-            return channel.getGuild();
-        }
-        if (member != null) {
-            return member.getGuild();
-        }
-        return null;
+    public TextChannel getChannel() {
+        return jda.getTextChannelById(channelId);
+    }
+
+    public Member getMember() {
+        Guild guild = jda.getGuildById(guildId);
+        return guild != null ? guild.getMemberById(memberId) : null;
     }
 }

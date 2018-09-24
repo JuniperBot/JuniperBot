@@ -194,7 +194,6 @@ public class CommandsServiceImpl implements CommandsService {
 
         BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
         context.setConfig(guildConfig);
-        context.setGuild(event.getGuild());
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
             try {

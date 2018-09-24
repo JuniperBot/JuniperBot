@@ -33,14 +33,13 @@ import ru.caramel.juniperbot.module.full.ModulesConfiguration;
 
 @Import({CoreConfiguration.class, ModulesConfiguration.class})
 @ImportResource("classpath:security-context.xml")
-@EnableAutoConfiguration(exclude = {
+@SpringBootApplication(exclude = {
         SecurityAutoConfiguration.class,
         SecurityFilterAutoConfiguration.class,
         SecurityRequestMatcherProviderAutoConfiguration.class,
         OAuth2ClientAutoConfiguration.class,
         OAuth2ResourceServerAutoConfiguration.class
 })
-@SpringBootApplication
 public class JuniperBotApplication {
 
     public static void main(String[] args) {

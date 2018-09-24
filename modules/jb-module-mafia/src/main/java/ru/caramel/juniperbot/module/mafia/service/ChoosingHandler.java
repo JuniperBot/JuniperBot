@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,24 +50,31 @@ public class ChoosingHandler extends AbstractStateHandler {
         String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
 
         builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix(), nextCommand), null);
-        Message message = instance.getChannel().sendMessage(builder.build()).complete();
-        message.addReaction(CHOOSE).queue();
-        instance.getListenedMessages().add(message.getId());
-        reactionsListener.onReaction(message.getId(), (event, add) -> {
-            if (!instance.isInState(MafiaState.CHOOSING)) {
-                return true;
-            }
-            String emote = event.getReaction().getReactionEmote().getName();
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && CHOOSE.equals(emote)) {
-                instance.tick();
-                if (add && instance.getPlayers().size() < 10) {
-                    instance.getPlayers().add(new MafiaPlayer(event.getMember()));
+
+        TextChannel channel = instance.getChannel();
+        if (channel == null) {
+            return true; // end for non existent channel instantly
+        }
+
+        channel.sendMessage(builder.build()).queue(message -> {
+            message.addReaction(CHOOSE).queue();
+            instance.getListenedMessages().add(message.getId());
+            reactionsListener.onReaction(message.getId(), (event, add) -> {
+                if (!instance.isInState(MafiaState.CHOOSING)) {
+                    return true;
                 }
-                if (!add) {
-                    instance.getPlayers().removeIf(e -> event.getMember().equals(e.getMember()));
+                String emote = event.getReaction().getReactionEmote().getName();
+                if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && CHOOSE.equals(emote)) {
+                    instance.tick();
+                    if (add && instance.getPlayers().size() < 10) {
+                        instance.getPlayers().add(new MafiaPlayer(event.getMember()));
+                    }
+                    if (!add) {
+                        instance.getPlayers().removeIf(e -> event.getMember().getUser().getIdLong() == e.getMemberId());
+                    }
                 }
-            }
-            return false;
+                return false;
+            });
         });
         return scheduleEnd(instance, choosingDelay);
     }

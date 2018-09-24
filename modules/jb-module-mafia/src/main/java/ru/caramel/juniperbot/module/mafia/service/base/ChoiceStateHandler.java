@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.module.mafia.service.base;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
@@ -115,17 +117,24 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
 
     protected void outPlayer(MafiaInstance instance, MafiaPlayer player) {
         player.out();
-        if (player.getRole() == MafiaRole.GOON && instance.getGoonChannel() != null) {
-            PermissionOverride override = instance.getGoonChannel().getPermissionOverride(player.getMember());
-            override.delete().queue();
+        TextChannel goonChannel = instance.getGoonChannel();
+        if (player.getRole() == MafiaRole.GOON && goonChannel != null) {
+            Member member = player.getMember();
+            if (member != null) {
+                PermissionOverride override = goonChannel.getPermissionOverride(player.getMember());
+                override.delete().queue();
+            }
         }
     }
 
     public void unpinMessage(MafiaInstance instance) {
         String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
-        if (messageId != null && instance.getChannel().getGuild().getSelfMember().hasPermission(instance.getChannel(),
-                Permission.MESSAGE_MANAGE)) {
-            instance.getChannel().unpinMessageById(messageId).queue();
+        if (messageId == null) {
+            return;
+        }
+        TextChannel channel = instance.getChannel();
+        if (channel != null && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE)) {
+            channel.unpinMessageById(messageId).queue();
         }
     }
 

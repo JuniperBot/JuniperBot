@@ -117,7 +117,10 @@ public class MafiaService implements ModuleListener {
             builder.setTitle(messageService.getMessage("discord.command.group.mafia"));
             builder.setDescription(stopReason);
             try {
-                instance.getChannel().sendMessage(builder.build()).queue();
+                TextChannel channel = instance.getChannel();
+                if (channel != null) {
+                    channel.sendMessage(builder.build()).queue();
+                }
             } catch (Exception e) {
                 LOGGER.warn("Cannot send end message", e);
             }
@@ -127,27 +130,26 @@ public class MafiaService implements ModuleListener {
             ((ChoiceStateHandler) instance.getHandler()).unpinMessage(instance);
         }
 
-        if (instance.getGoonChannel() != null) {
-            if (instance.getGuild().isAvailable()) {
-                try {
-                    instance.getGoonChannel().delete().queue();
-                } catch (Exception e) {
-                    LOGGER.warn("Cannot delete goon channel", e);
-                }
+        TextChannel goonChannel = instance.getGoonChannel();
+        if (goonChannel != null) {
+            try {
+                goonChannel.delete().queue();
+            } catch (Exception e) {
+                LOGGER.warn("Cannot delete goon channel", e);
             }
-            instances.remove(instance.getGoonChannel().getIdLong());
+            instances.remove(goonChannel.getIdLong());
         }
         if (CollectionUtils.isNotEmpty(instance.getListenedMessages())) {
             reactionsListener.unsubscribeAll(instance.getListenedMessages());
         }
-        instances.remove(instance.getChannel().getIdLong());
+        instances.remove(instance.getChannelId());
     }
 
     public MafiaInstance getRelatedInstance(long channelId) {
         MafiaInstance instance = instances.get(channelId);
         if (instance == null) {
             instance = instances.values().stream()
-                    .filter(e -> e.getGoonChannel() != null && e.getGoonChannel().getIdLong() == channelId)
+                    .filter(e -> Objects.equals(e.getGoonChannelId(), channelId))
                     .findFirst()
                     .orElse(null);
             if (instance != null) {
@@ -174,7 +176,7 @@ public class MafiaService implements ModuleListener {
             try {
                 contextService.withContext(e.getGuild(), () -> stop(e));
             } catch (Exception ex) {
-                LOGGER.error("Could not stop correctly mafia {}", e.getChannel(), ex);
+                LOGGER.error("Could not stop correctly mafia {}", e.getChannelId(), ex);
             }
         });
     }

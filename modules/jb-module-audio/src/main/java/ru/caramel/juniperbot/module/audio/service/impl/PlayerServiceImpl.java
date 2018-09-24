@@ -171,7 +171,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             if (current.getEndReason() == null) {
                 current.setEndReason(EndReason.getForLavaPlayer(endReason));
             }
-            contextService.withContext(current.getGuild(), () -> messageManager.onTrackEnd(current));
+            contextService.withContext(current.getGuildId(), () -> messageManager.onTrackEnd(current));
         }
     }
 
@@ -288,7 +288,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
 
         TrackRequest request = requests.get(0);
-        Guild guild = request.getChannel().getGuild();
+        Guild guild = discordService.getShardManager().getGuildById(request.getGuildId());
+        if (guild == null) {
+            return;
+        }
         PlaybackInstance instance = getInstance(guild);
 
         boolean store = true;
@@ -318,15 +321,24 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     @Transactional
     public void play(TrackRequest request) throws DiscordException {
-        PlaybackInstance instance = getInstance(request.getChannel().getGuild());
+        Guild guild = discordService.getShardManager().getGuildById(request.getGuildId());
+        if (guild == null) {
+            return;
+        }
+        PlaybackInstance instance = getInstance(guild);
         playlistService.storeToPlaylist(instance, Collections.singletonList(request));
         play(request, instance);
     }
 
     private void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
-        contextService.withContext(request.getGuild(), () -> messageManager.onTrackAdd(request, instance.getCursor() < 0));
-        connectToChannel(instance, request.getMember());
-        instance.play(request);
+        contextService.withContext(request.getGuildId(),
+                () -> messageManager.onTrackAdd(request, instance.getCursor() < 0));
+
+        Member member = request.getMember();
+        if (member != null) {
+            connectToChannel(instance, member);
+            instance.play(request);
+        }
     }
 
     @Override
@@ -338,7 +350,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
         if (instance.getCurrent() != null) {
             instance.getCurrent().setEndReason(EndReason.SKIPPED);
-            instance.getCurrent().setEndMember(member);
+            instance.getCurrent().setEndMemberId(member.getUser().getIdLong());
         }
         onTrackEnd(instance, AudioTrackEndReason.FINISHED);
     }
@@ -351,7 +363,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
         if (instance.getCurrent() != null) {
             instance.getCurrent().setEndReason(EndReason.STOPPED);
-            instance.getCurrent().setEndMember(member);
+            instance.getCurrent().setEndMemberId(member.getUser().getIdLong());
         }
         contextService.withContextAsync(guild, () -> clearInstance(instance, true));
         return true;
@@ -488,7 +500,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             }
             if (currentTimeMillis - lastMillis > TIMEOUT) {
                 if (current != null) {
-                    contextService.withContext(current.getGuild(), () -> messageManager.onIdle(current.getChannel()));
+                    TextChannel channel = current.getChannel();
+                    if (channel != null) {
+                        contextService.withContext(current.getGuildId(), () -> messageManager.onIdle(channel));
+                    }
                 }
                 toKill.add(v);
                 stopInstance(v, true);
