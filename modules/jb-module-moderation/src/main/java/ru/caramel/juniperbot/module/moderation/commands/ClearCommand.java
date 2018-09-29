@@ -58,20 +58,18 @@ public class ClearCommand extends ModeratorCommandAsync {
         TextChannel channel = event.getTextChannel();
         List<Message> messages;
 
-        int deletedCount;
         int number = getCount(query);
-        if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())) {
+        boolean mention = CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers());
+        if (mention) {
             Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
             if (mentioned == null) {
                 return;
             }
             channel.sendTyping().queue();
             messages = getMessages(channel, number, m -> Objects.equals(m.getMember(), mentioned));
-            deletedCount = messages.size();
         } else {
             channel.sendTyping().queue();
             messages = getMessages(channel, number + 1, null);
-            deletedCount = messages.size() - 1;
         }
 
         if (CollectionUtils.isEmpty(messages) || messages.size() == 1) {
@@ -79,14 +77,22 @@ public class ClearCommand extends ModeratorCommandAsync {
             fail(event);
             return;
         }
-        String pluralMessages = messageService.getCountPlural(deletedCount, "discord.plurals.message");
-        deleteMessages(channel, messages);
-        messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", deletedCount, pluralMessages);
+        int count = deleteMessages(channel, messages);
+        if (!mention) {
+            count--;
+        }
+        String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
+        messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
     }
 
-    private void deleteMessages(TextChannel channel, List<Message> messages) {
-        Iterator<Message> iterator = messages.iterator();
+    private int deleteMessages(TextChannel channel, List<Message> messages) {
         List<Message> chunk = new ArrayList<>(100);
+        int count = 0;
+
+        List<Message> pinnedMessages = channel.getPinnedMessages().complete();
+        messages.removeAll(pinnedMessages);
+
+        Iterator<Message> iterator = messages.iterator();
         while (iterator.hasNext()) {
             chunk.clear();
             while (chunk.size() < 100 && iterator.hasNext()) {
@@ -96,11 +102,14 @@ public class ClearCommand extends ModeratorCommandAsync {
                 channel.sendTyping().queue();
                 if (chunk.size() == 1) {
                     chunk.get(0).delete().complete();
+                    count++;
                 } else {
                     channel.deleteMessages(chunk).complete();
+                    count += chunk.size();
                 }
             }
         }
+        return count;
     }
 
     private int getCount(String queue) throws DiscordException {

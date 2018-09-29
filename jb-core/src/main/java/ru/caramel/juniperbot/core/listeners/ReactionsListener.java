@@ -20,14 +20,18 @@ import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.service.ContextService;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @DiscordEvent
 public class ReactionsListener extends DiscordEventListener {
@@ -38,8 +42,13 @@ public class ReactionsListener extends DiscordEventListener {
 
     private Map<String, BiFunction<GenericMessageReactionEvent, Boolean, Boolean>> listeners = new ConcurrentHashMap<>();
 
+    private Map<String, Long> messageTtl = new ConcurrentHashMap<>();
+
     @Autowired
     private ContextService contextService;
+
+    @Value("${core.listenerTtlMs:3600000}")
+    private long listenerTtlMs;
 
     @Override
     public void onGenericMessageReaction(GenericMessageReactionEvent event) {
@@ -65,24 +74,38 @@ public class ReactionsListener extends DiscordEventListener {
         }
     }
 
+    @Scheduled(fixedDelay = 3600000)
+    public void monitor() {
+        long currentTimeMillis = System.currentTimeMillis();
+        Set<String> oldListeners = messageTtl.entrySet().stream()
+                .filter(e -> currentTimeMillis - e.getValue() > listenerTtlMs)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        unsubscribeAll(oldListeners);
+    }
+
     @Override
     public void onMessageDelete(MessageDeleteEvent event) {
-        addListeners.remove(event.getMessageId());
-        listeners.remove(event.getMessageId());
+        unsubscribe(event.getMessageId());
     }
 
     public void onReactionAdd(String message, Function<MessageReactionAddEvent, Boolean> handler) {
         addListeners.put(message, handler);
+        messageTtl.put(message, System.currentTimeMillis());
     }
 
     public void onReaction(String message, BiFunction<GenericMessageReactionEvent, Boolean, Boolean> handler) {
         listeners.put(message, handler);
+        messageTtl.put(message, System.currentTimeMillis());
+    }
+
+    public void unsubscribe(String messageId) {
+        addListeners.remove(messageId);
+        listeners.remove(messageId);
+        messageTtl.remove(messageId);
     }
 
     public void unsubscribeAll(Collection<String> messageIds) {
-        messageIds.forEach(id -> {
-            addListeners.remove(id);
-            listeners.remove(id);
-        });
+        messageIds.forEach(this::unsubscribe);
     }
 }
