@@ -200,7 +200,7 @@ public class MessageController {
                     cancelled = true;
                     if (message.getGuild().isAvailable() && message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                         reactionFutures.forEach(e -> e.cancel(false));
-                        message.clearReactions().queue();
+                        message.clearReactions().queue(e -> reactionsListener.unsubscribe(message.getId()));
                     }
                 } else {
                     message.delete().queue();
@@ -223,7 +223,9 @@ public class MessageController {
     public void doForMessage(Consumer<? super Message> success, Consumer<? super Throwable> error) {
         TextChannel channel = jda.getTextChannelById(channelId);
         if (channel != null) {
-            channel.getMessageById(messageId).queue(success, error);
+            channel.getMessageById(messageId).queue(
+                    m -> contextService.withContext(guildId, () -> success.accept(m)),
+                    t -> contextService.withContext(guildId, () -> error.accept(t)));
         }
     }
 }

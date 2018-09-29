@@ -493,7 +493,7 @@ public class AudioMessageManager {
         ReentrantLock lock = guildLocks.computeIfAbsent(request.getGuildId(), e -> new ReentrantLock());
         lock.lock();
         try {
-            action.run();
+            contextService.withContext(request.getGuildId(), action);
         } finally {
             lock.unlock();
             if (!lock.hasQueuedThreads()) {

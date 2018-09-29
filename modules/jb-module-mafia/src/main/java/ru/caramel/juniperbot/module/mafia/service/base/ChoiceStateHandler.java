@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ChoiceStateHandler extends AbstractStateHandler {
 
-    protected static final String ATTR_MESSAGE_ID = "ChoiceState.messageId";
+    protected static final String ATTR_MESSAGE_ID = "ChoiceState.messageId.";
 
     @SuppressWarnings("unchecked")
     protected MafiaPlayer getChoiceResult(MafiaInstance instance) {
@@ -128,18 +128,18 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
     }
 
     public void unpinMessage(MafiaInstance instance) {
-        String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID);
+        String messageId = (String) instance.removeAttribute(ATTR_MESSAGE_ID + instance.getState().name());
         if (messageId == null) {
             return;
         }
-        TextChannel channel = instance.getChannel();
+        TextChannel channel = instance.getState() == MafiaState.DAY ? instance.getChannel() : instance.getGoonChannel();
         if (channel != null && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE)) {
             channel.unpinMessageById(messageId).queue();
         }
     }
 
     protected void pinMessage(MafiaInstance instance, Message message) {
-        instance.putAttribute(ATTR_MESSAGE_ID, message.getId());
+        instance.putAttribute(ATTR_MESSAGE_ID + instance.getState().name(), message.getId());
         if (message.getTextChannel().getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                 Permission.MESSAGE_MANAGE)) {
             message.getTextChannel().pinMessageById(message.getId()).queue();
