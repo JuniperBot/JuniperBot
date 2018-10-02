@@ -27,4 +27,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5.7-24092018-2" author="caramel">
+        <dropIndex tableName="command_config" indexName="idx_command_config_guild_id_key" />
+        <createIndex tableName="command_config" indexName="idx_command_config_guild_id_key" unique="true">
+            <column name="guild_id"/>
+            <column name="key"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

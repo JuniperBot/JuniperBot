@@ -64,10 +64,13 @@ public class CustomCommandsDao extends AbstractDao {
             }
             CustomCommand command = customCommands.stream().filter(e1 -> Objects.equals(e1.getId(), e.getId())).findFirst().orElse(null);
             if (command != null) {
-                if (command.getCommandConfig() == null) {
-                    CommandConfig commandConfig = new CommandConfig();
+                CommandConfig commandConfig = command.getCommandConfig();
+                if (commandConfig == null) {
+                    commandConfig = new CommandConfig();
                     commandConfig.setGuildId(guildId);
+                    command.setCommandConfig(commandConfig);
                 }
+                commandConfig.setKey(e.getKey());
                 apiMapper.updateCommandConfig(e, command.getCommandConfig());
                 apiMapper.updateCustomCommand(e, command);
                 result.add(command);
@@ -81,6 +84,7 @@ public class CustomCommandsDao extends AbstractDao {
             customCommand.setGuildId(guildId);
             CommandConfig commandConfig = new CommandConfig();
             commandConfig.setGuildId(guildId);
+            commandConfig.setKey(e.getKey());
             customCommand.setCommandConfig(commandConfig);
             apiMapper.updateCommandConfig(e, commandConfig);
             apiMapper.updateCustomCommand(e, customCommand);
