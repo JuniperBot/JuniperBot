@@ -224,8 +224,16 @@ public class MessageController {
         TextChannel channel = jda.getTextChannelById(channelId);
         if (channel != null) {
             channel.getMessageById(messageId).queue(
-                    m -> contextService.withContext(guildId, () -> success.accept(m)),
-                    t -> contextService.withContext(guildId, () -> error.accept(t)));
+                    m -> contextService.withContext(guildId, () -> {
+                        if (success != null) {
+                            success.accept(m);
+                        }
+                    }),
+                    t -> contextService.withContext(guildId, () -> {
+                        if (error != null) {
+                            error.accept(t);
+                        }
+                    }));
         }
     }
 }
