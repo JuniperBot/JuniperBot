@@ -363,7 +363,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
         if (instance.getCurrent() != null) {
             instance.getCurrent().setEndReason(EndReason.STOPPED);
-            instance.getCurrent().setEndMemberId(member.getUser().getIdLong());
+            if (member != null) {
+                instance.getCurrent().setEndMemberId(member.getUser().getIdLong());
+            }
         }
         contextService.withContextAsync(guild, () -> clearInstance(instance, true));
         return true;
