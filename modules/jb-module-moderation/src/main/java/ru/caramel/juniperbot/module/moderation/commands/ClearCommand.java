@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.moderation.commands;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -28,10 +29,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -81,37 +79,15 @@ public class ClearCommand extends ModeratorCommandAsync {
 
         channel.getPinnedMessages().queue(pinnedMessages -> {
             messages.removeAll(pinnedMessages);
-            int count = deleteMessages(channel, messages);
-            if (!mention) {
-                count--;
-            }
-            String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
-            messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
-        });
-    }
-
-    private int deleteMessages(TextChannel channel, List<Message> messages) {
-        List<Message> chunk = new ArrayList<>(100);
-
-        int count = 0;
-        Iterator<Message> iterator = messages.iterator();
-        while (iterator.hasNext()) {
-            chunk.clear();
-            while (chunk.size() < 100 && iterator.hasNext()) {
-                chunk.add(iterator.next());
-            }
-            if (!chunk.isEmpty()) {
-                channel.sendTyping().queue();
-                if (chunk.size() == 1) {
-                    chunk.get(0).delete().complete();
-                    count++;
-                } else {
-                    channel.deleteMessages(chunk).complete();
-                    count += chunk.size();
+            RequestFuture.allOf(channel.purgeMessages(messages)).whenComplete((v, t) -> {
+                int count = messages.size();
+                if (!mention) {
+                    count--;
                 }
-            }
-        }
-        return count;
+                String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
+                messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
+            });
+        });
     }
 
     private int getCount(String queue) throws DiscordException {
