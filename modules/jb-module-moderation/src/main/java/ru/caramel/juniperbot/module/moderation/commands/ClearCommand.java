@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,21 +78,22 @@ public class ClearCommand extends ModeratorCommandAsync {
             fail(event);
             return;
         }
-        int count = deleteMessages(channel, messages);
-        if (!mention) {
-            count--;
-        }
-        String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
-        messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
+
+        channel.getPinnedMessages().queue(pinnedMessages -> {
+            messages.removeAll(pinnedMessages);
+            int count = deleteMessages(channel, messages);
+            if (!mention) {
+                count--;
+            }
+            String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
+            messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
+        });
     }
 
     private int deleteMessages(TextChannel channel, List<Message> messages) {
         List<Message> chunk = new ArrayList<>(100);
+
         int count = 0;
-
-        List<Message> pinnedMessages = channel.getPinnedMessages().complete();
-        messages.removeAll(pinnedMessages);
-
         Iterator<Message> iterator = messages.iterator();
         while (iterator.hasNext()) {
             chunk.clear();
