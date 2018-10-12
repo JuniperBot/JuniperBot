@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.controller.pub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
@@ -32,7 +33,7 @@ public class GuildInfoPublicController extends BasePublicRestController {
 
     @RequestMapping(value = "/guild/{guildId}", method = RequestMethod.GET)
     @ResponseBody
-    public GuildDto getGuild(@PathVariable long guildId) {
+    public GuildDto getGuild(@GuildId(validate = false) @PathVariable long guildId) {
         GuildDto dto = guildDao.getGuild(new GuildInfoRequest(guildId));
         if (dto == null) {
             throw new NotFoundException();

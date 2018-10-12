@@ -22,6 +22,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
@@ -46,12 +47,17 @@ public class GuildIdAspect {
             Annotation[] annotations = annotationMatrix[i];
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType() == GuildId.class && methodArgs[i] instanceof Long) {
-                    DiscordGuildDetails details = tokenServices.getGuildById((long) methodArgs[i]);
-                    if (details == null) {
-                        throw new NotFoundException();
-                    }
-                    if (!tokenServices.hasPermission(details)) {
-                        throw new AccessDeniedException();
+                    GuildId guildIdAnnotation = (GuildId) annotation;
+                    long guildId = (long) methodArgs[i];
+                    MDC.put("guildId", String.valueOf(guildId));
+                    if (guildIdAnnotation.validate()) {
+                        DiscordGuildDetails details = tokenServices.getGuildById(guildId);
+                        if (details == null) {
+                            throw new NotFoundException();
+                        }
+                        if (!tokenServices.hasPermission(details)) {
+                            throw new AccessDeniedException();
+                        }
                     }
                 }
             }

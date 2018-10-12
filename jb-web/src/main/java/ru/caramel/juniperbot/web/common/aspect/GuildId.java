@@ -22,4 +22,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface GuildId {
+    boolean validate() default true;
 }

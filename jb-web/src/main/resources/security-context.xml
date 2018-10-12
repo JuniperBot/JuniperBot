@@ -83,6 +83,7 @@
         <security:cors configuration-source-ref="corsSource"/>
         <security:intercept-url pattern="/api/priv/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="infoMdcFilter" after="LAST"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:access-denied-handler ref="accessDeniedHandler" />
         <security:csrf disabled="true"/>
@@ -94,6 +95,7 @@
                    create-session="stateless"
                    xmlns="http://www.springframework.org/schema/security">
         <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="infoMdcFilter" after="LAST"/>
         <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
         <security:csrf disabled="true"/>
     </security:http>
@@ -138,8 +140,16 @@
       class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
       p:authenticationManager-ref="authenticationManager" />
 
+    <bean id="infoMdcFilter"
+          class="ru.caramel.juniperbot.web.common.InfoMdcFilter" />
+
     <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
         <property name="filter" ref="oauth2AuthenticationFilter"/>
+        <property name="enabled" value="false"/>
+    </bean>
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="infoMdcFilter"/>
         <property name="enabled" value="false"/>
     </bean>
 
