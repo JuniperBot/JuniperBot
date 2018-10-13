@@ -25,6 +25,7 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.service.VkService;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
@@ -60,14 +61,14 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
     }
 
     @Override
-    public SubscriptionDto create(long guildId, Map<String, ?> data) {
+    public SubscriptionCreateResponse create(long guildId, Map<String, ?> data) {
         String name = getValue(data, "name", String.class);
         String code = getValue(data, "code", String.class);
         if (StringUtils.isEmpty(name) || StringUtils.isEmpty(code)) {
             throw new IllegalArgumentException("Wrong data");
         }
         VkConnection connection = vkService.create(guildId, name, code);
-        return getSubscription(connection);
+        return getCreatedDto(getSubscription(connection));
     }
 
     @Override

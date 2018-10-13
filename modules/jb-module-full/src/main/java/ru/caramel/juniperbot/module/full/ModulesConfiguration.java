@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.module.moderation.ModerationConfiguration;
 import ru.caramel.juniperbot.module.ranking.RankingConfiguration;
 import ru.caramel.juniperbot.module.reminder.ReminderConfiguration;
 import ru.caramel.juniperbot.module.steam.SteamConfiguration;
+import ru.caramel.juniperbot.module.twitch.TwitchConfiguration;
 import ru.caramel.juniperbot.module.vk.VkConfiguration;
 import ru.caramel.juniperbot.module.welcome.WelcomeConfiguration;
 import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
@@ -41,6 +42,7 @@ import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
         WikiFurConfiguration.class,
         WelcomeConfiguration.class,
         VkConfiguration.class,
+        TwitchConfiguration.class,
         MiscConfiguration.class,
         ModerationConfiguration.class,
         RankingConfiguration.class,

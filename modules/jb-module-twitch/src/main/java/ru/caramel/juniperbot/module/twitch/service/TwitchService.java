@@ -14,14 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.persistence.repository;
+package ru.caramel.juniperbot.module.twitch.service;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+import me.philippheuer.twitch4j.model.User;
+import ru.caramel.juniperbot.module.twitch.persistence.entity.TwitchConnection;
 
-@Repository
-public interface VkConnectionRepository extends BaseSubscriptionRepository<VkConnection> {
+public interface TwitchService {
 
-    VkConnection findByToken(String token);
+    TwitchConnection find(long id);
+
+    TwitchConnection save(TwitchConnection connection);
+
+    void delete(TwitchConnection connection);
+
+    TwitchConnection create(long guildId, User user);
+
+    User getUser(String userName);
 }

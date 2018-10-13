@@ -14,14 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.persistence.repository;
+package ru.caramel.juniperbot.core.persistence.entity.base;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+import lombok.Getter;
+import lombok.Setter;
+import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
 
-@Repository
-public interface VkConnectionRepository extends BaseSubscriptionRepository<VkConnection> {
+import javax.persistence.*;
 
-    VkConnection findByToken(String token);
+@Getter
+@Setter
+@MappedSuperclass
+public abstract class BaseSubscriptionEntity extends WebHookOwnedEntity {
+
+    @Column
+    private String name;
+
+    @Column(name = "icon_url")
+    private String iconUrl;
+
+    @Column(name = "mention_everyone")
+    private boolean mentionEveryone;
+
 }

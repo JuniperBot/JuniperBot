@@ -14,14 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.persistence.repository;
+package ru.caramel.juniperbot.web.dto.request;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+import lombok.Getter;
+import lombok.Setter;
+import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 
-@Repository
-public interface VkConnectionRepository extends BaseSubscriptionRepository<VkConnection> {
+import java.io.Serializable;
 
-    VkConnection findByToken(String token);
+@Getter
+@Setter
+public class SubscriptionCreateResponse implements Serializable {
+
+    private static final long serialVersionUID = 1615419486664927622L;
+
+    private SubscriptionDto result;
+
+    private boolean created;
+
+    private String code;
 }

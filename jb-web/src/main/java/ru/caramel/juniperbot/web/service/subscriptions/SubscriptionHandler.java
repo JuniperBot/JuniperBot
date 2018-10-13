@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.service.subscriptions;
 
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
@@ -25,7 +26,7 @@ public interface SubscriptionHandler<T> {
 
     SubscriptionDto getSubscription(T object);
 
-    SubscriptionDto create(long fuildId, Map<String, ?> data);
+    SubscriptionCreateResponse create(long fuildId, Map<String, ?> data);
 
     boolean update(SubscriptionDto object);
 

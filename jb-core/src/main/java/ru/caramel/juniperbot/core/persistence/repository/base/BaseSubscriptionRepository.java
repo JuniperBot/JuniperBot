@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.vk.persistence.repository;
+package ru.caramel.juniperbot.core.persistence.repository.base;
 
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
+import org.springframework.data.repository.NoRepositoryBean;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+import ru.caramel.juniperbot.core.persistence.repository.WebHookOwnedRepository;
 
-@Repository
-public interface VkConnectionRepository extends BaseSubscriptionRepository<VkConnection> {
+@NoRepositoryBean
+public interface BaseSubscriptionRepository<T extends BaseSubscriptionEntity> extends WebHookOwnedRepository<T> {
 
-    VkConnection findByToken(String token);
 }

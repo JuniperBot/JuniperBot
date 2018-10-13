@@ -110,9 +110,6 @@ public class ContextEventManagerImpl implements JbEventManager {
             }
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Handle event: " + event);
-        }
         for (EventListener listener : listeners) {
             try {
                 listener.onEvent(event);

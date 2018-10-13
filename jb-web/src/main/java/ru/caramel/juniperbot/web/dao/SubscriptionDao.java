@@ -20,8 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.junipost.service.JuniPostService;
+import ru.caramel.juniperbot.module.twitch.persistence.entity.TwitchConnection;
+import ru.caramel.juniperbot.module.twitch.persistence.repository.TwitchConnectionRepository;
 import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
@@ -34,6 +37,9 @@ public class SubscriptionDao extends AbstractDao {
 
     @Autowired
     private VkConnectionRepository vkConnectionRepository;
+
+    @Autowired
+    private TwitchConnectionRepository twitchConnectionRepository;
 
     @Autowired
     private JuniPostService juniPostService;
@@ -53,11 +59,14 @@ public class SubscriptionDao extends AbstractDao {
 
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(guildId);
         vkConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
+
+        List<TwitchConnection> twitchConnections = twitchConnectionRepository.findAllByGuildId(guildId);
+        twitchConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
         return result;
     }
 
     @Transactional
-    public SubscriptionDto create(long guildId, SubscriptionCreateRequest request) {
+    public SubscriptionCreateResponse create(long guildId, SubscriptionCreateRequest request) {
         SubscriptionHandler<?> handler = handlersByType.get(request.getType());
         if (handler != null) {
             return handler.create(guildId, request.getData());
