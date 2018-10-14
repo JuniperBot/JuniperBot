@@ -19,6 +19,8 @@ package ru.caramel.juniperbot.module.ranking.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
@@ -29,6 +31,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "ranking")
+@OptimisticLocking(type = OptimisticLockType.NONE)
 public class Ranking extends BaseEntity {
 
     private static final long serialVersionUID = -1815192299879652747L;
