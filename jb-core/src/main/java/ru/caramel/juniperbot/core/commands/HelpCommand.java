@@ -90,7 +90,7 @@ public class HelpCommand extends AbstractCommand {
         groupedCommands.forEach((k, v) -> v.sort(Comparator.comparingInt(DiscordCommand::priority)));
 
         Map<String, String> localizedGroups = groupedCommands.keySet().stream()
-                .collect(Collectors.toMap(e -> e, messageService::getMessage));
+                .collect(Collectors.toMap(e -> e, e -> messageService.getMessageByLocale(e, context.getCommandLocale())));
 
         String rootGroup = COMMON_GROUP;
         if (StringUtils.isNotEmpty(query)) {
@@ -116,11 +116,12 @@ public class HelpCommand extends AbstractCommand {
         if (COMMON_GROUP.equals(rootGroup)) {
             groupedCommands.forEach((group, commands) -> {
                 String groupTitle = messageService.getMessage(group);
+                String groupTitleLocalized = messageService.getMessageByLocale(group, context.getCommandLocale());
                 embedBuilder.addField(String.format("%s (%s%s %s):",
                         groupTitle,
                         prefix,
                         messageService.getMessageByLocale("discord.command.help.key", context.getCommandLocale()),
-                        groupTitle.toLowerCase()),
+                        groupTitleLocalized.toLowerCase()),
                         commands.stream().map(e -> '`' + prefix + messageService.getMessageByLocale(e.key(),
                                 context.getCommandLocale()) + '`')
                                 .collect(Collectors.joining(" ")), false);
