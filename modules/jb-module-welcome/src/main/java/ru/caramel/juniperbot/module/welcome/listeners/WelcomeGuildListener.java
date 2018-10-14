@@ -18,10 +18,7 @@ package ru.caramel.juniperbot.module.welcome.listeners;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
@@ -41,25 +38,39 @@ public class WelcomeGuildListener extends DiscordEventListener {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         Guild guild = event.getGuild();
+        Member self = guild.getSelfMember();
         contextService.withContextAsync(guild, () -> {
             MessageEmbed embed = createWelcomeMessage(guild);
-            guild.getOwner().getUser().openPrivateChannel().queue(e -> {
-                if (e != null) {
-                    e.sendMessage(embed).queue();
-                    return;
-                }
-                TextChannel channel = guild.getDefaultChannel();
-                if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
-                    channel.sendMessage(embed).queue();
-                } else {
-                    for (TextChannel textChannel : guild.getTextChannels()) {
-                        if (guild.getSelfMember().hasPermission(textChannel, Permission.MESSAGE_WRITE)) {
-                            textChannel.sendMessage(embed).queue();
-                            break;
-                        }
+
+            MessageChannel channel = guild.getDefaultChannel();
+            if (channel != null && !self.hasPermission((TextChannel) channel,
+                    Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+                channel = null;
+            }
+
+            if (channel == null) {
+                for (TextChannel textChannel : guild.getTextChannels()) {
+                    if (self.hasPermission(textChannel,
+                            Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+                        channel = textChannel;
+                        break;
                     }
                 }
-            });
+            }
+
+            if (channel != null) {
+                channel.sendMessage(embed).queue();
+            } else {
+                try {
+                    guild.getOwner().getUser().openPrivateChannel().queue(e -> {
+                        if (e != null) {
+                            e.sendMessage(embed).queue();
+                        }
+                    });
+                } catch (Exception e) {
+                    // oh, ok then, we don't care
+                }
+            }
         });
     }
 
