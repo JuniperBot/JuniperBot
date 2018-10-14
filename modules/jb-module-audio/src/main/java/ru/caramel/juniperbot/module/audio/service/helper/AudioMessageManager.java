@@ -513,7 +513,7 @@ public class AudioMessageManager {
         ShardManager shardManager = discordService.getShardManager();
         Guild guild = shardManager.getGuildById(request.getGuildId());
         User user = shardManager.getUserById(userId);
-        if (guild != null) {
+        if (user != null && guild != null) {
             Member member = guild.getMember(user);
             if (member != null) {
                 return member.getEffectiveName();

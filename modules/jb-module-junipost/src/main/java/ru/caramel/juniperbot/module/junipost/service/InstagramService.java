@@ -145,7 +145,7 @@ public class InstagramService {
         } catch (ResourceAccessException e) {
             // skip
         } catch (Exception e) {
-            LOGGER.error("Could not get Instagram data", e);
+            LOGGER.warn("Could not get Instagram data: {}", e.getMessage());
         }
         return cache;
     }

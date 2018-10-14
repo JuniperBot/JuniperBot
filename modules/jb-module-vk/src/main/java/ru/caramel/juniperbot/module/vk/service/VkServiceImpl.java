@@ -36,6 +36,7 @@ import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -481,6 +482,9 @@ public class VkServiceImpl implements VkService {
                 photo.getPhoto604(),
                 photo.getPhoto130(),
                 photo.getPhoto75());
+        if (!UrlValidator.getInstance().isValid(imageUrl)) {
+            return;
+        }
         if (images.add(imageUrl)) {
             String url = String.format(PHOTO_URL,
                     Math.abs(message.getGroupId()),
