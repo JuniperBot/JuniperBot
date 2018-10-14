@@ -40,7 +40,8 @@ public class InfoMdcFilter implements Filter {
             }
             chain.doFilter(request, response);
         } finally {
-            MDC.clear();
+            MDC.remove("requestId");
+            MDC.remove("userId");
         }
     }
 
