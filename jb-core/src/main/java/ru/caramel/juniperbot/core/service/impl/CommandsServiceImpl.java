@@ -19,17 +19,17 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.units.JustNow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.Command;
+import ru.caramel.juniperbot.core.model.CoolDownHolder;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.model.enums.CoolDownMode;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
@@ -46,6 +48,9 @@ import ru.caramel.juniperbot.core.service.*;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +67,9 @@ public class CommandsServiceImpl implements CommandsService {
     private MessageService messageService;
 
     @Autowired
+    private ContextService contextService;
+
+    @Autowired
     private CommandsHolderService commandsHolderService;
 
     @Autowired
@@ -70,7 +78,11 @@ public class CommandsServiceImpl implements CommandsService {
     @Autowired
     private StatisticsService statisticsService;
 
-    private Map<MessageChannel, BotContext> contexts = new HashMap<>();
+    private Cache<Long, BotContext> contexts = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .build();
+
+    private Map<Long, CoolDownHolder> coolDownHolderMap = new ConcurrentHashMap<>();
 
     private Meter executions;
 
@@ -82,6 +94,11 @@ public class CommandsServiceImpl implements CommandsService {
     public void init() {
         executions = statisticsService.getMeter(EXECUTIONS_METER);
         counter = statisticsService.getCounter(EXECUTIONS_COUNTER);
+    }
+
+    @Override
+    public void clear(Guild guild) {
+        coolDownHolderMap.remove(guild.getIdLong());
     }
 
     @Override
@@ -192,7 +209,7 @@ public class CommandsServiceImpl implements CommandsService {
             }
         }
 
-        BotContext context = contexts.computeIfAbsent(event.getChannel(), e -> new BotContext());
+        BotContext context = getContext(event.getChannel());
         context.setConfig(guildConfig);
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
@@ -231,6 +248,21 @@ public class CommandsServiceImpl implements CommandsService {
             resultEmotion(event, "✋", null);
             messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.roles");
             return true;
+        }
+        if (commandConfig.getCoolDownMode() != CoolDownMode.NONE) {
+            CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
+            long duration = holder.perform(event, commandConfig);
+            if (duration > 0) {
+                resultEmotion(event, "\uD83D\uDD5C", null);
+                Date date = new Date();
+                date.setTime(date.getTime() + duration);
+
+                PrettyTime time = new PrettyTime(contextService.getLocale());
+                time.removeUnit(JustNow.class);
+                messageService.onTempEmbedMessage(event.getChannel(), 10,
+                        "discord.command.restricted.cooldown", time.format(date));
+                return true;
+            }
         }
         return false;
     }
@@ -323,5 +355,13 @@ public class CommandsServiceImpl implements CommandsService {
             shard = jda.getShardInfo().getShardId();
         }
         return statisticsService.getTimer(String.format("commands/shard.%d/%s", shard, command.getKey()));
+    }
+
+    private BotContext getContext(MessageChannel channel) {
+        try {
+            return contexts.get(channel.getIdLong(), BotContext::new);
+        } catch (ExecutionException e) {
+            return new BotContext();
+        }
     }
 }

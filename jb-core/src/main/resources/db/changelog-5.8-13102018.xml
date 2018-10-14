@@ -89,4 +89,15 @@
         <dropNotNullConstraint tableName="twitch_connection" columnName="announce_message"/>
     </changeSet>
 
+    <changeSet id="5.8-13102018-8" author="caramel">
+        <addColumn tableName="command_config">
+            <column name="cooldown" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="cooldown_mode" type="VARCHAR(255)" defaultValue="NONE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -146,6 +146,12 @@
             <version>${metrics-spring.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.ocpsoft.prettytime</groupId>
+            <artifactId>prettytime</artifactId>
+            <version>${prettytime.version}</version>
+        </dependency>
+
         <!-- INTEGRATION DEPENDENCIES -->
 
         <dependency>

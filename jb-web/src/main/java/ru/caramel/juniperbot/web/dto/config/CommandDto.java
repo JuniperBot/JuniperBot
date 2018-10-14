@@ -18,6 +18,9 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.core.model.enums.CoolDownMode;
+
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -30,6 +33,11 @@ public class CommandDto implements Serializable {
     private String key;
 
     private boolean enabled;
+
+    private int coolDown;
+
+    @NotNull
+    private CoolDownMode coolDownMode;
 
     private boolean deleteSource;
 
