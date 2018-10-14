@@ -105,10 +105,10 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Override
     @Transactional
     public T getOrCreate(long guildId) {
-        T result = getByGuildId(guildId);
+        T result = repository.findByGuildId(guildId);
         if (result == null) {
             synchronized (this) {
-                result = getByGuildId(guildId);
+                result = repository.findByGuildId(guildId);
                 if (result == null) {
                     result = createNew(guildId);
                     repository.saveAndFlush(result);

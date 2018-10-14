@@ -47,6 +47,9 @@ public class ModerationConfig extends GuildEntity {
     @Column(name = "public_colors")
     private boolean publicColors;
 
+    @Column(name = "muted_role_id")
+    private Long mutedRoleId;
+
     @Column(name = "max_warnings")
     private int maxWarnings = DEFAULT_MAX_WARNINGS;
 

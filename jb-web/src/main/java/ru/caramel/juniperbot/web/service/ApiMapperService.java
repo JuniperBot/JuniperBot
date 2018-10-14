@@ -160,6 +160,7 @@ public interface ApiMapperService {
             @Mapping(target = "ignoredRoles", ignore = true),
             @Mapping(target = "allowedChannels", ignore = true),
             @Mapping(target = "ignoredChannels", ignore = true),
+            @Mapping(target = "deleteSource", ignore = true)
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
 

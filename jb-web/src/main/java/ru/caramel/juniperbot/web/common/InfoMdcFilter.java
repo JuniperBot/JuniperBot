@@ -16,21 +16,14 @@
  */
 package ru.caramel.juniperbot.web.common;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.MDC;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.web.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
-
-@Component
 public class InfoMdcFilter implements Filter {
 
     @Override
@@ -39,19 +32,10 @@ public class InfoMdcFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        SecurityContext context = (SecurityContext) req.getSession().getAttribute(SPRING_SECURITY_CONTEXT_KEY);
-        if (context != null) {
-            Authentication authentication = context.getAuthentication();
-            if (authentication instanceof OAuth2Authentication && authentication.isAuthenticated()) {
-                authentication = ((OAuth2Authentication) authentication).getUserAuthentication();
-                if (authentication != null) {
-                    DiscordUserDetails details = SecurityUtils.getDetails(authentication);
-                    if (details != null) {
-                        MDC.put("userId", details.getId());
-                    }
-                }
-            }
+        MDC.put("requestId", RandomStringUtils.random(8, "0123456789abcdef"));
+        DiscordUserDetails details = SecurityUtils.getCurrentUser();
+        if (details != null) {
+            MDC.put("userId", details.getId());
         }
         chain.doFilter(request, response);
     }

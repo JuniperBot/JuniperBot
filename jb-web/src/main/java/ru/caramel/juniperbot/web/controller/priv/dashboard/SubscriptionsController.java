@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.SubscriptionDao;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
@@ -52,9 +53,9 @@ public class SubscriptionsController extends BaseRestController {
     }
 
     @RequestMapping(value = "/subscriptions/{guildId}", method = RequestMethod.PUT)
-    public SubscriptionDto create(@GuildId @PathVariable long guildId,
+    public SubscriptionCreateResponse create(@GuildId @PathVariable long guildId,
                                @RequestBody @Validated SubscriptionCreateRequest request) {
-        SubscriptionDto result = subscriptionDao.create(guildId, request);
+        SubscriptionCreateResponse result = subscriptionDao.create(guildId, request);
         if (result == null) {
             throw new AccessDeniedException();
         }

@@ -16,6 +16,9 @@
  */
 package ru.caramel.juniperbot.web.controller.base;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +30,8 @@ import ru.caramel.juniperbot.web.dto.ErrorDetailsDto;
 
 @RestControllerAdvice
 public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ResponseEntityExceptionHandlerEx.class);
 
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity handleNotFound(NotFoundException e) {
@@ -40,6 +45,20 @@ public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHan
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDto> handleAllExceptions(Exception e) {
-        return new ResponseEntity<>(new ErrorDetailsDto(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        return errorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    protected ResponseEntity<ErrorDetailsDto> errorResponse(Exception e, HttpStatus status) {
+        if (e != null) {
+            log.error("API error caught: " + e.getMessage(), e);
+            return response(new ErrorDetailsDto(e), status);
+        } else {
+            log.error("Unknown API error caught, {}", status);
+            return response(null, status);
+        }
+    }
+
+    private  <T> ResponseEntity<T> response(T body, HttpStatus status) {
+        return new ResponseEntity<>(body, new HttpHeaders(), status);
     }
 }

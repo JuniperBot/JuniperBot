@@ -18,5 +18,6 @@ package ru.caramel.juniperbot.web.model;
 
 public enum SubscriptionType {
     JUNIPERFOXX,
-    VK
+    VK,
+    TWITCH
 }

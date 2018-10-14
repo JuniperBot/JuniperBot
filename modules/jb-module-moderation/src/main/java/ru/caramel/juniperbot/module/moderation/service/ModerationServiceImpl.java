@@ -37,7 +37,6 @@ import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.moderation.jobs.UnMuteJob;
-import ru.caramel.juniperbot.module.moderation.model.SlowMode;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.moderation.persistence.entity.MuteState;
@@ -48,7 +47,6 @@ import ru.caramel.juniperbot.module.moderation.persistence.repository.MuteStateR
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -78,8 +76,6 @@ public class ModerationServiceImpl
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
-
-    private Map<Long, SlowMode> slowModeMap = new ConcurrentHashMap<>();
 
     public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
         super(repository, true);
@@ -173,8 +169,18 @@ public class ModerationServiceImpl
 
     @Override
     public Role getMutedRole(Guild guild) {
-        List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
-        Role role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
+        ModerationConfig moderationConfig = getOrCreate(guild);
+
+        Role role = null;
+        if (moderationConfig.getMutedRoleId() != null) {
+            role = guild.getRoleById(moderationConfig.getMutedRoleId());
+        }
+
+        if (role == null) {
+            List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
+            role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
+        }
+
         if (role == null || !guild.getSelfMember().canInteract(role)) {
             role = guild.getController()
                     .createRole()
@@ -183,6 +189,12 @@ public class ModerationServiceImpl
                     .setName(MUTED_ROLE_NAME)
                     .complete();
         }
+
+        if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
+            moderationConfig.setMutedRoleId(role.getIdLong());
+            save(moderationConfig);
+        }
+
         for (TextChannel channel : guild.getTextChannels()) {
             checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
         }
@@ -402,30 +414,6 @@ public class ModerationServiceImpl
         } catch (SchedulerException e) {
             // fall down, we don't care
         }
-    }
-
-    @Override
-    public void slowMode(TextChannel channel, int interval) {
-        SlowMode slowMode = slowModeMap.computeIfAbsent(channel.getIdLong(), e -> {
-            SlowMode result = new SlowMode();
-            result.setChannelId(e);
-            return result;
-        });
-        slowMode.setInterval(interval);
-    }
-
-    @Override
-    public boolean isRestricted(TextChannel channel, Member member) {
-        if (member == null || member.getUser().isBot() || isModerator(member)) {
-            return false;
-        }
-        SlowMode slowMode = slowModeMap.get(channel.getIdLong());
-        return slowMode != null && slowMode.tick(member.getUser().getId());
-    }
-
-    @Override
-    public boolean slowOff(TextChannel channel) {
-        return slowModeMap.remove(channel.getIdLong()) != null;
     }
 
     @Override

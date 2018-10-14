@@ -16,11 +16,7 @@
  */
 package ru.caramel.juniperbot.module.moderation.listeners;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
@@ -31,20 +27,6 @@ public class ModerationListener extends DiscordEventListener {
 
     @Autowired
     private ModerationService moderationService;
-
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getMessage().getType() == MessageType.DEFAULT
-                && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
-                && moderationService.isRestricted(event.getChannel(), event.getMember())) {
-            event.getMessage().delete().queue();
-        }
-    }
-
-    @Override
-    public void onTextChannelDelete(TextChannelDeleteEvent event) {
-        moderationService.slowOff(event.getChannel());
-    }
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {

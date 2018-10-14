@@ -44,18 +44,20 @@ public class MuteCommand extends ModeratorCommandAsync {
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
             return; // do not allow to mute moderators
         }
+
+        String globalKeyWord = messageService.getMessageByLocale("discord.command.mod.mute.key.everywhere",
+                context.getCommandLocale());
+
         if (mentioned == null) {
-            help(event, context);
+            help(event, context, globalKeyWord);
             return;
         }
-
-        String globalKeyWord = messageService.getMessage("discord.command.mod.mute.key.everywhere");
 
         Matcher m = Pattern
                 .compile(String.format(COMMAND_PATTERN, Pattern.quote(globalKeyWord)))
                 .matcher(removeMention(query));
         if (!m.find()) {
-            help(event, context);
+            help(event, context, globalKeyWord);
             return;
         }
 
@@ -64,7 +66,7 @@ public class MuteCommand extends ModeratorCommandAsync {
             try {
                 duration = Integer.parseInt(m.group(1).trim());
             } catch (NumberFormatException e) {
-                help(event, context);
+                help(event, context, globalKeyWord);
                 return;
             }
         }
@@ -74,11 +76,11 @@ public class MuteCommand extends ModeratorCommandAsync {
                 ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
     }
 
-    private void help(MessageReceivedEvent event, BotContext context) {
+    private void help(MessageReceivedEvent event, BotContext context, String globalKeyWord) {
         String muteCommand = messageService.getMessageByLocale("discord.command.mod.mute.key",
                 context.getCommandLocale());
         messageService.onMessage(event.getChannel(),
                 "discord.command.mod.mute.mention",
-                context.getConfig().getPrefix(), muteCommand);
+                context.getConfig().getPrefix(), muteCommand, globalKeyWord);
     }
 }

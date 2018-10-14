@@ -23,6 +23,7 @@ import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.junipost.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.junipost.service.JuniPostService;
 import ru.caramel.juniperbot.module.junipost.service.PostService;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
@@ -69,7 +70,7 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
     }
 
     @Override
-    public SubscriptionDto create(long fuildId, Map<String, ?> data) {
+    public SubscriptionCreateResponse create(long fuildId, Map<String, ?> data) {
         throw new AccessDeniedException();
     }
 

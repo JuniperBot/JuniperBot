@@ -15,9 +15,11 @@
 package ru.caramel.juniperbot.core.listeners;
 
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
 
@@ -29,6 +31,9 @@ public class GuildListener extends DiscordEventListener {
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private CommandsService commandsService;
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
@@ -47,4 +52,8 @@ public class GuildListener extends DiscordEventListener {
         contextService.initContext(event.getGuild()); // reinit context with updated locale
     }
 
+    @Override
+    public void onGuildLeave(GuildLeaveEvent event) {
+        commandsService.clear(event.getGuild());
+    }
 }

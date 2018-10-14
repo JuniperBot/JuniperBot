@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.MDC;
 
 import java.io.Serializable;
 
@@ -30,8 +30,11 @@ public class ErrorDetailsDto implements Serializable {
 
     private final String description;
 
+    private final String requestId;
+
     public ErrorDetailsDto(Exception e) {
         this.error = e.getClass().getName();
         this.description = e.getMessage();
+        this.requestId = MDC.get("requestId");
     }
 }

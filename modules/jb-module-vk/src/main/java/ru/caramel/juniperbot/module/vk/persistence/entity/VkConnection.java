@@ -20,7 +20,7 @@ import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
 import ru.caramel.juniperbot.module.vk.model.VkConnectionStatus;
 
 import javax.persistence.*;
@@ -30,7 +30,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "vk_connection")
-public class VkConnection extends WebHookOwnedEntity {
+public class VkConnection extends BaseSubscriptionEntity {
     private static final long serialVersionUID = 2146901518074674594L;
 
     @Column(name = "group_id")
@@ -38,9 +38,6 @@ public class VkConnection extends WebHookOwnedEntity {
 
     @Column
     private String token;
-
-    @Column
-    private String name;
 
     @Column(name = "confirm_code")
     private String confirmCode;
@@ -61,8 +58,5 @@ public class VkConnection extends WebHookOwnedEntity {
 
     @Column(name = "show_date")
     private boolean showDate = true;
-
-    @Column(name = "mention_everyone")
-    private boolean mentionEveryone;
 
 }

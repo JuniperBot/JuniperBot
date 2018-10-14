@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.moderation.commands;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -33,22 +34,33 @@ public class SlowModeCommand extends ModeratorCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
-        if (StringUtils.isNumeric(query)) {
-            int seconds = Integer.parseInt(query);
-            String secPlurals = messageService.getCountPlural(seconds, "discord.plurals.second");
-            moderationService.slowMode(event.getTextChannel(), seconds);
-            messageService.onEmbedMessage(event.getChannel(),"discord.command.mod.slow.enabled", seconds,
-                    secPlurals);
-            return true;
-        } else if (messageService.getMessage("discord.command.mod.slow.off").equalsIgnoreCase(query)) {
-            boolean disabled = moderationService.slowOff(event.getTextChannel());
-            messageService.onEmbedMessage(event.getChannel(), disabled
-                    ? "discord.command.mod.slow.disabled" : "discord.command.mod.slow.disabled.already");
-            return true;
+        TextChannel channel = event.getTextChannel();
+        if (!StringUtils.isNumeric(query)) {
+            return showHelp(channel, context);
         }
+
+        int seconds = Integer.parseInt(query);
+        if (seconds < 0 || seconds > 120) {
+            return showHelp(channel, context);
+        }
+
+        channel.sendTyping().queue();
+        channel.getManager().setSlowmode(seconds).queue(e -> contextService.withContext(channel.getGuild(), () -> {
+            if (seconds > 0) {
+                String secPlurals = messageService.getCountPlural(seconds, "discord.plurals.second");
+                messageService.onEmbedMessage(channel, "discord.command.mod.slow.enabled", seconds,
+                        secPlurals);
+            } else {
+                messageService.onEmbedMessage(channel, "discord.command.mod.slow.disabled");
+            }
+        }));
+        return true;
+    }
+
+    private boolean showHelp(TextChannel channel, BotContext context) {
         String slowCommand = messageService.getMessageByLocale("discord.command.mod.slow.key",
                 context.getCommandLocale());
-        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.slow.help",
+        messageService.onEmbedMessage(channel, "discord.command.mod.slow.help",
                 context.getConfig().getPrefix(), slowCommand);
         return false;
     }

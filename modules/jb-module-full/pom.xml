@@ -77,6 +77,12 @@
 
         <dependency>
             <groupId>ru.caramel</groupId>
+            <artifactId>jb-module-twitch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.caramel</groupId>
             <artifactId>jb-module-welcome</artifactId>
             <version>${project.version}</version>
         </dependency>

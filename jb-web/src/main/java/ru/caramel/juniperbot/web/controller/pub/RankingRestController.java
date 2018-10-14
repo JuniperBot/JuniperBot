@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dto.PageDto;
 import ru.caramel.juniperbot.web.dto.RankingInfoDto;
@@ -37,7 +38,7 @@ public class RankingRestController extends BasePublicRestController {
 
     @RequestMapping("/ranking/list/{guildId}")
     @ResponseBody
-    public PageDto<RankingInfoDto> list(@PathVariable long guildId,
+    public PageDto<RankingInfoDto> list(@GuildId(validate = false) @PathVariable long guildId,
                                         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                         @RequestParam(value = "size", defaultValue = "100", required = false) int size,
                                         @RequestParam(value = "search", required = false) String search) {

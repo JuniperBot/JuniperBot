@@ -52,13 +52,13 @@ public class InstagramService {
 
     private static final Pattern PATTERN = Pattern.compile("window._sharedData = (.*);</script>");
 
-    @Value("${instagram.pollUserName:juniperfoxx}")
+    @Value("${integrations.instagram.pollUserName:juniperfoxx}")
     private String pollUserName;
 
-    @Value("${instagram.ttl:30000}")
+    @Value("${integrations.instagram.ttl:30000}")
     private Long ttl;
 
-    @Value("${instagram.updateInterval:30000}")
+    @Value("${integrations.instagram.updateInterval:30000}")
     private Long updateInterval;
 
     @Autowired

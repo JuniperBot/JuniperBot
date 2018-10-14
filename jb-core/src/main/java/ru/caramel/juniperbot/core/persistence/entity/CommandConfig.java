@@ -4,11 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import ru.caramel.juniperbot.core.model.enums.CoolDownMode;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -29,6 +28,14 @@ public class CommandConfig extends GuildEntity {
 
     @Column(name = "delete_source")
     private boolean deleteSource;
+
+    @Column(name = "cooldown")
+    private int coolDown;
+
+    @Column(name = "cooldown_mode")
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private CoolDownMode coolDownMode = CoolDownMode.NONE;
 
     @Type(type = "jsonb")
     @Column(name = "allowed_roles", columnDefinition = "json")

@@ -119,7 +119,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         try {
             DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
-                    .setEventManager(eventManager)
+                    .setEventManagerProvider(id -> eventManager)
                     .addEventListeners(this)
                     .setCorePoolSize(corePoolSize)
                     .setShardsTotal(shardsNum)

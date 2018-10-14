@@ -42,12 +42,6 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     void refreshMute(Member member);
 
-    void slowMode(TextChannel channel, int interval);
-
-    boolean isRestricted(TextChannel channel, Member member);
-
-    boolean slowOff(TextChannel channel);
-
     boolean kick(Member author, Member member);
 
     boolean kick(Member author, Member member, String reason);
