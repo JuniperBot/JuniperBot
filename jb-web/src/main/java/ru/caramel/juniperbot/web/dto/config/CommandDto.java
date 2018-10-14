@@ -37,7 +37,7 @@ public class CommandDto implements Serializable {
     private int coolDown;
 
     @NotNull
-    private CoolDownMode coolDownMode;
+    private CoolDownMode coolDownMode = CoolDownMode.NONE;
 
     private boolean deleteSource;
 
