@@ -169,8 +169,18 @@ public class ModerationServiceImpl
 
     @Override
     public Role getMutedRole(Guild guild) {
-        List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
-        Role role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
+        ModerationConfig moderationConfig = getOrCreate(guild);
+
+        Role role = null;
+        if (moderationConfig.getMutedRoleId() != null) {
+            role = guild.getRoleById(moderationConfig.getMutedRoleId());
+        }
+
+        if (role == null) {
+            List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
+            role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
+        }
+
         if (role == null || !guild.getSelfMember().canInteract(role)) {
             role = guild.getController()
                     .createRole()
@@ -179,6 +189,12 @@ public class ModerationServiceImpl
                     .setName(MUTED_ROLE_NAME)
                     .complete();
         }
+
+        if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
+            moderationConfig.setMutedRoleId(role.getIdLong());
+            save(moderationConfig);
+        }
+
         for (TextChannel channel : guild.getTextChannels()) {
             checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
         }
