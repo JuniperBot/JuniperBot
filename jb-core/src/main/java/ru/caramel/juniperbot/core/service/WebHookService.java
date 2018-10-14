@@ -24,7 +24,7 @@ public interface WebHookService {
 
     Webhook getWebHook(Guild guild, WebHook webHook);
 
-    boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name);
+    boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name, String iconUrl);
 
     boolean delete(long guildId, WebHook webHook);
 

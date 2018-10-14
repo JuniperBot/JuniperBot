@@ -16,11 +16,21 @@
  */
 package ru.caramel.juniperbot.module.twitch.persistence.repository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
 import ru.caramel.juniperbot.module.twitch.persistence.entity.TwitchConnection;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface TwitchConnectionRepository extends BaseSubscriptionRepository<TwitchConnection> {
 
+    @Query("SELECT DISTINCT e.userId FROM TwitchConnection e")
+    Set<Long> findChannelIds();
+
+    @Query("SELECT t FROM TwitchConnection t WHERE t.userId IN :userIds AND t.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<TwitchConnection> findActiveConnections(@Param("userIds") Set<Long> userIds);
 }

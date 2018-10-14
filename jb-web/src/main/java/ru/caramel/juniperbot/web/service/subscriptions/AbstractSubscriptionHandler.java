@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -85,8 +86,18 @@ public abstract class AbstractSubscriptionHandler<T> implements SubscriptionHand
     protected void updateWebHook(WebHookOwnedEntity entity, SubscriptionDto dto) {
         WebHook webHook = entity.getWebHook();
         webHook.setEnabled(dto.isEnabled());
+
+        String iconUrl = null;
+        if (entity instanceof BaseSubscriptionEntity) {
+            iconUrl = ((BaseSubscriptionEntity) entity).getIconUrl();
+        }
+
         if (webHook.isEnabled() && dto.getChannelId() != null) {
-            webHookService.updateWebHook(entity.getGuildId(), Long.valueOf(dto.getChannelId()), webHook, dto.getName());
+            webHookService.updateWebHook(entity.getGuildId(),
+                    Long.valueOf(dto.getChannelId()),
+                    webHook,
+                    dto.getName(),
+                    iconUrl);
             webHookService.invalidateCache(entity.getGuildId());
         }
         webHookRepository.save(webHook);

@@ -21,6 +21,8 @@ import ru.caramel.juniperbot.module.twitch.persistence.entity.TwitchConnection;
 
 public interface TwitchService {
 
+    void init();
+
     TwitchConnection find(long id);
 
     TwitchConnection save(TwitchConnection connection);

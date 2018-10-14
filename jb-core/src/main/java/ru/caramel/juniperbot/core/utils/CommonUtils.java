@@ -17,13 +17,11 @@
 package ru.caramel.juniperbot.core.utils;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -31,7 +29,10 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.web.util.UriUtils;
 
 import java.awt.*;
-import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
@@ -83,6 +84,15 @@ public final class CommonUtils {
             content = content.substring(0, length - 3) + "...";
         }
         return content;
+    }
+
+    public static String formatNumber(long number) {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+
+        symbols.setGroupingSeparator(' ');
+        formatter.setDecimalFormatSymbols(symbols);
+        return formatter.format(number);
     }
 
     public static String trimTo(String content, int minLength, int maxLength) {
@@ -242,6 +252,17 @@ public final class CommonUtils {
         value = value.replace("@everyone", "@\u2063everyone");
         value = value.replace("@here", "@\u2063here");
         return value;
+    }
+
+    public static Icon getIcon(String iconUrl) {
+        if (UrlValidator.getInstance().isValid(iconUrl)) {
+            try {
+                return Icon.from(new URL(iconUrl).openStream());
+            } catch (Exception e) {
+                // fall down
+            }
+        }
+        return null;
     }
 
     public static String getUTCOffset(DateTimeZone zone) {

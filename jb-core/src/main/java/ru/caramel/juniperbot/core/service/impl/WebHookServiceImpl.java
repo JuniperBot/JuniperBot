@@ -52,7 +52,7 @@ public class WebHookServiceImpl implements WebHookService {
                         }
                     });
 
-    public boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name) {
+    public boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name, String iconUrl) {
         if (discordService.isConnected(guildId)) {
             Guild guild = discordService.getShardManager().getGuildById(guildId);
             if (guild != null && channelId != null) {
@@ -60,7 +60,10 @@ public class WebHookServiceImpl implements WebHookService {
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32)).complete();
+                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32))
+                                .setAvatar(CommonUtils.getIcon(iconUrl))
+                                .complete();
+                        webHooks.invalidate(guild);
                     }
                 }
                 if (webhook != null) {
