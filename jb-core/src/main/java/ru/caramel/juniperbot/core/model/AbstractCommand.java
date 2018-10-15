@@ -21,10 +21,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.service.BrandingService;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +41,9 @@ public abstract class AbstractCommand implements Command {
 
     @Autowired
     protected CommandsService commandsService;
+
+    @Autowired
+    protected ConfigService configService;
 
     @Override
     public boolean isAvailable(MessageReceivedEvent event) {
