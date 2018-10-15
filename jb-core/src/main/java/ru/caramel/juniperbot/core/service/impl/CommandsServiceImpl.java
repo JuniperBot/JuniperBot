@@ -78,6 +78,9 @@ public class CommandsServiceImpl implements CommandsService {
     @Autowired
     private StatisticsService statisticsService;
 
+    @Autowired
+    private ModerationService moderationService;
+
     private Cache<Long, BotContext> contexts = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.DAYS)
             .build();
@@ -249,7 +252,9 @@ public class CommandsServiceImpl implements CommandsService {
             messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.roles");
             return true;
         }
-        if (commandConfig.getCoolDownMode() != CoolDownMode.NONE) {
+        if (event.getMember() != null
+                && commandConfig.getCoolDownMode() != CoolDownMode.NONE
+                && !moderationService.isModerator(event.getMember())) {
             CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
             long duration = holder.perform(event, commandConfig);
             if (duration > 0) {
