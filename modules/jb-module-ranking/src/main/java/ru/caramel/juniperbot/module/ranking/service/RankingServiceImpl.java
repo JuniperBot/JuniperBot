@@ -350,12 +350,11 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Scheduled(fixedDelay = 300000)
     @Override
     public void calculateQueue() {
-        Set<Long> queue;
         synchronized (calculateQueue) {
-            queue = new HashSet<>(calculateQueue);
+            Set<Long> queue = new HashSet<>(calculateQueue);
             calculateQueue.clear();
+            queue.forEach(rankingRepository::recalculateRank);
         }
-        queue.forEach(rankingRepository::recalculateRank);
     }
 
     private static Date getCookieCoolDown() {
