@@ -14,34 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import ru.caramel.juniperbot.core.model.enums.WarnExceedAction;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Set;
-
-@Getter
-@Setter
-public class ModerationConfigDto implements Serializable {
-
-    private static final long serialVersionUID = 2373520739258476656L;
-
-    private Set<String> roles;
-
-    private boolean publicColors;
-
-    @Min(2)
-    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
-
-    @NotNull
-    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
-
-    @Min(1)
-    private int muteCount = ModerationConfig.DEFAULT_MUTE_COUNT;
+@Repository
+public interface ModerationConfigRepository extends GuildRepository<ModerationConfig> {
 }

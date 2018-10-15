@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.module.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.service.ModerationService;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

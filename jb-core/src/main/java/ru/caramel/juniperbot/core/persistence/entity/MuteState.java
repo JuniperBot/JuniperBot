@@ -14,34 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.config;
+package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.model.enums.WarnExceedAction;
-import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.core.persistence.entity.base.MemberEntity;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Set;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.util.Date;
 
 @Getter
 @Setter
-public class ModerationConfigDto implements Serializable {
+@Entity
+@NoArgsConstructor
+@Table(name = "mute_state")
+public class MuteState extends MemberEntity {
 
-    private static final long serialVersionUID = 2373520739258476656L;
+    private static final long serialVersionUID = -7592224653192706689L;
 
-    private Set<String> roles;
+    @Column
+    private boolean global;
 
-    private boolean publicColors;
+    @Column(name = "channel_id")
+    private String channelId;
 
-    @Min(2)
-    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
+    @Column
+    @Size(max = 2000)
+    private String reason;
 
-    @NotNull
-    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
-
-    @Min(1)
-    private int muteCount = ModerationConfig.DEFAULT_MUTE_COUNT;
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expire;
 }

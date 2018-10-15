@@ -128,7 +128,6 @@
         <module>modules/jb-module-info</module>
         <module>modules/jb-module-steam</module>
         <module>modules/jb-module-mafia</module>
-        <module>modules/jb-module-moderation</module>
         <module>modules/jb-module-aiml</module>
         <module>modules/jb-module-full</module>
         <module>jb-web</module>

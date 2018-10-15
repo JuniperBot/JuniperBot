@@ -125,12 +125,6 @@
 
         <dependency>
             <groupId>ru.caramel</groupId>
-            <artifactId>jb-module-moderation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ru.caramel</groupId>
             <artifactId>jb-module-aiml</artifactId>
             <version>${project.version}</version>
         </dependency>
