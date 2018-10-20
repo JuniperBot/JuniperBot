@@ -22,12 +22,16 @@ import com.google.gson.reflect.TypeToken;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.objects.wall.Wallpost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.service.VkService;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,9 +39,12 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
-public class VkCallbackController extends BasePublicRestController {
+public class CallbackController extends BasePublicRestController {
+
+    private static final Logger log = LoggerFactory.getLogger(CallbackController.class);
 
     private final Gson gson = GsonUtils.create();
 
@@ -58,10 +65,13 @@ public class VkCallbackController extends BasePublicRestController {
     @Autowired
     private VkService vkService;
 
+    @Autowired
+    private YouTubeService youTubeService;
+
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)
     @Transactional
-    public String callback(@RequestBody String content, @PathVariable("token") String token, HttpServletResponse response) {
+    public String vkCallback(@RequestBody String content, @PathVariable("token") String token, HttpServletResponse response) {
         JsonObject json = gson.fromJson(content, JsonObject.class);
         String type = json.get("type").getAsString();
         Type typeOfClass = CALLBACK_TYPES.get(type);
@@ -90,5 +100,25 @@ public class VkCallbackController extends BasePublicRestController {
             }
         }
         return "ok";
+    }
+
+    @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.POST)
+    @Transactional
+    public void youTubeCallback(@RequestBody String content,
+                                @RequestParam("hub.verify_token") String secret) {
+        if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
+            return;
+        }
+        log.info("YouTube request: {}", content);
+    }
+
+    @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.GET)
+    @Transactional
+    public String youTubeCallbackChallenge(@RequestParam("hub.verify_token") String secret,
+                                           @RequestParam("hub.challenge") String challenge) {
+        if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
+            throw new AccessDeniedException();
+        }
+        return challenge;
     }
 }

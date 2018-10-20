@@ -53,7 +53,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlaylistAudioSourceManager.class);
 
-    private final static String PLAYLIST_PATTERN = "https?:\\/\\/%s/playlist/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})";
+    private final static String PLAYLIST_PATTERN = "%s/playlist/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})";
 
     @Autowired
     private BrandingService brandingService;

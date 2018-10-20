@@ -23,6 +23,7 @@ import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import lombok.Getter;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
@@ -51,12 +61,25 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeServiceImpl.class);
 
+    private static final String PUSH_ENDPOINT = "https://pubsubhubbub.appspot.com/subscribe";
+
+    private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/feeds/videos.xml?channel_id=";
+
     @Value("${integrations.youTube.apiKey}")
     private String apiKey;
+
+    @Getter
+    @Value("${integrations.youTube.pubSubSecret}")
+    private String pubSubSecret;
+
+    @Autowired
+    private BrandingService brandingService;
 
     private YouTube youTube;
 
     private YouTubeConnectionRepository repository;
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     public YouTubeServiceImpl(@Autowired YouTubeConnectionRepository repository) {
         super(repository);
@@ -185,6 +208,31 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Override
     protected WebhookMessage createMessage(Video subscription, YouTubeConnection connection) {
         return null;
+    }
+
+    @Override
+    @Transactional
+    public YouTubeConnection create(long guildId, Channel channel) {
+        YouTubeConnection connection = super.create(guildId, channel);
+        subscribe(connection);
+        return connection;
+    }
+
+    private void subscribe(YouTubeConnection connection) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish", brandingService.getWebHost()));
+        map.add("hub.topic", CHANNEL_RSS_ENDPOINT + connection.getChannelId());
+        map.add("hub.mode", "subscribe");
+        map.add("hub.verify", "sync");
+        map.add("hub.verify_token", pubSubSecret);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(PUSH_ENDPOINT, request, String.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new IllegalStateException("Could not subscribe to " + connection.getChannelId());
+        }
     }
 
     @Override

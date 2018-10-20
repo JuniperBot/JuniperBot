@@ -41,4 +41,6 @@ public interface YouTubeService extends SubscriptionService<YouTubeConnection, V
     String getUrl(SearchResult result);
 
     String getUrl(Video result);
+
+    String getPubSubSecret();
 }
