@@ -16,18 +16,23 @@
  */
 package ru.caramel.juniperbot.module.social.service;
 
+import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import ru.caramel.juniperbot.core.service.SubscriptionService;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 
 import java.util.List;
 
-public interface YouTubeService {
+public interface YouTubeService extends SubscriptionService<YouTubeConnection, Video, Channel> {
 
     List<SearchResult> search(String queryTerm, long maxResults);
 
     List<Video> searchDetailed(String queryTerm, long maxResults);
 
     List<SearchResult> searchChannel(String queryTerm, long maxResults);
+
+    Channel getChannelById(String id);
 
     String searchForUrl(String queryTerm);
 

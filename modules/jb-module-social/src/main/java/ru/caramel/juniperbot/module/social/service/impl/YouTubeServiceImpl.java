@@ -19,15 +19,24 @@ package ru.caramel.juniperbot.module.social.service.impl;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Channel;
+import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import net.dv8tion.jda.webhook.WebhookMessage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
+import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class YouTubeServiceImpl implements YouTubeService {
+public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnection, Video, Channel> implements YouTubeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeServiceImpl.class);
 
@@ -46,6 +55,13 @@ public class YouTubeServiceImpl implements YouTubeService {
     private String apiKey;
 
     private YouTube youTube;
+
+    private YouTubeConnectionRepository repository;
+
+    public YouTubeServiceImpl(@Autowired YouTubeConnectionRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
 
     @PostConstruct
     public void init() {
@@ -57,6 +73,11 @@ public class YouTubeServiceImpl implements YouTubeService {
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    @Override
+    public Channel getUser(String userName) {
+        return null;
     }
 
     @Override
@@ -107,6 +128,20 @@ public class YouTubeServiceImpl implements YouTubeService {
         return Collections.emptyList();
     }
 
+    public Channel getChannelById(String id) {
+        try {
+            YouTube.Channels.List list = youTube.channels().list("id,snippet");
+            list.setKey(apiKey);
+            list.setId(id);
+            List<Channel> channels = list.execute().getItems();
+            return CollectionUtils.isNotEmpty(channels) ? channels.get(0) : null;
+        } catch (IOException e) {
+            LOGGER.error("Could not perform YouTube search", e);
+        }
+
+        return null;
+    }
+
     @Override
     public String searchForUrl(String queryTerm) {
         List<SearchResult> result = search(queryTerm, 1L);
@@ -145,5 +180,23 @@ public class YouTubeServiceImpl implements YouTubeService {
     @Override
     public String getUrl(Video result) {
         return String.format("https://www.youtube.com/watch?v=%s", result.getId());
+    }
+
+    @Override
+    protected WebhookMessage createMessage(Video subscription, YouTubeConnection connection) {
+        return null;
+    }
+
+    @Override
+    protected YouTubeConnection createConnection(Channel channel) {
+        YouTubeConnection connection = new YouTubeConnection();
+        connection.setChannelId(channel.getId());
+        ChannelSnippet snippet = channel.getSnippet();
+        connection.setName(CommonUtils.trimTo(snippet.getTitle(), 255));
+        connection.setDescription(CommonUtils.trimTo(snippet.getDescription(), 255));
+        if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
+            connection.setIconUrl(snippet.getThumbnails().getDefault().getUrl());
+        }
+        return connection;
     }
 }
