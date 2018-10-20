@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
@@ -52,11 +51,11 @@ public class HereCommand extends AudioCommand {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent message) {
-        if (message.getGuild() == null) {
+    public boolean isAvailable(User user, Member member) {
+        if (member == null) {
             return false;
         }
-        MusicConfig musicConfig = musicConfigService.getByGuildId(message.getGuild().getIdLong());
+        MusicConfig musicConfig = musicConfigService.getByGuildId(member.getGuild().getIdLong());
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 

@@ -188,7 +188,7 @@ public class CommandsServiceImpl implements CommandsService {
         }
 
         CommandConfig commandConfig = event.getGuild() != null ? commandConfigService.findByKey(event.getGuild().getIdLong(), rawKey) : null;
-        if (!isApplicable(event, command, commandConfig)) {
+        if (!isApplicable(command, commandConfig, event.getAuthor(), event.getMember(), event.getChannel())) {
             return false;
         }
 
@@ -315,7 +315,7 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    public boolean isApplicable(MessageReceivedEvent event, Command command, CommandConfig commandConfig) {
+    public boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, MessageChannel channel) {
         if (!command.getClass().isAnnotationPresent(DiscordCommand.class)) {
             return false;
         }
@@ -324,13 +324,37 @@ public class CommandsServiceImpl implements CommandsService {
         if (commandConfig != null && commandConfig.isDisabled()) {
             return false;
         }
-        if (!command.isAvailable(event)) {
+        if (!command.isAvailable(user, member)) {
             return false;
         }
-        if (commandAnnotation.source().length == 0) {
+        if (commandAnnotation.source().length == 0 || channel == null) {
             return true;
         }
-        return ArrayUtils.contains(commandAnnotation.source(), event.getChannelType());
+        return ArrayUtils.contains(commandAnnotation.source(), channel.getType());
+    }
+
+    public boolean isRestricted(String rawKey, TextChannel channel, Member member) {
+        CommandConfig config = commandConfigService.findByKey(channel.getGuild().getIdLong(), rawKey);
+        if (config == null) {
+            return false;
+        }
+        Command command = commandsHolderService.getCommands().get(rawKey);
+        if (command == null) {
+            return true;
+        }
+
+        if (!isApplicable(command, config, member != null ? member.getUser() : null, member, channel)) {
+            return true;
+        }
+
+        if (isRestricted(config, channel)) {
+            return true;
+        }
+
+        if (member != null && isRestricted(config, member)) {
+            return true;
+        }
+        return false;
     }
 
     public void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {

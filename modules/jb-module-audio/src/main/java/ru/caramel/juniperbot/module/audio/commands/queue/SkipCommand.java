@@ -24,12 +24,14 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 
 @DiscordCommand(
-        key = "discord.command.skip.key",
+        key = SkipCommand.KEY,
         description = "discord.command.skip.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
         priority = 110)
 public class SkipCommand extends AudioCommand {
+
+    public static final String KEY = "discord.command.skip.key";
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.model;
 
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +47,7 @@ public abstract class AbstractCommand implements Command {
     protected ConfigService configService;
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event) {
+    public boolean isAvailable(User user, Member member) {
         return true;
     }
 

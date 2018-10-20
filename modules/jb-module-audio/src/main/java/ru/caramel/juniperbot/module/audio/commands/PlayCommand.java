@@ -30,7 +30,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import java.util.List;
 
 @DiscordCommand(
-        key = "discord.command.play.key",
+        key = PlayCommand.KEY,
         description = "discord.command.play.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
@@ -42,6 +42,8 @@ import java.util.List;
         },
         priority = 100)
 public class PlayCommand extends AudioCommand {
+
+    public static final String KEY = "discord.command.play.key";
 
     protected static final String ATTR_SEARCH_MESSAGE = "search-message";
 

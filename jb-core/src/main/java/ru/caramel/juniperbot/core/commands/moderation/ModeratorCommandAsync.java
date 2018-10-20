@@ -16,7 +16,8 @@
  */
 package ru.caramel.juniperbot.core.commands.moderation;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
 import ru.caramel.juniperbot.core.service.ModerationService;
@@ -27,7 +28,7 @@ public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
     protected ModerationService moderationService;
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event) {
-        return moderationService.isModerator(event.getMember());
+    public boolean isAvailable(User user, Member member) {
+        return member != null && moderationService.isModerator(member);
     }
 }

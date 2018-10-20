@@ -24,12 +24,14 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 
 @DiscordCommand(
-        key = "discord.command.stop.key",
+        key = StopCommand.KEY,
         description = "discord.command.stop.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
         priority = 107)
 public class StopCommand extends AudioCommand {
+
+    public static final String KEY = "discord.command.stop.key";
 
     @Override
     public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

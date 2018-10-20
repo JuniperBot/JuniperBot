@@ -17,9 +17,7 @@
 package ru.caramel.juniperbot.core.commands.moderation;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -89,8 +87,8 @@ public class ColorCommand extends ModeratorCommandAsync {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent event) {
-        return super.isAvailable(event) || (event.getGuild() != null &&
-                moderationService.isPublicColor(event.getGuild().getIdLong()));
+    public boolean isAvailable(User user, Member member) {
+        return super.isAvailable(user, member) || (member != null &&
+                moderationService.isPublicColor(member.getGuild().getIdLong()));
     }
 }
