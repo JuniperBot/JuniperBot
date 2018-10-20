@@ -28,7 +28,7 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import java.time.Duration;
 import java.util.ArrayList;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service.helper;
+package ru.caramel.juniperbot.module.social.service.impl;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -37,9 +38,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class YouTubeService {
+public class YouTubeServiceImpl implements YouTubeService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeServiceImpl.class);
 
     @Value("${integrations.youTube.apiKey}")
     private String apiKey;
@@ -51,13 +52,14 @@ public class YouTubeService {
         try {
             youTube = new YouTube
                     .Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), e -> {})
-                    .setApplicationName(YouTubeService.class.getSimpleName())
+                    .setApplicationName(YouTubeServiceImpl.class.getSimpleName())
                     .build();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
+    @Override
     public List<SearchResult> search(String queryTerm, long maxResults) {
         try {
             YouTube.Search.List search = youTube.search().list("id,snippet");
@@ -73,6 +75,7 @@ public class YouTubeService {
         return Collections.emptyList();
     }
 
+    @Override
     public List<Video> searchDetailed(String queryTerm, long maxResults) {
         try {
             List<SearchResult> results = search(queryTerm, maxResults);
@@ -88,6 +91,7 @@ public class YouTubeService {
         return Collections.emptyList();
     }
 
+    @Override
     public List<SearchResult> searchChannel(String queryTerm, long maxResults) {
         try {
             YouTube.Search.List search = youTube.search().list("id,snippet");
@@ -103,11 +107,13 @@ public class YouTubeService {
         return Collections.emptyList();
     }
 
+    @Override
     public String searchForUrl(String queryTerm) {
         List<SearchResult> result = search(queryTerm, 1L);
         return result.isEmpty() ? null : getUrl(result.get(0));
     }
 
+    @Override
     public Long extractTimecode(String input) {
         try {
             URIBuilder uri = new URIBuilder(input);
@@ -130,11 +136,13 @@ public class YouTubeService {
         return null;
     }
 
+    @Override
     public String getUrl(SearchResult result) {
         return result != null && result.getId() != null
                 ? String.format("https://www.youtube.com/watch?v=%s", result.getId().getVideoId()) : null;
     }
 
+    @Override
     public String getUrl(Video result) {
         return String.format("https://www.youtube.com/watch?v=%s", result.getId());
     }

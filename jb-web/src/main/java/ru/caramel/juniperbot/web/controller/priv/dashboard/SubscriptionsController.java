@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
-import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.SubscriptionDao;

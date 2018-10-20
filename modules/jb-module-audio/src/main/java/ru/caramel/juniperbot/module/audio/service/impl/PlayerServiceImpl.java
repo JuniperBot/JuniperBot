@@ -50,7 +50,7 @@ import ru.caramel.juniperbot.module.audio.service.*;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.helper.PlayerListenerAdapter;
 import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
-import ru.caramel.juniperbot.module.audio.service.helper.YouTubeService;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
