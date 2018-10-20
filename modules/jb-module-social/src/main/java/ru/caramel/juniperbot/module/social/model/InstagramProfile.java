@@ -14,11 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.model;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+public class InstagramProfile {
+
+    private String fullName;
+
+    private String imageUrl;
+
+    private List<InstagramMedia> feed;
+
 }

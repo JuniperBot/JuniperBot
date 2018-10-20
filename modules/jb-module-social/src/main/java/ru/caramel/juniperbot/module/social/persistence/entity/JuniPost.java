@@ -14,11 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.persistence.entity;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "junipost")
+@ToString
+@Getter
+@Setter
+public class JuniPost extends WebHookOwnedEntity {
+    private static final long serialVersionUID = -3872054410668142201L;
+
 }

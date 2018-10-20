@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.persistence.repository;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
+import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
+
+@Repository
+public interface VkConnectionRepository extends BaseSubscriptionRepository<VkConnection> {
+
+    VkConnection findByToken(String token);
 }

@@ -14,11 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.persistence.repository;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
+
+import java.util.List;
+
+@Repository
+public interface JuniPostRepository extends GuildRepository<JuniPost> {
+
+    @Query("SELECT j FROM JuniPost j WHERE j.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<JuniPost> findActive();
 }

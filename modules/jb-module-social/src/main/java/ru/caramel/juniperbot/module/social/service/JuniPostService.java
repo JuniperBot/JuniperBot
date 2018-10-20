@@ -14,11 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.service;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import ru.caramel.juniperbot.core.service.DomainService;
+import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
+
+public interface JuniPostService extends DomainService<JuniPost> {
 }

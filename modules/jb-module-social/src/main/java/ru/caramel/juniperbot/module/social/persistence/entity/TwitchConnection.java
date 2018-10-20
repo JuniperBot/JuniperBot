@@ -14,11 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.persistence.entity;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import lombok.Getter;
+import lombok.Setter;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "twitch_connection")
+public class TwitchConnection extends BaseSubscriptionEntity {
+    private static final long serialVersionUID = 2146901518074674595L;
+
+    @Column
+    private Long userId;
+
+    @Column
+    private String login;
+
+    @Column(name = "announce_message")
+    private String announceMessage;
+
+    @Column
+    private String description;
 }

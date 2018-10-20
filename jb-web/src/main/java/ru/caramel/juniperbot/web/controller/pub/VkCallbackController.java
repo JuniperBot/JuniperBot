@@ -26,8 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.module.vk.service.VkService;
+import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
+import ru.caramel.juniperbot.module.social.service.VkService;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 
 import javax.servlet.http.HttpServletResponse;

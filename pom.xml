@@ -116,11 +116,9 @@
         <module>jb-core</module>
         <module>modules/jb-module-audio</module>
         <module>modules/jb-module-custom</module>
-        <module>modules/jb-module-junipost</module>
         <module>modules/jb-module-reminder</module>
         <module>modules/jb-module-misc</module>
-        <module>modules/jb-module-vk</module>
-        <module>modules/jb-module-twitch</module>
+        <module>modules/jb-module-social</module>
         <module>modules/jb-module-welcome</module>
         <module>modules/jb-module-wikifur</module>
         <module>modules/jb-module-ranking</module>

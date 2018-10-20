@@ -107,6 +107,7 @@ public interface ApiMapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
+            @Mapping(target = "mutedRoleId", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
     })
     void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);
@@ -160,7 +161,9 @@ public interface ApiMapperService {
             @Mapping(target = "ignoredRoles", ignore = true),
             @Mapping(target = "allowedChannels", ignore = true),
             @Mapping(target = "ignoredChannels", ignore = true),
-            @Mapping(target = "deleteSource", ignore = true)
+            @Mapping(target = "deleteSource", ignore = true),
+            @Mapping(target = "coolDown", ignore = true),
+            @Mapping(target = "coolDownMode", ignore = true)
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
 

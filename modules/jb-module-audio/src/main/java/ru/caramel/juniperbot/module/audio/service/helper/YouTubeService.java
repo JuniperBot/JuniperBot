@@ -88,6 +88,21 @@ public class YouTubeService {
         return Collections.emptyList();
     }
 
+    public List<SearchResult> searchChannel(String queryTerm, long maxResults) {
+        try {
+            YouTube.Search.List search = youTube.search().list("id,snippet");
+            search.setKey(apiKey);
+            search.setQ(queryTerm);
+            search.setType("channel");
+            search.setFields("items(id/channelId, snippet/channelTitle, snippet/thumbnails/default)");
+            search.setMaxResults(maxResults);
+            return search.execute().getItems();
+        } catch (IOException e) {
+            LOGGER.error("Could not perform YouTube search", e);
+        }
+        return Collections.emptyList();
+    }
+
     public String searchForUrl(String queryTerm) {
         List<SearchResult> result = search(queryTerm, 1L);
         return result.isEmpty() ? null : getUrl(result.get(0));

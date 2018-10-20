@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.module.social.service;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import me.philippheuer.twitch4j.model.Stream;
+import me.philippheuer.twitch4j.model.User;
+import ru.caramel.juniperbot.core.service.SubscriptionService;
+import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
+
+public interface TwitchService extends SubscriptionService<TwitchConnection, Stream, User> {
+
 }

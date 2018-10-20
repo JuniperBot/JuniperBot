@@ -14,11 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.model;
+package ru.caramel.juniperbot.core.service;
 
-public enum SubscriptionType {
-    JUNIPERFOXX,
-    VK,
-    TWITCH,
-    YOUTUBE
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+
+public interface SubscriptionService<T extends BaseSubscriptionEntity, S, U> {
+
+    void init();
+
+    T find(long id);
+
+    T save(T connection);
+
+    void delete(T connection);
+
+    T create(long guildId, U model);
+
+    U getUser(String userName);
 }
