@@ -16,15 +16,16 @@
  */
 package ru.caramel.juniperbot.web.controller.pub;
 
-import com.google.api.services.youtube.model.Video;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,10 +108,21 @@ public class CallbackController extends BasePublicRestController {
             throw new AccessDeniedException();
         }
         taskExecutor.execute(() -> {
-            List<Video> videos = FeedUtils.parseVideos(feed);
-            if (CollectionUtils.isNotEmpty(videos)) {
-                youTubeService.notifyVideo(videos.get(0));
+            if (CollectionUtils.isEmpty(feed.getEntries())) {
+                log.warn("Empty YouTube callback");
+                return;
             }
+            SyndEntry entry = feed.getEntries().get(0);
+            String channelId = FeedUtils.getForeignValue(entry, "channelId");
+            String videoId = FeedUtils.getForeignValue(entry, "videoId");
+            if (StringUtils.isEmpty(channelId)) {
+                log.warn("No channelId found in YouTube callback");
+            }
+            if (StringUtils.isEmpty(videoId)) {
+                log.warn("No videoId found in YouTube callback");
+            }
+            log.info("Notify YouTube Video[channelId={}, videoId={}]", channelId, videoId);
+            youTubeService.notifyVideo(channelId, videoId);
         });
     }
 
@@ -119,8 +131,10 @@ public class CallbackController extends BasePublicRestController {
     public String youTubeCallbackChallenge(@RequestParam("hub.verify_token") String secret,
                                            @RequestParam("hub.challenge") String challenge) {
         if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
+            log.warn("YouTube callback challenge denied, wrong secret");
             throw new AccessDeniedException();
         }
+        log.info("YouTube callback challenge accepted");
         return challenge;
     }
 }

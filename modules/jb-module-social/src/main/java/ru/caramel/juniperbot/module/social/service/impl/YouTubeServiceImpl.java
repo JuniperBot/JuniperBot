@@ -65,7 +65,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     private static final String PUSH_ENDPOINT = "https://pubsubhubbub.appspot.com/subscribe";
 
-    private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/feeds/videos.xml?channel_id=";
+    private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=";
 
     @Value("${integrations.youTube.apiKey}")
     private String apiKey;
@@ -135,6 +135,23 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             LOGGER.error("Could not perform YouTube search", e);
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public Video getVideoById(String videoId, String part) {
+        try {
+            if (part == null) {
+                part = "id,snippet,contentDetails";
+            }
+            YouTube.Videos.List list = youTube.videos().list(part);
+            list.setKey(apiKey);
+            list.setId(videoId);
+            List<Video> items = list.execute().getItems();
+            return CollectionUtils.isNotEmpty(items) ? items.get(0) : null;
+        } catch (IOException e) {
+            LOGGER.error("Could not get video by id={}", videoId, e);
+        }
+        return null;
     }
 
     @Override
@@ -216,8 +233,16 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     }
 
     @Override
-    public void notifyVideo(Video video) {
-        List<YouTubeConnection> connections = repository.findActiveConnections(video.getSnippet().getChannelId());
+    public void notifyVideo(String channelId, String videoId) {
+        List<YouTubeConnection> connections = repository.findActiveConnections(channelId);
+        if (CollectionUtils.isEmpty(connections)) {
+            return;
+        }
+        Video video = getVideoById(videoId, "id,snippet");
+        if (video == null) {
+            LOGGER.error("No suitable video found for id={}", videoId);
+            return;
+        }
         connections.forEach(e -> notifyConnection(video, e));
     }
 
@@ -242,8 +267,8 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             embedBuilder.setAuthor(snippet.getChannelTitle(),
                     getChannelUrl(snippet.getChannelId()), connection.getIconUrl());
 
-            if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
-                embedBuilder.setImage(snippet.getThumbnails().getDefault().getUrl());
+            if (snippet.getThumbnails() != null && snippet.getThumbnails().getMedium() != null) {
+                embedBuilder.setImage(snippet.getThumbnails().getMedium().getUrl());
             }
             embedBuilder.setDescription(CommonUtils.mdLink(snippet.getTitle(), getVideoUrl(video.getId())));
             embedBuilder.setColor(Color.RED);
