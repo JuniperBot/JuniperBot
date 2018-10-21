@@ -57,9 +57,6 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     private Map<URI, String> lavaLinkNodes;
 
-    @Autowired(required = false)
-    private IAudioSendFactory audioSendFactory;
-
     @Autowired
     private AudioPlayerManager playerManager;
 
@@ -70,8 +67,6 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
         if (jdaNAS) {
             builder.setAudioSendFactory(new NativeAudioSendFactory());
-        } else if (audioSendFactory != null) {
-            builder.setAudioSendFactory(audioSendFactory);
         }
         if (lavaLinkEnabled) {
             if (MapUtils.isNotEmpty(lavaLinkNodes)) {

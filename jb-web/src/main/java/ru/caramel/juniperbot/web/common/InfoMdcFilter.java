@@ -32,12 +32,17 @@ public class InfoMdcFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        MDC.put("requestId", RandomStringUtils.random(8, "0123456789abcdef"));
-        DiscordUserDetails details = SecurityUtils.getCurrentUser();
-        if (details != null) {
-            MDC.put("userId", details.getId());
+        try {
+            MDC.put("requestId", RandomStringUtils.random(8, "0123456789abcdef"));
+            DiscordUserDetails details = SecurityUtils.getCurrentUser();
+            if (details != null) {
+                MDC.put("userId", details.getId());
+            }
+            chain.doFilter(request, response);
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("userId");
         }
-        chain.doFilter(request, response);
     }
 
     @Override

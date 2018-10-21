@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.module.ranking.commands;
 
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
@@ -41,7 +43,7 @@ public abstract class RankingCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean isAvailable(MessageReceivedEvent message) {
-        return message.getGuild() != null && rankingService.isEnabled(message.getGuild().getIdLong());
+    public boolean isAvailable(User user, Member member) {
+        return member != null && rankingService.isEnabled(member.getGuild().getIdLong());
     }
 }

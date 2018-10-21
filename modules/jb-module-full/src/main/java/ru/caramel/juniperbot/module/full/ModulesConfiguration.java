@@ -22,29 +22,23 @@ import ru.caramel.juniperbot.module.audio.AudioConfiguration;
 import ru.caramel.juniperbot.module.custom.CustomConfiguration;
 import ru.caramel.juniperbot.module.groovy.GroovyConfiguration;
 import ru.caramel.juniperbot.module.info.InfoConfiguration;
-import ru.caramel.juniperbot.module.junipost.PostConfiguration;
 import ru.caramel.juniperbot.module.mafia.MafiaConfiguration;
 import ru.caramel.juniperbot.module.misc.MiscConfiguration;
-import ru.caramel.juniperbot.module.moderation.ModerationConfiguration;
 import ru.caramel.juniperbot.module.ranking.RankingConfiguration;
 import ru.caramel.juniperbot.module.reminder.ReminderConfiguration;
 import ru.caramel.juniperbot.module.steam.SteamConfiguration;
-import ru.caramel.juniperbot.module.twitch.TwitchConfiguration;
-import ru.caramel.juniperbot.module.vk.VkConfiguration;
+import ru.caramel.juniperbot.module.social.SocialConfiguration;
 import ru.caramel.juniperbot.module.welcome.WelcomeConfiguration;
 import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
 
 @Import({
         AudioConfiguration.class,
-        PostConfiguration.class,
         SteamConfiguration.class,
         GroovyConfiguration.class,
         WikiFurConfiguration.class,
         WelcomeConfiguration.class,
-        VkConfiguration.class,
-        TwitchConfiguration.class,
+        SocialConfiguration.class,
         MiscConfiguration.class,
-        ModerationConfiguration.class,
         RankingConfiguration.class,
         InfoConfiguration.class,
         ReminderConfiguration.class,

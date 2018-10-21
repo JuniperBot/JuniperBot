@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
-import ru.caramel.juniperbot.module.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.core.service.ModerationService;
 import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
 import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
 

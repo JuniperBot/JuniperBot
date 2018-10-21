@@ -39,29 +39,33 @@ public class GuildIdAspect {
 
     @Around("execution(public * *(.., @ru.caramel.juniperbot.web.common.aspect.GuildId (*), ..))")
     public Object doAwesomeStuff(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-        Object[] methodArgs = thisJoinPoint.getArgs();
-        int numArgs = methodArgs.length;
-        MethodSignature methodSignature = (MethodSignature) thisJoinPoint.getSignature();
-        Annotation[][] annotationMatrix = methodSignature.getMethod().getParameterAnnotations();
-        for (int i = 0; i < numArgs; i++) {
-            Annotation[] annotations = annotationMatrix[i];
-            for (Annotation annotation : annotations) {
-                if (annotation.annotationType() == GuildId.class && methodArgs[i] instanceof Long) {
-                    GuildId guildIdAnnotation = (GuildId) annotation;
-                    long guildId = (long) methodArgs[i];
-                    MDC.put("guildId", String.valueOf(guildId));
-                    if (guildIdAnnotation.validate()) {
-                        DiscordGuildDetails details = tokenServices.getGuildById(guildId);
-                        if (details == null) {
-                            throw new NotFoundException();
-                        }
-                        if (!tokenServices.hasPermission(details)) {
-                            throw new AccessDeniedException();
+        try {
+            Object[] methodArgs = thisJoinPoint.getArgs();
+            int numArgs = methodArgs.length;
+            MethodSignature methodSignature = (MethodSignature) thisJoinPoint.getSignature();
+            Annotation[][] annotationMatrix = methodSignature.getMethod().getParameterAnnotations();
+            for (int i = 0; i < numArgs; i++) {
+                Annotation[] annotations = annotationMatrix[i];
+                for (Annotation annotation : annotations) {
+                    if (annotation.annotationType() == GuildId.class && methodArgs[i] instanceof Long) {
+                        GuildId guildIdAnnotation = (GuildId) annotation;
+                        long guildId = (long) methodArgs[i];
+                        MDC.put("guildId", String.valueOf(guildId));
+                        if (guildIdAnnotation.validate()) {
+                            DiscordGuildDetails details = tokenServices.getGuildById(guildId);
+                            if (details == null) {
+                                throw new NotFoundException();
+                            }
+                            if (!tokenServices.hasPermission(details)) {
+                                throw new AccessDeniedException();
+                            }
                         }
                     }
                 }
             }
+            return thisJoinPoint.proceed();
+        } finally {
+            MDC.remove("guildId");
         }
-        return thisJoinPoint.proceed();
     }
 }

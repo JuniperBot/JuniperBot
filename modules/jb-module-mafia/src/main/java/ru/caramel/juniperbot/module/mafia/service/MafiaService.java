@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -37,7 +36,7 @@ import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
-import ru.caramel.juniperbot.module.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.service.ModerationService;
 
 import java.util.HashMap;
 import java.util.Map;

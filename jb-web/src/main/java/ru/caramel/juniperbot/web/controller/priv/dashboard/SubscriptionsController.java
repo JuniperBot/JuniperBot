@@ -16,26 +16,35 @@
  */
 package ru.caramel.juniperbot.web.controller.priv.dashboard;
 
+import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.SearchResultSnippet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.SubscriptionDao;
-import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.dto.config.SuggestionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class SubscriptionsController extends BaseRestController {
 
     @Autowired
     private SubscriptionDao subscriptionDao;
+
+    @Autowired
+    private YouTubeService youTubeService;
 
     @RequestMapping(value = "/subscriptions/{guildId}", method = RequestMethod.GET)
     @ResponseBody
@@ -70,5 +79,31 @@ public class SubscriptionsController extends BaseRestController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @RequestMapping(value = "/subscriptions/suggestions/{type}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<SuggestionDto> list(@PathVariable("type") SubscriptionType type, @RequestParam("q") String search) {
+        switch (type) {
+            case YOUTUBE:
+                List<SearchResult> results = youTubeService.searchChannel(search, 25);
+                return results.stream().map(e -> {
+                    SuggestionDto dto = new SuggestionDto();
+                    dto.setId(e.getId().getChannelId());
+
+                    SearchResultSnippet snippet = e.getSnippet();
+                    if (snippet == null) {
+                        return null;
+                    }
+                    dto.setName(snippet.getChannelTitle());
+                    if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
+                        dto.setIconUrl(snippet.getThumbnails().getDefault().getUrl());
+                    }
+                    return dto;
+                }).collect(Collectors.toList());
+
+            default:
+                return Collections.emptyList();
+        }
     }
 }

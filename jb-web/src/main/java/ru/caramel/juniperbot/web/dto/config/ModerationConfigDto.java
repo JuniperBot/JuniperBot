@@ -18,10 +18,9 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.module.moderation.model.WarnExceedAction;
-import ru.caramel.juniperbot.module.moderation.persistence.entity.ModerationConfig;
+import ru.caramel.juniperbot.core.model.enums.WarnExceedAction;
+import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

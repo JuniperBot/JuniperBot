@@ -46,6 +46,11 @@
             <artifactId>jb-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ru.caramel</groupId>
+            <artifactId>jb-module-social</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.sedmelluq</groupId>
@@ -63,12 +68,6 @@
                     <artifactId>lavaplayer</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-youtube</artifactId>
-            <version>${google-api-services-youtube.version}</version>
         </dependency>
 
         <dependency>

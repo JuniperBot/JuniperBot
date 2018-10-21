@@ -54,6 +54,7 @@
         <wikitext.version>3.1.6</wikitext.version>
         <vk.sdk.version>0.5.8</vk.sdk.version>
         <twitch4j.version>v0.12.0</twitch4j.version>
+        <rome.version>1.11.1</rome.version>
 
     </properties>
 
@@ -116,11 +117,9 @@
         <module>jb-core</module>
         <module>modules/jb-module-audio</module>
         <module>modules/jb-module-custom</module>
-        <module>modules/jb-module-junipost</module>
         <module>modules/jb-module-reminder</module>
         <module>modules/jb-module-misc</module>
-        <module>modules/jb-module-vk</module>
-        <module>modules/jb-module-twitch</module>
+        <module>modules/jb-module-social</module>
         <module>modules/jb-module-welcome</module>
         <module>modules/jb-module-wikifur</module>
         <module>modules/jb-module-ranking</module>
@@ -128,7 +127,6 @@
         <module>modules/jb-module-info</module>
         <module>modules/jb-module-steam</module>
         <module>modules/jb-module-mafia</module>
-        <module>modules/jb-module-moderation</module>
         <module>modules/jb-module-aiml</module>
         <module>modules/jb-module-full</module>
         <module>jb-web</module>

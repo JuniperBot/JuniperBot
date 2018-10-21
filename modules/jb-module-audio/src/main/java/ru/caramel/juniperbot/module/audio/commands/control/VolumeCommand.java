@@ -27,12 +27,14 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 
 @DiscordCommand(
-        key = "discord.command.volume.key",
+        key = VolumeCommand.KEY,
         description = "discord.command.volume.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
         priority = 111)
 public class VolumeCommand extends AudioCommand {
+
+    public static final String KEY = "discord.command.volume.key";
 
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

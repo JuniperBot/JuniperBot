@@ -71,7 +71,7 @@ public class HelpCommand extends AbstractCommand {
                 .filter(e -> {
                     CommandConfig config = configMap.get(e.getValue().getClass()
                             .getAnnotation(DiscordCommand.class).key());
-                    return commandsService.isApplicable(message, e.getValue(), config)
+                    return commandsService.isApplicable(e.getValue(), config, message.getAuthor(), message.getMember(), message.getChannel())
                             && !commandsService.isRestricted(config, message.getTextChannel())
                             && !commandsService.isRestricted(config, message.getMember());
 

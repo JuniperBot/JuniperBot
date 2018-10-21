@@ -45,6 +45,13 @@ public class CoreConfiguration {
     }
 
     @Bean
+    public ModuleMessageSourceImpl moderationMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("moderation-jbmessages");
+        return source;
+    }
+
+    @Bean
     public MessageSource messageSource() {
         return new JbMessageSource();
     }

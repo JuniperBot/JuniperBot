@@ -19,11 +19,13 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.junipost.service.JuniPostService;
-import ru.caramel.juniperbot.module.twitch.persistence.entity.TwitchConnection;
-import ru.caramel.juniperbot.module.twitch.persistence.repository.TwitchConnectionRepository;
-import ru.caramel.juniperbot.module.vk.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.module.vk.persistence.repository.VkConnectionRepository;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
+import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeConnectionRepository;
+import ru.caramel.juniperbot.module.social.service.JuniPostService;
+import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
+import ru.caramel.juniperbot.module.social.persistence.repository.TwitchConnectionRepository;
+import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
+import ru.caramel.juniperbot.module.social.persistence.repository.VkConnectionRepository;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
@@ -44,6 +46,9 @@ public class SubscriptionDao extends AbstractDao {
     @Autowired
     private JuniPostService juniPostService;
 
+    @Autowired
+    private YouTubeConnectionRepository youTubeConnectionRepository;
+
     private Map<Class<?>, SubscriptionHandler<?>> handlersByClass = new HashMap<>();
 
     private Map<SubscriptionType, SubscriptionHandler<?>> handlersByType = new HashMap<>();
@@ -62,6 +67,9 @@ public class SubscriptionDao extends AbstractDao {
 
         List<TwitchConnection> twitchConnections = twitchConnectionRepository.findAllByGuildId(guildId);
         twitchConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
+
+        List<YouTubeConnection> youTubeConnections = youTubeConnectionRepository.findAllByGuildId(guildId);
+        youTubeConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
         return result;
     }
 

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.MemberService;
+import ru.caramel.juniperbot.core.service.ModerationService;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,9 +34,13 @@ public class MemberListener extends DiscordEventListener {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private ModerationService moderationService;
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         memberService.getOrCreate(event.getMember());
+        moderationService.refreshMute(event.getMember());
     }
 
     @Override

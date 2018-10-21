@@ -16,46 +16,56 @@
  */
 package ru.caramel.juniperbot.module.audio.utils;
 
+import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.module.audio.commands.PlayCommand;
+import ru.caramel.juniperbot.module.audio.commands.control.PauseCommand;
+import ru.caramel.juniperbot.module.audio.commands.control.RepeatCommand;
+import ru.caramel.juniperbot.module.audio.commands.control.StopCommand;
+import ru.caramel.juniperbot.module.audio.commands.control.VolumeCommand;
+import ru.caramel.juniperbot.module.audio.commands.queue.SkipCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
-import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MessageController {
 
+    @Getter
     private enum Action {
-        PLAY("▶"),
-        PAUSE("\u23F8"),
-        NEXT("⏭"),
-        STOP("\u23F9"),
-        REPEAT_CURRENT("\uD83D\uDD02"),
-        REPEAT_ALL("\uD83D\uDD01"),
-        REPEAT_NONE("➡"),
-        VOLUME_DOWN("\uD83D\uDD09"),
-        VOLUME_UP("\uD83D\uDD0A");
+        PLAY(PlayCommand.KEY, "▶"),
+        PAUSE(PauseCommand.KEY, "\u23F8"),
+        NEXT(SkipCommand.KEY, "⏭"),
+        STOP(StopCommand.KEY, "\u23F9"),
+        REPEAT_CURRENT(RepeatCommand.KEY, "\uD83D\uDD02"),
+        REPEAT_ALL(RepeatCommand.KEY, "\uD83D\uDD01"),
+        REPEAT_NONE(RepeatCommand.KEY, "➡"),
+        VOLUME_DOWN(VolumeCommand.KEY, "\uD83D\uDD09"),
+        VOLUME_UP(VolumeCommand.KEY, "\uD83D\uDD0A");
 
         private final String code;
 
-        Action(String code) {
+        private final String commandKey;
+
+        Action(String commandKey, String code) {
             this.code = code;
+            this.commandKey = commandKey;
         }
 
         public static Action getForCode(String code) {
@@ -81,6 +91,8 @@ public class MessageController {
 
     private final MusicConfigService musicConfigService;
 
+    private final CommandsService commandsService;
+
     private boolean cancelled = false;
 
     private List<RequestFuture<Void>> reactionFutures = new ArrayList<>();
@@ -95,6 +107,7 @@ public class MessageController {
         this.messageManager = context.getBean(AudioMessageManager.class);
         this.contextService = context.getBean(ContextService.class);
         this.musicConfigService = context.getBean(MusicConfigService.class);
+        this.commandsService = context.getBean(CommandsService.class);
         init(message);
     }
 
@@ -102,7 +115,7 @@ public class MessageController {
         if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
                 Permission.MESSAGE_MANAGE,
                 Permission.MESSAGE_ADD_REACTION)) {
-            for (Action action : Action.values()) {
+            for (Action action : getAvailableActions()) {
                 try {
                     reactionFutures.add(message.addReaction(action.code).submit());
                 } catch (Exception ex) {
@@ -114,9 +127,7 @@ public class MessageController {
                 if (!cancelled && !event.getUser().equals(event.getJDA().getSelfUser())) {
                     String emote = event.getReaction().getReactionEmote().getName();
                     Action action = Action.getForCode(emote);
-                    if (action != null
-                            && musicConfigService.hasAccess(event.getMember())
-                            && playerService.isInChannel(event.getMember())) {
+                    if (action != null) {
                         contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
                     if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
@@ -131,7 +142,11 @@ public class MessageController {
 
     private void handleAction(Action action, Member member) {
         Guild guild = jda.getGuildById(guildId);
-        if (guild == null || !playerService.isActive(guild)) {
+        if (guild == null
+                || !musicConfigService.hasAccess(member)
+                || !playerService.isInChannel(member)
+                || !playerService.isActive(guild)
+                || !isAvailable(action, member)) {
             return;
         }
         PlaybackInstance instance = playerService.getInstance(guild);
@@ -214,6 +229,17 @@ public class MessageController {
                 }
             }
         });
+    }
+
+    private List<Action> getAvailableActions() {
+        return Stream.of(Action.values())
+                .filter(e -> isAvailable(e, null))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isAvailable(Action action, Member member) {
+        TextChannel channel = jda.getTextChannelById(channelId);
+        return channel != null && !commandsService.isRestricted(action.commandKey, channel, member);
     }
 
     public void doForMessage(Consumer<Message> success) {

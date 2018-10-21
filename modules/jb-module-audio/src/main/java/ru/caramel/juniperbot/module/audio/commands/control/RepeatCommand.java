@@ -29,12 +29,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @DiscordCommand(
-        key = "discord.command.repeat.key",
+        key = RepeatCommand.KEY,
         description = "discord.command.repeat.desc",
         group = "discord.command.group.music",
         source = ChannelType.TEXT,
         priority = 108)
 public class RepeatCommand extends AudioCommand {
+
+    public static final String KEY = "discord.command.repeat.key";
+
     @Override
     protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content);

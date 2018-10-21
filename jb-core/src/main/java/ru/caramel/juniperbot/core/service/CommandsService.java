@@ -16,9 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.Command;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
@@ -39,7 +37,7 @@ public interface CommandsService extends CommandSender {
 
     void registerHandler(CommandHandler sender);
 
-    boolean isApplicable(MessageReceivedEvent event, Command command, CommandConfig commandConfig);
+    boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, MessageChannel channel);
 
     void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args);
 
@@ -48,5 +46,7 @@ public interface CommandsService extends CommandSender {
     boolean isRestricted(CommandConfig commandConfig, TextChannel channel);
 
     boolean isRestricted(CommandConfig commandConfig, Member member);
+
+    boolean isRestricted(String rawKey, TextChannel channel, Member member);
 
 }

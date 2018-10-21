@@ -199,11 +199,16 @@ public class ContextServiceImpl implements ContextService {
     @Override
     @Async
     public void withContextAsync(Guild guild, Runnable action) {
+        inTransaction(() -> withContext(guild, action));
+    }
+
+    @Override
+    public void inTransaction(Runnable action) {
         try {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    withContext(guild, action);
+                    action.run();
                 }
             });
         } catch (ObjectOptimisticLockingFailureException e) {

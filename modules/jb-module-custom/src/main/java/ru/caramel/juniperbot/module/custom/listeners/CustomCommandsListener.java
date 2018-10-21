@@ -29,7 +29,7 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
-import ru.caramel.juniperbot.module.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.service.ModerationService;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
