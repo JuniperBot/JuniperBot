@@ -117,9 +117,11 @@ public class CallbackController extends BasePublicRestController {
             String videoId = FeedUtils.getForeignValue(entry, "videoId");
             if (StringUtils.isEmpty(channelId)) {
                 log.warn("No channelId found in YouTube callback");
+                return;
             }
             if (StringUtils.isEmpty(videoId)) {
                 log.warn("No videoId found in YouTube callback");
+                return;
             }
             log.info("Notify YouTube Video[channelId={}, videoId={}]", channelId, videoId);
             youTubeService.notifyVideo(channelId, videoId);
