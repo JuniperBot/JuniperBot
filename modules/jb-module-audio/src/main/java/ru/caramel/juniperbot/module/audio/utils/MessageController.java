@@ -130,7 +130,7 @@ public class MessageController {
                     if (action != null) {
                         contextService.withContext(event.getGuild(), () -> handleAction(action, event.getMember()));
                     }
-                    if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+                    if (event.getGuild().getSelfMember().hasPermission(event.getTextChannel(),
                             Permission.MESSAGE_MANAGE)) {
                         event.getReaction().removeReaction(event.getUser()).queue();
                     }
