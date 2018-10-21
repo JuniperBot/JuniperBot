@@ -16,11 +16,17 @@
  */
 package ru.caramel.juniperbot.module.social.persistence.repository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 
+import java.util.List;
+
 @Repository
 public interface YouTubeConnectionRepository extends BaseSubscriptionRepository<YouTubeConnection> {
 
+    @Query("SELECT c FROM YouTubeConnection c WHERE c.channelId = :channelId AND c.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<YouTubeConnection> findActiveConnections(@Param("channelId") String channelId);
 }

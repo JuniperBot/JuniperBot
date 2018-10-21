@@ -19,12 +19,11 @@ package ru.caramel.juniperbot.module.social.service.impl;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelSnippet;
-import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.*;
 import lombok.Getter;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
+import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -45,13 +44,16 @@ import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import javax.annotation.PostConstruct;
+import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -197,7 +199,15 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Override
     public String getUrl(SearchResult result) {
         return result != null && result.getId() != null
-                ? String.format("https://www.youtube.com/watch?v=%s", result.getId().getVideoId()) : null;
+                ? getVideoUrl(result.getId().getVideoId()) : null;
+    }
+
+    public String getVideoUrl(String videoId) {
+        return String.format("https://www.youtube.com/watch?v=%s", videoId);
+    }
+
+    public String getChannelUrl(String channelId) {
+        return String.format("https://www.youtube.com/channel/%s", channelId);
     }
 
     @Override
@@ -206,8 +216,44 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     }
 
     @Override
-    protected WebhookMessage createMessage(Video subscription, YouTubeConnection connection) {
-        return null;
+    public void notifyVideo(Video video) {
+        List<YouTubeConnection> connections = repository.findActiveConnections(video.getSnippet().getChannelId());
+        connections.forEach(e -> notifyConnection(video, e));
+    }
+
+    @Override
+    protected WebhookMessage createMessage(Video video, YouTubeConnection connection) {
+        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
+        resolver.put("channel", video.getSnippet().getChannelTitle());
+        resolver.put("video", video.getSnippet().getTitle());
+        resolver.put("link", getVideoUrl(video.getId()));
+        String announce = connection.getAnnounceMessage();
+        if (StringUtils.isBlank(announce)) {
+            announce = messageService.getMessage("discord.youtube.announce");
+        }
+        String content = PLACEHOLDER.replacePlaceholders(announce, resolver);
+
+        WebhookMessageBuilder builder = new WebhookMessageBuilder()
+                .setContent(content);
+
+        if (connection.isSendEmbed()) {
+            EmbedBuilder embedBuilder = messageService.getBaseEmbed();
+            VideoSnippet snippet = video.getSnippet();
+            embedBuilder.setAuthor(snippet.getChannelTitle(),
+                    getChannelUrl(snippet.getChannelId()), connection.getIconUrl());
+
+            if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
+                embedBuilder.setImage(snippet.getThumbnails().getDefault().getUrl());
+            }
+            embedBuilder.setDescription(CommonUtils.mdLink(snippet.getTitle(), getVideoUrl(video.getId())));
+            embedBuilder.setColor(Color.RED);
+            if (snippet.getPublishedAt() != null) {
+                embedBuilder.setTimestamp(Instant.ofEpochMilli(snippet.getPublishedAt().getValue()));
+            }
+
+            builder.addEmbeds(embedBuilder.build());
+        }
+        return builder.build();
     }
 
     @Override
@@ -222,10 +268,10 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish", brandingService.getWebHost()));
+        map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish?secret=%s", brandingService.getWebHost(), pubSubSecret));
         map.add("hub.topic", CHANNEL_RSS_ENDPOINT + connection.getChannelId());
         map.add("hub.mode", "subscribe");
-        map.add("hub.verify", "sync");
+        map.add("hub.verify", "async");
         map.add("hub.verify_token", pubSubSecret);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 

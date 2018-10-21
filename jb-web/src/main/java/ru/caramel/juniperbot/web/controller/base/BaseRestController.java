@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.web.controller.base;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -33,5 +34,8 @@ public abstract class BaseRestController {
 
     @Autowired
     protected ApiMapperService apiMapperService;
+
+    @Autowired
+    protected TaskExecutor taskExecutor;
 
 }

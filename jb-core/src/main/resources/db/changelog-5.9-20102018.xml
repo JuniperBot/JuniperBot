@@ -53,4 +53,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5.9-20102018-2" author="caramel">
+        <addColumn tableName="youtube_connection">
+            <column name="send_embed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

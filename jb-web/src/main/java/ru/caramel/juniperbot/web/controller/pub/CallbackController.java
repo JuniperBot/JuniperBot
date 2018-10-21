@@ -16,12 +16,15 @@
  */
 package ru.caramel.juniperbot.web.controller.pub;
 
+import com.google.api.services.youtube.model.Video;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.rometools.rome.feed.synd.SyndFeed;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.objects.wall.Wallpost;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +36,12 @@ import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.service.VkService;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
+import ru.caramel.juniperbot.web.model.AtomFeed;
+import ru.caramel.juniperbot.web.utils.FeedUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 public class CallbackController extends BasePublicRestController {
@@ -48,19 +50,13 @@ public class CallbackController extends BasePublicRestController {
 
     private final Gson gson = GsonUtils.create();
 
-    private final static Map<String, Type> CALLBACK_TYPES;
-
-    static {
-        Map<String, Type> types = new HashMap<>();
-
-        types.put(CallbackMessageType.WALL_POST_NEW.getValue(), new TypeToken<CallbackMessage<Wallpost>>() {
-        }.getType());
-
-        types.put(CallbackMessageType.CONFIRMATION.getValue(), new TypeToken<CallbackMessage>() {
-        }.getType());
-
-        CALLBACK_TYPES = Collections.unmodifiableMap(types);
-    }
+    private final static Map<String, Type> CALLBACK_TYPES = Map.of(
+            CallbackMessageType.WALL_POST_NEW.getValue(),
+            new TypeToken<CallbackMessage<Wallpost>>() {
+            }.getType(),
+            CallbackMessageType.CONFIRMATION.getValue(),
+            new TypeToken<CallbackMessage>() {
+            }.getType());
 
     @Autowired
     private VkService vkService;
@@ -104,12 +100,18 @@ public class CallbackController extends BasePublicRestController {
 
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.POST)
     @Transactional
-    public void youTubeCallback(@RequestBody String content,
-                                @RequestParam("hub.verify_token") String secret) {
+    public void youTubeCallback(
+            @AtomFeed SyndFeed feed,
+            @RequestParam("secret") String secret) {
         if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
-            return;
+            throw new AccessDeniedException();
         }
-        log.info("YouTube request: {}", content);
+        taskExecutor.execute(() -> {
+            List<Video> videos = FeedUtils.parseVideos(feed);
+            if (CollectionUtils.isNotEmpty(videos)) {
+                youTubeService.notifyVideo(videos.get(0));
+            }
+        });
     }
 
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.GET)

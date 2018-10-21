@@ -14,33 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.social.persistence.entity;
+package ru.caramel.juniperbot.web.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+import java.lang.annotation.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-@Getter
-@Setter
-@Entity
-@Table(name = "youtube_connection")
-public class YouTubeConnection extends BaseSubscriptionEntity {
-    private static final long serialVersionUID = 2146901528074674595L;
-
-    @Column
-    private String channelId;
-
-    @Column
-    private String description;
-
-    @Column
-    private String announceMessage;
-
-    @Column
-    private boolean sendEmbed;
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AtomFeed {
 
 }

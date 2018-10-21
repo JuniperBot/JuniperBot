@@ -26,9 +26,15 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMa
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.caramel.juniperbot.core.configuration.CoreConfiguration;
 import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
 import ru.caramel.juniperbot.module.full.ModulesConfiguration;
+import ru.caramel.juniperbot.web.common.AtomFeedArgumentResolver;
+
+import java.util.List;
 
 @Import({CoreConfiguration.class, ModulesConfiguration.class})
 @ImportResource("classpath:security-context.xml")
@@ -39,7 +45,7 @@ import ru.caramel.juniperbot.module.full.ModulesConfiguration;
         OAuth2ClientAutoConfiguration.class,
         OAuth2ResourceServerAutoConfiguration.class
 })
-public class JuniperBotApplication {
+public class JuniperBotApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         SpringApplication.run(JuniperBotApplication.class, args);
@@ -50,5 +56,10 @@ public class JuniperBotApplication {
         ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
         source.setBasename("web-jbmessages");
         return source;
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new AtomFeedArgumentResolver());
     }
 }

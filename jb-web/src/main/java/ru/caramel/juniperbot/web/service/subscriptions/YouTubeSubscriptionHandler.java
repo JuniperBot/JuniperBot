@@ -43,6 +43,7 @@ public class YouTubeSubscriptionHandler extends AbstractSubscriptionHandler<YouT
         attributes.put("youtube.channelId", connection.getChannelId());
         attributes.put("youtube.description", connection.getDescription());
         attributes.put("youtube.announce", connection.getAnnounceMessage());
+        attributes.put("youtube.sendEmbed", connection.isSendEmbed());
         SubscriptionDto dto = getDtoForHook(connection.getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
@@ -83,6 +84,10 @@ public class YouTubeSubscriptionHandler extends AbstractSubscriptionHandler<YouT
 
         String announce = getValue(subscription.getAttributes(), "youtube.announce", String.class);
         connection.setAnnounceMessage(announce);
+
+        Boolean sendEmbed = getValue(subscription.getAttributes(), "youtube.sendEmbed", Boolean.class);
+        connection.setSendEmbed(Boolean.TRUE.equals(sendEmbed));
+
         youTubeService.save(connection);
         return true;
     }
