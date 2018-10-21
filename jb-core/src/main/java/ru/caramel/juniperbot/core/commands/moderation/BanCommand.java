@@ -63,8 +63,10 @@ public class BanCommand extends ModeratorCommand {
                     if (StringUtils.isNotEmpty(matcher.group(1))) {
                         delDays = Integer.parseInt(matcher.group(1));
                     }
-                    moderationService.ban(event.getMember(), mentioned, delDays, matcher.group(2));
-                    return ok(event);
+                    if (delDays <= 7) {
+                        moderationService.ban(event.getMember(), mentioned, delDays, matcher.group(2));
+                        return ok(event);
+                    }
                 }
             } else {
                 moderationService.ban(event.getMember(), mentioned);
