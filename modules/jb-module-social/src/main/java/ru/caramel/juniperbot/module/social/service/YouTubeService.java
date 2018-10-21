@@ -34,6 +34,8 @@ public interface YouTubeService extends SubscriptionService<YouTubeConnection, V
 
     Channel getChannelById(String id);
 
+    Video getVideoById(String videoId, String part);
+
     String searchForUrl(String queryTerm);
 
     Long extractTimecode(String input);
@@ -44,5 +46,5 @@ public interface YouTubeService extends SubscriptionService<YouTubeConnection, V
 
     String getPubSubSecret();
 
-    void notifyVideo(Video video);
+    void notifyVideo(String channelId, String videoId);
 }
