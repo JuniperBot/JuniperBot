@@ -59,21 +59,25 @@ public class FeatureSetServiceImpl implements FeatureSetService {
 
     @Override
     public boolean isAvailable(long guildId, FeatureSet featureSet) {
+        // TODO Implement providers
         return getByGuild(guildId).contains(featureSet);
     }
 
     @Override
     public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
+        // TODO Implement providers
         return getByUser(userId).contains(featureSet);
     }
 
     @Override
     public Set<FeatureSet> getByGuild(long guildId) {
-        return Set.of();//Set.of(FeatureSet.values());
+        // TODO Implement providers
+        return Set.of(FeatureSet.values());
     }
 
     @Override
     public Set<FeatureSet> getByUser(long userId) {
-        return Set.of();//Set.of(FeatureSet.values());
+        // TODO Implement providers
+        return Set.of(FeatureSet.values());
     }
 }
