@@ -215,10 +215,24 @@ public class AudioMessageManager {
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
+    public void onNoMatches(long channelId, String query) {
+        TextChannel textChannel = discordService.getShardManager().getTextChannelById(channelId);
+        if (textChannel != null) {
+            onNoMatches(textChannel, query);
+        }
+    }
+
     public void onNoMatches(MessageChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage("discord.command.audio.search.noMatches", query));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    public void onQueueError(long channelId, String code, Object... args) {
+        TextChannel textChannel = discordService.getShardManager().getTextChannelById(channelId);
+        if (textChannel != null) {
+            onQueueError(textChannel, code, args);
+        }
     }
 
     public void onQueueError(MessageChannel sourceChannel, String code, Object... args) {

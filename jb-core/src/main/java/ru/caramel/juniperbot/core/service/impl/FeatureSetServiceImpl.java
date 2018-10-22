@@ -16,14 +16,46 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.entities.TextChannel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.enums.FeatureSet;
+import ru.caramel.juniperbot.core.service.BrandingService;
+import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.FeatureSetService;
+import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.Set;
 
 @Service
 public class FeatureSetServiceImpl implements FeatureSetService {
+
+    @Autowired
+    private DiscordService discordService;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private BrandingService brandingService;
+
+    @Override
+    public void sendBonusMessage(long channelId) {
+        TextChannel channel = discordService.getShardManager().getTextChannelById(channelId);
+        if (channel == null) {
+            return;
+        }
+        messageService.onEmbedMessage(channel, "discord.bonus.feature", brandingService.getWebHost());
+    }
+
+    @Override
+    public void sendBonusMessage(long channelId, String title) {
+        TextChannel channel = discordService.getShardManager().getTextChannelById(channelId);
+        if (channel == null) {
+            return;
+        }
+        messageService.onTitledMessage(channel, title, "discord.bonus.feature", brandingService.getWebHost());
+    }
 
     @Override
     public boolean isAvailable(long guildId, FeatureSet featureSet) {

@@ -79,7 +79,7 @@ public class TranslitCommand extends AbstractCommand {
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {
-            messageService.onTitledMessage(message.getChannel(), "discord.command.translit.title", "discord.command.translit.empty");
+            messageService.onError(message.getChannel(), "discord.command.translit.title", "discord.command.translit.empty");
             return false;
         }
         String userName = message.getChannelType().isGuild()

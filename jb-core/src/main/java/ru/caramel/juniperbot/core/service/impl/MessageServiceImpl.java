@@ -138,7 +138,7 @@ public class MessageServiceImpl implements MessageService {
     private EmbedBuilder createMessage(String titleCode, String code, Object... args) {
         return getBaseEmbed()
                 .setTitle(getMessage(titleCode), null)
-                .setColor(Color.RED)
+                .setColor(getAccentColor())
                 .setDescription(getMessage(code, args));
     }
 

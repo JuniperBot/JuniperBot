@@ -25,6 +25,10 @@ import java.util.Set;
 
 public interface FeatureSetService {
 
+    void sendBonusMessage(long channelId);
+
+    void sendBonusMessage(long channelId, String title);
+
     boolean isAvailable(long guildId, FeatureSet featureSet);
 
     boolean isAvailableForUser(long userId, FeatureSet featureSet);
