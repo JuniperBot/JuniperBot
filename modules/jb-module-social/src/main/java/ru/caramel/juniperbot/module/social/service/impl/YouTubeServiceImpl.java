@@ -20,6 +20,8 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
@@ -56,6 +58,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,7 +84,11 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     private YouTubeConnectionRepository repository;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private final Cache<String, String> videoCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(7, TimeUnit.DAYS)
+            .build();
 
     public YouTubeServiceImpl(@Autowired YouTubeConnectionRepository repository) {
         super(repository);
@@ -234,16 +241,29 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     @Override
     public void notifyVideo(String channelId, String videoId) {
-        List<YouTubeConnection> connections = repository.findActiveConnections(channelId);
-        if (CollectionUtils.isEmpty(connections)) {
-            return;
+        synchronized (videoCache) {
+            if (videoCache.getIfPresent(videoId) != null) {
+                return; // do not notify this video again
+            }
+            videoCache.put(videoId, videoId);
         }
-        Video video = getVideoById(videoId, "id,snippet");
-        if (video == null) {
-            LOGGER.error("No suitable video found for id={}", videoId);
-            return;
+
+        try {
+            List<YouTubeConnection> connections = repository.findActiveConnections(channelId);
+            if (CollectionUtils.isEmpty(connections)) {
+                return;
+            }
+
+            Video video = getVideoById(videoId, "id,snippet");
+            if (video == null) {
+                LOGGER.error("No suitable video found for id={}", videoId);
+                return;
+            }
+            connections.forEach(e -> notifyConnection(video, e));
+        } catch (Exception e) {
+            videoCache.invalidate(videoId);
+            throw e;
         }
-        connections.forEach(e -> notifyConnection(video, e));
     }
 
     @Override

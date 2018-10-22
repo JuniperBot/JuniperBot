@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -429,7 +430,7 @@ public class ModerationServiceImpl
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
             notifyUserAction(e -> {
-                member.getGuild().getController().kick(member, reasonAuthor).queue();
+                e.getGuild().getController().kick(e, reasonAuthor).queue();
             }, member, "discord.command.mod.action.message.kick", reason);
             return true;
         }
@@ -454,7 +455,7 @@ public class ModerationServiceImpl
                     ? String.format("%s: %s", author.getEffectiveName(), reason)
                     : author.getEffectiveName();
             notifyUserAction(e -> {
-                member.getGuild().getController().ban(member, delDays, reasonAuthor).queue();
+                e.getGuild().getController().ban(e, delDays, reasonAuthor).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
             return true;
         }
@@ -531,7 +532,7 @@ public class ModerationServiceImpl
         muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
     }
 
-    private void notifyUserAction(Consumer<Void> consumer, Member member, String code, String reason, Object... objects) {
+    private void notifyUserAction(Consumer<Member> consumer, Member member, String code, String reason, Object... objects) {
         if (StringUtils.isEmpty(reason)) {
             code += ".noReason";
         }
@@ -540,21 +541,35 @@ public class ModerationServiceImpl
         }
         String finalCode = code;
         try {
+            Object[] args = new Object[] { member.getGuild().getName() };
+            if (ArrayUtils.isNotEmpty(objects)) {
+                args = ArrayUtils.addAll(args, objects);
+            }
+            if (StringUtils.isNotEmpty(reason)) {
+                args = ArrayUtils.add(args, reason);
+            }
+            String message = messageService.getMessage(finalCode, args);
+
+            JDA jda = member.getGuild().getJDA();
+            long guildId = member.getGuild().getIdLong();
+            long userId = member.getUser().getIdLong();
+
             member.getUser().openPrivateChannel().queue(e -> {
-                contextService.withContext(member.getGuild(), () -> {
-                    Object[] args = new Object[] { member.getGuild().getName() };
-                    if (ArrayUtils.isNotEmpty(objects)) {
-                        args = ArrayUtils.addAll(args, objects);
-                    }
-                    if (StringUtils.isNotEmpty(reason)) {
-                        args = ArrayUtils.add(args, reason);
-                    }
-                    String message = messageService.getMessage(finalCode, args);
-                    e.sendMessage(message).queue(t -> consumer.accept(null), t -> consumer.accept(null));
+                contextService.withContext(guildId, () -> {
+                    e.sendMessage(message).queue(t -> {
+                        Guild guild = jda.getGuildById(guildId);
+                        consumer.accept(guild != null ? guild.getMemberById(userId) : null);
+                    }, t -> {
+                        Guild guild = jda.getGuildById(guildId);
+                        consumer.accept(guild != null ? guild.getMemberById(userId) : null);
+                    });
                 });
-            }, t -> consumer.accept(null));
+            }, t -> {
+                Guild guild = jda.getGuildById(guildId);
+                consumer.accept(guild != null ? guild.getMemberById(userId) : null);
+            });
         } catch (Exception e) {
-            consumer.accept(null);
+            consumer.accept(member);
         }
     }
 
