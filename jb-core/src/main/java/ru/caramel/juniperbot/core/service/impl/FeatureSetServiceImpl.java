@@ -17,15 +17,20 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.feature.FeatureSetProvider;
+import ru.caramel.juniperbot.core.model.FeatureProvider;
 import ru.caramel.juniperbot.core.model.enums.FeatureSet;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.utils.TriFunction;
 
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 
 @Service
 public class FeatureSetServiceImpl implements FeatureSetService {
@@ -39,45 +44,83 @@ public class FeatureSetServiceImpl implements FeatureSetService {
     @Autowired
     private BrandingService brandingService;
 
+    private List<FeatureSetProvider> providers;
+
+    @Override
+    public boolean isAvailable(long guildId, FeatureSet featureSet) {
+        // TODO Implement caching
+        return getAnyAvailable(guildId, featureSet, FeatureSetProvider::isAvailable);
+    }
+
+    @Override
+    public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
+        // TODO Implement caching
+        return getAnyAvailable(userId, featureSet, FeatureSetProvider::isAvailableForUser);
+    }
+
+    @Override
+    public Set<FeatureSet> getByGuild(long guildId) {
+        // TODO Implement caching
+        return calculateFeatures(guildId, FeatureSetProvider::getByGuild);
+    }
+
+    @Override
+    public Set<FeatureSet> getByUser(long userId) {
+        // TODO Implement caching
+        return calculateFeatures(userId, FeatureSetProvider::getByUser);
+    }
+
+    @Autowired(required = false)
+    private void addProviders(List<FeatureSetProvider> providers) {
+        if (CollectionUtils.isNotEmpty(providers)) {
+            this.providers = new ArrayList<>(providers);
+            this.providers.sort(Comparator.comparingInt(e ->
+                    e != null && e.getClass().isAnnotationPresent(FeatureProvider.class)
+                    ? e.getClass().getAnnotation(FeatureProvider.class).priority()
+                    : Integer.MAX_VALUE));
+        }
+    }
+
+    private boolean getAnyAvailable(long id, FeatureSet featureSet, TriFunction<FeatureSetProvider, Long, FeatureSet, Boolean> supplier) {
+        if (CollectionUtils.isEmpty(providers)) {
+            return false;
+        }
+        for (FeatureSetProvider provider : providers) {
+            if (supplier.apply(provider, id, featureSet)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<FeatureSet> calculateFeatures(long id, BiFunction<FeatureSetProvider, Long, Set<FeatureSet>> supplier) {
+        if (CollectionUtils.isEmpty(providers)) {
+            return Set.of(FeatureSet.values());
+        }
+        int size = FeatureSet.values().length;
+        Set<FeatureSet> result = new HashSet<>(size);
+        for (FeatureSetProvider provider : providers) {
+            result.addAll(supplier.apply(provider, id));
+            if (result.size() == size) {
+                break; // we have all possible features, pulling other providers doesn't make sense
+            }
+        }
+        return result;
+    }
+
     @Override
     public void sendBonusMessage(long channelId) {
         TextChannel channel = discordService.getShardManager().getTextChannelById(channelId);
-        if (channel == null) {
-            return;
+        if (channel != null) {
+            messageService.onEmbedMessage(channel, "discord.bonus.feature", brandingService.getWebHost());
         }
-        messageService.onEmbedMessage(channel, "discord.bonus.feature", brandingService.getWebHost());
     }
 
     @Override
     public void sendBonusMessage(long channelId, String title) {
         TextChannel channel = discordService.getShardManager().getTextChannelById(channelId);
-        if (channel == null) {
-            return;
+        if (channel != null) {
+            messageService.onTitledMessage(channel, title, "discord.bonus.feature", brandingService.getWebHost());
         }
-        messageService.onTitledMessage(channel, title, "discord.bonus.feature", brandingService.getWebHost());
-    }
-
-    @Override
-    public boolean isAvailable(long guildId, FeatureSet featureSet) {
-        // TODO Implement providers
-        return getByGuild(guildId).contains(featureSet);
-    }
-
-    @Override
-    public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
-        // TODO Implement providers
-        return getByUser(userId).contains(featureSet);
-    }
-
-    @Override
-    public Set<FeatureSet> getByGuild(long guildId) {
-        // TODO Implement providers
-        return Set.of(FeatureSet.values());
-    }
-
-    @Override
-    public Set<FeatureSet> getByUser(long userId) {
-        // TODO Implement providers
-        return Set.of(FeatureSet.values());
     }
 }

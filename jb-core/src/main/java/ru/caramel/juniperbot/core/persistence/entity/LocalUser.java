@@ -41,6 +41,9 @@ public class LocalUser extends UserEntity {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column
+    private String features;
+
     @Transient
     public String getAsMention() {
         return "<@" + userId + '>';
