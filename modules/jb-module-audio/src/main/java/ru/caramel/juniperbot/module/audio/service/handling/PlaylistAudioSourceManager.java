@@ -88,7 +88,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     @Override
     @Transactional
     public AudioItem loadItem(DefaultAudioPlayerManager manager, AudioReference reference) {
-        Pattern pattern = Pattern.compile(String.format(PLAYLIST_PATTERN, Pattern.quote(brandingService.getWebHost())));
+        Pattern pattern = Pattern.compile(String.format(PLAYLIST_PATTERN, Pattern.quote(brandingService.getWebHostName())));
         Matcher matcher = pattern.matcher(reference.identifier);
         if (matcher.find()) {
             String uuid = matcher.group(1);
