@@ -36,10 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.service.BrandingService;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
@@ -79,6 +76,9 @@ public class AudioMessageManager {
     @Autowired
     private DiscordService discordService;
 
+    @Autowired
+    private FeatureSetService featureSetService;
+
     private Map<Long, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
 
     private Map<Long, MessageController> controllers = new ConcurrentHashMap<>();
@@ -113,7 +113,9 @@ public class AudioMessageManager {
                                 contextService.withContext(request.getGuildId(),
                                         () -> markAsPassed(request, oldController, true));
                             }
-                            runUpdater(request);
+                            if (featureSetService.isAvailable(request.getGuildId())) {
+                                runUpdater(request);
+                            }
                         });
             } catch (PermissionException e) {
                 LOGGER.warn("No permission to message", e);
@@ -457,20 +459,20 @@ public class AudioMessageManager {
 
     private String getTextProgress(PlaybackInstance instance, AudioTrack track) {
         StringBuilder builder = new StringBuilder();
-        if (instance.getPlayer().getPlayingTrack() != null) {
+        boolean showPosition = featureSetService.isAvailable(instance.getGuildId());
+        if (showPosition && instance.getPlayer().getPlayingTrack() != null) {
             builder.append(CommonUtils.formatDuration(instance.getPosition()));
         }
         if (!track.getInfo().isStream) {
             if (track.getDuration() >= 0) {
-                if (builder.length() > 0) {
+                if (showPosition && builder.length() > 0) {
                     builder.append("/");
                 }
                 builder.append(CommonUtils.formatDuration(track.getDuration()));
             }
         } else {
-            builder.append(" (")
-                    .append(messageService.getMessage("discord.command.audio.panel.stream"))
-                    .append(")");
+            builder.append(String.format(showPosition ? " (%s)" : "%s",
+                    messageService.getMessage("discord.command.audio.panel.stream")));
         }
         return builder.toString();
     }
