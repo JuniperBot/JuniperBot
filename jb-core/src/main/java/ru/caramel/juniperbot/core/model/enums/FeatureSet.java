@@ -14,22 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.commands.moderation;
+package ru.caramel.juniperbot.core.model.enums;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
-import ru.caramel.juniperbot.core.service.ModerationService;
-
-public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
-
-    @Autowired
-    protected ModerationService moderationService;
-
-    @Override
-    public boolean isAvailable(User user, Member member, Guild guild) {
-        return member != null && moderationService.isModerator(member);
-    }
+public enum FeatureSet {
+    BONUS
 }

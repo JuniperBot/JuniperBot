@@ -43,6 +43,7 @@ import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
@@ -91,6 +92,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     private AudioPlayerManager audioPlayerManager;
 
     @Autowired
+    private FeatureSetService featureSetService;
+
+    @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
 
@@ -115,7 +119,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         return create ? instances.computeIfAbsent(guildId, e -> {
             MusicConfig config = musicConfigService.getOrCreate(guildId);
             IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
-            player.setVolume(config.getVoiceVolume());
+            if (featureSetService.isAvailable(guildId)) {
+                player.setVolume(config.getVoiceVolume());
+            }
             return registerInstance(new PlaybackInstance(e, player));
         }) : instances.get(guildId);
     }
@@ -155,7 +161,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
             }
             instance.stop();
-            musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+            if (featureSetService.isAvailable(instance.getGuildId())) {
+                musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+            }
             Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
             if (guild != null) {
                 lavaAudioService.closeConnection(guild);

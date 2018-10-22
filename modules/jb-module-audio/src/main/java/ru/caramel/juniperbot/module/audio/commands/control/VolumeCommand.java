@@ -17,9 +17,13 @@
 package ru.caramel.juniperbot.module.audio.commands.control;
 
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.model.enums.FeatureSet;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -63,5 +67,10 @@ public class VolumeCommand extends AudioCommand {
             }
         }
         return count;
+    }
+
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return guild != null && featureSetService.isAvailable(guild);
     }
 }

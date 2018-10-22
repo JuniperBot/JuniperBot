@@ -324,7 +324,11 @@ public class CommandsServiceImpl implements CommandsService {
         if (commandConfig != null && commandConfig.isDisabled()) {
             return false;
         }
-        if (!command.isAvailable(user, member)) {
+        Guild guild = member != null ? member.getGuild() : null;
+        if (guild == null && channel instanceof TextChannel) {
+            guild = ((TextChannel) channel).getGuild();
+        }
+        if (!command.isAvailable(user, member, guild)) {
             return false;
         }
         if (commandAnnotation.source().length == 0 || channel == null) {

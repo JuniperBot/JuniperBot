@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.commands.moderation;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -85,7 +86,7 @@ public class WarnsCommand extends ModeratorCommandAsync {
     }
 
     @Override
-    public boolean isAvailable(User user, Member member) {
+    public boolean isAvailable(User user, Member member, Guild guild) {
         return true; // to everyone
     }
 }

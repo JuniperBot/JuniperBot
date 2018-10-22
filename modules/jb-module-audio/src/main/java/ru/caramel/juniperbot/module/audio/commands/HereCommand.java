@@ -51,11 +51,11 @@ public class HereCommand extends AudioCommand {
     }
 
     @Override
-    public boolean isAvailable(User user, Member member) {
-        if (member == null) {
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        if (guild == null) {
             return false;
         }
-        MusicConfig musicConfig = musicConfigService.getByGuildId(member.getGuild().getIdLong());
+        MusicConfig musicConfig = musicConfigService.getByGuildId(guild.getIdLong());
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 

@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.model;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -46,8 +47,11 @@ public abstract class AbstractCommand implements Command {
     @Autowired
     protected ConfigService configService;
 
+    @Autowired
+    protected FeatureSetService featureSetService;
+
     @Override
-    public boolean isAvailable(User user, Member member) {
+    public boolean isAvailable(User user, Member member, Guild guild) {
         return true;
     }
 
