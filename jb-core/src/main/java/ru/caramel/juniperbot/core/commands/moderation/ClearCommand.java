@@ -78,18 +78,15 @@ public class ClearCommand extends ModeratorCommandAsync {
             return;
         }
 
-        channel.getPinnedMessages().queue(pinnedMessages -> {
-            messages.removeAll(pinnedMessages);
-            RequestFuture.allOf(channel.purgeMessages(messages)).whenComplete((v, t) ->
-                    contextService.withContext(channel.getGuild(), () -> {
-                        int count = messages.size();
-                        if (!mention) {
-                            count--;
-                        }
-                        String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
-                        messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
-                    }));
-        });
+        RequestFuture.allOf(channel.purgeMessages(messages)).whenComplete((v, t) ->
+                contextService.withContext(channel.getGuild(), () -> {
+                    int count = messages.size();
+                    if (!mention) {
+                        count--;
+                    }
+                    String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
+                    messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
+                }));
     }
 
     private int getCount(String queue) throws DiscordException {
