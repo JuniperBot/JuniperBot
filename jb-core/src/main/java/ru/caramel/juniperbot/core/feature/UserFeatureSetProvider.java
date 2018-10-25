@@ -34,12 +34,6 @@ public class UserFeatureSetProvider extends BaseOwnerFeatureSetProvider {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
-        return getByUser(userId).contains(featureSet);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Set<FeatureSet> getByUser(long userId) {
         String features = userRepository.findFeaturesByUserId(String.valueOf(userId));
         return CommonUtils.safeEnumSet(features, FeatureSet.class);

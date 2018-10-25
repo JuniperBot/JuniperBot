@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.UserEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.FeaturedUserEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 @Setter
 @Entity
 @Table(name = "user", schema = "public")
-public class LocalUser extends UserEntity {
+public class LocalUser extends FeaturedUserEntity {
     private static final long serialVersionUID = -1439894653981742651L;
 
     @Column
@@ -40,9 +40,6 @@ public class LocalUser extends UserEntity {
 
     @Column(name = "avatar_url")
     private String avatarUrl;
-
-    @Column
-    private String features;
 
     @Transient
     public String getAsMention() {

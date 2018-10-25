@@ -16,15 +16,10 @@
  */
 package ru.caramel.juniperbot.core.persistence.repository;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
-import ru.caramel.juniperbot.core.persistence.repository.base.UserRepository;
 
 @Repository
-public interface LocalUserRepository extends UserRepository<LocalUser> {
+public interface LocalUserRepository extends FeaturedUserRepository<LocalUser> {
 
-    @Query("SELECT u.features FROM LocalUser u WHERE u.userId = :userId")
-    String findFeaturesByUserId(@Param("userId") String userId);
 }

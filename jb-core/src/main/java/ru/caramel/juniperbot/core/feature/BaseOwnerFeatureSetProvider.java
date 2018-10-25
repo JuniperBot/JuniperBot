@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.feature;
 
 import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.enums.FeatureSet;
 import ru.caramel.juniperbot.core.service.DiscordService;
 
@@ -27,6 +28,12 @@ public abstract class BaseOwnerFeatureSetProvider implements FeatureSetProvider 
 
     @Autowired
     private DiscordService discordService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
+        return getByUser(userId).contains(featureSet);
+    }
 
     @Override
     public boolean isAvailable(long guildId, FeatureSet featureSet) {

@@ -180,6 +180,12 @@
             <version>${sentry.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.patreon</groupId>
+            <artifactId>patreon</artifactId>
+            <version>${patreon.version}</version>
+        </dependency>
+
         <!-- DATABASE DEPENDENCIES -->
 
         <dependency>

@@ -27,4 +27,32 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.0-22102018-2" author="caramel">
+        <createTable tableName="patreon_user">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patreon_user"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="patreon_id" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="features" type="text"/>
+        </createTable>
+        <createIndex indexName="idx_patreon_user_user_id" tableName="patreon_user" unique="true">
+            <column name="user_id" type="VARCHAR(255)"/>
+        </createIndex>
+        <createIndex indexName="idx_patreon_user_patreon_id" tableName="patreon_user" unique="true">
+            <column name="patreon_id" type="VARCHAR(255)"/>
+        </createIndex>
+        <createIndex indexName="idx_patreon_user_active" tableName="patreon_user">
+            <column name="active" type="BOOLEAN"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
