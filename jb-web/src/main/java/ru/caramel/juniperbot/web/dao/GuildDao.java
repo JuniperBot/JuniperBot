@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.discord.RoleDto;
 import ru.caramel.juniperbot.web.dto.discord.TextChannelDto;
@@ -39,6 +40,9 @@ public class GuildDao extends AbstractDao {
 
     @Autowired
     private DiscordTokenServices tokenServices;
+
+    @Autowired
+    private FeatureSetService featureSetService;
 
     @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
@@ -75,7 +79,8 @@ public class GuildDao extends AbstractDao {
                 .locale(config.getLocale())
                 .commandLocale(config.getCommandLocale())
                 .id(String.valueOf(config.getGuildId()))
-                .icon(config.getIconUrl());
+                .icon(config.getIconUrl())
+                .featureSets(featureSetService.getByGuild(config.getGuildId()));
 
         if (!discordService.isConnected()) {
             return builder.build();
