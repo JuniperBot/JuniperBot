@@ -19,4 +19,6 @@ package ru.caramel.juniperbot.core.service;
 import ru.caramel.juniperbot.core.feature.FeatureSetProvider;
 
 public interface PatreonService extends FeatureSetProvider {
+
+    boolean processWebHook(String content, String trigger, String signature);
 }

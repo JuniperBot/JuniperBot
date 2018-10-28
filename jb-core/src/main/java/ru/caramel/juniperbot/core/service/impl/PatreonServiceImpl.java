@@ -17,24 +17,28 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import com.patreon.PatreonAPI;
-import com.patreon.PatreonOAuth;
 import com.patreon.resources.Pledge;
+import com.patreon.resources.User;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.feature.BaseOwnerFeatureSetProvider;
 import ru.caramel.juniperbot.core.model.FeatureProvider;
+import ru.caramel.juniperbot.core.model.PatreonMember;
 import ru.caramel.juniperbot.core.model.enums.FeatureSet;
 import ru.caramel.juniperbot.core.persistence.entity.PatreonUser;
 import ru.caramel.juniperbot.core.persistence.repository.PatreonUserRepository;
 import ru.caramel.juniperbot.core.service.EmergencyService;
 import ru.caramel.juniperbot.core.service.PatreonService;
+import ru.caramel.juniperbot.core.utils.PatreonUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -47,20 +51,14 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Value("${integrations.patreon.campaignId:1552419}")
     private String campaignId;
 
-    @Value("${integrations.patreon.clientId:}")
-    private String clientId;
-
-    @Value("${integrations.patreon.clientSecret:}")
-    private String clientSecret;
+    @Value("${integrations.patreon.webhookSecret:}")
+    private String webHookSecret;
 
     @Value("${integrations.patreon.accessToken:}")
     private String accessToken;
 
     @Value("${integrations.patreon.refreshToken:}")
     private String refreshToken;
-
-    @Value("${integrations.patreon.redirectUri:}")
-    private String redirectUri;
 
     @Value("${integrations.patreon.updateInterval:3600000}")
     private Long updateInterval;
@@ -74,26 +72,28 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Autowired
     private TaskScheduler scheduler;
 
-    private PatreonOAuth oAuth;
-
     private PatreonAPI creatorApi;
+
+    private HmacUtils webHookHmac;
 
     private final Map<Long, Set<FeatureSet>> featureSets = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
-        if (StringUtils.isEmpty(clientId)
-                || StringUtils.isEmpty(clientSecret)
-                || StringUtils.isEmpty(redirectUri)
-                || StringUtils.isEmpty(accessToken)) {
-            log.warn("No Patreon credentials specified, integration would not work");
-            return;
-        }
-        oAuth = new PatreonOAuth(clientId, clientSecret, redirectUri);
-        creatorApi = new PatreonAPI(accessToken);
         List<PatreonUser> activeUsers = repository.findActive();
         featureSets.putAll(activeUsers.stream().collect(Collectors.toMap(e -> Long.valueOf(e.getUserId()), PatreonUser::getFeatureSets)));
-        scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+
+        if (StringUtils.isNotEmpty(accessToken)) {
+            creatorApi = new PatreonAPI(accessToken);
+            scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+        } else {
+            log.warn("No Patreon credentials specified, integration would not work");
+        }
+        if (StringUtils.isNotEmpty(webHookSecret)) {
+            webHookHmac = new HmacUtils(HmacAlgorithms.HMAC_MD5, webHookSecret);
+        } else {
+            log.warn("No Patreon WebHook secret specified, WebHooks would not work");
+        }
     }
 
     private synchronized void update() {
@@ -101,7 +101,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         try {
             List<PatreonUser> patreonUsers = repository.findAll();
             Map<String, PatreonUser> patreonById = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getPatreonId, e -> e));
-            Map<String, PatreonUser> patreonByUserId = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getPatreonId, e -> e));
+            Map<String, PatreonUser> patreonByUserId = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getUserId, e -> e));
 
             patreonUsers.forEach(e -> e.setActive(false));
             Map<Long, Set<FeatureSet>> featureSets = new HashMap<>();
@@ -113,12 +113,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     continue;
                 }
 
-                String discordUserId = null;
-                if (pledge.getPatron().getSocialConnections() != null
-                        && pledge.getPatron().getSocialConnections().getDiscord() != null
-                        && StringUtils.isNotEmpty(pledge.getPatron().getSocialConnections().getDiscord().getUser_id())) {
-                    discordUserId = pledge.getPatron().getSocialConnections().getDiscord().getUser_id();
-                }
+                String discordUserId = getDiscordId(pledge.getPatron());
 
                 PatreonUser patreon = patreonById.get(pledge.getPatron().getId());
 
@@ -140,12 +135,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     patreon.setUserId(discordUserId);
                 }
                 patreon.setActive(true);
-
-                Set<FeatureSet> pledgeSets = new HashSet<>();
-                if (pledge.getAmountCents() >= 100) {
-                    pledgeSets.add(FeatureSet.BONUS);
-                }
-                patreon.setFeatureSets(pledgeSets);
+                patreon.setFeatureSets(getFeatureSets(pledge.getAmountCents()));
 
                 featureSets.put(Long.valueOf(patreon.getUserId()), patreon.getFeatureSets());
             }
@@ -164,5 +154,79 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Override
     public Set<FeatureSet> getByUser(long userId) {
         return featureSets.getOrDefault(userId, Set.of());
+    }
+
+    @Override
+    @Transactional
+    public boolean processWebHook(String content, String trigger, String signature) {
+        try {
+            if (signature != null && webHookHmac != null && !signature.equalsIgnoreCase(webHookHmac.hmacHex(content))) {
+                log.warn("Denied Patreon WebHook!");
+                return false;
+            }
+
+            PatreonMember member = PatreonUtils.parseMember(content);
+            PatreonUser patron = getOrCreatePatron(member);
+            if (patron == null) {
+                return true; // treat it is as success, we could not find such user yet
+            }
+
+            switch (trigger) {
+                case "members:pledge:create":
+                case "members:pledge:update":
+                    patron.setActive(true);
+                    patron.setFeatureSets(getFeatureSets(member.getPledgeAmountCents()));
+                    featureSets.put(Long.valueOf(patron.getUserId()), patron.getFeatureSets());
+                    break;
+                case "members:pledge:delete":
+                    patron.setActive(false);
+                    featureSets.remove(Long.valueOf(patron.getUserId()));
+                    break;
+            }
+            repository.save(patron);
+        } catch (Exception e) {
+            log.error("Could not perform Patreon WebHook [event={}]: {}", trigger, content, e);
+            emergencyService.error("Could not perform Patreon WebHook", e);
+        }
+        return true;
+    }
+
+    private PatreonUser getOrCreatePatron(PatreonMember member) {
+        User user = member.getUser();
+        if (user == null) {
+            return null;
+        }
+
+        String discordUserId = getDiscordId(user);
+        PatreonUser patron = repository.findByPatreonId(user.getId());
+        if (patron == null && discordUserId == null) {
+            return null;
+        }
+        if (patron == null) {
+            patron = repository.findByUserId(discordUserId);
+        }
+        if (patron == null) {
+            patron = new PatreonUser();
+        }
+        patron.setPatreonId(user.getId());
+        if (discordUserId != null) {
+            patron.setUserId(discordUserId);
+        }
+        return patron;
+    }
+
+    private static String getDiscordId(User user) {
+        return user != null && user.getSocialConnections() != null
+                && user.getSocialConnections().getDiscord() != null
+                && StringUtils.isNotEmpty(user.getSocialConnections().getDiscord().getUser_id())
+                ? user.getSocialConnections().getDiscord().getUser_id() : null;
+    }
+
+    private static Set<FeatureSet> getFeatureSets(int cents) {
+        Set<FeatureSet> pledgeSets = new HashSet<>();
+        if (cents >= 100) {
+            pledgeSets.add(FeatureSet.BONUS);
+        }
+        return pledgeSets;
     }
 }

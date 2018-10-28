@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.service.PatreonService;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.service.VkService;
@@ -64,6 +65,9 @@ public class CallbackController extends BasePublicRestController {
 
     @Autowired
     private YouTubeService youTubeService;
+
+    @Autowired
+    private PatreonService patreonService;
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)
@@ -100,7 +104,6 @@ public class CallbackController extends BasePublicRestController {
     }
 
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.POST)
-    @Transactional
     public void youTubeCallback(
             @AtomFeed SyndFeed feed,
             @RequestParam("secret") String secret) {
@@ -129,7 +132,6 @@ public class CallbackController extends BasePublicRestController {
     }
 
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.GET)
-    @Transactional
     public String youTubeCallbackChallenge(@RequestParam("hub.verify_token") String secret,
                                            @RequestParam("hub.challenge") String challenge) {
         if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
@@ -138,5 +140,14 @@ public class CallbackController extends BasePublicRestController {
         }
         log.info("YouTube callback challenge accepted");
         return challenge;
+    }
+
+    @RequestMapping(value = "/patreon/callback", method = RequestMethod.POST)
+    public void patreonCallback(@RequestBody String content,
+                          @RequestHeader("X-Patreon-Event") String event,
+                          @RequestHeader("X-Patreon-Signature") String signature) {
+        if (!patreonService.processWebHook(content, event, signature)) {
+            throw new AccessDeniedException();
+        }
     }
 }
