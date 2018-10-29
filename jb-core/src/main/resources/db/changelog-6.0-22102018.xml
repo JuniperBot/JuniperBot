@@ -63,4 +63,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.0-22102018-4" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="color" type="VARCHAR(7)" defaultValue="#FFA550">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

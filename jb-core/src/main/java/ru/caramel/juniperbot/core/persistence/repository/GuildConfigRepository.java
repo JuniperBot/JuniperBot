@@ -30,4 +30,7 @@ public interface GuildConfigRepository extends GuildRepository<GuildConfig> {
 
     @Query("SELECT e.locale FROM GuildConfig e WHERE e.guildId = :guildId")
     String findLocaleByGuildId(@Param("guildId") long guildId);
+
+    @Query("SELECT e.color FROM GuildConfig e WHERE e.guildId = :guildId")
+    String findColorByGuildId(@Param("guildId") long guildId);
 }

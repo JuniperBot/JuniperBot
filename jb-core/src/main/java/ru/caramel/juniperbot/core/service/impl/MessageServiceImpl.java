@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
-import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -27,7 +26,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -53,9 +51,6 @@ public class MessageServiceImpl implements MessageService {
 
     private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
 
-    @Getter
-    private Color accentColor;
-
     @Autowired
     private BrandingService brandingService;
 
@@ -75,7 +70,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public EmbedBuilder getBaseEmbed(boolean copyright) {
-        EmbedBuilder builder = new EmbedBuilder().setColor(accentColor);
+        EmbedBuilder builder = new EmbedBuilder().setColor(contextService.getColor());
         if (copyright) {
             builder.setFooter(getMessage("about.copy.content", Year.now()), brandingService.getCopyImageUrl());
         }
@@ -138,7 +133,7 @@ public class MessageServiceImpl implements MessageService {
     private EmbedBuilder createMessage(String titleCode, String code, Object... args) {
         return getBaseEmbed()
                 .setTitle(getMessage(titleCode), null)
-                .setColor(getAccentColor())
+                .setColor(contextService.getColor())
                 .setDescription(getMessage(code, args));
     }
 
@@ -205,10 +200,5 @@ public class MessageServiceImpl implements MessageService {
     public String getCountPlural(long count, String code) {
         String key = PluralUtils.getPluralKey(contextService.getLocale(), count);
         return getMessage(String.format("%s[%s]", code, key));
-    }
-
-    @Value("${discord.accentColor:#FFA550}")
-    public void setAccentColor(String color) {
-        accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }
 }

@@ -21,14 +21,11 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.awt.*;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface MessageService {
-
-    Color getAccentColor();
 
     EmbedBuilder getBaseEmbed();
 

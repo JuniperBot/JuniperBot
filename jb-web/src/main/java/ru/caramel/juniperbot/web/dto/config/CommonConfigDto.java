@@ -40,6 +40,10 @@ public class CommonConfigDto implements Serializable {
     @NotBlank
     private String locale;
 
+    @Size(max = 7)
+    @NotBlank
+    private String color;
+
     @Size(max = 10)
     @NotBlank
     private String commandLocale;

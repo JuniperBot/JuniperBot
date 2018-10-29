@@ -22,10 +22,12 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
@@ -38,6 +40,7 @@ import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.SourceResolverService;
 
 import javax.annotation.PostConstruct;
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,6 +54,7 @@ public class ContextServiceImpl implements ContextService {
 
     private static class ContextHolder {
         private Locale locale;
+        private Color color;
         private Long guildId;
         private String userId;
     }
@@ -61,7 +65,12 @@ public class ContextServiceImpl implements ContextService {
 
     private final ThreadLocal<Locale> localeHolder = new NamedThreadLocal<>("ContextServiceImpl.Locale");
 
+    private final ThreadLocal<Color> colorHolder = new NamedThreadLocal<>("ContextServiceImpl.Color");
+
     private final ThreadLocal<Long> guildHolder = new NamedThreadLocal<>("ContextServiceImpl.GuildIds");
+
+    @Getter
+    private Color accentColor;
 
     @Getter
     private Map<String, Locale> supportedLocales;
@@ -97,8 +106,26 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    public Color getColor() {
+        Color color = colorHolder.get();
+        if (color == null) {
+            Long guildId = guildHolder.get();
+            if (guildId != null) {
+                setColor(Color.decode(configService.getColor(guildId)));
+                color = colorHolder.get();
+            }
+        }
+        return color != null ? color : getDefaultColor();
+    }
+
+    @Override
     public Locale getDefaultLocale() {
         return supportedLocales.get(DEFAULT_LOCALE);
+    }
+
+    @Override
+    public Color getDefaultColor() {
+        return accentColor;
     }
 
     @Override
@@ -122,6 +149,15 @@ public class ContextServiceImpl implements ContextService {
             localeHolder.remove();
         } else {
             localeHolder.set(locale);
+        }
+    }
+
+    @Override
+    public void setColor(Color color) {
+        if (color == null) {
+            colorHolder.remove();
+        } else {
+            colorHolder.set(color);
         }
     }
 
@@ -240,12 +276,19 @@ public class ContextServiceImpl implements ContextService {
         MDC.remove(MDC_USER);
         guildHolder.remove();
         localeHolder.remove();
+        colorHolder.remove();
+    }
+
+    @Value("${discord.accentColor:#FFA550}")
+    public void setAccentColor(String color) {
+        accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }
 
     public ContextHolder getContext() {
         ContextHolder holder = new ContextHolder();
         holder.guildId = guildHolder.get();
         holder.locale = localeHolder.get();
+        holder.color = colorHolder.get();
         holder.userId = MDC.get(MDC_USER);
         return holder;
     }
