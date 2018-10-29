@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 @DiscordCommand(key = "discord.command.dog.key",
         description = "discord.command.dog.desc",
-        group = "discord.command.group.utility",
+        group = "discord.command.group.fun",
         priority = 16)
 public class DogCommand extends AbstractCommand {
 

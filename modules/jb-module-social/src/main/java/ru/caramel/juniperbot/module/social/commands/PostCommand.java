@@ -33,7 +33,7 @@ import java.util.List;
 
 @DiscordCommand(key = "discord.command.post.key",
         description = "discord.command.post.desc",
-        group = "discord.command.group.utility",
+        group = "discord.command.group.fun",
         priority = 5)
 public class PostCommand extends AbstractCommand {
 
