@@ -43,6 +43,7 @@ public class TwitchSubscriptionHandler extends AbstractSubscriptionHandler<Twitc
         attributes.put("twitch.login", connection.getLogin());
         attributes.put("twitch.description", connection.getDescription());
         attributes.put("twitch.announce", connection.getAnnounceMessage());
+        attributes.put("twitch.sendEmbed", connection.isSendEmbed());
         SubscriptionDto dto = getDtoForHook(connection.getGuildId(), connection.getWebHook());
         dto.setId(connection.getId());
         dto.setAttributes(attributes);
@@ -83,6 +84,10 @@ public class TwitchSubscriptionHandler extends AbstractSubscriptionHandler<Twitc
 
         String announce = getValue(subscription.getAttributes(), "twitch.announce", String.class);
         connection.setAnnounceMessage(announce);
+
+        Boolean sendEmbed = getValue(subscription.getAttributes(), "twitch.sendEmbed", Boolean.class);
+        connection.setSendEmbed(Boolean.TRUE.equals(sendEmbed));
+
         twitchService.save(connection);
         return true;
     }
