@@ -364,7 +364,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     private void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
         contextService.withContext(request.getGuildId(),
-                () -> messageManager.onTrackAdd(request, instance.getCursor() < 0));
+                () -> messageManager.onTrackAdd(request, instance));
 
         Member member = request.getMember();
         if (member != null) {

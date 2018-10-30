@@ -79,4 +79,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.0-22102018-6" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="show_queue" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

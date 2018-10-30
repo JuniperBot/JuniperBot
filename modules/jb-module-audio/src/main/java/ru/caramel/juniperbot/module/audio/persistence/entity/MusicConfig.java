@@ -69,6 +69,9 @@ public class MusicConfig extends GuildEntity {
     @Column(columnDefinition = "json")
     private List<Long> roles;
 
+    @Column(name = "show_queue")
+    private boolean showQueue;
+
     public MusicConfig(long guildId) {
         this.guildId = guildId;
     }
