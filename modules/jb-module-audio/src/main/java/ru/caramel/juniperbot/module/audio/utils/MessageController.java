@@ -218,7 +218,7 @@ public class MessageController {
                         message.clearReactions().queue(e -> reactionsListener.unsubscribe(message.getId()));
                     }
                 } else {
-                    message.delete().queue();
+                    message.delete().queue(e -> reactionsListener.unsubscribe(message.getId()));
                 }
             } catch (ErrorResponseException e) {
                 switch (e.getErrorResponse()) {

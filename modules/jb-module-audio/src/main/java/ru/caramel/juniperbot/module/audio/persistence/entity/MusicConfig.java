@@ -72,6 +72,9 @@ public class MusicConfig extends GuildEntity {
     @Column(name = "show_queue")
     private boolean showQueue;
 
+    @Column(name = "remove_messages")
+    private boolean removeMessages;
+
     public MusicConfig(long guildId) {
         this.guildId = guildId;
     }

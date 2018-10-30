@@ -53,4 +53,6 @@ public class MusicConfigDto implements Serializable {
     private Set<String> roles;
 
     private boolean showQueue;
+
+    private boolean removeMessages;
 }

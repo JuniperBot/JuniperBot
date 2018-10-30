@@ -87,4 +87,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.0-22102018-7" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="remove_messages" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

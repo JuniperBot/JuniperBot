@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.audio.model.EndReason;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -96,7 +97,12 @@ public class AudioMessageManager {
         if (instance.getCursor() >= 0) {
             TextChannel channel = request.getChannel();
             if (channel != null) {
-                messageService.sendMessageSilent(channel::sendMessage, getBasicMessage(request).build());
+                MessageEmbed addedMessage = getBasicMessage(request).build();
+                if (isKeepMessage(request)) {
+                    messageService.sendMessageSilent(channel::sendMessage, addedMessage);
+                } else {
+                    messageService.sendTempMessageSilent(channel::sendMessage, addedMessage, 10);
+                }
                 if (instance.getQueue().size() <= MAX_SHORT_QUEUE) {
                     MusicConfig config = musicConfigService.getByGuildId(request.getGuildId());
                     if (config != null && config.isShowQueue()) {
@@ -124,7 +130,7 @@ public class AudioMessageManager {
                                     new MessageController(context, e));
                             if (oldController != null) {
                                 contextService.withContext(request.getGuildId(),
-                                        () -> markAsPassed(request, oldController, true));
+                                        () -> markAsPassed(request, oldController, isKeepMessage(request)));
                             }
                             if (featureSetService.isAvailable(request.getGuildId())) {
                                 runUpdater(request);
@@ -140,7 +146,7 @@ public class AudioMessageManager {
         syncByGuild(request, () -> {
             cancelUpdate(request);
             controllers.computeIfPresent(request.getGuildId(), (g, c) -> {
-                markAsPassed(request, c, true);
+                markAsPassed(request, c, isKeepMessage(request));
                 return null;
             });
         });
@@ -165,6 +171,14 @@ public class AudioMessageManager {
                 throw e;
             }
         }
+    }
+
+    private boolean isKeepMessage(TrackRequest request) {
+        if (request.getEndReason() == EndReason.SHUTDOWN || request.getEndReason() == EndReason.ERROR) {
+            return true;
+        }
+        MusicConfig musicConfig = musicConfigService.getByGuildId(request.getGuildId());
+        return musicConfig == null || !musicConfig.isRemoveMessages();
     }
 
     private void deleteMessage(TrackRequest request) {

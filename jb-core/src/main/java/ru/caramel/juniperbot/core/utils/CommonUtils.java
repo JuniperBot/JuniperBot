@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.utils;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -280,5 +281,16 @@ public final class CommonUtils {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(offset - TimeUnit.HOURS.toMillis(hours));
 
         return String.format("UTC%s%d:%02d", hours > 0 ? '+' : '-', hours, minutes);
+    }
+
+    public static MessageChannel getChannel(JDA jda, ChannelType type, long channelId) {
+        switch (type) {
+            case TEXT:
+                return jda.getTextChannelById(channelId);
+            case PRIVATE:
+                return jda.getPrivateChannelById(channelId);
+            default:
+                return null;
+        }
     }
 }

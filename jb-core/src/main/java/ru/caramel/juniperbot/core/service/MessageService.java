@@ -31,6 +31,8 @@ public interface MessageService {
 
     EmbedBuilder getBaseEmbed(boolean copyright);
 
+    <T> void sendTempMessageSilent(Function<T, RestAction<Message>> action, T embed, int sec);
+
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
     <T> void sendMessageSilentQueue(Function<T, RestAction<Message>> action, T embed,

@@ -17,6 +17,8 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.PluralUtils;
 
 import java.awt.*;
@@ -104,9 +107,7 @@ public class MessageServiceImpl implements MessageService {
     public void onTempEmbedMessage(MessageChannel sourceChannel, int sec, String code, Object... args) {
         EmbedBuilder builder = getBaseEmbed();
         builder.setDescription(getMessage(code, args));
-        sendMessageSilentQueue(sourceChannel::sendMessage, builder.build(), message -> {
-            scheduler.schedule(() -> message.delete().queue(), new DateTime().plusSeconds(sec).toDate());
-        });
+        sendTempMessageSilent(sourceChannel::sendMessage, builder.build(), sec);
     }
 
     @Override
@@ -116,9 +117,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void onTempPlainMessage(MessageChannel sourceChannel, int sec, String text) {
-        sendMessageSilentQueue(sourceChannel::sendMessage, text, message -> {
-            scheduler.schedule(() -> message.delete().queue(), new DateTime().plusSeconds(sec).toDate());
-        });
+        sendTempMessageSilent(sourceChannel::sendMessage, text, sec);
     }
 
     @Override
@@ -163,6 +162,22 @@ public class MessageServiceImpl implements MessageService {
         return StringUtils.isNotEmpty(code) &&
                 context.getMessage(code, null, null,
                         contextService.getLocale()) != null;
+    }
+
+    @Override
+    public <T> void sendTempMessageSilent(Function<T, RestAction<Message>> action, T embed, int sec) {
+        sendMessageSilentQueue(action, embed, message -> {
+            JDA jda = message.getJDA();
+            long messageId = message.getIdLong();
+            long channelId = message.getChannel().getIdLong();
+            ChannelType type = message.getChannelType();
+            scheduler.schedule(() -> {
+                MessageChannel channel = CommonUtils.getChannel(jda, type, channelId);
+                if (channel != null) {
+                    channel.getMessageById(messageId).queue(m -> m.delete().queue());
+                }
+            }, new DateTime().plusSeconds(sec).toDate());
+        });
     }
 
     @Override
