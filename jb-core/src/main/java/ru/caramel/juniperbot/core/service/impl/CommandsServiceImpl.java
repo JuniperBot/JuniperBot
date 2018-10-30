@@ -44,6 +44,7 @@ import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.core.service.*;
 
 import javax.annotation.PostConstruct;
@@ -252,21 +253,23 @@ public class CommandsServiceImpl implements CommandsService {
             messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.roles");
             return true;
         }
-        if (event.getMember() != null
-                && commandConfig.getCoolDownMode() != CoolDownMode.NONE
-                && !moderationService.isModerator(event.getMember())) {
-            CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
-            long duration = holder.perform(event, commandConfig);
-            if (duration > 0) {
-                resultEmotion(event, "\uD83D\uDD5C", null);
-                Date date = new Date();
-                date.setTime(date.getTime() + duration);
+        if (event.getMember() != null && commandConfig.getCoolDownMode() != CoolDownMode.NONE) {
+            ModerationConfig moderationConfig = moderationService.get(event.getGuild());
+            if (!moderationService.isModerator(event.getMember())
+                    || (moderationConfig != null && !moderationConfig.isCoolDownIgnored())) {
+                CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
+                long duration = holder.perform(event, commandConfig);
+                if (duration > 0) {
+                    resultEmotion(event, "\uD83D\uDD5C", null);
+                    Date date = new Date();
+                    date.setTime(date.getTime() + duration);
 
-                PrettyTime time = new PrettyTime(contextService.getLocale());
-                time.removeUnit(JustNow.class);
-                messageService.onTempEmbedMessage(event.getChannel(), 10,
-                        "discord.command.restricted.cooldown", time.format(date));
-                return true;
+                    PrettyTime time = new PrettyTime(contextService.getLocale());
+                    time.removeUnit(JustNow.class);
+                    messageService.onTempEmbedMessage(event.getChannel(), 10,
+                            "discord.command.restricted.cooldown", time.format(date));
+                    return true;
+                }
             }
         }
         return false;

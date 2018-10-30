@@ -83,7 +83,9 @@ public class ModerationServiceImpl
 
     @Override
     protected ModerationConfig createNew(long guildId) {
-        return new ModerationConfig(guildId);
+        ModerationConfig config = new ModerationConfig(guildId);
+        config.setCoolDownIgnored(true);
+        return config;
     }
 
     @Override

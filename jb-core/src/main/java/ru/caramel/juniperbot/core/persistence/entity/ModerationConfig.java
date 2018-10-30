@@ -61,6 +61,9 @@ public class ModerationConfig extends GuildEntity {
     @Column(name = "mute_count")
     private int muteCount = DEFAULT_MUTE_COUNT;
 
+    @Column(name = "cooldown_ignored")
+    private boolean coolDownIgnored;
+
     public ModerationConfig(long guildId) {
         this.guildId = guildId;
     }
