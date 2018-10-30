@@ -29,7 +29,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.avatar.key",
         description = "discord.command.avatar.desc",
         group = "discord.command.group.utility",
-        priority = 20)
+        priority = 21)
 public class AvatarCommand extends AbstractCommand {
 
     @Override

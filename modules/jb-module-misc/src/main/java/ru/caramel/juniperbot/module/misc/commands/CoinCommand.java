@@ -24,7 +24,7 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.coin.key",
         description = "discord.command.coin.desc",
         group = "discord.command.group.fun",
-        priority = 17)
+        priority = 18)
 public class CoinCommand extends AbstractCommand {
 
     @Override
