@@ -18,7 +18,11 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.model.AuditActionBuilder;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import ru.caramel.juniperbot.core.persistence.repository.AuditActionRepository;
 import ru.caramel.juniperbot.core.persistence.repository.AuditConfigRepository;
 import ru.caramel.juniperbot.core.service.AuditService;
 
@@ -26,6 +30,9 @@ import ru.caramel.juniperbot.core.service.AuditService;
 public class AuditServiceImpl
         extends AbstractDomainServiceImpl<AuditConfig, AuditConfigRepository>
         implements AuditService {
+
+    @Autowired
+    private AuditActionRepository actionRepository;
 
     public AuditServiceImpl(@Autowired AuditConfigRepository repository) {
         super(repository, true);
@@ -35,6 +42,21 @@ public class AuditServiceImpl
     protected AuditConfig createNew(long guildId) {
         AuditConfig config = new AuditConfig(guildId);
         return config;
+    }
+
+    private AuditAction save(AuditAction action) {
+        // action forwarding notification
+        return actionRepository.save(action);
+    }
+
+    @Override
+    public AuditActionBuilder log(long guildId, AuditActionType type) {
+        return new AuditActionBuilder(guildId, type) {
+            @Override
+            public AuditAction save() {
+                return AuditServiceImpl.this.save(this.action);
+            }
+        };
     }
 
     @Override

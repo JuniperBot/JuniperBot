@@ -14,18 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.persistence.entity.base;
 
-import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.model.AuditActionBuilder;
-import ru.caramel.juniperbot.core.model.enums.AuditActionType;
-import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface AuditService extends DomainService<AuditConfig> {
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
-    AuditActionBuilder log(long guildId, AuditActionType type);
+@Embeddable
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class NamedReference {
 
-    default AuditActionBuilder log(Guild guild, AuditActionType type) {
-        return log(guild.getIdLong(), type);
+    @Column(length = 21)
+    private String id;
+
+    @Column
+    private String name;
+
+    @Transient
+    public String getAsChannelMention() {
+        return "<#" + id + '>';
+    }
+
+    @Transient
+    public String getAsUserMention() {
+        return "<@" + id + '>';
     }
 }

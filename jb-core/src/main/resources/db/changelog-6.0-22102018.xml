@@ -115,4 +115,70 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="6.0-22102018-9" author="caramel">
+        <createTable tableName="audit_action">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_audit_action"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="action_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_user_id" type="VARCHAR(21)"/>
+            <column name="source_user_name" type="VARCHAR(255)"/>
+            <column name="target_user_id" type="VARCHAR(21)"/>
+            <column name="target_user_name" type="VARCHAR(255)"/>
+            <column name="channel_id" type="VARCHAR(21)"/>
+            <column name="channel_name" type="VARCHAR(255)"/>
+            <column name="attributes" type="JSONB"/>
+        </createTable>
+
+        <createIndex indexName="idx_audit_action_guild_id" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_action_date" tableName="audit_action">
+            <column name="action_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_action_type" tableName="audit_action">
+            <column name="action_type" type="VARCHAR(255)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_source_user_id" tableName="audit_action">
+            <column name="source_user_id" type="VARCHAR(21)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_target_user_id" tableName="audit_action">
+            <column name="target_user_id" type="VARCHAR(21)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_channel_id" tableName="audit_action">
+            <column name="channel_id" type="VARCHAR(21)"/>
+        </createIndex>
+
+        <createIndex indexName="idx_audit_action_guild_action_date" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="action_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_guild_action_type" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="action_type" type="VARCHAR(255)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_guild_source_user_id" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="source_user_id" type="VARCHAR(21)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_guild_target_user_id" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="target_user_id" type="VARCHAR(21)"/>
+        </createIndex>
+        <createIndex indexName="idx_audit_action_guild_channel_id" tableName="audit_action">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="channel_id" type="VARCHAR(21)"/>
+        </createIndex>
+
+    </changeSet>
+
 </databaseChangeLog>

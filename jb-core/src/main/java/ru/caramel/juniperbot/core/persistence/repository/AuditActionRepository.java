@@ -14,18 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import net.dv8tion.jda.core.entities.Guild;
-import ru.caramel.juniperbot.core.model.AuditActionBuilder;
-import ru.caramel.juniperbot.core.model.enums.AuditActionType;
-import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
+import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 
-public interface AuditService extends DomainService<AuditConfig> {
-
-    AuditActionBuilder log(long guildId, AuditActionType type);
-
-    default AuditActionBuilder log(Guild guild, AuditActionType type) {
-        return log(guild.getIdLong(), type);
-    }
+@Repository
+public interface AuditActionRepository extends GuildRepository<AuditAction> {
 }

@@ -50,6 +50,9 @@ public abstract class AbstractCommand implements Command {
     @Autowired
     protected FeatureSetService featureSetService;
 
+    @Autowired
+    protected AuditService auditService;
+
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
         return true;
