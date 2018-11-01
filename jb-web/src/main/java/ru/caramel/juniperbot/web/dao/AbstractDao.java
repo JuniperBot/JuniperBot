@@ -16,6 +16,9 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.DiscordService;
@@ -36,4 +39,26 @@ public abstract class AbstractDao {
     @Autowired
     protected JbCacheManager cacheManager;
 
+    protected String filterTextChannel(long guildId, String channelId) {
+        if (StringUtils.isEmpty(channelId)) {
+            return channelId;
+        }
+        TextChannel channel = discordService.getTextChannelById(channelId);
+        if (channel == null) {
+            return null;
+        }
+        return channel.getGuild().getIdLong() == guildId ? channelId : null;
+    }
+
+
+    protected String filterVoiceChannel(long guildId, String channelId) {
+        if (StringUtils.isEmpty(channelId)) {
+            return channelId;
+        }
+        VoiceChannel channel = discordService.getVoiceChannelById(channelId);
+        if (channel == null) {
+            return null;
+        }
+        return channel.getGuild().getIdLong() == guildId ? channelId : null;
+    }
 }

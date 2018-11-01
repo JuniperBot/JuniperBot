@@ -95,4 +95,24 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.0-22102018-8" author="caramel">
+        <createTable tableName="audit_config">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_audit_config"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="forward_enabled" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="forward_channel_id" type="VARCHAR(21)"/>
+            <column name="forward_actions" type="JSONB"/>
+        </createTable>
+        <createIndex indexName="idx_audit_config_guild_id" tableName="audit_config" unique="true">
+            <column name="guild_id" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

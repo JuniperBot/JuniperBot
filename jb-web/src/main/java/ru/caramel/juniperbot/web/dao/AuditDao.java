@@ -19,28 +19,27 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
-import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
+import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import ru.caramel.juniperbot.core.service.AuditService;
+import ru.caramel.juniperbot.web.dto.config.AuditConfigDto;
 
 @Service
-public class WelcomeDao extends AbstractDao {
+public class AuditDao extends AbstractDao {
 
     @Autowired
-    private WelcomeService welcomeService;
+    private AuditService auditService;
 
     @Transactional
-    public WelcomeDto get(long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.getByGuildId(guildId);
-        return welcomeMessage != null ? apiMapper.getWelcomeDto(welcomeMessage) : new WelcomeDto();
+    public AuditConfigDto get(long guildId) {
+        AuditConfig auditConfig = auditService.getByGuildId(guildId);
+        return auditConfig != null ? apiMapper.getAuditConfigDto(auditConfig) : new AuditConfigDto();
     }
 
     @Transactional
-    public void save(WelcomeDto dto, long guildId) {
-        WelcomeMessage welcomeMessage = welcomeService.getOrCreate(guildId);
-        dto.setJoinChannelId(filterTextChannel(guildId, dto.getJoinChannelId()));
-        dto.setLeaveChannelId(filterTextChannel(guildId, dto.getLeaveChannelId()));
-        apiMapper.updateWelcome(dto, welcomeMessage);
-        welcomeService.save(welcomeMessage);
+    public void save(AuditConfigDto dto, long guildId) {
+        AuditConfig auditConfig = auditService.getOrCreate(guildId);
+        dto.setForwardChannelId(filterTextChannel(guildId, dto.getForwardChannelId()));
+        apiMapper.updateAudit(dto, auditConfig);
+        auditService.save(auditConfig);
     }
 }

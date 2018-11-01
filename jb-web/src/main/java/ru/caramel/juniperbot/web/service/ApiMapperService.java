@@ -24,6 +24,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
@@ -154,6 +155,15 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
+
+    AuditConfigDto getAuditConfigDto(AuditConfig source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildId", ignore = true)
+    })
+    void updateAudit(AuditConfigDto source, @MappingTarget AuditConfig target);
 
     @Mappings({
             @Mapping(target = "enabled", ignore = true),
