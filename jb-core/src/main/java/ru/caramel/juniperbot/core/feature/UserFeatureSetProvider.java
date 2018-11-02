@@ -16,6 +16,9 @@
  */
 package ru.caramel.juniperbot.core.feature;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.FeatureProvider;
@@ -25,6 +28,8 @@ import ru.caramel.juniperbot.core.persistence.repository.LocalUserRepository;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @FeatureProvider(priority = 1)
 public class UserFeatureSetProvider extends BaseOwnerFeatureSetProvider {
@@ -32,11 +37,26 @@ public class UserFeatureSetProvider extends BaseOwnerFeatureSetProvider {
     @Autowired
     private LocalUserRepository userRepository;
 
+    private LoadingCache<Long, Set<FeatureSet>> userFeatureCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(7)
+            .maximumSize(10000)
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build(
+                    new CacheLoader<>() {
+                        public Set<FeatureSet> load(Long userId) {
+                            String features = userRepository.findFeaturesByUserId(String.valueOf(userId));
+                            return CommonUtils.safeEnumSet(features, FeatureSet.class);
+                        }
+                    });
+
     @Override
     @Transactional(readOnly = true)
     public Set<FeatureSet> getByUser(long userId) {
-        String features = userRepository.findFeaturesByUserId(String.valueOf(userId));
-        return CommonUtils.safeEnumSet(features, FeatureSet.class);
+        try {
+            return userFeatureCache.get(userId);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -53,5 +73,6 @@ public class UserFeatureSetProvider extends BaseOwnerFeatureSetProvider {
         }
         user.setFeatures(CommonUtils.enumsString(featureSets));
         userRepository.save(user);
+        userFeatureCache.invalidate(userId);
     }
 }

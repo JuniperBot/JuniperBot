@@ -48,25 +48,21 @@ public class FeatureSetServiceImpl implements FeatureSetService {
 
     @Override
     public boolean isAvailable(long guildId, FeatureSet featureSet) {
-        // TODO Implement caching
         return getAnyAvailable(guildId, featureSet, FeatureSetProvider::isAvailable);
     }
 
     @Override
     public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
-        // TODO Implement caching
         return getAnyAvailable(userId, featureSet, FeatureSetProvider::isAvailableForUser);
     }
 
     @Override
     public Set<FeatureSet> getByGuild(long guildId) {
-        // TODO Implement caching
         return calculateFeatures(guildId, FeatureSetProvider::getByGuild);
     }
 
     @Override
     public Set<FeatureSet> getByUser(long userId) {
-        // TODO Implement caching
         return calculateFeatures(userId, FeatureSetProvider::getByUser);
     }
 
