@@ -29,6 +29,8 @@ public class AuditConfigDto implements Serializable {
 
     private static final long serialVersionUID = 1373520739258476656L;
 
+    private boolean enabled;
+
     private boolean forwardEnabled;
 
     private String forwardChannelId;

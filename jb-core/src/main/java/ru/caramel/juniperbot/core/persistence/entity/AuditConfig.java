@@ -35,6 +35,9 @@ public class AuditConfig extends GuildEntity {
 
     private static final long serialVersionUID = 1052650749958531237L;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     @Column(name = "forward_enabled")
     private boolean forwardEnabled;
 

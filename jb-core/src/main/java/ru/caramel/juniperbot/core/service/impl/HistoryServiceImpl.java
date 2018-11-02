@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.joda.time.DateTime;
@@ -26,6 +27,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.entity.MessageHistory;
 import ru.caramel.juniperbot.core.persistence.repository.MessageHistoryRepository;
@@ -63,7 +65,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageCreate(Message message) {
-        if (!historyEnabled) {
+        if (!isEnabled(message.getGuild())) {
             return;
         }
         MessageHistory messageHistory = createHistory(message);
@@ -73,7 +75,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageUpdate(Message message) {
-        if (!historyEnabled) {
+        if (!isEnabled(message.getGuild())) {
             return;
         }
         MessageHistory history = historyRepository.findByChannelIdAndMessageId(message.getTextChannel().getId(), message.getId());
@@ -83,11 +85,11 @@ public class HistoryServiceImpl implements HistoryService {
             return;
         }
         String oldContent = history.getMessage();
-        String newContent = message.getContentDisplay();
+        String newContent = message.getContentStripped();
         if (Objects.equals(oldContent, newContent)) {
             return;
         }
-        history.setMessage(message.getContentDisplay());
+        history.setMessage(message.getContentStripped());
         history.setUpdateDate(new Date());
         historyRepository.save(history);
 
@@ -103,7 +105,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageDelete(TextChannel channel, String messageId) {
-        if (!historyEnabled) {
+        if (!isEnabled(channel.getGuild())) {
             return;
         }
         MessageHistory history = historyRepository.findByChannelIdAndMessageId(channel.getId(), messageId);
@@ -132,12 +134,20 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepository.deleteByCreateDateBefore(DateTime.now().minusDays(durationDays).toDate());
     }
 
+    private boolean isEnabled(Guild guild) {
+        if (!historyEnabled) {
+            return false;
+        }
+        AuditConfig config = auditService.get(guild);
+        return config != null && config.isEnabled();
+    }
+
     private static MessageHistory createHistory(Message message) {
         MessageHistory messageHistory = new MessageHistory();
         messageHistory.setGuildId(message.getGuild().getIdLong());
         messageHistory.setUserId(message.getAuthor().getId());
         messageHistory.setChannelId(message.getTextChannel().getId());
-        messageHistory.setMessage(message.getContentDisplay());
+        messageHistory.setMessage(message.getContentStripped());
         messageHistory.setMessageId(message.getId());
         messageHistory.setCreateDate(new Date());
         messageHistory.setUpdateDate(messageHistory.getCreateDate());

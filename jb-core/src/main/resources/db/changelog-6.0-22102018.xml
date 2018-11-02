@@ -231,4 +231,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="6.0-22102018-12" author="caramel">
+        <addColumn tableName="audit_config">
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

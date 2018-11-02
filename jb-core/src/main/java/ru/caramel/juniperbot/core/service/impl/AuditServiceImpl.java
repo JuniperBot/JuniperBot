@@ -54,13 +54,17 @@ public class AuditServiceImpl
         return config;
     }
 
+    @Override
     @Transactional
     public AuditAction save(AuditAction action) {
-        action = actionRepository.save(action);
-        if (MapUtils.isNotEmpty(forwardProviders)) {
-            AuditForwardProvider forwardProvider = forwardProviders.get(action.getActionType());
-            if (forwardProvider != null) {
-                forwardProvider.send(action);
+        AuditConfig config = getByGuildId(action.getGuildId());
+        if (config != null && config.isEnabled()) {
+            action = actionRepository.save(action);
+            if (MapUtils.isNotEmpty(forwardProviders)) {
+                AuditForwardProvider forwardProvider = forwardProviders.get(action.getActionType());
+                if (forwardProvider != null) {
+                    forwardProvider.send(config, action);
+                }
             }
         }
         return action;

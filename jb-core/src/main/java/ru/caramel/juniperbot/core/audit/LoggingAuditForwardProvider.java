@@ -54,11 +54,9 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
 
     @Override
     @Transactional
-    public void send(AuditAction action) {
-        AuditConfig config = auditService.getByGuildId(action.getGuildId());
+    public void send(AuditConfig config, AuditAction action) {
         Class<?> clazz = this.getClass();
-        if (config == null
-                || config.getForwardChannelId() == null
+        if (config.getForwardChannelId() == null
                 || !config.isForwardEnabled()
                 || !config.getForwardActions().contains(action.getActionType())
                 || !clazz.isAnnotationPresent(ForwardProvider.class)

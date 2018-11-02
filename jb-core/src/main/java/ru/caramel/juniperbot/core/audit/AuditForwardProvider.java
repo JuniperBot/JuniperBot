@@ -17,8 +17,9 @@
 package ru.caramel.juniperbot.core.audit;
 
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
+import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 
 public interface AuditForwardProvider {
 
-    void send(AuditAction action);
+    void send(AuditConfig config, AuditAction action);
 }
