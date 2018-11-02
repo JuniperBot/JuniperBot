@@ -35,8 +35,7 @@ public class MemberWarnAuditForwardProvider extends ModerationAuditForwardProvid
             return;
         }
         String message = messageService.getMessage("audit.member.warn.message",
-                action.getTargetUser().getName(),
-                action.getTargetUser().getAsUserMention());
+                getReferenceContent(action.getTargetUser(), false));
         embedBuilder.setDescription(message);
 
         addModeratorField(action, embedBuilder);

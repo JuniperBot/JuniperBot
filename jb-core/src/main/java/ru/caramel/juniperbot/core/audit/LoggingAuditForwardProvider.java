@@ -98,5 +98,9 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
                 channel ? reference.getAsChannelMention() : reference.getAsUserMention());
     }
 
+    protected String getReferenceShortContent(NamedReference reference) {
+        return messageService.getMessage("audit.reference.short.content", reference.getName());
+    }
+
     protected abstract void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder);
 }

@@ -31,8 +31,7 @@ public class MemberJoinAuditForwardProvider extends LoggingAuditForwardProvider 
             return;
         }
         String message = messageService.getMessage("audit.member.join.message",
-                action.getUser().getName(),
-                action.getUser().getAsUserMention());
+                getReferenceContent(action.getUser(), false));
         embedBuilder.setDescription(message);
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getUser().getId()), null);
     }

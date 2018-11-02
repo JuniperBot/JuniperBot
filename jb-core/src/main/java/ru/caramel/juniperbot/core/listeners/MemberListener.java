@@ -19,6 +19,9 @@ import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider;
@@ -96,6 +99,39 @@ public class MemberListener extends DiscordEventListener {
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
             member.setEffectiveName(event.getMember().getEffectiveName());
             memberService.save(member);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_JOIN)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelJoined())
+                    .save();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_JOIN)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelJoined())
+                    .save();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_LEAVE)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelLeft())
+                    .save();
         }
     }
 }

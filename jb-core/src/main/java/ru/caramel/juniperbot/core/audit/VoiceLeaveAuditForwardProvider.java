@@ -22,21 +22,14 @@ import ru.caramel.juniperbot.core.model.ForwardProvider;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 
-@ForwardProvider(AuditActionType.MEMBER_KICK)
-public class MemberKickAuditForwardProvider extends ModerationAuditForwardProvider {
+@ForwardProvider(AuditActionType.VOICE_LEAVE)
+public class VoiceLeaveAuditForwardProvider extends VoiceAuditForwardProvider {
 
     @Override
     protected void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder) {
-        if (action.getTargetUser() == null) {
-            return;
+        if (action.getChannel() != null && action.getUser() != null) {
+            embedBuilder.setDescription(getUserMessage(action, "audit.message.voice.leave.message"));
+            embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getUser().getId()), null);
         }
-        String message = messageService.getMessage("audit.member.kick.message",
-                getReferenceContent(action.getTargetUser(), false));
-        embedBuilder.setDescription(message);
-
-        addModeratorField(action, embedBuilder);
-        addReasonField(action, embedBuilder);
-
-        embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);
     }
 }

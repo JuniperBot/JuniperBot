@@ -31,8 +31,7 @@ public class MemberLeaveAuditForwardProvider extends LoggingAuditForwardProvider
             return;
         }
         String message = messageService.getMessage("audit.member.leave.message",
-                action.getUser().getName(),
-                action.getUser().getAsUserMention());
+                getReferenceContent(action.getUser(), false));
         embedBuilder.setDescription(message);
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getUser().getId()), null);
     }
