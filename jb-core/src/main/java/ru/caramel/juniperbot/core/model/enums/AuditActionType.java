@@ -20,6 +20,7 @@ public enum AuditActionType {
     BOT_ADD,
     BOT_LEAVE,
     MEMBER_JOIN,
+    MEMBER_NAME_CHANGE,
     MEMBER_LEAVE,
     MEMBER_WARN,
     MEMBER_BAN,

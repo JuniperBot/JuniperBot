@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider;
+import ru.caramel.juniperbot.core.audit.NicknameChangeAuditForwardProvider;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -97,6 +98,11 @@ public class MemberListener extends DiscordEventListener {
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {
         LocalMember member = memberService.get(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
+            getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)
+                    .withUser(member)
+                    .withAttribute(NicknameChangeAuditForwardProvider.OLD_NAME, member.getEffectiveName())
+                    .withAttribute(NicknameChangeAuditForwardProvider.NEW_NAME, event.getMember().getEffectiveName())
+                    .save();
             member.setEffectiveName(event.getMember().getEffectiveName());
             memberService.save(member);
         }

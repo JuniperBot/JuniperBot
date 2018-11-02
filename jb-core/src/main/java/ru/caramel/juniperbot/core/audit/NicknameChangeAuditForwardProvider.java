@@ -22,20 +22,25 @@ import ru.caramel.juniperbot.core.model.ForwardProvider;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 
-@ForwardProvider(AuditActionType.MEMBER_BAN)
-public class MemberBanAuditForwardProvider extends ModerationAuditForwardProvider {
+@ForwardProvider(AuditActionType.MEMBER_NAME_CHANGE)
+public class NicknameChangeAuditForwardProvider extends LoggingAuditForwardProvider {
+
+    public static final String OLD_NAME = "old";
+
+    public static final String NEW_NAME = "new";
 
     @Override
     protected void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder) {
-        if (action.getTargetUser() == null) {
-            return;
+        if (action.getUser() != null) {
+            embedBuilder.setDescription(messageService.getMessage("audit.message.nickname.change.message",
+                    getReferenceContent(action.getUser(), false)));
+
+            embedBuilder.addField(messageService.getMessage("audit.message.nickname.old.title"),
+                    action.getAttribute(OLD_NAME, String.class), true);
+            embedBuilder.addField(messageService.getMessage("audit.message.nickname.new.title"),
+                    action.getAttribute(NEW_NAME, String.class), true);
+
+            embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getUser().getId()), null);
         }
-        embedBuilder.setDescription(messageService.getMessage("audit.member.ban.message",
-                getReferenceContent(action.getTargetUser(), false)));
-
-        addModeratorField(action, embedBuilder);
-        addReasonField(action, embedBuilder);
-
-        embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);
     }
 }
