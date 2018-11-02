@@ -181,4 +181,54 @@
 
     </changeSet>
 
+    <changeSet id="6.0-22102018-10" author="caramel">
+        <createTable tableName="message_history">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_message_history"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="VARCHAR(21)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_id" type="VARCHAR(21)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="VARCHAR(21)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="VARCHAR(2048)"/>
+            <column name="create_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_message_history_guild_id" tableName="message_history">
+            <column name="guild_id" type="BIGINT"/>
+        </createIndex>
+
+        <createIndex indexName="idx_message_history_member" tableName="message_history">
+            <column name="guild_id" type="BIGINT"/>
+            <column name="user_id" type="VARCHAR(21)"/>
+            <column name="channel_id" type="VARCHAR(21)"/>
+        </createIndex>
+
+        <createIndex indexName="idx_message_history_message" tableName="message_history" unique="true">
+            <column name="channel_id" type="VARCHAR(21)"/>
+            <column name="message_id" type="VARCHAR(21)"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="6.0-22102018-11" author="caramel">
+        <createIndex indexName="idx_message_history_create_date" tableName="message_history">
+            <column name="create_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

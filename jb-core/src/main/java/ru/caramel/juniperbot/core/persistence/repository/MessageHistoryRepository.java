@@ -14,26 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.entity.MessageHistory;
 
-public interface MemberService {
+import java.util.Date;
 
-    LocalMember get(Member member);
+@Repository
+public interface MessageHistoryRepository extends MemberMessageRepository<MessageHistory> {
 
-    LocalMember get(Guild guild, User user);
+    MessageHistory findByChannelIdAndMessageId(String channelId, String messageId);
 
-    LocalMember get(long guildId, String userId);
-
-    LocalMember getOrCreate(Member member);
-
-    LocalMember save(LocalMember member);
-
-    LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    boolean isApplicable(Member member);
+    @Modifying
+    void deleteByCreateDateBefore(Date expiryDate);
 }

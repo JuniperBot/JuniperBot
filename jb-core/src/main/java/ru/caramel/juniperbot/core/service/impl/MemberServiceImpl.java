@@ -38,15 +38,21 @@ public class MemberServiceImpl implements MemberService {
     private UserService userService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public LocalMember get(Member member) {
         return get(member.getGuild(), member.getUser());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public LocalMember get(Guild guild, User user) {
-        return memberRepository.findByGuildIdAndUserId(guild.getIdLong(), user.getId());
+        return get(guild.getIdLong(), user.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalMember get(long guildId, String userId) {
+        return memberRepository.findByGuildIdAndUserId(guildId, userId);
     }
 
     @Override

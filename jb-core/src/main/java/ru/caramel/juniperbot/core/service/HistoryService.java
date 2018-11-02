@@ -16,24 +16,18 @@
  */
 package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
-public interface MemberService {
+public interface HistoryService {
 
-    LocalMember get(Member member);
+    void onMessageCreate(Message message);
 
-    LocalMember get(Guild guild, User user);
+    void onMessageUpdate(Message message);
 
-    LocalMember get(long guildId, String userId);
+    void onMessageDelete(TextChannel channel, String messageId);
 
-    LocalMember getOrCreate(Member member);
+    void runCleanUp();
 
-    LocalMember save(LocalMember member);
-
-    LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    boolean isApplicable(Member member);
+    void runCleanUp(int durationDays);
 }

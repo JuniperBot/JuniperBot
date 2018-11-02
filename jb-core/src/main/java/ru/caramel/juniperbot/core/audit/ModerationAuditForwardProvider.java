@@ -29,9 +29,7 @@ public abstract class ModerationAuditForwardProvider extends LoggingAuditForward
     protected void addModeratorField(AuditAction action, EmbedBuilder embedBuilder) {
         if (action.getUser() != null) {
             embedBuilder.addField(messageService.getMessage("audit.moderator.title"),
-                    messageService.getMessage("audit.moderator.content",
-                            action.getUser().getName(),
-                            action.getUser().getAsUserMention()), true);
+                    getReferenceContent(action.getUser(), false), true);
         }
     }
 

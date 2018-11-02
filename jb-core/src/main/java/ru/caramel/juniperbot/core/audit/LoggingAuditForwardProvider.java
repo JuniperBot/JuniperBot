@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.ForwardProvider;
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import ru.caramel.juniperbot.core.persistence.entity.base.NamedReference;
 import ru.caramel.juniperbot.core.persistence.repository.AuditConfigRepository;
 import ru.caramel.juniperbot.core.service.AuditService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -89,6 +90,12 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
                 channel.sendMessage(messageBuilder.build()).queue();
             }
         });
+    }
+
+    protected String getReferenceContent(NamedReference reference, boolean channel) {
+        return messageService.getMessage("audit.reference.content",
+                reference.getName(),
+                channel ? reference.getAsChannelMention() : reference.getAsUserMention());
     }
 
     protected abstract void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder);
