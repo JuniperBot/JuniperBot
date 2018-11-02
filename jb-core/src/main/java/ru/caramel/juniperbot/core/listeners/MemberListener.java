@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.ModerationService;
@@ -39,13 +40,22 @@ public class MemberListener extends DiscordEventListener {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        memberService.getOrCreate(event.getMember());
+        if (event.getMember().getUser().isBot()) {
+            return;
+        }
+        LocalMember member = memberService.getOrCreate(event.getMember());
         moderationService.refreshMute(event.getMember());
+        auditService.log(event.getGuild(), AuditActionType.MEMBER_JOIN)
+                .withUser(member)
+                .save();
     }
 
     @Override
     @Transactional
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+        if (event.getMember().getUser().isBot()) {
+            return;
+        }
         LocalMember member = memberService.get(event.getMember());
         if (member == null) {
             return;
@@ -53,6 +63,9 @@ public class MemberListener extends DiscordEventListener {
         member.setLastKnownRoles( event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
+        auditService.log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
+                .withUser(member)
+                .save();
     }
 
     @Override

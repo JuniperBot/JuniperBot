@@ -52,6 +52,13 @@ public class CoreConfiguration {
     }
 
     @Bean
+    public ModuleMessageSourceImpl auditMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("audit-jbmessages");
+        return source;
+    }
+
+    @Bean
     public MessageSource messageSource() {
         return new JbMessageSource();
     }

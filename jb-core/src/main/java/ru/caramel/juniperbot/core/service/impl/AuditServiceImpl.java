@@ -16,15 +16,23 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.audit.AuditForwardProvider;
 import ru.caramel.juniperbot.core.model.AuditActionBuilder;
+import ru.caramel.juniperbot.core.model.ForwardProvider;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 import ru.caramel.juniperbot.core.persistence.repository.AuditActionRepository;
 import ru.caramel.juniperbot.core.persistence.repository.AuditConfigRepository;
 import ru.caramel.juniperbot.core.service.AuditService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AuditServiceImpl
@@ -33,6 +41,8 @@ public class AuditServiceImpl
 
     @Autowired
     private AuditActionRepository actionRepository;
+
+    private Map<AuditActionType, AuditForwardProvider> forwardProviders;
 
     public AuditServiceImpl(@Autowired AuditConfigRepository repository) {
         super(repository, true);
@@ -44,19 +54,34 @@ public class AuditServiceImpl
         return config;
     }
 
-    private AuditAction save(AuditAction action) {
-        // action forwarding notification
-        return actionRepository.save(action);
+    @Transactional
+    public AuditAction save(AuditAction action) {
+        action = actionRepository.save(action);
+        if (MapUtils.isNotEmpty(forwardProviders)) {
+            AuditForwardProvider forwardProvider = forwardProviders.get(action.getActionType());
+            if (forwardProvider != null) {
+                forwardProvider.send(action);
+            }
+        }
+        return action;
     }
 
     @Override
     public AuditActionBuilder log(long guildId, AuditActionType type) {
         return new AuditActionBuilder(guildId, type) {
             @Override
+            @Transactional
             public AuditAction save() {
                 return AuditServiceImpl.this.save(this.action);
             }
         };
+    }
+
+    @Autowired(required = false)
+    private void setForwardProviders(List<AuditForwardProvider> forwardProviders) {
+        this.forwardProviders = forwardProviders.stream().collect(Collectors.toMap(
+                e -> e.getClass().isAnnotationPresent(ForwardProvider.class)
+                        ? e.getClass().getAnnotation(ForwardProvider.class).value() : null, e -> e));
     }
 
     @Override

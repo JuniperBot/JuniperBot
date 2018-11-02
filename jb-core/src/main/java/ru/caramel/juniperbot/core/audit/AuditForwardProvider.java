@@ -14,24 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.core.audit;
 
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
-import ru.caramel.juniperbot.core.service.AuditService;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 
-public abstract class DiscordEventListener extends ListenerAdapter {
+public interface AuditForwardProvider {
 
-    @Autowired
-    @Qualifier("executor")
-    protected TaskExecutor taskExecutor;
-
-    @Autowired
-    protected ContextService contextService;
-
-    @Autowired
-    protected AuditService auditService;
+    void send(AuditAction action);
 }

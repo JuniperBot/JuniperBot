@@ -19,9 +19,12 @@ package ru.caramel.juniperbot.core.service;
 import net.dv8tion.jda.core.entities.Guild;
 import ru.caramel.juniperbot.core.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 
 public interface AuditService extends DomainService<AuditConfig> {
+
+    AuditAction save(AuditAction action);
 
     AuditActionBuilder log(long guildId, AuditActionType type);
 
