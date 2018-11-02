@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.joda.time.DateTime;
@@ -26,6 +27,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -113,13 +115,22 @@ public class HistoryServiceImpl implements HistoryService {
             return;
         }
         historyRepository.delete(history);
-        LocalMember member = memberService.get(history.getGuildId(), history.getUserId());
-        auditService.log(channel.getGuild(), AuditActionType.MESSAGE_DELETE)
-                .withUser(member)
+
+        AuditActionBuilder builder = auditService.log(channel.getGuild(), AuditActionType.MESSAGE_DELETE)
                 .withChannel(channel)
                 .withAttribute(MESSAGE_ID, messageId)
-                .withAttribute(OLD_CONTENT, history.getMessage())
-                .save();
+                .withAttribute(OLD_CONTENT, history.getMessage());
+
+        Member member = channel.getGuild().getMemberById(history.getUserId());
+        if (member != null) {
+            builder.withUser(member);
+        } else {
+            LocalMember localMember = memberService.get(history.getGuildId(), history.getUserId());
+            if (localMember != null) {
+                builder.withUser(localMember);
+            }
+        }
+        builder.save();
     }
 
     @Scheduled(cron="0 0 0 * * ?")
