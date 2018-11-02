@@ -22,32 +22,20 @@ import ru.caramel.juniperbot.core.model.ForwardProvider;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
 
-@ForwardProvider(AuditActionType.MEMBER_WARN)
-public class MemberWarnAuditForwardProvider extends ModerationAuditForwardProvider {
-
-    public static final String COUNT_ATTR = "count";
-
-    public static final String MAX_ATTR = "max";
+@ForwardProvider(AuditActionType.MEMBER_BAN)
+public class MemberBanAuditForwardProvider extends ModerationAuditForwardProvider {
 
     @Override
     protected void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder) {
         if (action.getTargetUser() == null) {
             return;
         }
-        String message = messageService.getMessage("audit.member.warn.message",
+        String message = messageService.getMessage("audit.member.ban.message",
                 action.getTargetUser().getName(),
                 action.getTargetUser().getAsUserMention());
         embedBuilder.setDescription(message);
 
         addModeratorField(action, embedBuilder);
-
-        Number count = action.getAttribute(COUNT_ATTR, Number.class);
-        Number max = action.getAttribute(MAX_ATTR, Number.class);
-        if (count != null && max != null) {
-            embedBuilder.addField(messageService.getMessage("audit.member.warn.count.title"),
-                    messageService.getMessage("audit.member.warn.count.content", count, max), true);
-        }
-
         addReasonField(action, embedBuilder);
 
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);

@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,6 @@ import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.UserService;
-
-import java.util.Objects;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -40,8 +40,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public LocalMember get(Member member) {
-        return memberRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(),
-                member.getUser().getId());
+        return get(member.getGuild(), member.getUser());
+    }
+
+    @Override
+    @Transactional
+    public LocalMember get(Guild guild, User user) {
+        return memberRepository.findByGuildIdAndUserId(guild.getIdLong(), user.getId());
     }
 
     @Override

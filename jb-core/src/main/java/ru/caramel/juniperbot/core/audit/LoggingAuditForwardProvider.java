@@ -32,6 +32,8 @@ import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 
+import java.time.Instant;
+
 public abstract class LoggingAuditForwardProvider implements AuditForwardProvider {
 
     @Autowired
@@ -80,6 +82,7 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
             MessageBuilder messageBuilder = new MessageBuilder();
             build(action, messageBuilder, embedBuilder);
             if (!embedBuilder.isEmpty()) {
+                embedBuilder.setTimestamp(Instant.now());
                 messageBuilder.setEmbed(embedBuilder.build());
             }
             if (!messageBuilder.isEmpty()) {

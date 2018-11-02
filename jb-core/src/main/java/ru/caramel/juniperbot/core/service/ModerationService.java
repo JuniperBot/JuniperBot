@@ -64,4 +64,7 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     void clearState(long guildId, String userId, String channelId);
 
+    boolean isLeaveNotified(long guildId, long userId);
+
+    void setLeaveNotified(long guildId, long userId);
 }

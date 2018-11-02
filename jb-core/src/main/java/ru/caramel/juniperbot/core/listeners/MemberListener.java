@@ -15,11 +15,13 @@
 package ru.caramel.juniperbot.core.listeners;
 
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -51,6 +53,22 @@ public class MemberListener extends DiscordEventListener {
     }
 
     @Override
+    public void onGuildBan(GuildBanEvent event) {
+        if (event.getUser().isBot()) {
+            return;
+        }
+        if (!moderationService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+            moderationService.setLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong());
+            event.getGuild().getBan(event.getUser()).queue(e -> {
+                getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                        .withTargetUser(event.getUser())
+                        .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
+                        .save();
+            });
+        }
+    }
+
+    @Override
     @Transactional
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
         if (event.getMember().getUser().isBot()) {
@@ -63,9 +81,12 @@ public class MemberListener extends DiscordEventListener {
         member.setLastKnownRoles( event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
-        getAuditService().log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
-                .withUser(member)
-                .save();
+
+        if (!moderationService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+            getAuditService().log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
+                    .withUser(member)
+                    .save();
+        }
     }
 
     @Override

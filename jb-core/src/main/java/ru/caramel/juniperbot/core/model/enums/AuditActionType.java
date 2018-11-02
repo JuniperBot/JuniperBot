@@ -22,6 +22,8 @@ public enum AuditActionType {
     MEMBER_JOIN,
     MEMBER_LEAVE,
     MEMBER_WARN,
+    MEMBER_BAN,
+    MEMBER_KICK,
     MESSAGE_DELETE,
     MESSAGE_EDIT,
     VOICE_JOIN,

@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.service.AuditService;
 import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.service.*;
@@ -53,7 +54,9 @@ public abstract class AbstractCommand implements Command {
     protected FeatureSetService featureSetService;
 
     @Autowired
-    protected AuditService auditService;
+    protected ApplicationContext applicationContext;
+
+    private AuditService auditService;
 
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
@@ -94,5 +97,12 @@ public abstract class AbstractCommand implements Command {
             return matcher.group(1).trim();
         }
         return input;
+    }
+
+    protected AuditService getAuditService() {
+        if (auditService == null) {
+            auditService = applicationContext.getBean(AuditService.class);
+        }
+        return auditService;
     }
 }
