@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.MapUtils;
 import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
@@ -75,5 +76,15 @@ public class AuditAction extends GuildEntity {
 
     public AuditAction(long guildId) {
         this.guildId = guildId;
+    }
+
+    @Transient
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(String key, Class<T> type) {
+        if (MapUtils.isEmpty(attributes)) {
+            return null;
+        }
+        Object value = attributes.get(key);
+        return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;
     }
 }

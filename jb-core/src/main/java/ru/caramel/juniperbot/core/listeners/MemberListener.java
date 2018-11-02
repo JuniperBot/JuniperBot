@@ -45,7 +45,7 @@ public class MemberListener extends DiscordEventListener {
         }
         LocalMember member = memberService.getOrCreate(event.getMember());
         moderationService.refreshMute(event.getMember());
-        auditService.log(event.getGuild(), AuditActionType.MEMBER_JOIN)
+        getAuditService().log(event.getGuild(), AuditActionType.MEMBER_JOIN)
                 .withUser(member)
                 .save();
     }
@@ -63,7 +63,7 @@ public class MemberListener extends DiscordEventListener {
         member.setLastKnownRoles( event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
-        auditService.log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
+        getAuditService().log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
                 .withUser(member)
                 .save();
     }

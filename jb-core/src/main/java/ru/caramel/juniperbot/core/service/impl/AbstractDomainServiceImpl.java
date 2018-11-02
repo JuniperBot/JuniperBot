@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import ru.caramel.juniperbot.core.service.AuditService;
 import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 
@@ -45,6 +47,11 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     @Autowired
     protected JbCacheManager cacheManager;
+
+    @Autowired
+    protected ApplicationContext applicationContext;
+
+    private AuditService auditService;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
@@ -134,4 +141,11 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     protected abstract T createNew(long guildId);
 
     protected abstract Class<T> getDomainClass();
+
+    protected AuditService getAuditService() {
+        if (auditService == null) {
+            auditService = applicationContext.getBean(AuditService.class);
+        }
+        return auditService;
+    }
 }

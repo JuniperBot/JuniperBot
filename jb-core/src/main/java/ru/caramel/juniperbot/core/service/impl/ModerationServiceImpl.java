@@ -33,6 +33,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.jobs.UnMuteJob;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
@@ -49,6 +50,8 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.caramel.juniperbot.core.audit.MemberWarnAuditForwardProvider.*;
 
 @Service
 public class ModerationServiceImpl
@@ -494,6 +497,15 @@ public class ModerationServiceImpl
         long count = warningRepository.countActiveByViolator(guildId, memberLocal);
         boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
         MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
+
+        getAuditService().log(guildId, AuditActionType.MEMBER_WARN)
+                .withUser(author)
+                .withTargetUser(memberLocal)
+                .withAttribute(REASON_ATTR, reason)
+                .withAttribute(COUNT_ATTR, count + 1)
+                .withAttribute(MAX_ATTR, moderationConfig.getMaxWarnings())
+                .save();
+
         if (exceed) {
             reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
             boolean success = true;
