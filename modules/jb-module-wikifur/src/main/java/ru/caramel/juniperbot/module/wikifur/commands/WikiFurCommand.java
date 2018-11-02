@@ -81,7 +81,7 @@ public class WikiFurCommand extends AbstractCommand {
                     String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                     if (index >= 0 && index < finalResult.size() && message.getAuthor().equals(event.getUser())) {
-                        e.delete().queue();
+                        messageService.delete(e);
                         SearchResult result = finalResult.get(index);
                         message.getTextChannel().sendTyping().queue();
                         MessageEmbed searchEmbed = wikiFurService.renderArticle(result.getTitle());

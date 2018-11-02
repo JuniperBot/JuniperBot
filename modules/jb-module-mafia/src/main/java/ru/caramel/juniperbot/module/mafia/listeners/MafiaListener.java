@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 import ru.caramel.juniperbot.module.mafia.service.MafiaService;
@@ -35,6 +36,9 @@ public class MafiaListener extends DiscordEventListener {
 
     @Autowired
     private MafiaService mafiaService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
@@ -64,10 +68,10 @@ public class MafiaListener extends DiscordEventListener {
                                 && selfMember.hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                             if (instance.isInState(MafiaState.DAY)) {
                                 if (!isPlayer) {
-                                    event.getMessage().delete().queue();
+                                    messageService.delete(event.getMessage());
                                 }
                             } else {
-                                event.getMessage().delete().queue();
+                                messageService.delete(event.getMessage());
                             }
                         }
                     }

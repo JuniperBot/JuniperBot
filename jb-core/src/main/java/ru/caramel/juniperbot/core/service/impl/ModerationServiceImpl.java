@@ -84,11 +84,10 @@ public class ModerationServiceImpl
     private ContextService contextService;
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private ActionsHolderService actionsHolderService;
 
-    private Cache<String, Boolean> leaveNotified = CacheBuilder.newBuilder()
-            .expireAfterWrite(2, TimeUnit.MINUTES)
-            .build();
+    @Autowired
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
         super(repository, true);
@@ -450,7 +449,7 @@ public class ModerationServiceImpl
 
             notifyUserAction(e -> {
                 actionBuilder.save();
-                setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
+                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
                 e.getGuild().getController().kick(e, reason).queue();
             }, member, "discord.command.mod.action.message.kick", reason);
             return true;
@@ -481,7 +480,7 @@ public class ModerationServiceImpl
 
             notifyUserAction(e -> {
                 actionBuilder.save();
-                setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
+                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
                 e.getGuild().getController().ban(e, delDays, reason).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
             return true;
@@ -566,16 +565,6 @@ public class ModerationServiceImpl
     @Transactional
     public void clearState(long guildId, String userId, String channelId) {
         muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
-    }
-
-    @Override
-    public boolean isLeaveNotified(long guildId, long userId) {
-        return Boolean.TRUE.equals(leaveNotified.getIfPresent(String.format("%s_%s", guildId, userId)));
-    }
-
-    @Override
-    public void setLeaveNotified(long guildId, long userId) {
-        leaveNotified.put(String.format("%s_%s", guildId, userId), true);
     }
 
     private void notifyUserAction(Consumer<Member> consumer, Member member, String code, String reason, Object... objects) {

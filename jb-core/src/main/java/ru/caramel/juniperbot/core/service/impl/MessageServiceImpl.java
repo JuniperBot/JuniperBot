@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -65,6 +66,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private TaskScheduler scheduler;
+
+    @Autowired
+    private ActionsHolderService actionsHolderService;
 
     @Override
     public EmbedBuilder getBaseEmbed() {
@@ -174,7 +178,7 @@ public class MessageServiceImpl implements MessageService {
             scheduler.schedule(() -> {
                 MessageChannel channel = CommonUtils.getChannel(jda, type, channelId);
                 if (channel != null) {
-                    channel.getMessageById(messageId).queue(m -> m.delete().queue());
+                    channel.getMessageById(messageId).queue(this::delete);
                 }
             }, new DateTime().plusSeconds(sec).toDate());
         });
@@ -215,5 +219,13 @@ public class MessageServiceImpl implements MessageService {
     public String getCountPlural(long count, String code) {
         String key = PluralUtils.getPluralKey(contextService.getLocale(), count);
         return getMessage(String.format("%s[%s]", code, key));
+    }
+
+    @Override
+    public void delete(Message message) {
+        if (message != null) {
+            actionsHolderService.markAsDeleted(message);
+            message.delete().queue();
+        }
     }
 }

@@ -226,7 +226,7 @@ public class CommandsServiceImpl implements CommandsService {
                 counter.inc();
                 if (commandConfig != null && commandConfig.isDeleteSource()
                         && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
-                    event.getMessage().delete().queue();
+                    messageService.delete(event.getMessage());
                 }
             } catch (ValidationException e) {
                 messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());

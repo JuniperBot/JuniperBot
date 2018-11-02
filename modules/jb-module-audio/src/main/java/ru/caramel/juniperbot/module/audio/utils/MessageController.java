@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.audio.commands.PlayCommand;
 import ru.caramel.juniperbot.module.audio.commands.control.PauseCommand;
 import ru.caramel.juniperbot.module.audio.commands.control.RepeatCommand;
@@ -89,6 +90,8 @@ public class MessageController {
 
     private final ContextService contextService;
 
+    private final MessageService messageService;
+
     private final MusicConfigService musicConfigService;
 
     private final CommandsService commandsService;
@@ -108,6 +111,7 @@ public class MessageController {
         this.contextService = context.getBean(ContextService.class);
         this.musicConfigService = context.getBean(MusicConfigService.class);
         this.commandsService = context.getBean(CommandsService.class);
+        this.messageService = context.getBean(MessageService.class);
         init(message);
     }
 
@@ -218,7 +222,8 @@ public class MessageController {
                         message.clearReactions().queue(e -> reactionsListener.unsubscribe(message.getId()));
                     }
                 } else {
-                    message.delete().queue(e -> reactionsListener.unsubscribe(message.getId()));
+                    messageService.delete(message);
+                    reactionsListener.unsubscribe(message.getId());
                 }
             } catch (ErrorResponseException e) {
                 switch (e.getErrorResponse()) {

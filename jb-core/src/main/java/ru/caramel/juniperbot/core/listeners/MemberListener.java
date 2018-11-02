@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.core.audit.NicknameChangeAuditForwardProvider;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.ModerationService;
 
@@ -43,6 +44,9 @@ public class MemberListener extends DiscordEventListener {
 
     @Autowired
     private ModerationService moderationService;
+
+    @Autowired
+    private ActionsHolderService actionsHolderService;
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
@@ -61,8 +65,8 @@ public class MemberListener extends DiscordEventListener {
         if (event.getUser().isBot()) {
             return;
         }
-        if (!moderationService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
-            moderationService.setLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong());
+        if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+            actionsHolderService.setLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong());
             event.getGuild().getBan(event.getUser()).queue(e -> {
                 getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
                         .withTargetUser(event.getUser())
@@ -86,7 +90,7 @@ public class MemberListener extends DiscordEventListener {
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
 
-        if (!moderationService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+        if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
             getAuditService().log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
                     .withUser(member)
                     .save();

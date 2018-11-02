@@ -23,10 +23,12 @@ import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
+import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -53,6 +55,9 @@ public class ClearCommand extends ModeratorCommandAsync {
 
     private static final Pattern COUNT_PATTERN = Pattern.compile("^(\\d+)");
 
+    @Autowired
+    private ActionsHolderService actionsHolderService;
+
     @Override
     protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) throws DiscordException {
         TextChannel channel = event.getTextChannel();
@@ -78,6 +83,7 @@ public class ClearCommand extends ModeratorCommandAsync {
             return;
         }
 
+        messages.forEach(actionsHolderService::markAsDeleted);
         RequestFuture.allOf(channel.purgeMessages(messages)).whenComplete((v, t) ->
                 contextService.withContext(channel.getGuild(), () -> {
                     int count = messages.size();

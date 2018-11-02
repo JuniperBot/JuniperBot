@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.service.HistoryService;
 
 @DiscordEvent
@@ -26,6 +27,9 @@ public class MessageListener extends DiscordEventListener {
 
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private ActionsHolderService actionsHolderService;
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -43,6 +47,8 @@ public class MessageListener extends DiscordEventListener {
 
     @Override
     public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
-        historyService.onMessageDelete(event.getChannel(), event.getMessageId());
+        if (!actionsHolderService.isOwnDeleted(event.getChannel().getId(), event.getMessageId())) {
+            historyService.onMessageDelete(event.getChannel(), event.getMessageId());
+        }
     }
 }

@@ -67,4 +67,6 @@ public interface MessageService {
     String getEnumTitle(Enum<?> clazz);
 
     String getCountPlural(long count, String code);
+
+    void delete(Message message);
 }

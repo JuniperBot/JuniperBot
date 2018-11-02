@@ -95,7 +95,7 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
             }
             if (commandConfig.isDeleteSource()
                     && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
-                event.getMessage().delete().queue();
+                messageService.delete(event.getMessage());
             }
         }
 
