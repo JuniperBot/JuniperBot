@@ -82,6 +82,9 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
             build(action, messageBuilder, embedBuilder);
             if (!embedBuilder.isEmpty()) {
                 embedBuilder.setTimestamp(Instant.now());
+                if (action.getActionType().getColor() != null) {
+                    embedBuilder.setColor(action.getActionType().getColor());
+                }
                 messageBuilder.setEmbed(embedBuilder.build());
             }
             if (!messageBuilder.isEmpty()) {

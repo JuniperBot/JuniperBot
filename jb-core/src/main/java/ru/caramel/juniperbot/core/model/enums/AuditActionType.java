@@ -16,17 +16,32 @@
  */
 package ru.caramel.juniperbot.core.model.enums;
 
+import lombok.Getter;
+
+import java.awt.*;
+
 public enum AuditActionType {
     BOT_ADD,
     BOT_LEAVE,
-    MEMBER_JOIN,
-    MEMBER_NAME_CHANGE,
-    MEMBER_LEAVE,
-    MEMBER_WARN,
-    MEMBER_BAN,
-    MEMBER_KICK,
-    MESSAGE_DELETE,
-    MESSAGE_EDIT,
-    VOICE_JOIN,
-    VOICE_LEAVE
+    MEMBER_JOIN("#7FFF83"),
+    MEMBER_NAME_CHANGE("#7F9BFF"),
+    MEMBER_LEAVE("#EAD967"),
+    MEMBER_WARN("#FFCA59"),
+    MEMBER_BAN("#FF686B"),
+    MEMBER_KICK("#FFA154"),
+    MESSAGE_DELETE("#FF6D96"),
+    MESSAGE_EDIT("#60AFFF"),
+    VOICE_JOIN("#AD84E8"),
+    VOICE_LEAVE("#E5ACA0");
+
+    @Getter
+    private final Color color;
+
+    AuditActionType() {
+        this(null);
+    }
+
+    AuditActionType(String hex) {
+        this.color = hex != null ? Color.decode(hex) : null;
+    }
 }
