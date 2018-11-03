@@ -35,5 +35,9 @@ public class AuditActionRequest implements Serializable {
 
     private String channelId;
 
+    private Date startDate;
+
+    private Date endDate;
+
     private Date olderThan;
 }

@@ -38,7 +38,7 @@ public class CustomCommandDto extends CommandDto {
 
     @Size(max = 25, message = "{validation.commands.key.Size.message}")
     @NotBlank(message = "{validation.commands.key.NotBlank.message}")
-    @Pattern(regexp = "^[a-zA-Zа-яА-Я0-9]*$", message = "{validation.commands.key.pattern.message}")
+    @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ0-9]*$", message = "{validation.commands.key.pattern.message}")
     private String key;
 
     @NotBlank(message = "{validation.commands.content.NotBlank.message}")

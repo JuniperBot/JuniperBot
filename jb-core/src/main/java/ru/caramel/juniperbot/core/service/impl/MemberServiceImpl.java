@@ -28,6 +28,8 @@ import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.UserService;
 
+import java.util.List;
+
 @Service
 public class MemberServiceImpl implements MemberService {
 
@@ -36,6 +38,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private UserService userService;
+
+    @Override
+    public List<LocalMember> findLike(long guildId, String query) {
+        return memberRepository.findLike(guildId, query);
+    }
 
     @Override
     @Transactional(readOnly = true)

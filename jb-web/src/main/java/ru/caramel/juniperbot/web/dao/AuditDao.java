@@ -66,6 +66,12 @@ public class AuditDao extends AbstractDao {
             if (request.getOlderThan() != null) {
                 spec = spec.and(withOlderThan(request.getOlderThan()));
             }
+            if (request.getStartDate() != null) {
+                spec = spec.and(withStartDate(request.getStartDate()));
+            }
+            if (request.getEndDate() != null) {
+                spec = spec.and(withEndDate(request.getEndDate()));
+            }
         }
         List<AuditAction> actions = actionRepository.findAll(spec, PageRequest.of(0, 50)).getContent();
         return apiMapper.getAuditActionDtos(actions);
@@ -99,6 +105,14 @@ public class AuditDao extends AbstractDao {
 
     private static Specification<AuditAction> withOlderThan(Date olderThan) {
         return (root, query, builder) -> builder.lessThan(root.get(AuditAction_.actionDate), olderThan);
+    }
+
+    private static Specification<AuditAction> withStartDate(Date date) {
+        return (root, query, builder) -> builder.greaterThanOrEqualTo(root.get(AuditAction_.actionDate), date);
+    }
+
+    private static Specification<AuditAction> withEndDate(Date date) {
+        return (root, query, builder) -> builder.lessThanOrEqualTo(root.get(AuditAction_.actionDate), date);
     }
 
     private static Specification<AuditAction> withChannelId(String userId) {

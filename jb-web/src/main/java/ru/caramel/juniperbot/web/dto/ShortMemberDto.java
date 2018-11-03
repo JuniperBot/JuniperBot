@@ -14,30 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.service;
+package ru.caramel.juniperbot.web.dto;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.io.Serializable;
 
-public interface MemberService {
+@Getter
+@Setter
+public class ShortMemberDto implements Serializable {
+    private static final long serialVersionUID = 4899899650091163132L;
 
-    List<LocalMember> findLike(long guildId, String query);
+    private String id;
 
-    LocalMember get(Member member);
+    private String name;
 
-    LocalMember get(Guild guild, User user);
+    private String discriminator;
 
-    LocalMember get(long guildId, String userId);
+    private String avatarUrl;
 
-    LocalMember getOrCreate(Member member);
-
-    LocalMember save(LocalMember member);
-
-    LocalMember updateIfRequired(Member member, LocalMember localMember);
-
-    boolean isApplicable(Member member);
+    private String effectiveName;
 }

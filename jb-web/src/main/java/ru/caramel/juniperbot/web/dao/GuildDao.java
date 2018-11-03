@@ -23,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.core.service.FeatureSetService;
+import ru.caramel.juniperbot.core.service.MemberService;
+import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.discord.RoleDto;
 import ru.caramel.juniperbot.web.dto.discord.TextChannelDto;
@@ -32,6 +35,7 @@ import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +48,9 @@ public class GuildDao extends AbstractDao {
     @Autowired
     private FeatureSetService featureSetService;
 
+    @Autowired
+    private MemberService memberService;
+
     @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
         GuildConfig config = getOrCreate(request.getId());
@@ -54,6 +61,20 @@ public class GuildDao extends AbstractDao {
     public GuildDto getGuild(long guildId) {
         GuildConfig config = getOrCreate(guildId);
         return getGuild(config, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShortMemberDto> getMembers(long guildId, String query) {
+        return memberService.findLike(guildId, query).stream().map(e -> {
+            ShortMemberDto dto = new ShortMemberDto();
+            LocalUser user = e.getUser();
+            dto.setId(user.getUserId());
+            dto.setName(user.getName());
+            dto.setDiscriminator(user.getDiscriminator());
+            dto.setEffectiveName(e.getEffectiveName());
+            dto.setAvatarUrl(user.getAvatarUrl());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private GuildConfig getOrCreate(long guildId) {
