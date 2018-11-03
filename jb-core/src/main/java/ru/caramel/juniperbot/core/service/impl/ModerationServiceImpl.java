@@ -528,7 +528,7 @@ public class ModerationServiceImpl
                 .save();
 
         if (exceed) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
+            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count + 1);
             boolean success = true;
             switch (moderationConfig.getWarnExceedAction()) {
                 case BAN:
