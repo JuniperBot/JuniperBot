@@ -17,17 +17,32 @@
 package ru.caramel.juniperbot.web.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
+import ru.caramel.juniperbot.core.persistence.entity.AuditAction_;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
+import ru.caramel.juniperbot.core.persistence.entity.base.NamedReference_;
+import ru.caramel.juniperbot.core.persistence.repository.AuditActionRepository;
 import ru.caramel.juniperbot.core.service.AuditService;
+import ru.caramel.juniperbot.web.dto.AuditActionDto;
 import ru.caramel.juniperbot.web.dto.config.AuditConfigDto;
+import ru.caramel.juniperbot.web.dto.request.AuditActionRequest;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class AuditDao extends AbstractDao {
 
     @Autowired
     private AuditService auditService;
+
+    @Autowired
+    private AuditActionRepository actionRepository;
 
     @Transactional
     public AuditConfigDto get(long guildId) {
@@ -36,10 +51,57 @@ public class AuditDao extends AbstractDao {
     }
 
     @Transactional
+    public List<AuditActionDto> getActions(long guildId, AuditActionRequest request) {
+        Specification<AuditAction> spec = rootAuditSpec(guildId);
+        if (request != null) {
+            if (request.getActionType() != null) {
+                spec = spec.and(withActionType(request.getActionType()));
+            }
+            if (request.getUserId() != null) {
+                spec = spec.and(withUserId(request.getUserId()));
+            }
+            if (request.getChannelId() != null) {
+                spec = spec.and(withChannelId(request.getChannelId()));
+            }
+            if (request.getOlderThan() != null) {
+                spec = spec.and(withOlderThan(request.getOlderThan()));
+            }
+        }
+        List<AuditAction> actions = actionRepository.findAll(spec, PageRequest.of(0, 50)).getContent();
+        return apiMapper.getAuditActionDtos(actions);
+    }
+
+    @Transactional
     public void save(AuditConfigDto dto, long guildId) {
         AuditConfig auditConfig = auditService.getOrCreate(guildId);
         dto.setForwardChannelId(filterTextChannel(guildId, dto.getForwardChannelId()));
         apiMapper.updateAudit(dto, auditConfig);
         auditService.save(auditConfig);
+    }
+
+    private static Specification<AuditAction> rootAuditSpec(long withGuildId) {
+        return (root, query, builder) ->  {
+            query.orderBy(builder.desc(root.get(AuditAction_.actionDate)));
+            return builder.equal(root.get(AuditAction_.guildId), withGuildId);
+        };
+    }
+
+    private static Specification<AuditAction> withActionType(AuditActionType actionType) {
+        return (root, query, builder) -> builder.equal(root.get(AuditAction_.actionType), actionType);
+    }
+
+    private static Specification<AuditAction> withUserId(String userId) {
+        return (root, query, builder) -> builder.or(
+                builder.equal(root.get(AuditAction_.user).get(NamedReference_.id), userId),
+                builder.equal(root.get(AuditAction_.user).get(NamedReference_.id), userId)
+        );
+    }
+
+    private static Specification<AuditAction> withOlderThan(Date olderThan) {
+        return (root, query, builder) -> builder.lessThan(root.get(AuditAction_.actionDate), olderThan);
+    }
+
+    private static Specification<AuditAction> withChannelId(String userId) {
+        return (root, query, builder) -> builder.equal(root.get(AuditAction_.channel).get(NamedReference_.id), userId);
     }
 }

@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.AuditDao;
+import ru.caramel.juniperbot.web.dto.AuditActionDto;
 import ru.caramel.juniperbot.web.dto.config.AuditConfigDto;
+import ru.caramel.juniperbot.web.dto.request.AuditActionRequest;
+
+import java.util.List;
 
 @RestController
 public class AuditController extends BaseRestController {
@@ -40,5 +44,12 @@ public class AuditController extends BaseRestController {
     public void save(@GuildId @PathVariable long guildId,
                      @RequestBody @Validated AuditConfigDto dto) {
         auditDao.save(dto, guildId);
+    }
+
+    @RequestMapping(value = "/audit/actions/{guildId}", method = RequestMethod.POST)
+    @ResponseBody
+    public List<AuditActionDto> getActions(@GuildId @PathVariable long guildId,
+                                           @RequestBody @Validated AuditActionRequest request) {
+        return auditDao.getActions(guildId, request);
     }
 }

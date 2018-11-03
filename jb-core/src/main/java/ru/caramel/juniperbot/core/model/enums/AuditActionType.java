@@ -23,7 +23,7 @@ import java.awt.*;
 public enum AuditActionType {
     BOT_ADD,
     BOT_LEAVE,
-    MEMBER_JOIN("#7FFF83"),
+    MEMBER_JOIN("#7DE848"),
     MEMBER_NAME_CHANGE("#7F9BFF"),
     MEMBER_LEAVE("#EAD967"),
     MEMBER_WARN("#FFCA59"),

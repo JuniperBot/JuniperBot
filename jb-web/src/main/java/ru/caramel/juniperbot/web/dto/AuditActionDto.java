@@ -14,13 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.repository;
+package ru.caramel.juniperbot.web.dto;
 
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.entity.AuditAction;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import lombok.Getter;
+import lombok.Setter;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 
-@Repository
-public interface AuditActionRepository extends GuildRepository<AuditAction>, JpaSpecificationExecutor<AuditAction> {
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
+
+@Getter
+@Setter
+public class AuditActionDto implements Serializable {
+    private static final long serialVersionUID = -6243311763429092143L;
+
+    private long id;
+
+    private Date actionDate;
+
+    private AuditActionType actionType;
+
+    private NamedReferenceDto user;
+
+    private NamedReferenceDto targetUser;
+
+    private NamedReferenceDto channel;
+
+    private Map<String, Object> attributes;
 }
