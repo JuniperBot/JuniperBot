@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.model.ForwardProvider;
@@ -58,6 +59,7 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
         Class<?> clazz = this.getClass();
         if (config.getForwardChannelId() == null
                 || !config.isForwardEnabled()
+                || CollectionUtils.isEmpty(config.getForwardActions())
                 || !config.getForwardActions().contains(action.getActionType())
                 || !clazz.isAnnotationPresent(ForwardProvider.class)
                 || clazz.getAnnotation(ForwardProvider.class).value() != action.getActionType()) {
