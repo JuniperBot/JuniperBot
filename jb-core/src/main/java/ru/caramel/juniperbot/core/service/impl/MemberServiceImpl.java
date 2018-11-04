@@ -40,6 +40,7 @@ public class MemberServiceImpl implements MemberService {
     private UserService userService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<LocalMember> findLike(long guildId, String query) {
         return memberRepository.findLike(guildId, query);
     }
