@@ -49,7 +49,7 @@ public abstract class BaseOwnerFeatureSetProvider implements FeatureSetProvider 
 
     private Long getOwnerId(long guildId) {
         if (!discordService.isConnected(guildId)) {
-            throw new IllegalStateException("Not connected to check get owner");
+            return null;
         }
         Guild guild = discordService.getGuildById(guildId);
         return guild != null ? guild.getOwnerIdLong() : null;
