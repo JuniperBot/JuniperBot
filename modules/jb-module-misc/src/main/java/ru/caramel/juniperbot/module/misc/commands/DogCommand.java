@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 @DiscordCommand(key = "discord.command.dog.key",
         description = "discord.command.dog.desc",
-        group = "discord.command.group.utility",
+        group = "discord.command.group.fun",
         priority = 16)
 public class DogCommand extends AbstractCommand {
 
@@ -138,6 +138,7 @@ public class DogCommand extends AbstractCommand {
                 }
                 EmbedBuilder builder = messageService.getBaseEmbed();
                 builder.setImage(response.getBody().getMessage());
+                builder.setColor(null);
                 messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
             } catch (HttpClientErrorException e) {
                 switch (e.getStatusCode()) {

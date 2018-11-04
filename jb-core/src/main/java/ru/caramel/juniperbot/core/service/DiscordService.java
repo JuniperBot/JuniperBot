@@ -18,10 +18,7 @@ package ru.caramel.juniperbot.core.service;
 
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
@@ -54,6 +51,14 @@ public interface DiscordService {
     JDA getShardById(int guildId);
 
     Guild getGuildById(long guildId);
+
+    TextChannel getTextChannelById(long channelId);
+
+    TextChannel getTextChannelById(String channelId);
+
+    VoiceChannel getVoiceChannelById(long channelId);
+
+    VoiceChannel getVoiceChannelById(String channelId);
 
     JDA getShard(long guildId);
 

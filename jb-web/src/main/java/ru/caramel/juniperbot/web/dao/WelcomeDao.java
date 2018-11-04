@@ -38,6 +38,8 @@ public class WelcomeDao extends AbstractDao {
     @Transactional
     public void save(WelcomeDto dto, long guildId) {
         WelcomeMessage welcomeMessage = welcomeService.getOrCreate(guildId);
+        dto.setJoinChannelId(filterTextChannel(guildId, dto.getJoinChannelId()));
+        dto.setLeaveChannelId(filterTextChannel(guildId, dto.getLeaveChannelId()));
         apiMapper.updateWelcome(dto, welcomeMessage);
         welcomeService.save(welcomeMessage);
     }

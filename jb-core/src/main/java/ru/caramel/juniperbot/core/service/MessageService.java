@@ -21,18 +21,17 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.awt.*;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface MessageService {
 
-    Color getAccentColor();
-
     EmbedBuilder getBaseEmbed();
 
     EmbedBuilder getBaseEmbed(boolean copyright);
+
+    <T> void sendTempMessageSilent(Function<T, RestAction<Message>> action, T embed, int sec);
 
     <T> void sendMessageSilent(Function<T, RestAction<Message>> action, T embed);
 
@@ -68,4 +67,6 @@ public interface MessageService {
     String getEnumTitle(Enum<?> clazz);
 
     String getCountPlural(long count, String code);
+
+    void delete(Message message);
 }

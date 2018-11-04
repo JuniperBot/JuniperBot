@@ -3,10 +3,10 @@
   <groupId>com.sedmelluq</groupId>
   <artifactId>lavaplayer</artifactId>
   <versioning>
-    <release>1.3.7-jb</release>
+    <release>1.3.10-jb</release>
     <versions>
-      <version>1.3.7-jb</version>
+      <version>1.3.10-jb</version>
     </versions>
-    <lastUpdated>20180717210644</lastUpdated>
+    <lastUpdated>20181104060813</lastUpdated>
   </versioning>
 </metadata>

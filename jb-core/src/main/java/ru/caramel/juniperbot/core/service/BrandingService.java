@@ -25,4 +25,6 @@ public interface BrandingService {
     String getCopyImageUrl();
 
     String getWebHost();
+
+    String getWebHostName();
 }

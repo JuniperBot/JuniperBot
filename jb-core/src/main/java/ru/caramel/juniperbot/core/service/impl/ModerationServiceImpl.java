@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -33,6 +35,8 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.jobs.UnMuteJob;
+import ru.caramel.juniperbot.core.model.AuditActionBuilder;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
@@ -47,8 +51,13 @@ import ru.caramel.juniperbot.core.persistence.repository.MuteStateRepository;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider.*;
+
+import static ru.caramel.juniperbot.core.audit.MemberWarnAuditForwardProvider.*;
 
 @Service
 public class ModerationServiceImpl
@@ -75,6 +84,9 @@ public class ModerationServiceImpl
     private ContextService contextService;
 
     @Autowired
+    private ActionsHolderService actionsHolderService;
+
+    @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
     public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
@@ -83,7 +95,9 @@ public class ModerationServiceImpl
 
     @Override
     protected ModerationConfig createNew(long guildId) {
-        return new ModerationConfig(guildId);
+        ModerationConfig config = new ModerationConfig(guildId);
+        config.setCoolDownIgnored(true);
+        return config;
     }
 
     @Override
@@ -426,11 +440,17 @@ public class ModerationServiceImpl
     public boolean kick(Member author, Member member, final String reason) {
         Member self = member.getGuild().getSelfMember();
         if (self.hasPermission(Permission.KICK_MEMBERS) && self.canInteract(member)) {
-            String reasonAuthor = StringUtils.isNotEmpty(reason)
-                    ? String.format("%s: %s", author.getEffectiveName(), reason)
-                    : author.getEffectiveName();
+
+            AuditActionBuilder actionBuilder = getAuditService()
+                    .log(self.getGuild(), AuditActionType.MEMBER_KICK)
+                    .withUser(author)
+                    .withSTargetUser(member)
+                    .withAttribute(REASON_ATTR, reason);
+
             notifyUserAction(e -> {
-                e.getGuild().getController().kick(e, reasonAuthor).queue();
+                actionBuilder.save();
+                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
+                e.getGuild().getController().kick(e, reason).queue();
             }, member, "discord.command.mod.action.message.kick", reason);
             return true;
         }
@@ -451,11 +471,17 @@ public class ModerationServiceImpl
     public boolean ban(Member author, Member member, int delDays, final String reason) {
         Member self = member.getGuild().getSelfMember();
         if (self.hasPermission(Permission.BAN_MEMBERS) && self.canInteract(member)) {
-            String reasonAuthor = StringUtils.isNotEmpty(reason)
-                    ? String.format("%s: %s", author.getEffectiveName(), reason)
-                    : author.getEffectiveName();
+
+            AuditActionBuilder actionBuilder = getAuditService()
+                    .log(self.getGuild(), AuditActionType.MEMBER_BAN)
+                    .withUser(author)
+                    .withSTargetUser(member)
+                    .withAttribute(REASON_ATTR, reason);
+
             notifyUserAction(e -> {
-                e.getGuild().getController().ban(e, delDays, reasonAuthor).queue();
+                actionBuilder.save();
+                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
+                e.getGuild().getController().ban(e, delDays, reason).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
             return true;
         }
@@ -492,8 +518,17 @@ public class ModerationServiceImpl
         long count = warningRepository.countActiveByViolator(guildId, memberLocal);
         boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
         MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
+
+        getAuditService().log(guildId, AuditActionType.MEMBER_WARN)
+                .withUser(author)
+                .withTargetUser(memberLocal)
+                .withAttribute(REASON_ATTR, reason)
+                .withAttribute(COUNT_ATTR, count + 1)
+                .withAttribute(MAX_ATTR, moderationConfig.getMaxWarnings())
+                .save();
+
         if (exceed) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count);
+            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count + 1);
             boolean success = true;
             switch (moderationConfig.getWarnExceedAction()) {
                 case BAN:

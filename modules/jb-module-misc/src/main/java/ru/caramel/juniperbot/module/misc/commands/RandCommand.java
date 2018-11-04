@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 @DiscordCommand(key = "discord.command.rand.key",
         description = "discord.command.rand.desc",
         group = "discord.command.group.utility",
-        priority = 18)
+        priority = 19)
 public class RandCommand extends AbstractCommand {
 
     private static final Pattern RANGE_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)$");

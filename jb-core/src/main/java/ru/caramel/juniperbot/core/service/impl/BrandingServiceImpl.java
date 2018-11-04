@@ -56,6 +56,13 @@ public class BrandingServiceImpl implements BrandingService {
         return wehHost;
     }
 
+    @Override
+    public String getWebHostName() {
+        return wehHost != null ? wehHost
+                .replace("https://", "")
+                .replace("http://", "") : null;
+    }
+
     private String getOrDefault(String url) {
         return StringUtils.isNotEmpty(url) ? url : null;
     }

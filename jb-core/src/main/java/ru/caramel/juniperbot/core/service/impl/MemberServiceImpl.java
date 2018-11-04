@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.UserService;
 
-import java.util.Objects;
+import java.util.List;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -38,10 +40,27 @@ public class MemberServiceImpl implements MemberService {
     private UserService userService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
+    public List<LocalMember> findLike(long guildId, String query) {
+        return memberRepository.findLike(guildId, query);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public LocalMember get(Member member) {
-        return memberRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(),
-                member.getUser().getId());
+        return get(member.getGuild(), member.getUser());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalMember get(Guild guild, User user) {
+        return get(guild.getIdLong(), user.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalMember get(long guildId, String userId) {
+        return memberRepository.findByGuildIdAndUserId(guildId, userId);
     }
 
     @Override

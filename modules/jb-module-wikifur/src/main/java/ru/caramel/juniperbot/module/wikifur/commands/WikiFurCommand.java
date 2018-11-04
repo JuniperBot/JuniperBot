@@ -40,7 +40,7 @@ public class WikiFurCommand extends AbstractCommand {
 
         List<SearchResult> searchResult = wikiFurService.search(content);
         if (searchResult.isEmpty()) {
-            messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");
+            messageService.onError(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");
             return false;
         }
         // для единственного результата просто вернем его
@@ -50,7 +50,7 @@ public class WikiFurCommand extends AbstractCommand {
                 messageService.sendMessageSilent(message.getChannel()::sendMessage, embed);
                 return true;
             } else {
-                messageService.onTitledMessage(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");
+                messageService.onError(message.getChannel(), "discord.command.wikifur.title", "discord.command.wikifur.noResults");
                 return false;
             }
         }
@@ -81,13 +81,13 @@ public class WikiFurCommand extends AbstractCommand {
                     String emote = event.getReaction().getReactionEmote().getName();
                     int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                     if (index >= 0 && index < finalResult.size() && message.getAuthor().equals(event.getUser())) {
-                        e.delete().queue();
+                        messageService.delete(e);
                         SearchResult result = finalResult.get(index);
                         message.getTextChannel().sendTyping().queue();
                         MessageEmbed searchEmbed = wikiFurService.renderArticle(result.getTitle());
                         contextService.withContext(event.getGuild(), () -> {
                             if (searchEmbed == null) {
-                                messageService.onTitledMessage(message.getChannel(),
+                                messageService.onError(message.getChannel(),
                                         "discord.command.wikifur.title",
                                         "discord.command.wikifur.noResults");
                                 return;

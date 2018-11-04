@@ -19,7 +19,9 @@ package ru.caramel.juniperbot.core.listeners;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
+import ru.caramel.juniperbot.core.service.AuditService;
 import ru.caramel.juniperbot.core.service.ContextService;
 
 public abstract class DiscordEventListener extends ListenerAdapter {
@@ -30,4 +32,16 @@ public abstract class DiscordEventListener extends ListenerAdapter {
 
     @Autowired
     protected ContextService contextService;
+
+    @Autowired
+    protected ApplicationContext applicationContext;
+
+    private AuditService auditService;
+
+    protected AuditService getAuditService() {
+        if (auditService == null) {
+            auditService = applicationContext.getBean(AuditService.class);
+        }
+        return auditService;
+    }
 }

@@ -24,17 +24,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
+import ru.caramel.juniperbot.core.persistence.entity.*;
+import ru.caramel.juniperbot.core.persistence.entity.base.NamedReference;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
-import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
+import ru.caramel.juniperbot.web.dto.AuditActionDto;
+import ru.caramel.juniperbot.web.dto.NamedReferenceDto;
 import ru.caramel.juniperbot.web.dto.config.*;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
@@ -155,6 +156,15 @@ public interface ApiMapperService {
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
 
+    AuditConfigDto getAuditConfigDto(AuditConfig source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "guildId", ignore = true)
+    })
+    void updateAudit(AuditConfigDto source, @MappingTarget AuditConfig target);
+
     @Mappings({
             @Mapping(target = "enabled", ignore = true),
             @Mapping(target = "allowedRoles", ignore = true),
@@ -193,6 +203,12 @@ public interface ApiMapperService {
     PlaylistItemDto getPlaylistItemDto(PlaylistItem source);
 
     List<PlaylistItemDto> getPlaylistItemDtos(List<PlaylistItem> source);
+
+    NamedReferenceDto getNamedReferenceDto(NamedReference source);
+
+    AuditActionDto getAuditActionDto(AuditAction source);
+
+    List<AuditActionDto> getAuditActionDtos(List<AuditAction> source);
 
     @Mappings({
             @Mapping(target = "guild", ignore = true)

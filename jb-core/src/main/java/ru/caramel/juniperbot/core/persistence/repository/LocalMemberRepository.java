@@ -22,10 +22,15 @@ import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
 
+import java.util.List;
+
 @Repository
 public interface LocalMemberRepository extends GuildRepository<LocalMember> {
 
     @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :userId")
     LocalMember findByGuildIdAndUserId(@Param("guildId") long guildId, @Param("userId") String userId);
+
+    @Query("SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND (m.user.userId = :query OR UPPER(m.effectiveName) LIKE CONCAT('%',UPPER(:query),'%') OR UPPER(m.user.name) LIKE CONCAT('%',UPPER(:query),'%'))")
+    List<LocalMember> findLike(@Param("guildId") long guildId, @Param("query") String query);
 
 }

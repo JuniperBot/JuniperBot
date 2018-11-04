@@ -86,7 +86,7 @@ public class PlayCommand extends AudioCommand {
             actions.forEach(e1 -> e1.cancel(true));
             context.removeAttribute(ATTR_SEARCH_ACTIONS);
         }
-        context.removeAttribute(Message.class, ATTR_SEARCH_MESSAGE).delete().queue();
+        messageService.delete(context.removeAttribute(Message.class, ATTR_SEARCH_MESSAGE));
         return (String) context.removeAttribute(List.class, ATTR_SEARCH_RESULTS).get(index);
     }
 }

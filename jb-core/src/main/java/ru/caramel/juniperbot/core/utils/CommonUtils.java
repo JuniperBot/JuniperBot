@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.utils;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -193,7 +194,7 @@ public final class CommonUtils {
         return new DateTime(offsetDateTime.toEpochSecond() * 1000).withZone(DateTimeZone.UTC);
     }
 
-    public static <T> List<T> reverse(List<T> collection, List<T> part) {
+    public static <T> List<T> reverse(List<T> collection, Collection<T> part) {
         List<T> arrayList = new ArrayList<>(collection);
         if (CollectionUtils.isNotEmpty(part)) {
             arrayList.removeAll(part);
@@ -239,10 +240,18 @@ public final class CommonUtils {
         return null;
     }
 
-    public static <T extends Enum<T>> List<T> safeEnumSet(Collection<?> collection, Class<T> type) {
+    public static <T extends Enum<T>> Set<T> safeEnumSet(Collection<?> collection, Class<T> type) {
         return Stream.of(type.getEnumConstants())
                 .filter(e -> collection.contains(e.name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+    }
+
+    public static <T extends Enum<T>> Set<T> safeEnumSet(String input, Class<T> type) {
+        return StringUtils.isNotEmpty(input) ? safeEnumSet(Arrays.asList(input.split(",")), type) : new HashSet<>();
+    }
+
+    public static <T extends Enum<T>> String enumsString(Set<T> enums) {
+        return CollectionUtils.isNotEmpty(enums) ? enums.stream().map(Enum::name).collect(Collectors.joining(",")) : null;
     }
 
     public static String maskPublicMentions(String value) {
@@ -272,5 +281,16 @@ public final class CommonUtils {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(offset - TimeUnit.HOURS.toMillis(hours));
 
         return String.format("UTC%s%d:%02d", hours > 0 ? '+' : '-', hours, minutes);
+    }
+
+    public static MessageChannel getChannel(JDA jda, ChannelType type, long channelId) {
+        switch (type) {
+            case TEXT:
+                return jda.getTextChannelById(channelId);
+            case PRIVATE:
+                return jda.getPrivateChannelById(channelId);
+            default:
+                return null;
+        }
     }
 }

@@ -28,4 +28,6 @@ public interface ConfigService extends DomainService<GuildConfig> {
     String getLocale(Guild guild);
 
     String getLocale(long guildId);
+
+    String getColor(long guildId);
 }

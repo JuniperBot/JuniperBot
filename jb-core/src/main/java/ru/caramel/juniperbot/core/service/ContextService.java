@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.awt.*;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -33,9 +34,15 @@ public interface ContextService {
 
     void setLocale(Locale locale);
 
+    void setColor(Color color);
+
     Locale getLocale();
 
+    Color getColor();
+
     Locale getDefaultLocale();
+
+    Color getDefaultColor();
 
     Locale getLocale(String localeName);
 

@@ -41,6 +41,10 @@ public class GuildConfig extends GuildEntity {
     @Size(max = 100)
     private String name;
 
+    @Basic
+    @Size(max = 7)
+    private String color;
+
     @Column(name = "icon_url")
     private String iconUrl;
 

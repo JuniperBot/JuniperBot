@@ -25,8 +25,8 @@ import ru.caramel.juniperbot.core.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.ball.key",
         description = "discord.command.ball.desc",
-        group = "discord.command.group.utility",
-        priority = 19)
+        group = "discord.command.group.fun",
+        priority = 20)
 public class BallCommand extends AbstractCommand {
 
     @Override

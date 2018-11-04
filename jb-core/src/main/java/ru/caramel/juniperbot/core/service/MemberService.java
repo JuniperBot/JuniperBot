@@ -16,12 +16,22 @@
  */
 package ru.caramel.juniperbot.core.service;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+
+import java.util.List;
 
 public interface MemberService {
 
+    List<LocalMember> findLike(long guildId, String query);
+
     LocalMember get(Member member);
+
+    LocalMember get(Guild guild, User user);
+
+    LocalMember get(long guildId, String userId);
 
     LocalMember getOrCreate(Member member);
 

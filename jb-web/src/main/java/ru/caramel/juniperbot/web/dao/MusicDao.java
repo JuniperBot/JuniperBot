@@ -47,6 +47,8 @@ public class MusicDao extends AbstractDao {
     @Transactional
     public void saveConfig(MusicConfigDto dto, long guildId) {
         MusicConfig musicConfig = musicConfigService.getOrCreate(guildId);
+        dto.setChannelId(filterVoiceChannel(guildId, dto.getChannelId()));
+        dto.setTextChannelId(filterTextChannel(guildId, dto.getTextChannelId()));
         apiMapper.updateMusicConfig(dto, musicConfig);
         musicConfigService.save(musicConfig);
     }

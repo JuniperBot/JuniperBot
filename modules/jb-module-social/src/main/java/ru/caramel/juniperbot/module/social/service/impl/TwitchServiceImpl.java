@@ -182,29 +182,31 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         }
         String content = PLACEHOLDER.replacePlaceholders(announce, resolver);
 
-        Channel channel = stream.getChannel();
+        WebhookMessageBuilder builder = new WebhookMessageBuilder()
+                .setContent(content);
 
-        EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-        embedBuilder.setAuthor(CommonUtils.trimTo(channel.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
-                channel.getUrl(), channel.getLogo());
-        embedBuilder.setThumbnail(channel.getLogo());
-        embedBuilder.setDescription(CommonUtils.trimTo(channel.getStatus(), MessageEmbed.TITLE_MAX_LENGTH));
-        embedBuilder.setColor(TWITCH_COLOR);
+        if (connection.isSendEmbed()) {
+            Channel channel = stream.getChannel();
 
-        if (stream.getPreview() != null && stream.getPreview().getMedium() != null) {
-            embedBuilder.setImage(stream.getPreview().getMedium());
+            EmbedBuilder embedBuilder = messageService.getBaseEmbed();
+            embedBuilder.setAuthor(CommonUtils.trimTo(channel.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
+                    channel.getUrl(), channel.getLogo());
+            embedBuilder.setThumbnail(channel.getLogo());
+            embedBuilder.setDescription(CommonUtils.trimTo(channel.getStatus(), MessageEmbed.TITLE_MAX_LENGTH));
+            embedBuilder.setColor(TWITCH_COLOR);
+
+            if (stream.getPreview() != null && stream.getPreview().getMedium() != null) {
+                embedBuilder.setImage(stream.getPreview().getMedium());
+            }
+            embedBuilder.addField(messageService.getMessage("discord.viewers.title"),
+                    CommonUtils.formatNumber(stream.getViewers()), false);
+            if (StringUtils.isNotBlank(stream.getGame())) {
+                embedBuilder.addField(messageService.getMessage("discord.game.title"),
+                        CommonUtils.trimTo(stream.getGame(), MessageEmbed.VALUE_MAX_LENGTH), false);
+            }
+            builder.addEmbeds(embedBuilder.build());
         }
-        embedBuilder.addField(messageService.getMessage("discord.viewers.title"),
-                CommonUtils.formatNumber(stream.getViewers()), false);
-        if (StringUtils.isNotBlank(stream.getGame())) {
-            embedBuilder.addField(messageService.getMessage("discord.game.title"),
-                    CommonUtils.trimTo(stream.getGame(), MessageEmbed.VALUE_MAX_LENGTH), false);
-        }
-
-        return new WebhookMessageBuilder()
-                .setContent(content)
-                .addEmbeds(embedBuilder.build())
-                .build();
+        return builder.build();
     }
 
     @Override
@@ -215,6 +217,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         connection.setName(user.getDisplayName());
         connection.setDescription(user.getBio());
         connection.setIconUrl(user.getLogo());
+        connection.setSendEmbed(true);
         return connection;
     }
 

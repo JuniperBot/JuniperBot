@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
@@ -40,6 +41,9 @@ public class GuildAudioListener extends DiscordEventListener {
 
     @Autowired
     private MusicConfigService musicConfigService;
+
+    @Autowired
+    private FeatureSetService featureSetService;
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
@@ -57,7 +61,9 @@ public class GuildAudioListener extends DiscordEventListener {
     }
 
     private void tryAutoPlay(Member member, Guild guild, VoiceChannel joinedChannel) {
-        if (member.getUser().isBot() || playerService.isActive(guild)) {
+        if (member.getUser().isBot()
+                || !featureSetService.isAvailable(guild)
+                || playerService.isActive(guild)) {
             return;
         }
         contextService.withContextAsync(guild, () -> {
@@ -79,7 +85,9 @@ public class GuildAudioListener extends DiscordEventListener {
                 }
             }
 
-            if (joinedChannel.equals(targetChannel) && targetChannel.getMembers().size() < 2 && StringUtils.isNotEmpty(config.getAutoPlay())) {
+            if (joinedChannel.equals(targetChannel)
+                    && targetChannel.getMembers().size() < 2
+                    && StringUtils.isNotEmpty(config.getAutoPlay())) {
                 TextChannel channel = null;
                 if (config.getTextChannelId() != null) {
                     channel = guild.getTextChannelById(config.getTextChannelId());

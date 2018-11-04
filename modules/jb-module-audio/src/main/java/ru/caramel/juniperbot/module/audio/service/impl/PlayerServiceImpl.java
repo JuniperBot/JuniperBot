@@ -24,6 +24,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -43,6 +44,7 @@ import org.springframework.util.ResourceUtils;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
@@ -91,6 +93,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     private AudioPlayerManager audioPlayerManager;
 
     @Autowired
+    private FeatureSetService featureSetService;
+
+    @Autowired
     @Qualifier("executor")
     private TaskExecutor taskExecutor;
 
@@ -115,7 +120,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         return create ? instances.computeIfAbsent(guildId, e -> {
             MusicConfig config = musicConfigService.getOrCreate(guildId);
             IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
-            player.setVolume(config.getVoiceVolume());
+            if (featureSetService.isAvailable(guildId)) {
+                player.setVolume(config.getVoiceVolume());
+            }
             return registerInstance(new PlaybackInstance(e, player));
         }) : instances.get(guildId);
     }
@@ -155,7 +162,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
             }
             instance.stop();
-            musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+            if (featureSetService.isAvailable(instance.getGuildId())) {
+                musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+            }
             Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
             if (guild != null) {
                 lavaAudioService.closeConnection(guild);
@@ -240,42 +249,65 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
         final String query = trackUrl;
 
+        JDA jda = channel.getJDA();
+        long guildId = channel.getGuild().getIdLong();
+        long channelId = channel.getIdLong();
+        long requestedById = requestedBy.getUser().getIdLong();
+
         PlaybackInstance instance = getInstance(channel.getGuild());
         audioPlayerManager.loadItemOrdered(instance, query, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                contextService.withContext(channel.getGuild(), () -> {
+                contextService.withContext(guildId, () -> {
                     try {
                         validationService.validateSingle(track, requestedBy);
-                        play(new TrackRequest(track, requestedBy, channel, timeCode));
+                        play(TrackRequest.builder()
+                                .jda(jda)
+                                .track(track)
+                                .guildId(guildId)
+                                .memberId(requestedById)
+                                .channelId(channelId)
+                                .timeCode(timeCode)
+                                .build());
                     } catch (DiscordException e) {
-                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
+                        messageManager.onQueueError(channelId, e.getMessage(), e.getArgs());
                     }
                 });
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                contextService.withContext(channel.getGuild(), () -> {
+                contextService.withContext(guildId, () -> {
+                    if (playlist instanceof StoredPlaylist && !featureSetService.isAvailable(guildId)) {
+                        featureSetService.sendBonusMessage(channelId, "discord.bonus.audio");
+                        return;
+                    }
+
                     try {
                         List<AudioTrack> tracks = validationService.filterPlaylist(playlist, requestedBy);
-                        play(playlist, tracks.stream().map(e -> new TrackRequest(e, requestedBy, channel))
+                        play(playlist, tracks.stream().map(e -> TrackRequest.builder()
+                                .jda(jda)
+                                .track(e)
+                                .guildId(guildId)
+                                .memberId(requestedById)
+                                .channelId(channelId)
+                                .build())
                                 .collect(Collectors.toList()));
                     } catch (DiscordException e) {
-                        messageManager.onQueueError(channel, e.getMessage(), e.getArgs());
+                        messageManager.onQueueError(channelId, e.getMessage(), e.getArgs());
                     }
                 });
             }
 
             @Override
             public void noMatches() {
-                contextService.withContext(channel.getGuild(), () -> messageManager.onNoMatches(channel, query));
+                contextService.withContext(guildId, () -> messageManager.onNoMatches(channelId, query));
             }
 
             @Override
             public void loadFailed(FriendlyException e) {
-                contextService.withContext(channel.getGuild(), () ->
-                        messageManager.onQueueError(channel, "discord.command.audio.error", e.getMessage()));
+                contextService.withContext(guildId, () ->
+                        messageManager.onQueueError(channelId, "discord.command.audio.error", e.getMessage()));
             }
         });
     }
@@ -332,7 +364,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     private void play(TrackRequest request, PlaybackInstance instance) throws DiscordException {
         contextService.withContext(request.getGuildId(),
-                () -> messageManager.onTrackAdd(request, instance.getCursor() < 0));
+                () -> messageManager.onTrackAdd(request, instance));
 
         Member member = request.getMember();
         if (member != null) {

@@ -15,13 +15,21 @@
 package ru.caramel.juniperbot.core.listeners;
 
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider;
+import ru.caramel.juniperbot.core.audit.NicknameChangeAuditForwardProvider;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
+import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.ModerationService;
 
@@ -37,15 +45,43 @@ public class MemberListener extends DiscordEventListener {
     @Autowired
     private ModerationService moderationService;
 
+    @Autowired
+    private ActionsHolderService actionsHolderService;
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        memberService.getOrCreate(event.getMember());
+        if (event.getMember().getUser().isBot()) {
+            return;
+        }
+        LocalMember member = memberService.getOrCreate(event.getMember());
         moderationService.refreshMute(event.getMember());
+        getAuditService().log(event.getGuild(), AuditActionType.MEMBER_JOIN)
+                .withUser(member)
+                .save();
+    }
+
+    @Override
+    public void onGuildBan(GuildBanEvent event) {
+        if (event.getUser().isBot()) {
+            return;
+        }
+        if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+            actionsHolderService.setLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong());
+            event.getGuild().getBan(event.getUser()).queue(e -> {
+                getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                        .withTargetUser(event.getUser())
+                        .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
+                        .save();
+            });
+        }
     }
 
     @Override
     @Transactional
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
+        if (event.getMember().getUser().isBot()) {
+            return;
+        }
         LocalMember member = memberService.get(event.getMember());
         if (member == null) {
             return;
@@ -53,6 +89,12 @@ public class MemberListener extends DiscordEventListener {
         member.setLastKnownRoles( event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
+
+        if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
+            getAuditService().log(event.getGuild(), AuditActionType.MEMBER_LEAVE)
+                    .withUser(member)
+                    .save();
+        }
     }
 
     @Override
@@ -60,8 +102,46 @@ public class MemberListener extends DiscordEventListener {
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {
         LocalMember member = memberService.get(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
+            getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)
+                    .withUser(member)
+                    .withAttribute(NicknameChangeAuditForwardProvider.OLD_NAME, member.getEffectiveName())
+                    .withAttribute(NicknameChangeAuditForwardProvider.NEW_NAME, event.getMember().getEffectiveName())
+                    .save();
             member.setEffectiveName(event.getMember().getEffectiveName());
             memberService.save(member);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_JOIN)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelJoined())
+                    .save();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_JOIN)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelJoined())
+                    .save();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+        if (!event.getMember().getUser().isBot()) {
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_LEAVE)
+                    .withUser(event.getMember())
+                    .withChannel(event.getChannelLeft())
+                    .save();
         }
     }
 }

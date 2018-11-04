@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.audio.model;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 @Getter
 @Setter
+@Builder
 public class TrackRequest {
 
     private AudioTrack track;
@@ -47,19 +49,6 @@ public class TrackRequest {
     private EndReason endReason;
 
     private Long timeCode;
-
-    public TrackRequest(AudioTrack track, Member member, TextChannel channel) {
-        this(track, member, channel, null);
-    }
-
-    public TrackRequest(AudioTrack track, Member member, TextChannel channel, Long timeCode) {
-        this.jda = member.getJDA();
-        this.track = track;
-        this.guildId = member.getGuild().getIdLong();
-        this.memberId = member.getUser().getIdLong();
-        this.channelId = channel.getIdLong();
-        this.timeCode = timeCode;
-    }
 
     public void reset() {
         endReason = null;

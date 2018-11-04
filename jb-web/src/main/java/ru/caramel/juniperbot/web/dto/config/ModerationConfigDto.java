@@ -44,4 +44,6 @@ public class ModerationConfigDto implements Serializable {
 
     @Min(1)
     private int muteCount = ModerationConfig.DEFAULT_MUTE_COUNT;
+
+    private boolean coolDownIgnored;
 }

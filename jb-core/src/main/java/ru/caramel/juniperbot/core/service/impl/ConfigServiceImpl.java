@@ -37,6 +37,9 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Value("${discord.defaultPrefix:!}")
     private String defaultPrefix;
 
+    @Value("${discord.accentColor:#FFA550}")
+    private String accentColor;
+
     public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {
         super(repository, true);
     }
@@ -84,9 +87,15 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     }
 
     @Override
+    public String getColor(long guildId) {
+        return repository.findColorByGuildId(guildId);
+    }
+
+    @Override
     protected GuildConfig createNew(long guildId) {
         GuildConfig config = new GuildConfig(guildId);
         config.setPrefix(defaultPrefix);
+        config.setColor(accentColor);
         config.setLocale(ContextService.DEFAULT_LOCALE);
         config.setCommandLocale(ContextService.DEFAULT_LOCALE);
         config.setTimeZone("Etc/Greenwich");

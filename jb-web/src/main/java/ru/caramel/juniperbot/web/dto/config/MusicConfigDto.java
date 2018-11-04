@@ -51,4 +51,8 @@ public class MusicConfigDto implements Serializable {
     private Long duplicateLimit;
 
     private Set<String> roles;
+
+    private boolean showQueue;
+
+    private boolean removeMessages;
 }

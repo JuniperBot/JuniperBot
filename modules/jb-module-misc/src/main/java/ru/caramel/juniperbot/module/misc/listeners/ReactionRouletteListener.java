@@ -29,8 +29,8 @@ import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @DiscordEvent
 public class ReactionRouletteListener extends DiscordEventListener {
@@ -58,7 +58,7 @@ public class ReactionRouletteListener extends DiscordEventListener {
         }
 
         if (RandomUtils.nextLong(1, 1000) <= roulette.getPercent() * 10) {
-            List<Emote> emotes = new ArrayList<>(guild.getEmotes());
+            List<Emote> emotes = guild.getEmotes().stream().filter(e -> !e.isManaged()).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(emotes)) {
                 return;
             }

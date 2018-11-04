@@ -40,4 +40,8 @@ public class TwitchConnection extends BaseSubscriptionEntity {
 
     @Column
     private String description;
+
+    @Column
+    private boolean sendEmbed;
+
 }

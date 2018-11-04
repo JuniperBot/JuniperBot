@@ -35,15 +35,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.service.BrandingService;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.audio.model.EndReason;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
 
 import java.awt.*;
@@ -57,6 +58,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class AudioMessageManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioMessageManager.class);
+
+    private static final int MAX_SHORT_QUEUE = 3;
 
     @Value("${discord.audio.ui.refreshInterval:5000}")
     private Long playRefreshInterval;
@@ -79,17 +82,34 @@ public class AudioMessageManager {
     @Autowired
     private DiscordService discordService;
 
+    @Autowired
+    private FeatureSetService featureSetService;
+
+    @Autowired
+    private MusicConfigService musicConfigService;
+
     private Map<Long, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
 
     private Map<Long, MessageController> controllers = new ConcurrentHashMap<>();
 
     private Map<Long, ReentrantLock> guildLocks = new ConcurrentHashMap<>();
 
-    public void onTrackAdd(TrackRequest request, boolean silent) {
-        if (!silent) {
+    public void onTrackAdd(TrackRequest request, PlaybackInstance instance) {
+        if (instance.getCursor() >= 0) {
             TextChannel channel = request.getChannel();
             if (channel != null) {
-                messageService.sendMessageSilent(channel::sendMessage, getBasicMessage(request).build());
+                MessageEmbed addedMessage = getBasicMessage(request).build();
+                if (isKeepMessage(request)) {
+                    messageService.sendMessageSilent(channel::sendMessage, addedMessage);
+                } else {
+                    messageService.sendTempMessageSilent(channel::sendMessage, addedMessage, 10);
+                }
+                if (instance.getQueue().size() <= MAX_SHORT_QUEUE) {
+                    MusicConfig config = musicConfigService.getByGuildId(request.getGuildId());
+                    if (config != null && config.isShowQueue()) {
+                        syncByGuild(request, () -> updateMessage(instance.getCurrent()));
+                    }
+                }
             }
         }
     }
@@ -111,9 +131,11 @@ public class AudioMessageManager {
                                     new MessageController(context, e));
                             if (oldController != null) {
                                 contextService.withContext(request.getGuildId(),
-                                        () -> markAsPassed(request, oldController, true));
+                                        () -> markAsPassed(request, oldController, isKeepMessage(request)));
                             }
-                            runUpdater(request);
+                            if (featureSetService.isAvailable(request.getGuildId())) {
+                                runUpdater(request);
+                            }
                         });
             } catch (PermissionException e) {
                 LOGGER.warn("No permission to message", e);
@@ -125,7 +147,7 @@ public class AudioMessageManager {
         syncByGuild(request, () -> {
             cancelUpdate(request);
             controllers.computeIfPresent(request.getGuildId(), (g, c) -> {
-                markAsPassed(request, c, true);
+                markAsPassed(request, c, isKeepMessage(request));
                 return null;
             });
         });
@@ -150,6 +172,14 @@ public class AudioMessageManager {
                 throw e;
             }
         }
+    }
+
+    private boolean isKeepMessage(TrackRequest request) {
+        if (request.getEndReason() == EndReason.SHUTDOWN || request.getEndReason() == EndReason.ERROR) {
+            return true;
+        }
+        MusicConfig musicConfig = musicConfigService.getByGuildId(request.getGuildId());
+        return musicConfig == null || !musicConfig.isRemoveMessages();
     }
 
     private void deleteMessage(TrackRequest request) {
@@ -189,8 +219,10 @@ public class AudioMessageManager {
             if (request.isResetOnResume()) {
                 deleteMessage(request);
                 onTrackStart(request);
-            } else {
+            } else if (featureSetService.isAvailable(request.getGuildId())) {
                 runUpdater(request);
+            } else {
+                updateMessage(request);
             }
         });
     }
@@ -215,10 +247,24 @@ public class AudioMessageManager {
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
     }
 
+    public void onNoMatches(long channelId, String query) {
+        TextChannel textChannel = discordService.getShardManager().getTextChannelById(channelId);
+        if (textChannel != null) {
+            onNoMatches(textChannel, query);
+        }
+    }
+
     public void onNoMatches(MessageChannel sourceChannel, String query) {
         EmbedBuilder builder = getQueueMessage();
         builder.setDescription(messageService.getMessage("discord.command.audio.search.noMatches", query));
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    public void onQueueError(long channelId, String code, Object... args) {
+        TextChannel textChannel = discordService.getShardManager().getTextChannelById(channelId);
+        if (textChannel != null) {
+            onQueueError(textChannel, code, args);
+        }
     }
 
     public void onQueueError(MessageChannel sourceChannel, String code, Object... args) {
@@ -273,17 +319,8 @@ public class AudioMessageManager {
             builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist",
                     brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
-        for (int i = 0; i < pageRequests.size(); i++) {
-            TrackRequest request = pageRequests.get(i);
-            AudioTrack track = request.getTrack();
-            AudioTrackInfo info = track.getInfo();
 
-            int rowNum = i + offset;
-            String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
-                    CommonUtils.formatDuration(track.getDuration()), rowNum == 1 ? ":musical_note: " : "",
-                    getTitle(info), getUrl(info), getMemberName(request, false));
-            builder.addField(EmbedBuilder.ZERO_WIDTH_SPACE, title, false);
-        }
+        addQueue(builder, instance, pageRequests, offset, false);
 
         String queueCommand = messageService.getMessageByLocale("discord.command.queue.key", context.getCommandLocale());
 
@@ -294,6 +331,28 @@ public class AudioMessageManager {
                 : messageService.getMessage("discord.command.audio.queue.list.footer",
                 requests.size(), CommonUtils.formatDuration(totalDuration)), null);
         messageService.sendMessageSilent(sourceChannel::sendMessage, builder.build());
+    }
+
+    private void addQueue(EmbedBuilder builder, PlaybackInstance instance, List<TrackRequest> requests, int offset, boolean nextHint) {
+        if (requests.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < requests.size(); i++) {
+            TrackRequest request = requests.get(i);
+            AudioTrack track = request.getTrack();
+            AudioTrackInfo info = track.getInfo();
+
+            int rowNum = i + offset;
+            String name = EmbedBuilder.ZERO_WIDTH_SPACE;
+            if (nextHint && i == 0) {
+                name = messageService.getMessage("discord.command.audio.queue.next");
+            }
+            String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
+                    CommonUtils.formatDuration(track.getDuration()), !nextHint && rowNum - instance.getCursor() == 1 ? ":musical_note: " : "",
+                    getTitle(info), getUrl(info), getMemberName(request, false));
+            builder.addField(name, title, false);
+        }
     }
 
     private void runUpdater(TrackRequest request) {
@@ -407,6 +466,15 @@ public class AudioMessageManager {
                     brandingService.getWebHost(), instance.getPlaylistUuid()));
         }
 
+        int size = instance.getQueue().size();
+        if (request.getEndReason() == null && size > 1) {
+            MusicConfig config = musicConfigService.getByGuildId(instance.getGuildId());
+            if (config != null && config.isShowQueue()) {
+                List<TrackRequest> next = instance.getQueue().subList(1, Math.min(size, MAX_SHORT_QUEUE + 1));
+                addQueue(builder, instance, next, 1 + instance.getCursor(), true);
+            }
+        }
+
         builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
                 durationText, true);
         builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
@@ -443,20 +511,20 @@ public class AudioMessageManager {
 
     private String getTextProgress(PlaybackInstance instance, AudioTrack track) {
         StringBuilder builder = new StringBuilder();
-        if (instance.getPlayer().getPlayingTrack() != null) {
+        boolean showPosition = featureSetService.isAvailable(instance.getGuildId());
+        if (showPosition && instance.getPlayer().getPlayingTrack() != null) {
             builder.append(CommonUtils.formatDuration(instance.getPosition()));
         }
         if (!track.getInfo().isStream) {
             if (track.getDuration() >= 0) {
-                if (builder.length() > 0) {
+                if (showPosition && builder.length() > 0) {
                     builder.append("/");
                 }
                 builder.append(CommonUtils.formatDuration(track.getDuration()));
             }
         } else {
-            builder.append(" (")
-                    .append(messageService.getMessage("discord.command.audio.panel.stream"))
-                    .append(")");
+            builder.append(String.format(showPosition ? " (%s)" : "%s",
+                    messageService.getMessage("discord.command.audio.panel.stream")));
         }
         return builder.toString();
     }

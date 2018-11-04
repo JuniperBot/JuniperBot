@@ -18,9 +18,8 @@ package ru.caramel.juniperbot.core.persistence.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
-import ru.caramel.juniperbot.core.persistence.repository.base.UserRepository;
 
 @Repository
-public interface LocalUserRepository extends UserRepository<LocalUser> {
+public interface LocalUserRepository extends FeaturedUserRepository<LocalUser> {
 
 }

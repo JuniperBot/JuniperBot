@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
+import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.social.model.InstagramMedia;
@@ -55,6 +56,9 @@ public class PostService {
 
     @Autowired
     private DiscordService discordService;
+
+    @Autowired
+    private ContextService contextService;
 
     @Autowired
     private MessageService messageService;
@@ -118,7 +122,7 @@ public class PostService {
         EmbedBuilder builder = new EmbedBuilder()
                 .setImage(media.getImageUrl())
                 .setTimestamp(media.getDate().toInstant())
-                .setColor(messageService.getAccentColor())
+                .setColor(contextService.getColor())
                 .setAuthor(profile.getFullName(), null, profile.getImageUrl());
 
         if (media.getText() != null) {

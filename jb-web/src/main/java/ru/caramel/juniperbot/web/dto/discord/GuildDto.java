@@ -19,9 +19,11 @@ package ru.caramel.juniperbot.web.dto.discord;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.core.model.enums.FeatureSet;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -48,5 +50,7 @@ public class GuildDto implements Serializable {
     private List<TextChannelDto> textChannels;
 
     private List<VoiceChannelDto> voiceChannels;
+
+    private Set<FeatureSet> featureSets;
 
 }

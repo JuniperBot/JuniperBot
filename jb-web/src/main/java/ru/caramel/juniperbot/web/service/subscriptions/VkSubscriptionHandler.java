@@ -87,7 +87,7 @@ public class VkSubscriptionHandler extends AbstractSubscriptionHandler<VkConnect
         if (attachments == null) {
             attachments = Collections.emptyList();
         }
-        List<WallpostAttachmentType> attachmentTypes = CommonUtils.safeEnumSet(attachments, WallpostAttachmentType.class);
+        Set<WallpostAttachmentType> attachmentTypes = CommonUtils.safeEnumSet(attachments, WallpostAttachmentType.class);
         connection.setAttachments(CommonUtils.reverse(vkService.getAttachmentTypes(), attachmentTypes));
 
         Boolean groupOnlyPosts = getValue(subscription.getAttributes(), "vk.groupOnlyPosts", Boolean.class);

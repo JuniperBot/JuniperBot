@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.commands.moderation;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
     protected ModerationService moderationService;
 
     @Override
-    public boolean isAvailable(User user, Member member) {
+    public boolean isAvailable(User user, Member member, Guild guild) {
         return member != null && moderationService.isModerator(member);
     }
 }
