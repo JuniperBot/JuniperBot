@@ -96,7 +96,7 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepository.save(history);
 
         auditService.log(message.getGuild(), AuditActionType.MESSAGE_EDIT)
-                .withUser(message.getAuthor())
+                .withUser(message.getMember())
                 .withChannel(message.getTextChannel())
                 .withAttribute(MESSAGE_ID, message.getId())
                 .withAttribute(OLD_CONTENT, oldContent)
