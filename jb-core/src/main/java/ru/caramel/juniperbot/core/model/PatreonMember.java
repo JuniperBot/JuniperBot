@@ -38,6 +38,7 @@ public class PatreonMember extends BaseResource {
     private int lifetimeSupportCents;
     private String patronStatus;
     private Integer pledgeAmountCents;
+    private Integer currentlyEntitledAmountCents;
     private Integer pledgeCapAmountCents;
     private Date pledgeRelationshipStart;
 
@@ -56,6 +57,7 @@ public class PatreonMember extends BaseResource {
             @JsonProperty("lifetime_support_cents") int lifetimeSupportCents,
             @JsonProperty("patron_status") String patronStatus,
             @JsonProperty("pledge_amount_cents") Integer pledgeAmountCents,
+            @JsonProperty("currently_entitled_amount_cents") Integer currentlyEntitledAmountCents,
             @JsonProperty("pledge_cap_amount_cents") Integer pledgeCapAmountCents,
             @JsonProperty("pledge_relationship_start") Date pledgeRelationshipStart,
             @JsonProperty("campaign") Campaign campaign,
@@ -68,6 +70,7 @@ public class PatreonMember extends BaseResource {
         this.lifetimeSupportCents = lifetimeSupportCents;
         this.patronStatus = patronStatus;
         this.pledgeAmountCents = pledgeAmountCents;
+        this.currentlyEntitledAmountCents = currentlyEntitledAmountCents;
         this.pledgeCapAmountCents = pledgeCapAmountCents;
         this.pledgeRelationshipStart = pledgeRelationshipStart;
         this.campaign = campaign;

@@ -96,7 +96,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         }
     }
 
-    private synchronized void update() {
+    @Transactional
+    public synchronized void update() {
         log.info("Starting Patreon pledges fetching");
         try {
             List<PatreonUser> patreonUsers = repository.findAll();
@@ -175,8 +176,15 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 case "members:pledge:create":
                 case "members:pledge:update":
                     patron.setActive(true);
-                    patron.setFeatureSets(getFeatureSets(member.getPledgeAmountCents()));
-                    featureSets.put(Long.valueOf(patron.getUserId()), patron.getFeatureSets());
+                    Set<FeatureSet> entitledFeatureSets = new HashSet<>();
+                    if (member.getPledgeAmountCents() != null) {
+                        entitledFeatureSets.addAll(getFeatureSets(member.getPledgeAmountCents()));
+                    }
+                    if (member.getCurrentlyEntitledAmountCents() != null) {
+                        entitledFeatureSets.addAll(getFeatureSets(member.getCurrentlyEntitledAmountCents()));
+                    }
+                    patron.setFeatureSets(entitledFeatureSets);
+                    featureSets.put(Long.valueOf(patron.getUserId()), entitledFeatureSets);
                     break;
                 case "members:pledge:delete":
                     patron.setActive(false);
