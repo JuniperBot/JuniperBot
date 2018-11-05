@@ -342,9 +342,6 @@ public class CommandsServiceImpl implements CommandsService {
 
     public boolean isRestricted(String rawKey, TextChannel channel, Member member) {
         CommandConfig config = commandConfigService.findByKey(channel.getGuild().getIdLong(), rawKey);
-        if (config == null) {
-            return false;
-        }
         Command command = commandsHolderService.getCommands().get(rawKey);
         if (command == null) {
             return true;
