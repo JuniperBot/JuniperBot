@@ -5,6 +5,8 @@ out/
 **/src/main/generated/
 /conf/
 !gradle/wrapper/gradle-wrapper.jar
+/logs/*
+/application.yml
 
 ### STS ###
 .apt_generated
