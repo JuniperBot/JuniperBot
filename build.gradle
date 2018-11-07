@@ -1,0 +1,120 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.0.RELEASE'
+	}
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("gradle.plugin.at.comm_unity.gradle.plugins:jpamodelgen-plugin:1.1.4")
+	}
+}
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        mavenLocal()
+        maven { url "https://jitpack.io" }
+        maven { url "file:local" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+
+    group = 'ru.caramel'
+	version = '5.x-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'at.comm_unity.gradle.plugins.jpamodelgen'
+
+    sourceCompatibility = 10
+    targetCompatibility = 10
+
+    compileJava.options.encoding = 'UTF-8'
+    compileJava.options.compilerArgs /*<< "-Xlint:unchecked" << "-Xlint:deprecation"*/ << "--add-modules=java.xml.ws.annotation"
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.compilerArgs /*<< "-Xlint:unchecked" << "-Xlint:deprecation"*/ << "--add-modules=java.xml.ws.annotation"
+    }
+
+    jpaModelgen {
+        library = "org.hibernate:hibernate-jpamodelgen:5.3.7.Final"
+        jpaModelgenSourcesDir = "src/main/generated"
+    }
+
+    sourceSets {
+        main {
+            ext.originalJavaSrcDirs = new HashSet<>(java.srcDirs)
+            java {
+                srcDirs += "src/main/generated"
+            }
+        }
+    }
+
+    ext {
+        //@formatter:off
+
+        // Common Properties
+		springBootVersion                  = "${springBootVersion}"
+        jsonVersion                        = '20160810'
+        commonsIoVersion                   = '2.5'
+        commonsCollections4Version         = '4.1'
+        commonsValidatorVersion            = '1.6'
+        guavaVersion                       = '18.0'
+        postgresqlVersion                  = '42.2.5'
+        metricsSpringVersion               = '3.1.3'
+        programJbVersion                   = '1.0.13'
+        gsonVersion                        = '2.8.1'
+        jodaMoneyVersion                   = '0.12'
+        prettytimeVersion                  = '4.0.1.Final'
+        jsoupVersion                       = '1.11.2'
+        mapstructVersion                   = '1.2.0.Final'
+        opencvVersion                      = '3.2.0'
+        sentryVersion                      = '1.7.9'
+        jacksonVersion                     = '2.9.7'
+
+        // Integration Properties
+        jdaVersion                         = '3.8.1_439'
+        jdaNasVersion                      = '1.0.6'
+        lavaplayerVersion                  = '1.3.10-jb'
+        lavalinkVersion                    = 'fbd297512f'
+        googleApiServicesYoutubeVersion    = 'v3-rev205-1.25.0'
+        jwbfVersion                        = '4.0.0-SNAPSHOT'
+        wikitextVersion                    = '3.1.6'
+        vkSdkVersion                       = '0.5.8'
+        twitch4jVersion                    = 'v0.12.0'
+        romeVersion                        = '1.11.1'
+        patreonVersion                     = '0.4.2'
+
+        //@formatter:on
+    }
+
+    dependencies {
+        compileOnly             (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
+        annotationProcessor     (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
+        testCompile             (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
+        testAnnotationProcessor (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
+    }
+
+    dependencyManagement {
+        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+    }
+}
+
+ext {
+    moduleName = 'JuniperBot-Parent'
+}

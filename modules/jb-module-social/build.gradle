@@ -1,0 +1,10 @@
+
+description = 'JuniperBot Module: Social Integrations'
+
+dependencies {
+    compile project(':jb-core')
+    compile (group: 'com.github.twitch4j', name: 'twitch4j', version: twitch4jVersion)
+    compile (group: 'com.vk.api', name: 'sdk', version: vkSdkVersion)
+    compile (group: 'com.google.apis', name: 'google-api-services-youtube', version: googleApiServicesYoutubeVersion)
+    compile (group: 'com.rometools', name: 'rome', version: romeVersion)
+}

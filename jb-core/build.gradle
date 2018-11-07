@@ -1,0 +1,44 @@
+
+description = 'JuniperBot Discord Bot Core Library'
+
+dependencies {
+
+	// SPRING CORE DEPENDENCIES
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion)
+    compile (group: 'org.springframework', name: 'spring-web')
+    compile (group: 'org.springframework', name: 'spring-context-support')
+	
+	// COMMON CORE DEPENDENCIES
+    compile (group: 'org.apache.commons', name: 'commons-lang3')
+    compile (group: 'commons-io', name: 'commons-io', version: commonsIoVersion)
+    compile (group: 'commons-validator', name: 'commons-validator', version: commonsValidatorVersion)
+    compile (group: 'org.apache.commons', name: 'commons-collections4', version: commonsCollections4Version)
+    compile (group: 'joda-time', name: 'joda-time')
+    compile (group: 'com.google.code.gson', name: 'gson', version: gsonVersion)
+    compile (group: 'com.google.guava', name: 'guava', version: guavaVersion)
+    compile (group: 'org.json', name: 'json', version: jsonVersion)
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-core')
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
+    compile (group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
+    compile (group: 'io.dropwizard.metrics', name: 'metrics-jmx')
+    compile (group: 'io.dropwizard.metrics', name: 'metrics-jvm')
+    compile (group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
+
+	// INTEGRATION DEPENDENCIES
+    compile (group: 'net.dv8tion', name: 'JDA', version: jdaVersion)
+    compile (group: 'com.sedmelluq', name: 'jda-nas', version: jdaNasVersion)
+    compile (group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)
+    compile (group: 'com.patreon', name: 'patreon', version: patreonVersion)
+
+	// DATABASE DEPENDENCIES
+    compile (group: 'javax.annotation', name: 'javax.annotation-api')
+    compile (group: 'org.hibernate.validator', name: 'hibernate-validator')
+    compile (group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion)
+    compile (group: 'org.liquibase', name: 'liquibase-core')
+
+	testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+    testCompile (group: 'org.springframework.security', name: 'spring-security-test')
+}

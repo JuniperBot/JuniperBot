@@ -1,0 +1,6 @@
+
+description = 'JuniperBot Module: Commands (Custom)'
+
+dependencies {
+    compile project(':jb-core')
+}

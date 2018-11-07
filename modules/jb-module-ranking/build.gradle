@@ -1,0 +1,7 @@
+
+description = 'JuniperBot Module: Ranking'
+
+dependencies {
+    compile project(':jb-core')
+    compile (group: 'org.jsoup', name: 'jsoup', version: jsoupVersion)
+}

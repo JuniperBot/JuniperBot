@@ -1,0 +1,7 @@
+
+description = 'JuniperBot Module: Welcome'
+
+dependencies {
+    compile project(':jb-core')
+    compile project(':modules:jb-module-ranking')
+}

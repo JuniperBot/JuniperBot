@@ -49,7 +49,7 @@ public class InfoCommand extends AbstractInfoCommand {
     @Value("${dependencies.spring.version}")
     private String springVersion;
 
-    @Value("${spring.application.version}")
+    @Value("${build.version}")
     private String appVersion;
 
     private DateTime buildTimestamp;
@@ -93,7 +93,7 @@ public class InfoCommand extends AbstractInfoCommand {
         return true;
     }
 
-    @Value("${spring.application.timestamp}")
+    @Value("${build.time}")
     public void setBuildTimestamp(String value) {
         buildTimestamp = new DateTime(StringUtils.isNumeric(value) ? Long.parseLong(value) : new Date())
                 .withZone(DateTimeZone.UTC);

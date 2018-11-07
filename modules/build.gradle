@@ -1,0 +1,19 @@
+
+description = 'JuniperBot Modules'
+
+dependencies {
+    compile project(':jb-core')
+    compile project(':modules:jb-module-aiml')
+    compile project(':modules:jb-module-audio')
+    compile project(':modules:jb-module-custom')
+    compile project(':modules:jb-module-groovy')
+    compile project(':modules:jb-module-info')
+    compile project(':modules:jb-module-mafia')
+    compile project(':modules:jb-module-misc')
+    compile project(':modules:jb-module-ranking')
+    compile project(':modules:jb-module-reminder')
+    compile project(':modules:jb-module-social')
+    compile project(':modules:jb-module-steam')
+    compile project(':modules:jb-module-welcome')
+    compile project(':modules:jb-module-wikifur')
+}

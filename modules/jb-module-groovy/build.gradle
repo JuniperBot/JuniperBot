@@ -1,0 +1,7 @@
+
+description = 'JuniperBot Module: Groovy Interpreter'
+
+dependencies {
+    compile project(':jb-core')
+    compile (group: 'org.codehaus.groovy', name: 'groovy')
+}

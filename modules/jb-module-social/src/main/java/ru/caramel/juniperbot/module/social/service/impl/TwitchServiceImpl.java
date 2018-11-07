@@ -82,16 +82,12 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
             log.warn("No valid Twitch credentials provided");
             return;
         }
-        try {
-            client = TwitchClientBuilder.init()
-                    .withClientId(clientId)
-                    .withClientSecret(secret)
-                    .withCredential(oauthKey)
-                    .connect();
-            schedule(updateInterval);
-        } catch (Exception e) {
-            log.error("Twitch connection error", e);
-        }
+        client = TwitchClientBuilder.init()
+                .withClientId(clientId)
+                .withClientSecret(secret)
+                .withCredential(oauthKey)
+                .connect();
+        schedule(updateInterval);
     }
 
     @Override

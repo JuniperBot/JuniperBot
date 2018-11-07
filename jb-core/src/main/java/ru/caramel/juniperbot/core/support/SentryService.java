@@ -33,7 +33,7 @@ public class SentryService {
 
     private static final Logger log = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
-    @Value("${spring.application.version}")
+    @Value("${build.version}")
     private String appVersion;
 
     @Value("${core.sentryDsn:}")
