@@ -24,6 +24,7 @@ dependencies {
     compile(group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: springOauthVersion)
 
     compile(group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion)
+    compile(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
     annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
 
     compile(group: 'org.openpnp', name: 'opencv', version: opencvVersion + '-0')
