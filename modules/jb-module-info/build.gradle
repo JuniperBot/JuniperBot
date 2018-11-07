@@ -19,5 +19,4 @@ description = 'JuniperBot Module: Info'
 dependencies {
     compile project(':jb-core')
     compile project(':modules:jb-module-ranking')
-    compile(group: 'org.codehaus.groovy', name: 'groovy')
 }
