@@ -47,7 +47,7 @@ public class WikiFurService {
 
     private WtEngineImpl engine = new WtEngineImpl(config);
 
-    @Value("${build.version}")
+    @Value("${spring.application.version}")
     private String version;
 
     @Autowired

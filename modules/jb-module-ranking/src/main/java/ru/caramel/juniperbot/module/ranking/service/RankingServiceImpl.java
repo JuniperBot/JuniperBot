@@ -90,7 +90,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
-    private final Set<Long> calculateQueue = Sets.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<Long> calculateQueue = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public RankingServiceImpl(@Autowired RankingConfigRepository repository) {
         super(repository, true);

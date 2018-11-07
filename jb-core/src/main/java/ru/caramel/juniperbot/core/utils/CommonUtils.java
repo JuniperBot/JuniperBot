@@ -73,6 +73,7 @@ public final class CommonUtils {
         return DurationFormatUtils.formatDuration(millis, format);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T coalesce(T... objects) {
         return Stream.of(objects).filter(Objects::nonNull).findFirst().orElse(null);
     }

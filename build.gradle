@@ -1,16 +1,16 @@
 buildscript {
-	ext {
-		springBootVersion = '2.1.0.RELEASE'
-	}
+    ext {
+        springBootVersion = '2.1.0.RELEASE'
+    }
     repositories {
         jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url 'http://repo.spring.io/plugins-release' }
     }
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("gradle.plugin.at.comm_unity.gradle.plugins:jpamodelgen-plugin:1.1.4")
-	}
+    }
 }
 
 allprojects {
@@ -27,7 +27,7 @@ allprojects {
     }
 
     group = 'ru.caramel'
-	version = '5.x-SNAPSHOT'
+    version = System.getenv('APPVEYOR_BUILD_VERSION') ?: '5.x-SNAPSHOT'
 }
 
 subprojects {
@@ -36,40 +36,20 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'at.comm_unity.gradle.plugins.jpamodelgen'
 
-    sourceCompatibility = 10
-    targetCompatibility = 10
+    sourceCompatibility = JavaVersion.VERSION_1_10
+    targetCompatibility = JavaVersion.VERSION_1_10
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.compilerArgs /*<< "-Xlint:unchecked" << "-Xlint:deprecation"*/ << "--add-modules=java.xml.ws.annotation"
-
-    task sourceJar(type: Jar) {
-        from sourceSets.main.allJava
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-        options.compilerArgs /*<< "-Xlint:unchecked" << "-Xlint:deprecation"*/ << "--add-modules=java.xml.ws.annotation"
-    }
-
-    jpaModelgen {
-        library = "org.hibernate:hibernate-jpamodelgen:5.3.7.Final"
-        jpaModelgenSourcesDir = "src/main/generated"
-    }
-
-    sourceSets {
-        main {
-            ext.originalJavaSrcDirs = new HashSet<>(java.srcDirs)
-            java {
-                srcDirs += "src/main/generated"
-            }
-        }
-    }
+    compileJava.options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
 
     ext {
         //@formatter:off
 
         // Common Properties
-		springBootVersion                  = "${springBootVersion}"
+        springBootVersion                  = "${springBootVersion}"
+        springOauthVersion                 = '2.1.0.RELEASE'
+        hibernateVersion                   = '5.3.7.Final'
+        lombokVersion                      = '1.18.4'
         jsonVersion                        = '20160810'
         commonsIoVersion                   = '2.5'
         commonsCollections4Version         = '4.1'
@@ -89,6 +69,7 @@ subprojects {
 
         // Integration Properties
         jdaVersion                         = '3.8.1_439'
+        opusJavaVersion                    = '1.0.4' // CHECK ITS VERSION ON JDA UPDATE!
         jdaNasVersion                      = '1.0.6'
         lavaplayerVersion                  = '1.3.10-jb'
         lavalinkVersion                    = 'fbd297512f'
@@ -103,15 +84,37 @@ subprojects {
         //@formatter:on
     }
 
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
+    }
+
+    jpaModelgen {
+        library = "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
+        jpaModelgenSourcesDir = "src/main/generated"
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += "src/main/generated"
+            }
+        }
+    }
+
     dependencies {
-        compileOnly             (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
-        annotationProcessor     (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
-        testCompile             (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
-        testAnnotationProcessor (group: 'org.projectlombok', name: 'lombok', version: '1.18.4')
+        compileOnly(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
+        annotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
+        testCompile(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
+        testAnnotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
     }
 
     dependencyManagement {
-        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+        imports { mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES) }
     }
 }
 

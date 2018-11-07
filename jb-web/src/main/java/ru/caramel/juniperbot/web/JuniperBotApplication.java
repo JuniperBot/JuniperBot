@@ -46,7 +46,6 @@ import java.util.List;
         OAuth2ClientAutoConfiguration.class,
         OAuth2ResourceServerAutoConfiguration.class
 })
-@PropertySource({"classpath:build.properties"})
 public class JuniperBotApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {

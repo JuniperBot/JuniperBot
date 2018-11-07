@@ -43,6 +43,7 @@ public class ArraySqlTypeDescriptor
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X> ValueBinder<X> getBinder(
             JavaTypeDescriptor<X> javaTypeDescriptor) {
         return new BasicBinder<X>(javaTypeDescriptor, this) {

@@ -1,9 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 
-mainClassName = "ru.caramel.juniperbot.web.JuniperBotApplication"
 description = 'JuniperBot Discord Bot Web Application'
 
 ext {
@@ -11,6 +9,7 @@ ext {
 }
 
 bootJar {
+    mainClassName = 'ru.caramel.juniperbot.web.JuniperBotApplication'
     archiveName = "JuniperBot.jar"
 }
 
@@ -19,27 +18,30 @@ dependencies {
     compile project(':jb-core')
     compile project(':modules')
 
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web')
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security')
-    compile (group: 'org.springframework.security', name: 'spring-security-acl')
-    compile (group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.1.0.RELEASE')
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')
+    compile(group: 'org.springframework.security', name: 'spring-security-acl')
+    compile(group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: springOauthVersion)
 
-    compile (group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion)
-    annotationProcessor (group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
+    compile(group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion)
+    annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
 
-    compile (group: 'org.openpnp', name: 'opencv', version: opencvVersion + '-0')
-    compile (group: 'org.opencv', name: 'opencv', version: opencvVersion)
+    compile(group: 'org.openpnp', name: 'opencv', version: opencvVersion + '-0')
+    compile(group: 'org.opencv', name: 'opencv', version: opencvVersion)
 
-    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test')
-    testCompile (group: 'org.springframework.security', name: 'spring-security-test')
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+    testCompile(group: 'org.springframework.security', name: 'spring-security-test')
 
 }
 
 processResources {
-    filesMatching("**/build.properties") {
+    filesMatching("**/application.yml") {
         filter ReplaceTokens, tokens: [
-                "build.version"   : System.getenv('APPVEYOR_BUILD_VERSION') ?: project.version,
-                "build.time"      : System.currentTimeMillis() + ''
+                "build.version"     : project.version,
+                "build.timestamp"   : System.currentTimeMillis() + '',
+                "JDA.version"       : jdaVersion,
+                "lavaplayer.version": lavaplayerVersion,
+                "spring.version"    : dependencyManagement.importedProperties['spring.version']
         ]
     }
 }

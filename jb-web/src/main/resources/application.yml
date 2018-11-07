@@ -18,6 +18,8 @@ spring:
         enabled: "false"
 
   application:
+    version: "@build.version@"
+    timestamp: "@build.timestamp@"
     name: "JuniperBot"
   jpa:
     generate-ddl: "false"

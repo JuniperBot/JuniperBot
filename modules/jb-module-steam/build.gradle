@@ -1,7 +1,6 @@
-
 description = 'JuniperBot Module: Steam'
 
 dependencies {
     compile project(':jb-core')
-    compile (group: 'org.joda', name: 'joda-money', version: jodaMoneyVersion)
+    compile(group: 'org.joda', name: 'joda-money', version: jodaMoneyVersion)
 }

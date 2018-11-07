@@ -1,8 +1,7 @@
-
 description = 'JuniperBot Module: Welcome'
 
 dependencies {
     compile project(':jb-core')
-    compile (group: 'org.sweble.wikitext', name: 'swc-engine', version: wikitextVersion)
-    compile (group: 'net.sourceforge', name: 'jwbf', version: jwbfVersion)
+    compile(group: 'org.sweble.wikitext', name: 'swc-engine', version: wikitextVersion)
+    compile(group: 'net.sourceforge', name: 'jwbf', version: jwbfVersion)
 }
