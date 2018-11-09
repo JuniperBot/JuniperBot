@@ -220,6 +220,7 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedChannels()))", target = "allowedChannels"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getCoolDownIgnoredRoles()))", target = "coolDownIgnoredRoles"),
             @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
     })
     CommandDto getCommandDto(CommandConfig source);
@@ -229,6 +230,7 @@ public interface ApiMapperService {
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredRoles()))", target = "ignoredRoles"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAllowedChannels()))", target = "allowedChannels"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getCoolDownIgnoredRoles()))", target = "coolDownIgnoredRoles"),
             @Mapping(expression = "java(!source.isDisabled())", target = "enabled")
     })
     void updateCommandDto(CommandConfig source, @MappingTarget CommandDto target);

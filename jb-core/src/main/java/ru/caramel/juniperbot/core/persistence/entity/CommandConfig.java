@@ -38,6 +38,10 @@ public class CommandConfig extends GuildEntity {
     private CoolDownMode coolDownMode = CoolDownMode.NONE;
 
     @Type(type = "jsonb")
+    @Column(name = "cooldown_ignored_roles", columnDefinition = "json")
+    private List<Long> coolDownIgnoredRoles;
+
+    @Type(type = "jsonb")
     @Column(name = "allowed_roles", columnDefinition = "json")
     private List<Long> allowedRoles;
 

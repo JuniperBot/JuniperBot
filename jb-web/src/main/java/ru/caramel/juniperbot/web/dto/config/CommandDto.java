@@ -39,6 +39,8 @@ public class CommandDto implements Serializable {
     @NotNull
     private CoolDownMode coolDownMode = CoolDownMode.NONE;
 
+    private Set<String> coolDownIgnoredRoles;
+
     private boolean deleteSource;
 
     private Set<String> allowedRoles;

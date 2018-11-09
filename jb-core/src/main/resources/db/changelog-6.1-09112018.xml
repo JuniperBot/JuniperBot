@@ -75,4 +75,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.1-09112018-5" author="caramel">
+        <addColumn tableName="command_config">
+            <column name="cooldown_ignored_roles" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
