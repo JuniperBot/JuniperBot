@@ -14,14 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.misc.model;
+package ru.caramel.juniperbot.module.misc.commands;
 
-import lombok.Getter;
-import lombok.Setter;
+import ru.caramel.juniperbot.core.model.DiscordCommand;
 
-@Getter
-@Setter
-public class CatResponse {
+@DiscordCommand(key = "discord.command.fox.key",
+        description = "discord.command.fox.desc",
+        group = "discord.command.group.fun",
+        priority = 18)
+public class FoxCommand extends AbstractPhotoCommand {
 
-    private String file;
+    @Override
+    protected String getEndPoint() {
+        return "http://wohlsoft.ru/images/foxybot/randomfox.php";
+    }
+
+    @Override
+    protected String getErrorCode() {
+        return "discord.command.fox.error";
+    }
 }

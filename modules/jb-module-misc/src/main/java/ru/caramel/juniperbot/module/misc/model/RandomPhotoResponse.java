@@ -14,23 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.misc.commands;
+package ru.caramel.juniperbot.module.misc.model;
 
-import ru.caramel.juniperbot.core.model.DiscordCommand;
+import lombok.Getter;
+import lombok.Setter;
 
-@DiscordCommand(key = "discord.command.cat.key",
-        description = "discord.command.cat.desc",
-        group = "discord.command.group.fun",
-        priority = 17)
-public class CatCommand extends AbstractPhotoCommand {
+@Getter
+@Setter
+public class RandomPhotoResponse {
 
-    @Override
-    protected String getEndPoint() {
-        return "http://aws.random.cat/meow";
-    }
-
-    @Override
-    protected String getErrorCode() {
-        return "discord.command.cat.error";
-    }
+    private String file;
 }
