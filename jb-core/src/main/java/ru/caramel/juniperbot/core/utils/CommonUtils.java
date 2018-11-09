@@ -31,6 +31,8 @@ import org.springframework.web.util.UriUtils;
 
 import java.awt.*;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -293,5 +295,9 @@ public final class CommonUtils {
             default:
                 return null;
         }
+    }
+
+    public static String urlEncode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

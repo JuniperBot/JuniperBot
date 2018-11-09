@@ -14,32 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.social.persistence.entity;
+package ru.caramel.juniperbot.module.social.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 
-import javax.persistence.*;
+@Repository
+public interface YouTubeChannelRepository extends JpaRepository<YouTubeChannel, Long> {
 
-@Getter
-@Setter
-@Entity
-@Table(name = "youtube_connection")
-public class YouTubeConnection extends BaseSubscriptionEntity {
-    private static final long serialVersionUID = 2146901528074674595L;
-
-    @ManyToOne
-    @JoinColumn(name="channel_id")
-    private YouTubeChannel channel;
-
-    @Column
-    private String description;
-
-    @Column
-    private String announceMessage;
-
-    @Column
-    private boolean sendEmbed;
-
+    YouTubeChannel findByChannelId(String channelId);
 }

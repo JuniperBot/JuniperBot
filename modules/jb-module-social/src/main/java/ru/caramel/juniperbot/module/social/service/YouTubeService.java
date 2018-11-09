@@ -20,6 +20,7 @@ import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import ru.caramel.juniperbot.core.service.SubscriptionService;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 
 import java.util.List;
@@ -47,4 +48,8 @@ public interface YouTubeService extends SubscriptionService<YouTubeConnection, V
     String getPubSubSecret();
 
     void notifyVideo(String channelId, String videoId);
+
+    void subscribe(YouTubeChannel channel);
+
+    void resubscribeAll();
 }

@@ -30,6 +30,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +40,20 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.service.BrandingService;
+import ru.caramel.juniperbot.core.service.EmergencyService;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
+import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeChannelRepository;
 import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
@@ -57,14 +63,16 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
 public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnection, Video, Channel> implements YouTubeService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(YouTubeServiceImpl.class);
 
     private static final String PUSH_ENDPOINT = "https://pubsubhubbub.appspot.com/subscribe";
 
@@ -77,8 +85,18 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Value("${integrations.youTube.pubSubSecret}")
     private String pubSubSecret;
 
+    @Getter
+    @Value("${integrations.youTube.resubscribeThresholdPct:10}")
+    private Long resubscribeThresholdPct;
+
     @Autowired
     private BrandingService brandingService;
+
+    @Autowired
+    private EmergencyService emergencyService;
+
+    @Autowired
+    private YouTubeChannelRepository channelRepository;
 
     private YouTube youTube;
 
@@ -123,7 +141,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             search.setMaxResults(maxResults);
             return search.execute().getItems();
         } catch (IOException e) {
-            LOGGER.error("Could not perform YouTube search", e);
+            log.error("Could not perform YouTube search", e);
         }
         return Collections.emptyList();
     }
@@ -139,7 +157,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
                     .map(e -> e.getId().getVideoId()).collect(Collectors.joining(",")));
             return list.execute().getItems();
         } catch (IOException e) {
-            LOGGER.error("Could not perform YouTube search", e);
+            log.error("Could not perform YouTube search", e);
         }
         return Collections.emptyList();
     }
@@ -156,7 +174,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             List<Video> items = list.execute().getItems();
             return CollectionUtils.isNotEmpty(items) ? items.get(0) : null;
         } catch (IOException e) {
-            LOGGER.error("Could not get video by id={}", videoId, e);
+            log.error("Could not get video by id={}", videoId, e);
         }
         return null;
     }
@@ -172,7 +190,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             search.setMaxResults(maxResults);
             return search.execute().getItems();
         } catch (IOException e) {
-            LOGGER.error("Could not perform YouTube search", e);
+            log.error("Could not perform YouTube search", e);
         }
         return Collections.emptyList();
     }
@@ -185,7 +203,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             List<Channel> channels = list.execute().getItems();
             return CollectionUtils.isNotEmpty(channels) ? channels.get(0) : null;
         } catch (IOException e) {
-            LOGGER.error("Could not perform YouTube search", e);
+            log.error("Could not perform YouTube search", e);
         }
 
         return null;
@@ -226,11 +244,11 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
                 ? getVideoUrl(result.getId().getVideoId()) : null;
     }
 
-    public String getVideoUrl(String videoId) {
+    private String getVideoUrl(String videoId) {
         return String.format("https://www.youtube.com/watch?v=%s", videoId);
     }
 
-    public String getChannelUrl(String channelId) {
+    private String getChannelUrl(String channelId) {
         return String.format("https://www.youtube.com/channel/%s", channelId);
     }
 
@@ -256,7 +274,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
             Video video = getVideoById(videoId, "id,snippet");
             if (video == null) {
-                LOGGER.error("No suitable video found for id={}", videoId);
+                log.error("No suitable video found for id={}", videoId);
                 return;
             }
             connections.forEach(e -> notifyConnection(video, e));
@@ -305,16 +323,26 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Transactional
     public YouTubeConnection create(long guildId, Channel channel) {
         YouTubeConnection connection = super.create(guildId, channel);
-        subscribe(connection);
+        subscribe(connection.getChannel());
         return connection;
     }
 
-    private void subscribe(YouTubeConnection connection) {
+    @Override
+    public void subscribe(YouTubeChannel channel) {
+        LocalDate now = LocalDate.now();
+        LocalDate expiredAt = channel.getExpiresAt() != null
+                ? LocalDate.fromDateFields(channel.getExpiresAt())
+                : LocalDate.now();
+        if (now.isBefore(expiredAt)) {
+            return;
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish?secret=%s", brandingService.getWebHost(), pubSubSecret));
-        map.add("hub.topic", CHANNEL_RSS_ENDPOINT + connection.getChannelId());
+        map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish?secret=%s&channel=%s",
+                brandingService.getWebHost(), pubSubSecret, CommonUtils.urlEncode(channel.getChannelId())));
+        map.add("hub.topic", CHANNEL_RSS_ENDPOINT + channel.getChannelId());
         map.add("hub.mode", "subscribe");
         map.add("hub.verify", "async");
         map.add("hub.verify_token", pubSubSecret);
@@ -322,14 +350,16 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
         ResponseEntity<String> response = restTemplate.postForEntity(PUSH_ENDPOINT, request, String.class);
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new IllegalStateException("Could not subscribe to " + connection.getChannelId());
+            throw new IllegalStateException("Could not subscribe to " + channel.getChannelId());
         }
+        channel.setExpiresAt(DateTime.now().plusDays(7).toDate());
+        channelRepository.save(channel);
     }
 
     @Override
     protected YouTubeConnection createConnection(Channel channel) {
         YouTubeConnection connection = new YouTubeConnection();
-        connection.setChannelId(channel.getId());
+        connection.setChannel(getOrCreateChannel(channel.getId()));
         ChannelSnippet snippet = channel.getSnippet();
         connection.setName(CommonUtils.trimTo(snippet.getTitle(), 255));
         connection.setDescription(CommonUtils.trimTo(snippet.getDescription(), 255));
@@ -337,5 +367,58 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             connection.setIconUrl(snippet.getThumbnails().getDefault().getUrl());
         }
         return connection;
+    }
+
+    private YouTubeChannel getOrCreateChannel(String channelId) {
+        YouTubeChannel channel = channelRepository.findByChannelId(channelId);
+        if (channel != null) {
+            return channel;
+        }
+        channel = new YouTubeChannel();
+        channel.setChannelId(channelId);
+        return channelRepository.save(channel);
+    }
+
+    /**
+     * Appspot PubSubHubBub subscriptions expires each 10 days so we should resubscribe all
+     */
+    @Override
+    @Scheduled(cron="0 0 0 * * ?")
+    public synchronized void resubscribeAll() {
+        Date currentDate = new Date();
+        List<YouTubeChannel> channels = repository.findToResubscribe(currentDate);
+        if (CollectionUtils.isEmpty(channels)) {
+            return;
+        }
+        AtomicLong failed = new AtomicLong();
+        AtomicLong successful = new AtomicLong();
+        long threshold = channels.size() * (resubscribeThresholdPct / 100);
+        if (threshold == 0) {
+            threshold = 1;
+        }
+
+        log.info("Starting YouTube resubscription with total {} channels and {} threshold",
+                channels.size(), threshold);
+
+        final long start = System.currentTimeMillis();
+        final long thresholdFinal = threshold;
+        channels.parallelStream().forEach(connection -> {
+            if (failed.longValue() >= thresholdFinal) {
+                return;
+            }
+            try {
+                subscribe(connection);
+                successful.incrementAndGet();
+            } catch (Exception e) {
+                log.warn("Could not resubscribe channelId={}", channels, e);
+                if (failed.incrementAndGet() >= thresholdFinal) {
+                    emergencyService.error(String.format("YouTubeConnection resubscription threshold reached %s with " +
+                            "successful %s", thresholdFinal, successful.longValue()), e);
+                }
+            }
+        });
+
+        log.info("Finished YouTube channels resubscription in {} ms with successful {} of total {}",
+                System.currentTimeMillis() - start, successful, channels.size());
     }
 }

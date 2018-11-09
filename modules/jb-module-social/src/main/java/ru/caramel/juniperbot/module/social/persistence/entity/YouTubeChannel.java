@@ -18,28 +18,25 @@ package ru.caramel.juniperbot.module.social.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "youtube_connection")
-public class YouTubeConnection extends BaseSubscriptionEntity {
-    private static final long serialVersionUID = 2146901528074674595L;
+@Table(name = "youtube_channel")
+public class YouTubeChannel extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name="channel_id")
-    private YouTubeChannel channel;
+    private static final long serialVersionUID = 2022980896837729579L;
 
     @Column
-    private String description;
+    @NotNull
+    private String channelId;
 
-    @Column
-    private String announceMessage;
-
-    @Column
-    private boolean sendEmbed;
-
+    @Column(name = "expires_at")
+    @Temporal(TemporalType.DATE)
+    private Date expiresAt;
 }
