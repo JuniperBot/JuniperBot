@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.utils;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -216,13 +217,14 @@ public final class CommonUtils {
                 Integer.valueOf(colorStr.substring(4, 6), 16));
     }
 
-    public static Role getHighestRole(Member member) {
+    public static Role getHighestRole(Member member, Permission... permission) {
         if (member == null || CollectionUtils.isEmpty(member.getRoles())) {
             return null;
         }
-        List<Role> roles = new ArrayList<>(member.getRoles());
-        roles.sort(Comparator.comparingInt(Role::getPosition));
-        return roles.get(0);
+        return member.getRoles().stream()
+                .sorted(Comparator.comparingInt(Role::getPosition))
+                .filter(e -> permission == null || permission.length == 0 || e.hasPermission(permission))
+                .findFirst().orElse(null);
     }
 
     public static String getUrl(String url) {
