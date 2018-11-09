@@ -81,4 +81,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.1-09112018-6" author="caramel">
+        <addColumn tableName="reaction_roulette">
+            <column name="selected_emotes" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

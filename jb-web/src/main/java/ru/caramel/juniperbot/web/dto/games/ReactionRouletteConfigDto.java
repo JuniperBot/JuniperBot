@@ -18,27 +18,18 @@ package ru.caramel.juniperbot.web.dto.games;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.web.dto.discord.EmoteDto;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
-public class ReactionRouletteDto implements Serializable {
+public class ReactionRouletteConfigDto implements Serializable {
+    private static final long serialVersionUID = -7868033704887727170L;
 
-    private static final long serialVersionUID = -1859770585473921470L;
+    private ReactionRouletteDto config;
 
-    private boolean enabled;
-
-    private boolean reaction;
-
-    private Set<String> ignoredChannels;
-
-    private Set<String> selectedEmotes;
-
-    @Min(1)
-    @Max(5)
-    private int percent = 1;
+    private List<EmoteDto> emotes = Collections.emptyList();
 }

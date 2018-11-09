@@ -14,31 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto.games;
+package ru.caramel.juniperbot.web.dto.discord;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Set;
 
 @Getter
 @Setter
-public class ReactionRouletteDto implements Serializable {
+public class EmoteDto implements Serializable {
+    private static final long serialVersionUID = 5709743082815488421L;
 
-    private static final long serialVersionUID = -1859770585473921470L;
+    private String id;
 
-    private boolean enabled;
+    private String name;
 
-    private boolean reaction;
-
-    private Set<String> ignoredChannels;
-
-    private Set<String> selectedEmotes;
-
-    @Min(1)
-    @Max(5)
-    private int percent = 1;
+    private String imageUrl;
 }

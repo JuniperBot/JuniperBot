@@ -25,6 +25,7 @@ import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "reaction_roulette")
@@ -48,6 +49,10 @@ public class ReactionRoulette extends GuildEntity {
     @Type(type = "jsonb")
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
+
+    @Type(type = "jsonb")
+    @Column(name = "selected_emotes", columnDefinition = "json")
+    private Set<String> selectedEmotes;
 
     public ReactionRoulette(long guildId) {
         this.guildId = guildId;

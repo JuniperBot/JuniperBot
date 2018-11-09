@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.service;
 
+import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -37,13 +38,10 @@ import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.web.dto.AuditActionDto;
 import ru.caramel.juniperbot.web.dto.NamedReferenceDto;
 import ru.caramel.juniperbot.web.dto.config.*;
+import ru.caramel.juniperbot.web.dto.discord.*;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
 import ru.caramel.juniperbot.web.dto.RankingInfoDto;
-import ru.caramel.juniperbot.web.dto.discord.GuildShortDto;
-import ru.caramel.juniperbot.web.dto.discord.RoleDto;
-import ru.caramel.juniperbot.web.dto.discord.TextChannelDto;
-import ru.caramel.juniperbot.web.dto.discord.VoiceChannelDto;
 import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
@@ -66,6 +64,8 @@ public interface ApiMapperService {
     })
     RoleDto getRoleDto(Role role);
 
+    EmoteDto getEmoteDto(Emote role);
+
     @Mappings({
             @Mapping(source = "NSFW", target = "nsfw"),
             @Mapping(expression = "java(channel.canTalk())", target = "canTalk"),
@@ -83,6 +83,8 @@ public interface ApiMapperService {
     List<VoiceChannelDto> getVoiceChannelDto(List<VoiceChannel> channels);
 
     List<GuildShortDto> getGuildDtos(List<DiscordGuildDetails> details);
+
+    List<EmoteDto> getEmotesDto(Collection<Emote> role);
 
     @Mappings({
             @Mapping(target = "modConfig", ignore = true)
@@ -173,7 +175,8 @@ public interface ApiMapperService {
             @Mapping(target = "ignoredChannels", ignore = true),
             @Mapping(target = "deleteSource", ignore = true),
             @Mapping(target = "coolDown", ignore = true),
-            @Mapping(target = "coolDownMode", ignore = true)
+            @Mapping(target = "coolDownMode", ignore = true),
+            @Mapping(target = "coolDownIgnoredRoles", ignore = true)
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
 

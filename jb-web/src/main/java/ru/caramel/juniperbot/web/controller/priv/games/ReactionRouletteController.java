@@ -16,13 +16,16 @@
  */
 package ru.caramel.juniperbot.web.controller.priv.games;
 
+import net.dv8tion.jda.core.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.ReactionRouletteDao;
-import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
+import ru.caramel.juniperbot.web.dto.games.ReactionRouletteConfigDto;
+
+import java.util.stream.Collectors;
 
 @RestController
 public class ReactionRouletteController extends BaseRestController {
@@ -32,13 +35,22 @@ public class ReactionRouletteController extends BaseRestController {
 
     @RequestMapping(value = "/games/roulette/{guildId}", method = RequestMethod.GET)
     @ResponseBody
-    public ReactionRouletteDto load(@GuildId @PathVariable long guildId) {
-        return rouletteDao.get(guildId);
+    public ReactionRouletteConfigDto load(@GuildId @PathVariable long guildId) {
+        ReactionRouletteConfigDto configDto = new ReactionRouletteConfigDto();
+        configDto.setConfig(rouletteDao.get(guildId));
+        if (discordService.isConnected(guildId)) {
+            Guild guild = discordService.getGuildById(guildId);
+            if (guild != null) {
+                configDto.setEmotes(apiMapperService.getEmotesDto(guild.getEmotes().stream()
+                        .filter(e -> !e.isManaged()).collect(Collectors.toList())));
+            }
+        }
+        return configDto;
     }
 
     @RequestMapping(value = "/games/roulette/{guildId}", method = RequestMethod.POST)
     public void save(@GuildId @PathVariable long guildId,
-                     @RequestBody @Validated ReactionRouletteDto configDto) {
-        rouletteDao.save(configDto, guildId);
+                     @RequestBody @Validated ReactionRouletteConfigDto configDto) {
+        rouletteDao.save(configDto.getConfig(), guildId);
     }
 }
