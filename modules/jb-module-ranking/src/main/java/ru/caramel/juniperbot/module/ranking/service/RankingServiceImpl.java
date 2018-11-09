@@ -168,7 +168,8 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             });
         }
 
-        if (CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
+        if (config.isCookieEnabled()
+                && CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
                 && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE)) {
             contextService.withContextAsync(null, () -> {
@@ -201,9 +202,12 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         if (!memberService.isApplicable(senderMember) || !memberService.isApplicable(recipientMember)) {
             return;
         }
-        LocalMember recipient = memberService.getOrCreate(recipientMember);
-        LocalMember sender = memberService.getOrCreate(senderMember);
-        giveCookie(sender, recipient, getCookieCoolDown());
+        RankingConfig config = get(senderMember.getGuild());
+        if (config != null && config.isCookieEnabled()) {
+            LocalMember recipient = memberService.getOrCreate(recipientMember);
+            LocalMember sender = memberService.getOrCreate(senderMember);
+            giveCookie(sender, recipient, getCookieCoolDown());
+        }
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {

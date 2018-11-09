@@ -60,6 +60,7 @@ public class RankingDao extends AbstractDao {
         config.setEmbed(dto.isEmbed());
         config.setBannedRoles(dto.getBannedRoles());
         config.setIgnoredChannels(ApiMapperService.toLongList(dto.getIgnoredChannels()));
+        config.setCookieEnabled(dto.isCookieEnabled());
 
         config.setWhisper(WHISPER_CHANNEL.equals(dto.getAnnouncementChannelId()));
         if (config.isWhisper()) {

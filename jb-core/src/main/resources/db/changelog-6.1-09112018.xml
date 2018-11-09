@@ -67,4 +67,12 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="6.1-09112018-4" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="cookie_enabled" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
