@@ -14,6 +14,9 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +25,14 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.CommandsService;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.service.MessageService;
+
+import java.util.function.Function;
 
 @DiscordEvent(priority = 0)
 public class GuildListener extends DiscordEventListener {
+
+    private static final String NEW_LINE = "\n" + EmbedBuilder.ZERO_WIDTH_SPACE;
 
     @Autowired
     private ConfigService configService;
@@ -34,6 +42,9 @@ public class GuildListener extends DiscordEventListener {
 
     @Autowired
     private CommandsService commandsService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
@@ -50,10 +61,87 @@ public class GuildListener extends DiscordEventListener {
         }
         configService.save(config);
         contextService.initContext(event.getGuild()); // reinit context with updated locale
+        sendWelcome(event);
     }
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
         commandsService.clear(event.getGuild());
+    }
+
+    private void sendWelcome(GuildJoinEvent event) {
+        Guild guild = event.getGuild();
+        Member self = guild.getSelfMember();
+        contextService.withContextAsync(guild, () -> {
+            MessageEmbed embed = createWelcomeMessage(guild);
+
+            TextChannel channel = guild.getDefaultChannel();
+            if (channel != null && !self.hasPermission(channel,
+                    Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+                channel = null;
+            }
+
+            if (channel == null) {
+                for (TextChannel textChannel : guild.getTextChannels()) {
+                    if (self.hasPermission(textChannel,
+                            Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+                        channel = textChannel;
+                        break;
+                    }
+                }
+            }
+
+            if (channel != null) {
+                channel.sendMessage(embed).queue();
+            } else {
+                try {
+                    guild.getOwner().getUser().openPrivateChannel().queue(e -> {
+                        if (e != null) {
+                            e.sendMessage(embed).queue();
+                        }
+                    });
+                } catch (Exception e) {
+                    // oh, ok then, we don't care
+                }
+            }
+        });
+    }
+
+    private MessageEmbed createWelcomeMessage(Guild guild) {
+        Function<String, String> m = messageService::getMessage;
+        String webPage = m.apply("about.support.page");
+        String discordServer = m.apply("about.support.server");
+        String githubPage = m.apply("about.support.github");
+        EmbedBuilder builder = messageService.getBaseEmbed(true);
+        builder.setDescription(messageService.getMessage("welcome.guild.message",
+                guild.getName()) + NEW_LINE);
+
+        User self = guild.getJDA().getSelfUser();
+        builder.setAuthor(self.getName(), webPage, self.getAvatarUrl());
+
+        builder.addField(m.apply("welcome.fields.common.title"),
+                m.apply("welcome.fields.common.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.music.title"),
+                m.apply("welcome.fields.music.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.audit.title"),
+                m.apply("welcome.fields.audit.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.subscriptions.title"),
+                m.apply("welcome.fields.subscriptions.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.ranking.title"),
+                m.apply("welcome.fields.ranking.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.welcome.title"),
+                m.apply("welcome.fields.welcome.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.commands.title"),
+                m.apply("welcome.fields.commands.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.custom.title"),
+                m.apply("welcome.fields.custom.content") + NEW_LINE, false);
+        builder.addField(m.apply("welcome.fields.fun.title"),
+                m.apply("welcome.fields.fun.content") + NEW_LINE, false);
+
+        builder.addField(m.apply("welcome.fields.support.title"),
+                messageService.getMessage("welcome.fields.support.content", webPage, discordServer, githubPage),
+                false);
+
+        return builder.build();
     }
 }
