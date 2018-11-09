@@ -113,8 +113,7 @@ public class GuildListener extends DiscordEventListener {
         String discordServer = m.apply("about.support.server");
         String githubPage = m.apply("about.support.github");
         EmbedBuilder builder = messageService.getBaseEmbed(true);
-        builder.setDescription(messageService.getMessage("welcome.guild.message",
-                guild.getName()) + NEW_LINE);
+        builder.setDescription(messageService.getMessage("welcome.guild.message") + NEW_LINE);
 
         User self = guild.getJDA().getSelfUser();
         builder.setAuthor(self.getName(), webPage, self.getAvatarUrl());
