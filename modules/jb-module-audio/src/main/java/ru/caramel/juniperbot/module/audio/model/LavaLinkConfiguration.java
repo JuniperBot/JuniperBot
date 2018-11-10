@@ -14,44 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.module.audio.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-public class StatusDto implements Serializable {
+@Component
+@ConfigurationProperties("discord.audio.engine.lavalink")
+public class LavaLinkConfiguration {
 
-    private static final long serialVersionUID = 1569031085142209018L;
+    private boolean enabled;
+    private List<Node> nodes = new ArrayList<>();
 
-    private long guildCount;
-
-    private long userCount;
-
-    private long textChannelCount;
-
-    private long voiceChannelCount;
-
-    private long activeConnections;
-
-    private long uptimeDuration;
-
-    private long executedCommands;
-
-    private double commandsRateMean;
-
-    private double commandsRate1m;
-
-    private double commandsRate5m;
-
-    private double commandsRate15m;
-
-    private List<ShardDto> shards = Collections.emptyList();
-
-    private List<LavaLinkNodeDto> linkNodes = Collections.emptyList();
+    @Getter
+    @Setter
+    @ToString
+    public static class Node {
+        private String name;
+        private String url;
+        private String password;
+    }
 }

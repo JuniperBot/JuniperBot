@@ -14,28 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.audio.service;
+package ru.caramel.juniperbot.web.dto;
 
-import lavalink.client.io.jda.JdaLavalink;
-import lavalink.client.player.IPlayer;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import ru.caramel.juniperbot.core.service.AudioService;
-import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface LavaAudioService extends AudioService {
+import java.io.Serializable;
 
-    IPlayer createPlayer(String guildId);
+@Getter
+@Setter
+public class LavaLinkNodeDto implements Serializable {
+    private static final long serialVersionUID = -1327040995166820535L;
 
-    void openConnection(IPlayer player, VoiceChannel channel);
+    private String name;
 
-    void closeConnection(Guild guild);
+    private boolean available;
 
-    JdaLavalink getLavaLink();
+    private int players;
 
-    void shutdown();
+    private int playingPlayers;
 
-    boolean isConnected(Guild guild);
+    private double systemLoad;
 
-    LavaLinkConfiguration getConfiguration();
+    private double lavalinkLoad;
+
 }

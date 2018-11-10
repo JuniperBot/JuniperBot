@@ -17,21 +17,35 @@
 package ru.caramel.juniperbot.web.dao;
 
 import com.codahale.metrics.*;
+import lavalink.client.io.LavalinkSocket;
+import lavalink.client.io.RemoteStats;
+import net.dv8tion.jda.core.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.web.dto.LavaLinkNodeDto;
+import ru.caramel.juniperbot.web.dto.ShardDto;
 import ru.caramel.juniperbot.web.dto.StatusDto;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class StatusDao extends AbstractDao {
 
     @Autowired
     private MetricRegistry metricRegistry;
+
+    @Autowired
+    private DiscordService discordService;
+
+    @Autowired
+    private LavaAudioService lavaAudioService;
 
     @Transactional(readOnly = true)
     public StatusDto get() {
@@ -52,6 +66,38 @@ public class StatusDao extends AbstractDao {
             result.setCommandsRate1m(commandRate.getOneMinuteRate());
             result.setCommandsRate5m(commandRate.getFiveMinuteRate());
             result.setCommandsRate15m(commandRate.getFifteenMinuteRate());
+        }
+
+        result.setShards(discordService.getShardManager().getShards().stream()
+                .sorted(Comparator.comparing(e -> e.getShardInfo().getShardId()))
+                .map(e -> {
+                    ShardDto dto = new ShardDto();
+                    dto.setId(e.getShardInfo().getShardId());
+                    dto.setGuilds(e.getGuildCache().size());
+                    dto.setUsers(e.getUserCache().size());
+                    dto.setChannels(e.getTextChannelCache().size() + e.getVoiceChannelCache().size());
+                    dto.setPing(e.getPing());
+                    dto.setConnected(JDA.Status.CONNECTED.equals(e.getStatus()));
+                    return dto;
+                })
+                .collect(Collectors.toList()));
+
+        if (lavaAudioService.getConfiguration().isEnabled()) {
+            result.setLinkNodes(lavaAudioService.getLavaLink().getNodes().stream()
+                    .sorted(Comparator.comparing(LavalinkSocket::getName))
+                    .map(e -> {
+                        LavaLinkNodeDto nodeDto = new LavaLinkNodeDto();
+                        nodeDto.setName(e.getName());
+                        nodeDto.setAvailable(e.isAvailable());
+                        RemoteStats stats = e.getStats();
+                        if (stats != null) {
+                            nodeDto.setPlayers(stats.getPlayers());
+                            nodeDto.setPlayingPlayers(stats.getPlayingPlayers());
+                            nodeDto.setLavalinkLoad(stats.getLavalinkLoad());
+                            nodeDto.setSystemLoad(stats.getSystemLoad());
+                        }
+                        return nodeDto;
+                    }).collect(Collectors.toList()));
         }
         return result;
     }
