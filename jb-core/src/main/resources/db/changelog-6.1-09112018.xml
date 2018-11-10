@@ -87,4 +87,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.1-09112018-7" author="caramel">
+        <addColumn tableName="metric">
+            <column name="data" type="JSONB"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

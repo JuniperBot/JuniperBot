@@ -20,6 +20,9 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import net.dv8tion.jda.core.JDA;
+import ru.caramel.juniperbot.core.model.TimeWindowChart;
+
+import java.util.concurrent.TimeUnit;
 
 public interface StatisticsService {
 
@@ -28,6 +31,8 @@ public interface StatisticsService {
     Meter getMeter(String name);
 
     Counter getCounter(String name);
+
+    TimeWindowChart getTimeChart(String name, long window, TimeUnit windowUnit);
 
     void notifyProviders(JDA shard);
 

@@ -32,7 +32,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.core.model.PersistentMetric;
 import ru.caramel.juniperbot.core.model.ProviderStats;
+import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.StoredMetric;
 import ru.caramel.juniperbot.core.persistence.repository.StoredMetricRepository;
 import ru.caramel.juniperbot.core.service.StatisticsService;
@@ -40,12 +42,13 @@ import ru.caramel.juniperbot.core.service.StatisticsService;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(StatisticsServiceImpl.class);
 
     private static final String ORG_ENDPOINT = "https://discordbots.org/api/bots/{clientId}/stats";
 
@@ -88,12 +91,22 @@ public class StatisticsServiceImpl implements StatisticsService {
         return metricRegistry.counter(name);
     }
 
+    @Override
+    public TimeWindowChart getTimeChart(String name, long window, TimeUnit windowUnit) {
+        Metric metric = metricRegistry.getMetrics().get(name);
+        if (metric instanceof TimeWindowChart) {
+            return (TimeWindowChart) metric;
+        }
+        TimeWindowChart chart = new TimeWindowChart(window, windowUnit);
+        return metricRegistry.register(name, chart);
+    }
+
     @PostConstruct
     public void init() {
         try {
             loadMetrics();
         } catch (Exception e) {
-            LOGGER.warn("Could not load metrics from database", e);
+            log.warn("Could not load metrics from database", e);
         }
     }
 
@@ -115,11 +128,11 @@ public class StatisticsServiceImpl implements StatisticsService {
             HttpEntity<ProviderStats> request = new HttpEntity<>(stats, headers);
             ResponseEntity<String> response = restTemplate.exchange(endPoint, HttpMethod.POST, request, String.class, clientId);
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.warn("Could not report stats {} to endpoint {}: response is {}", stats, endPoint,
+                log.warn("Could not report stats {} to endpoint {}: response is {}", stats, endPoint,
                         response.getStatusCode());
             }
         } catch (Exception e) {
-            LOGGER.warn("Could not report stats {} to endpoint {}: {}", stats, endPoint, e.getMessage());
+            log.warn("Could not report stats {} to endpoint {}: {}", stats, endPoint, e.getMessage());
         }
     }
 
@@ -129,6 +142,21 @@ public class StatisticsServiceImpl implements StatisticsService {
             if (Counter.class.isAssignableFrom(metric.getType())) {
                 Counter counter = getCounter(metric.getName());
                 counter.inc(metric.getCount());
+            }
+            if (PersistentMetric.class.isAssignableFrom(metric.getType())) {
+                try {
+                    PersistentMetric persistent;
+                    if (TimeWindowChart.class.isAssignableFrom(metric.getType())) {
+                        persistent = getTimeChart(metric.getName(), 10, TimeUnit.MINUTES);
+                    } else {
+                        persistent = (PersistentMetric) metric.getType().getConstructor().newInstance();
+                        metricRegistry.remove(metric.getName());
+                        metricRegistry.register(metric.getName(), persistent);
+                    }
+                    persistent.fromMap(metric.getData());
+                } catch (Exception e) {
+                    log.warn("Could not initialize metric[name={},type={}]", metric.getName(), metric.getType(), e);
+                }
             }
         }
     }
@@ -140,7 +168,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             Map<String, Metric> metricMap = metricRegistry.getMetrics();
             if (MapUtils.isNotEmpty(metricMap)) {
                 metricMap = metricMap.entrySet().stream()
-                        .filter(e -> e.getKey().endsWith(".persist") && e.getValue() instanceof Counter)
+                        .filter(e -> e.getKey().endsWith(".persist"))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             }
             if (MapUtils.isEmpty(metricMap)) {
@@ -148,9 +176,15 @@ public class StatisticsServiceImpl implements StatisticsService {
             }
 
             metricMap.forEach((k, v) -> {
-                Counter counter = (Counter) v;
                 StoredMetric storedMetric = getOrNewMetric(k, v);
-                storedMetric.setCount(counter.getCount());
+                if (v instanceof Counter) {
+                    Counter counter = (Counter) v;
+                    storedMetric.setCount(counter.getCount());
+                }
+                if (v instanceof PersistentMetric) {
+                    PersistentMetric persistentMetric = (PersistentMetric) v;
+                    storedMetric.setData(persistentMetric.toMap());
+                }
                 metricRepository.save(storedMetric);
             });
         }

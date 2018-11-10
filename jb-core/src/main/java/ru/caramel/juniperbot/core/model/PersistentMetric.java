@@ -14,39 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.persistence.entity;
+package ru.caramel.juniperbot.core.model;
 
 import com.codahale.metrics.Metric;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Map;
 
-@Entity
-@Table(name = "metric")
-@ToString
-@Getter
-@Setter
-public class StoredMetric extends BaseEntity {
+public interface PersistentMetric extends Metric {
 
-    private static final long serialVersionUID = 1086198114157452394L;
+    Map<String, Object> toMap();
 
-    @Column
-    private String name;
-
-    @Column
-    private Class<? extends Metric> type;
-
-    @Column
-    private Long count;
-
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "json")
-    private Map<String, Object> data;
+    void fromMap(Map<String, Object> data);
 }

@@ -16,22 +16,26 @@
  */
 package ru.caramel.juniperbot.core.model;
 
-import com.codahale.metrics.Reservoir;
-import com.codahale.metrics.SlidingTimeWindowReservoir;
-import com.codahale.metrics.Snapshot;
-import com.codahale.metrics.UniformSnapshot;
+import com.codahale.metrics.*;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TimeWindowChart implements Reservoir {
+public class TimeWindowChart implements Reservoir, PersistentMetric, Gauge<Long> {
 
     private final ConcurrentSkipListMap<Long, Long> measurements;
-    private final long window;
+    private long window;
     private final AtomicLong lastTick;
+    private volatile Long lastMeasurement;
+
+    public TimeWindowChart() {
+        this(10, TimeUnit.MINUTES);
+    }
 
     /**
      * Creates a new {@link SlidingTimeWindowReservoir} with the given window of time.
@@ -46,29 +50,29 @@ public class TimeWindowChart implements Reservoir {
     }
 
     @Override
-    public int size() {
+    public synchronized int size() {
         trim();
         return measurements.size();
     }
 
     @Override
-    public void update(long value) {
+    public synchronized void update(long value) {
         trim();
         measurements.put(getTime(), value);
     }
 
     @Override
-    public Snapshot getSnapshot() {
+    public synchronized Snapshot getSnapshot() {
         trim();
         return new UniformSnapshot(measurements.values());
     }
 
-    public Map<Long, Long> getMeasurements() {
+    public synchronized Map<Long, Long> getMeasurements() {
         trim();
         return Collections.unmodifiableMap(measurements);
     }
 
-    private long getTime() {
+    private synchronized long getTime() {
         for (; ; ) {
             final long oldTick = lastTick.get();
             final long tick = System.currentTimeMillis();
@@ -89,5 +93,36 @@ public class TimeWindowChart implements Reservoir {
         } else {
             measurements.subMap(windowEnd, windowStart).clear();
         }
+    }
+
+    @Override
+    public synchronized Map<String, Object> toMap() {
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("window", window);
+        objectMap.put("measurements", new HashMap<>(measurements));
+        return objectMap;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized void fromMap(Map<String, Object> data) {
+        if (MapUtils.isEmpty(data)) {
+            return;
+        }
+        Object window = data.get("window");
+        Object measurements = data.get("measurements");
+        if (window instanceof Number && measurements instanceof Map) {
+            this.window = ((Number) window).longValue();
+            this.measurements.clear();
+            ((Map) measurements).forEach((k, v) ->
+                    this.measurements.put(Long.parseLong(k.toString()), Long.parseLong(v.toString())));
+            this.lastTick.set(System.currentTimeMillis());
+            trim();
+        }
+    }
+
+    @Override
+    public Long getValue() {
+        return lastMeasurement;
     }
 }
