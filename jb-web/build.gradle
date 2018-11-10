@@ -16,6 +16,7 @@
  */
 import org.apache.tools.ant.filters.ReplaceTokens
 
+apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 
 description = 'JuniperBot Discord Bot Web Application'
@@ -24,8 +25,9 @@ ext {
     moduleName = 'JuniperBot-Web'
 }
 
+mainClassName = 'ru.caramel.juniperbot.web.JuniperBotApplication'
+
 bootJar {
-    mainClassName = 'ru.caramel.juniperbot.web.JuniperBotApplication'
     archiveName = "JuniperBot.jar"
 }
 
