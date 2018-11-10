@@ -39,7 +39,6 @@ public abstract class RankingCommand extends AbstractCommand {
         RankingConfig rankingConfig = rankingService.get(message.getGuild());
         return rankingConfig != null
                 && rankingConfig.isEnabled()
-                && !rankingService.isBanned(rankingConfig, message.getMember())
                 && doInternal(message, context, content);
     }
 
