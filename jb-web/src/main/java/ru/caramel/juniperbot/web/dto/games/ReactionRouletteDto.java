@@ -36,6 +36,8 @@ public class ReactionRouletteDto implements Serializable {
 
     private Set<String> ignoredChannels;
 
+    private Set<String> selectedEmotes;
+
     @Min(1)
     @Max(5)
     private int percent = 1;

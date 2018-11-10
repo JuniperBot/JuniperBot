@@ -20,13 +20,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
+import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface YouTubeConnectionRepository extends BaseSubscriptionRepository<YouTubeConnection> {
 
-    @Query("SELECT c FROM YouTubeConnection c WHERE c.channelId = :channelId AND c.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    @Query("SELECT c FROM YouTubeConnection c WHERE c.channel.channelId = :channelId " +
+            "AND c.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
     List<YouTubeConnection> findActiveConnections(@Param("channelId") String channelId);
+
+    @Query("SELECT DISTINCT c.channel FROM YouTubeConnection c WHERE (c.channel.expiresAt IS NULL OR c.channel.expiresAt <= :expirationDate) " +
+            "AND c.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<YouTubeChannel> findToResubscribe(@Param("expirationDate") Date date);
 }

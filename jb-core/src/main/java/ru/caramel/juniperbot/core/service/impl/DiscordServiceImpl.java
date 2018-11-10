@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
@@ -53,6 +52,7 @@ import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.AudioService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.service.StatisticsService;
 import ru.caramel.juniperbot.core.support.DiscordHttpRequestFactory;
 import ru.caramel.juniperbot.core.support.ModuleListener;
 import ru.caramel.juniperbot.core.support.jmx.JmxJDAMBean;
@@ -93,6 +93,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Autowired
     private IEventManager eventManager;
+
+    @Autowired
+    private StatisticsService statisticsService;
 
     @Getter
     private ShardManager shardManager;
@@ -151,7 +154,10 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onReady(ReadyEvent event) {
-        pingCharts.put(event.getJDA(), new TimeWindowChart(10, TimeUnit.MINUTES));
+        TimeWindowChart chart = statisticsService
+                .getTimeChart(String.format("jda.shard.ping.%s.persist", event.getJDA().getShardInfo().getShardId()),
+                        10, TimeUnit.MINUTES);
+        pingCharts.put(event.getJDA(), chart);
         mBeanExporter.registerManagedResource(new JmxJDAMBean(event.getJDA()));
         setUpStatus();
     }

@@ -140,11 +140,11 @@ public class ModerationServiceImpl
                         .setName(roleName)
                         .complete();
 
-                Role highestRole = CommonUtils.getHighestRole(self);
+                Role highestRole = CommonUtils.getHighestRole(self, Permission.MANAGE_ROLES);
                 if (highestRole != null) {
                     controller.modifyRolePositions()
                             .selectPosition(role)
-                            .moveUp(highestRole.getPosition() - role.getPosition() - 1)
+                            .moveTo(highestRole.getPosition() - 1)
                             .complete();
                 }
             }

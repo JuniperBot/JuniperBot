@@ -254,21 +254,24 @@ public class CommandsServiceImpl implements CommandsService {
             return true;
         }
         if (event.getMember() != null && commandConfig.getCoolDownMode() != CoolDownMode.NONE) {
-            ModerationConfig moderationConfig = moderationService.get(event.getGuild());
-            if (!moderationService.isModerator(event.getMember())
-                    || (moderationConfig != null && !moderationConfig.isCoolDownIgnored())) {
-                CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
-                long duration = holder.perform(event, commandConfig);
-                if (duration > 0) {
-                    resultEmotion(event, "\uD83D\uDD5C", null);
-                    Date date = new Date();
-                    date.setTime(date.getTime() + duration);
+            if (CollectionUtils.isEmpty(commandConfig.getCoolDownIgnoredRoles()) ||
+                    event.getMember().getRoles().stream().noneMatch(e -> commandConfig.getCoolDownIgnoredRoles().contains(e.getIdLong()))) {
+                ModerationConfig moderationConfig = moderationService.get(event.getGuild());
+                if (!moderationService.isModerator(event.getMember())
+                        || (moderationConfig != null && !moderationConfig.isCoolDownIgnored())) {
+                    CoolDownHolder holder = coolDownHolderMap.computeIfAbsent(event.getGuild().getIdLong(), CoolDownHolder::new);
+                    long duration = holder.perform(event, commandConfig);
+                    if (duration > 0) {
+                        resultEmotion(event, "\uD83D\uDD5C", null);
+                        Date date = new Date();
+                        date.setTime(date.getTime() + duration);
 
-                    PrettyTime time = new PrettyTime(contextService.getLocale());
-                    time.removeUnit(JustNow.class);
-                    messageService.onTempEmbedMessage(event.getChannel(), 10,
-                            "discord.command.restricted.cooldown", time.format(date));
-                    return true;
+                        PrettyTime time = new PrettyTime(contextService.getLocale());
+                        time.removeUnit(JustNow.class);
+                        messageService.onTempEmbedMessage(event.getChannel(), 10,
+                                "discord.command.restricted.cooldown", time.format(date));
+                        return true;
+                    }
                 }
             }
         }

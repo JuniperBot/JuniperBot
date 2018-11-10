@@ -40,7 +40,7 @@ public class YouTubeSubscriptionHandler extends AbstractSubscriptionHandler<YouT
     @Override
     public SubscriptionDto getSubscription(YouTubeConnection connection) {
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("youtube.channelId", connection.getChannelId());
+        attributes.put("youtube.channelId", connection.getChannel().getChannelId());
         attributes.put("youtube.description", connection.getDescription());
         attributes.put("youtube.announce", connection.getAnnounceMessage());
         attributes.put("youtube.sendEmbed", connection.isSendEmbed());
@@ -81,6 +81,7 @@ public class YouTubeSubscriptionHandler extends AbstractSubscriptionHandler<YouT
             return false;
         }
         updateWebHook(connection, subscription);
+        youTubeService.subscribe(connection.getChannel());
 
         String announce = getValue(subscription.getAttributes(), "youtube.announce", String.class);
         connection.setAnnounceMessage(announce);

@@ -28,14 +28,14 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
@@ -47,15 +47,14 @@ import java.util.stream.Stream;
 @Service
 public class DefaultAudioServiceImpl implements LavaAudioService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAudioServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultAudioServiceImpl.class);
 
     @Value("${discord.audio.engine.jdaNAS:true}")
     private boolean jdaNAS;
 
-    @Value("${discord.audio.engine.lavaLink.enabled:false}")
-    private boolean lavaLinkEnabled;
-
-    private Map<URI, String> lavaLinkNodes;
+    @Autowired
+    @Getter
+    private LavaLinkConfiguration configuration;
 
     @Autowired
     private AudioPlayerManager playerManager;
@@ -68,39 +67,25 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
         if (jdaNAS) {
             builder.setAudioSendFactory(new NativeAudioSendFactory());
         }
-        if (lavaLinkEnabled) {
-            if (MapUtils.isNotEmpty(lavaLinkNodes)) {
+        if (configuration.isEnabled()) {
+            if (CollectionUtils.isNotEmpty(configuration.getNodes())) {
                 lavaLink = new JdaLavalink(
                         discordService.getUserId(),
                         discordService.getShardsNum(),
                         discordService::getShardById
                 );
-                lavaLinkNodes.forEach(lavaLink::addNode);
+                configuration.getNodes().forEach(e -> {
+                    try {
+                        lavaLink.addNode(e.getName(), new URI(e.getUrl()), e.getPassword());
+                    } catch (URISyntaxException e1) {
+                        log.warn("Could not add node {}", e, e1);
+                    }
+                });
                 builder.addEventListeners(lavaLink);
             } else {
-                LOGGER.warn("Lavalink is enabled but no valid nodes was specified");
+                log.warn("Lavalink is enabled but no valid nodes was specified");
             }
         }
-    }
-
-    @Value("${discord.audio.engine.lavaLink.nodes:}")
-    public void setLavaLinkNodes(String value) {
-        if (StringUtils.isEmpty(value)) {
-            return;
-        }
-        String[] nodes = value.split(";");
-        Map<URI, String> nodeMap = new HashMap<>(nodes.length);
-        Stream.of(nodes).forEach(e -> {
-            String[] node = e.split("\\|");
-            if (node.length > 1) {
-                try {
-                    nodeMap.put(new URI(node[0]), node[1]);
-                } catch (URISyntaxException ex) {
-                    LOGGER.warn("Could not parse node {}", e, ex);
-                }
-            }
-        });
-        lavaLinkNodes = Collections.unmodifiableMap(nodeMap);
     }
 
     @Override

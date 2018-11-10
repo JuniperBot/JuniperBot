@@ -37,7 +37,7 @@ public class AvatarCommand extends AbstractCommand {
         User user = message.getAuthor();
         String name = user.getName();
         if (message.getGuild() != null && CollectionUtils.isNotEmpty(message.getMessage().getMentionedMembers())) {
-            Member member = message.getMessage().getMentionedMembers().get(0);
+            Member member = getMentioned(message);
             user = member.getUser();
             name = member.getEffectiveName();
         }

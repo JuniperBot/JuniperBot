@@ -16,70 +16,21 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
-import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.module.misc.model.CatResponse;
-import ru.caramel.juniperbot.module.misc.model.DogBreedsResponse;
-
-import javax.annotation.PostConstruct;
-import java.util.concurrent.TimeUnit;
 
 @DiscordCommand(key = "discord.command.cat.key",
         description = "discord.command.cat.desc",
         group = "discord.command.group.fun",
         priority = 17)
-public class CatCommand extends AbstractCommandAsync {
+public class CatCommand extends AbstractPhotoCommand {
 
-    private final static String ENDPOINT = "http://aws.random.cat/meow";
-
-    private RestTemplate restTemplate;
-
-    private final Supplier<CatResponse> catResult =
-            Suppliers.memoizeWithExpiration(this::getCat, 1, TimeUnit.SECONDS);
-
-    @PostConstruct
-    public void init() {
-        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        httpRequestFactory.setConnectTimeout(3000);
-        this.restTemplate = new RestTemplate(httpRequestFactory);
-    }
-
-    private CatResponse getCat() {
-        ResponseEntity<CatResponse> response = restTemplate.getForEntity(ENDPOINT, CatResponse.class);
-        if (response.getStatusCode() != HttpStatus.OK
-                || response.getBody() == null
-                || StringUtils.isEmpty(response.getBody().getFile())) {
-            return null;
-        }
-        return response.getBody();
+    @Override
+    protected String getEndPoint() {
+        return "http://aws.random.cat/meow";
     }
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
-        try {
-            message.getChannel().sendTyping().queue();
-            CatResponse response = catResult.get();
-            if (response == null) {
-                messageService.onEmbedMessage(message.getChannel(), "discord.command.cat.error");
-                return;
-            }
-            EmbedBuilder builder = messageService.getBaseEmbed();
-            builder.setImage(response.getFile());
-            builder.setColor(null);
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-        } catch (HttpClientErrorException e) {
-            messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
-        }
+    protected String getErrorCode() {
+        return "discord.command.cat.error";
     }
 }

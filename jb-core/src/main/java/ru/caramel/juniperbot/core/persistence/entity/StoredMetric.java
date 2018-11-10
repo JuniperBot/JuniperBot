@@ -20,11 +20,13 @@ import com.codahale.metrics.Metric;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Map;
 
 @Entity
 @Table(name = "metric")
@@ -43,4 +45,8 @@ public class StoredMetric extends BaseEntity {
 
     @Column
     private Long count;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    private Map<String, Object> data;
 }

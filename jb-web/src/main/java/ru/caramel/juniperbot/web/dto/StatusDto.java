@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,4 +50,8 @@ public class StatusDto implements Serializable {
     private double commandsRate5m;
 
     private double commandsRate15m;
+
+    private List<ShardDto> shards = Collections.emptyList();
+
+    private List<LavaLinkNodeDto> linkNodes = Collections.emptyList();
 }

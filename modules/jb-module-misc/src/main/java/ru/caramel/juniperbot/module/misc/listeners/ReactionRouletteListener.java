@@ -48,7 +48,9 @@ public class ReactionRouletteListener extends DiscordEventListener {
             return;
         }
         ReactionRoulette roulette = reactionRouletteService.getByGuildId(guild.getIdLong());
-        if (roulette == null || !roulette.isEnabled()) {
+        if (roulette == null
+                || !roulette.isEnabled()
+                || CollectionUtils.isEmpty(roulette.getSelectedEmotes())) {
             return;
         }
 
@@ -58,12 +60,14 @@ public class ReactionRouletteListener extends DiscordEventListener {
         }
 
         if (RandomUtils.nextLong(1, 1000) <= roulette.getPercent() * 10) {
-            List<Emote> emotes = guild.getEmotes().stream().filter(e -> !e.isManaged()).collect(Collectors.toList());
+            List<Emote> emotes = guild.getEmotes().stream()
+                    .filter(e -> !e.isManaged() && roulette.getSelectedEmotes().contains(e.getId()))
+                    .collect(Collectors.toList());
             if (CollectionUtils.isEmpty(emotes)) {
                 return;
             }
 
-            Emote emote = emotes.get(RandomUtils.nextInt(0, emotes.size() - 1));
+            Emote emote = emotes.get(RandomUtils.nextInt(0, emotes.size()));
             if (roulette.isReaction() && guild.getSelfMember().hasPermission(event.getChannel(),
                     Permission.MESSAGE_ADD_REACTION) && emote.canInteract(event.getJDA().getSelfUser(), event.getChannel())) {
                 try {

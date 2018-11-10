@@ -21,6 +21,7 @@ import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.service.AudioService;
+import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 
 public interface LavaAudioService extends AudioService {
 
@@ -35,4 +36,6 @@ public interface LavaAudioService extends AudioService {
     void shutdown();
 
     boolean isConnected(Guild guild);
+
+    LavaLinkConfiguration getConfiguration();
 }

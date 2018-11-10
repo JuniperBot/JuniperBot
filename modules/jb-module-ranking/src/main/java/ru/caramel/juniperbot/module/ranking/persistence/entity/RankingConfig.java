@@ -71,6 +71,9 @@ public class RankingConfig extends GuildEntity {
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
 
+    @Column(name = "cookie_enabled")
+    private boolean cookieEnabled;
+
     public RankingConfig(long guildId) {
         this.guildId = guildId;
     }

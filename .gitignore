@@ -1,5 +1,12 @@
+.gradle
 target/
-!.mvn/wrapper/maven-wrapper.jar
+build/
+out/
+**/src/main/generated/
+/conf/
+!gradle/wrapper/gradle-wrapper.jar
+/logs/*
+/application.yml
 
 ### STS ###
 .apt_generated
@@ -17,10 +24,8 @@ target/
 *.ipr
 
 ### NetBeans ###
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-conf/
-.nb-gradle/
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/

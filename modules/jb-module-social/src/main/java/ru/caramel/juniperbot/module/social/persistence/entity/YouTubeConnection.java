@@ -20,9 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -31,8 +29,9 @@ import javax.persistence.Table;
 public class YouTubeConnection extends BaseSubscriptionEntity {
     private static final long serialVersionUID = 2146901528074674595L;
 
-    @Column
-    private String channelId;
+    @ManyToOne
+    @JoinColumn(name="channel_id")
+    private YouTubeChannel channel;
 
     @Column
     private String description;

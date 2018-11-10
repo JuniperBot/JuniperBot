@@ -14,14 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.misc.model;
+package ru.caramel.juniperbot.module.audio.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-public class CatResponse {
+@Component
+@ConfigurationProperties("discord.audio.engine.lavalink")
+public class LavaLinkConfiguration {
 
-    private String file;
+    private boolean enabled;
+    private List<Node> nodes = new ArrayList<>();
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Node {
+        private String name;
+        private String url;
+        private String password;
+    }
 }

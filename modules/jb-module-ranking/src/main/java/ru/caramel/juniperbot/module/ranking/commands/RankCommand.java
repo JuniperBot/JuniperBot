@@ -27,6 +27,7 @@ import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
+import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
 @DiscordCommand(
         key = "discord.command.rank.key",
@@ -84,6 +85,7 @@ public class RankCommand extends RankingCommand {
     }
 
     public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
+        RankingConfig config = rankingService.get(guild);
         long totalMembers = rankingService.countRankings(guild.getIdLong());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
                 String.format("# %d/%d", info.getRank(), totalMembers), true);
@@ -92,7 +94,9 @@ public class RankCommand extends RankingCommand {
         builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
                 messageService.getMessage("discord.command.rank.info.exp.format",
                         info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()), true);
-        builder.addField(messageService.getMessage("discord.command.rank.info.cookies.title"),
-                String.format("%d \uD83C\uDF6A", info.getCookies()), true);
+        if (config != null && config.isCookieEnabled()) {
+            builder.addField(messageService.getMessage("discord.command.rank.info.cookies.title"),
+                    String.format("%d \uD83C\uDF6A", info.getCookies()), true);
+        }
     }
 }

@@ -48,4 +48,6 @@ public class RankingDto implements Serializable {
     private List<Reward> rewards;
 
     private Set<String> ignoredChannels;
+
+    private boolean cookieEnabled;
 }

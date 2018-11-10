@@ -35,6 +35,7 @@ public abstract class AbstractArrayTypeDescriptor<T>
     private Class<T> arrayObjectClass;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setParameterValues(Properties parameters) {
         arrayObjectClass = ((ParameterType) parameters
                 .get(PARAMETER_TYPE))
@@ -42,6 +43,7 @@ public abstract class AbstractArrayTypeDescriptor<T>
 
     }
 
+    @SuppressWarnings("unchecked")
     public AbstractArrayTypeDescriptor(Class<T> arrayObjectClass) {
         super(
                 arrayObjectClass,
@@ -90,6 +92,7 @@ public abstract class AbstractArrayTypeDescriptor<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X> T wrap(
             X value,
             WrapperOptions options
