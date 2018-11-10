@@ -59,7 +59,7 @@ public class WebHookServiceImpl implements WebHookService {
                 Webhook webhook = getWebHook(guild, webHook);
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
-                    if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
+                    if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
                         webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32))
                                 .setAvatar(CommonUtils.getIcon(iconUrl))
                                 .complete();

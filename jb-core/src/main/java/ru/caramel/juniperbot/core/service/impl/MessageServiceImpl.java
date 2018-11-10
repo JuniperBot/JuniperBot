@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
 
@@ -195,7 +195,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             action.apply(embed).queue(messageConsumer);
         } catch (PermissionException e) {
-            LOGGER.warn("No permission to message", e);
+            // we don't care about it, this is why it is silent
         }
     }
 
