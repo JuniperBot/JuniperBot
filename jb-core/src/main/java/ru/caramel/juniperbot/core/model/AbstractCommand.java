@@ -28,6 +28,7 @@ import ru.caramel.juniperbot.core.service.AuditService;
 import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.service.*;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,8 +85,11 @@ public abstract class AbstractCommand implements Command {
     }
 
     protected Member getMentioned(MessageReceivedEvent event) {
-        return event.getGuild() != null && CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
-                ? event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0)) : null;
+        if (event.getGuild() == null || CollectionUtils.isEmpty(event.getMessage().getMentionedMembers())) {
+            return null;
+        }
+        List<Member> mentioned = event.getMessage().getMentionedMembers();
+        return mentioned.get(mentioned.size() - 1);
     }
 
     protected String removeMention(String input) {
