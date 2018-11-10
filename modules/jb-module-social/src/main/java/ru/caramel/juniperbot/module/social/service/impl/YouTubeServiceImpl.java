@@ -407,7 +407,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
                 return;
             }
             try {
-                subscribe(connection);
+                contextService.inTransaction(() -> subscribe(connection));
                 successful.incrementAndGet();
             } catch (Exception e) {
                 log.warn("Could not resubscribe channelId={}", channels, e);

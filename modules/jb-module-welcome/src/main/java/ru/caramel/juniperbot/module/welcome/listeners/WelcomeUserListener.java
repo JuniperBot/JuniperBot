@@ -105,12 +105,14 @@ public class WelcomeUserListener extends DiscordEventListener {
                 }
 
                 if (StringUtils.isNotEmpty(localMember.getEffectiveName())
-                        && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
+                        && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)
+                        && guild.getSelfMember().canInteract(event.getMember())) {
                     guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
                 }
             }
 
-            if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)
+                    && guild.getSelfMember().canInteract(event.getMember())) {
                 Set<Role> roles = roleIdsToAdd.stream()
                         .map(guild::getRoleById)
                         .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())

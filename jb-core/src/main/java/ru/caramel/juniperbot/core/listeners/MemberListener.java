@@ -14,6 +14,7 @@
  */
 package ru.caramel.juniperbot.core.listeners;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -62,7 +63,7 @@ public class MemberListener extends DiscordEventListener {
 
     @Override
     public void onGuildBan(GuildBanEvent event) {
-        if (event.getUser().isBot()) {
+        if (event.getUser().isBot() || !event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             return;
         }
         if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
