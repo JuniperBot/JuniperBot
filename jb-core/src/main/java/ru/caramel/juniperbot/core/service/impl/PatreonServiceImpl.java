@@ -106,9 +106,6 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Transactional
     public synchronized void update() {
-        if (!updateEnabled) {
-            return;
-        }
         log.info("Starting Patreon pledges fetching");
         try {
             List<PatreonUser> patreonUsers = repository.findAll();
@@ -244,6 +241,13 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             synchronized (this) {
                 if (updateFuture == null) {
                     updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+                }
+            }
+        } else if (!enabled && updateFuture != null) {
+            synchronized (this) {
+                if (updateFuture != null) {
+                    updateFuture.cancel(false);
+                    updateFuture = null;
                 }
             }
         }
