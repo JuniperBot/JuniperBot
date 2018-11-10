@@ -41,6 +41,7 @@ import ru.caramel.juniperbot.core.utils.PatreonUtils;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 @FeatureProvider(priority = 2)
@@ -60,6 +61,9 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Value("${integrations.patreon.refreshToken:}")
     private String refreshToken;
 
+    @Value("${integrations.patreon.updateEnabled:false}")
+    private boolean updateEnabled;
+
     @Value("${integrations.patreon.updateInterval:3600000}")
     private Long updateInterval;
 
@@ -76,6 +80,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     private HmacUtils webHookHmac;
 
+    private ScheduledFuture<?> updateFuture;
+
     private final Map<Long, Set<FeatureSet>> featureSets = new ConcurrentHashMap<>();
 
     @PostConstruct
@@ -85,7 +91,9 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
         if (StringUtils.isNotEmpty(accessToken)) {
             creatorApi = new PatreonAPI(accessToken);
-            scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+            if (updateEnabled) {
+                updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+            }
         } else {
             log.warn("No Patreon credentials specified, integration would not work");
         }
@@ -98,6 +106,9 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Transactional
     public synchronized void update() {
+        if (!updateEnabled) {
+            return;
+        }
         log.info("Starting Patreon pledges fetching");
         try {
             List<PatreonUser> patreonUsers = repository.findAll();
@@ -161,6 +172,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Transactional
     public boolean processWebHook(String content, String trigger, String signature) {
         try {
+            log.info("Incoming Patreon WebHook [{}]: {}", trigger, content);
             if (signature != null && webHookHmac != null && !signature.equalsIgnoreCase(webHookHmac.hmacHex(content))) {
                 log.warn("Denied Patreon WebHook!");
                 return false;
@@ -177,11 +189,13 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 case "members:pledge:update":
                     patron.setActive(true);
                     Set<FeatureSet> entitledFeatureSets = new HashSet<>();
-                    if (member.getPledgeAmountCents() != null) {
-                        entitledFeatureSets.addAll(getFeatureSets(member.getPledgeAmountCents()));
-                    }
-                    if (member.getCurrentlyEntitledAmountCents() != null) {
-                        entitledFeatureSets.addAll(getFeatureSets(member.getCurrentlyEntitledAmountCents()));
+                    if ("paid".equalsIgnoreCase(member.getLastChargeStatus())) {
+                        if (member.getPledgeAmountCents() != null) {
+                            entitledFeatureSets.addAll(getFeatureSets(member.getPledgeAmountCents()));
+                        }
+                        if (member.getCurrentlyEntitledAmountCents() != null) {
+                            entitledFeatureSets.addAll(getFeatureSets(member.getCurrentlyEntitledAmountCents()));
+                        }
                     }
                     patron.setFeatureSets(entitledFeatureSets);
                     featureSets.put(Long.valueOf(patron.getUserId()), entitledFeatureSets);
@@ -221,6 +235,18 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             patron.setUserId(discordUserId);
         }
         return patron;
+    }
+
+    @Override
+    public void setUpdateEnabled(boolean enabled) {
+        this.updateEnabled = enabled;
+        if (enabled && updateFuture == null) {
+            synchronized (this) {
+                if (updateFuture == null) {
+                    updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+                }
+            }
+        }
     }
 
     private static String getDiscordId(User user) {
