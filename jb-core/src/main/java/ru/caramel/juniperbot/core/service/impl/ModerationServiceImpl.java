@@ -102,6 +102,7 @@ public class ModerationServiceImpl
 
     @Override
     @Cacheable(value = "ModerationServiceImpl.isModerator", cacheManager = RequestScopedCacheManager.NAME)
+    @Transactional(readOnly = true)
     public boolean isModerator(Member member) {
         if (member == null) {
             return false;
@@ -115,6 +116,7 @@ public class ModerationServiceImpl
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isPublicColor(long guildId) {
         ModerationConfig config = getByGuildId(guildId);
         return config != null && config.isPublicColors();
@@ -182,6 +184,7 @@ public class ModerationServiceImpl
     }
 
     @Override
+    @Transactional
     public Role getMutedRole(Guild guild) {
         ModerationConfig moderationConfig = getOrCreate(guild);
 
@@ -432,11 +435,13 @@ public class ModerationServiceImpl
     }
 
     @Override
+    @Transactional
     public boolean kick(Member author, Member member) {
         return kick(author, member, null);
     }
 
     @Override
+    @Transactional
     public boolean kick(Member author, Member member, final String reason) {
         Member self = member.getGuild().getSelfMember();
         if (self.hasPermission(Permission.KICK_MEMBERS) && self.canInteract(member)) {
@@ -458,16 +463,19 @@ public class ModerationServiceImpl
     }
 
     @Override
+    @Transactional
     public boolean ban(Member author, Member member) {
         return ban(author, member, null);
     }
 
     @Override
+    @Transactional
     public boolean ban(Member author, Member member, String reason) {
         return ban(author, member, 0, reason);
     }
 
     @Override
+    @Transactional
     public boolean ban(Member author, Member member, int delDays, final String reason) {
         Member self = member.getGuild().getSelfMember();
         if (self.hasPermission(Permission.BAN_MEMBERS) && self.canInteract(member)) {
@@ -496,6 +504,7 @@ public class ModerationServiceImpl
     }
 
     @Override
+    @Transactional
     public boolean warn(Member author, Member member) {
         return warn(author, member, null);
     }

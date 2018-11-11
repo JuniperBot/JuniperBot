@@ -58,8 +58,8 @@ public class CommandConfigServiceImpl implements CommandConfigService {
     }
 
     @Override
+    @Transactional
     public Iterable<CommandConfig> save(Iterable<CommandConfig> configs) {
         return repository.saveAll(configs);
     }
-
 }

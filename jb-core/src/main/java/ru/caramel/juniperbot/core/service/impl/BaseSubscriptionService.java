@@ -123,6 +123,7 @@ public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, 
     }
 
     @Override
+    @Transactional
     public void delete(T connection) {
         webHookService.delete(connection.getGuildId(), connection.getWebHook());
         repository.delete(connection);

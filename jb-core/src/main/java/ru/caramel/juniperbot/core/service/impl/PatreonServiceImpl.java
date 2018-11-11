@@ -104,6 +104,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         }
     }
 
+    @Override
     @Transactional
     public synchronized void update() {
         log.info("Starting Patreon pledges fetching");

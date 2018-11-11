@@ -242,6 +242,7 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
+    @Transactional
     public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
         if (isRestricted(commandConfig, event.getTextChannel())) {
             resultEmotion(event, "✋", null);

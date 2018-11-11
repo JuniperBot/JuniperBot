@@ -258,6 +258,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     }
 
     @Override
+    @Transactional
     public void notifyVideo(String channelId, String videoId) {
         synchronized (videoCache) {
             if (videoCache.getIfPresent(videoId) != null) {
@@ -328,6 +329,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     }
 
     @Override
+    @Transactional
     public void subscribe(YouTubeChannel channel) {
         LocalDate now = LocalDate.now();
         LocalDate expiredAt = channel.getExpiresAt() != null
@@ -384,6 +386,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
      */
     @Override
     @Scheduled(cron="0 0 0 * * ?")
+    @Transactional
     public synchronized void resubscribeAll() {
         Date currentDate = new Date();
         List<YouTubeChannel> channels = repository.findToResubscribe(currentDate);
