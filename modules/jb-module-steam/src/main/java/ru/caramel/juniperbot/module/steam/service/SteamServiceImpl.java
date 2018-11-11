@@ -112,17 +112,20 @@ public class SteamServiceImpl implements SteamService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SteamApp> find(String query) {
         return appRepository.search(query, null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SteamApp findOne(String query) {
         List<SteamApp> result = appRepository.search(query, PageRequest.of(0, 1));
         return result.isEmpty() ? null : result.get(0);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SteamApp findByAppId(Long appId) {
         return appRepository.findByAppId(appId);
     }

@@ -94,6 +94,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public LocalMember updateIfRequired(Member member, LocalMember localMember) {
         try {
             boolean shouldSave = false;

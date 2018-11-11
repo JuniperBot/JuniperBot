@@ -68,7 +68,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public String getPrefix(long guildId) {
         String prefix = repository.findPrefixByGuildId(guildId);
         return prefix != null ? prefix : defaultPrefix;
@@ -87,6 +87,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String getColor(long guildId) {
         return repository.findColorByGuildId(guildId);
     }

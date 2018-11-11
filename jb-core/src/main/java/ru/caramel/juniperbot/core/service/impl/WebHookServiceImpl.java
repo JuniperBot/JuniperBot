@@ -52,6 +52,7 @@ public class WebHookServiceImpl implements WebHookService {
                         }
                     });
 
+    @Override
     public boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name, String iconUrl) {
         if (discordService.isConnected(guildId)) {
             Guild guild = discordService.getShardManager().getGuildById(guildId);

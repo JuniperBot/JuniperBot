@@ -114,6 +114,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countRankings(long guildId) {
         return rankingRepository.countByGuildId(guildId);
     }

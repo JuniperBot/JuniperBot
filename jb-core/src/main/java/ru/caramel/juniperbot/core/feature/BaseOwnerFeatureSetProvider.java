@@ -36,12 +36,14 @@ public abstract class BaseOwnerFeatureSetProvider implements FeatureSetProvider 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isAvailable(long guildId, FeatureSet featureSet) {
         Long ownerId = getOwnerId(guildId);
         return ownerId != null && isAvailableForUser(ownerId, featureSet);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<FeatureSet> getByGuild(long guildId) {
         Long ownerId = getOwnerId(guildId);
         return ownerId != null ? getByUser(ownerId) : Set.of();

@@ -148,11 +148,13 @@ public class VkServiceImpl implements VkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VkConnection find(long id) {
         return repository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional
     public VkConnection save(VkConnection connection) {
         return repository.save(connection);
     }
@@ -165,11 +167,13 @@ public class VkServiceImpl implements VkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VkConnection getForToken(String token) {
         return repository.findByToken(token);
     }
 
     @Override
+    @Transactional
     public String confirm(VkConnection connection, CallbackMessage message) {
         connection.setGroupId(message.getGroupId());
         connection.setStatus(VkConnectionStatus.CONNECTED);

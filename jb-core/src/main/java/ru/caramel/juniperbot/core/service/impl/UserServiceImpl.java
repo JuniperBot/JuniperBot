@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private LocalUserRepository repository;
 
     @Override
+    @Transactional(readOnly = true)
     public LocalUser get(User user) {
         return repository.findByUserId(user.getId());
     }
@@ -61,6 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public LocalUser updateIfRequired(User user, LocalUser localUser) {
         try {
             boolean shouldSave = false;

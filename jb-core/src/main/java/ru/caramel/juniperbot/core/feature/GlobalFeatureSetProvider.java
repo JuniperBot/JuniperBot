@@ -32,18 +32,22 @@ public class GlobalFeatureSetProvider implements FeatureSetProvider {
         this.globalAccess = globalAccess;
     }
 
+    @Override
     public boolean isAvailable(long guildId, FeatureSet featureSet) {
         return globalAccess;
     }
 
+    @Override
     public boolean isAvailableForUser(long userId, FeatureSet featureSet) {
         return globalAccess;
     }
 
+    @Override
     public Set<FeatureSet> getByGuild(long guildId) {
         return globalAccess ? Set.of(FeatureSet.values()) : Set.of();
     }
 
+    @Override
     public Set<FeatureSet> getByUser(long userId) {
         return globalAccess ? Set.of(FeatureSet.values()) : Set.of();
     }

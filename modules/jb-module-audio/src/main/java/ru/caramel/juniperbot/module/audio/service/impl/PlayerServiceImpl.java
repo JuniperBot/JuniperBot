@@ -111,11 +111,13 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     @Override
+    @Transactional
     public PlaybackInstance getInstance(Guild guild) {
         return getInstance(guild.getIdLong(), true);
     }
 
     @Override
+    @Transactional
     public PlaybackInstance getInstance(long guildId, boolean create) {
         return create ? instances.computeIfAbsent(guildId, e -> {
             MusicConfig config = musicConfigService.getOrCreate(guildId);
@@ -521,6 +523,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     @Scheduled(fixedDelay = 15000)
+    @Transactional
     public void monitor() {
         long currentTimeMillis = System.currentTimeMillis();
 
