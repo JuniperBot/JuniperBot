@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
-import ru.caramel.juniperbot.core.model.PatreonMember;
+import ru.caramel.juniperbot.core.patreon.resources.Member;
 
 import java.io.UnsupportedEncodingException;
 
@@ -35,7 +35,7 @@ public class PatreonUtils {
         objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         converter = new ResourceConverter(
                 objectMapper,
-                PatreonMember.class
+                Member.class
         );
         converter.enableDeserializationOption(DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS);
     }
@@ -44,11 +44,11 @@ public class PatreonUtils {
         // private
     }
 
-    public static PatreonMember parseMember(String content) {
+    public static Member parseMember(String content) {
         try {
-            JSONAPIDocument<PatreonMember> document = converter.readDocument(
+            JSONAPIDocument<Member> document = converter.readDocument(
                     content.getBytes("UTF-8"),
-                    PatreonMember.class
+                    Member.class
             );
             return document.get();
         } catch (UnsupportedEncodingException e) {

@@ -70,6 +70,7 @@ subprojects {
         commonsIoVersion                   = '2.5'
         commonsCollections4Version         = '4.1'
         commonsValidatorVersion            = '1.6'
+        commonsCodecVersion                = '1.11'
         guavaVersion                       = '18.0'
         postgresqlVersion                  = '42.2.5'
         metricsSpringVersion               = '3.1.3'
@@ -95,7 +96,7 @@ subprojects {
         vkSdkVersion                       = '0.5.8'
         twitch4jVersion                    = 'v0.12.0'
         romeVersion                        = '1.11.1'
-        patreonVersion                     = '0.4.2'
+        jsonApiConverter                   = '0.9'
 
         //@formatter:on
     }
