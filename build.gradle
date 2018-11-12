@@ -43,7 +43,7 @@ allprojects {
     }
 
     group = 'ru.caramel'
-    version = System.getenv('APPVEYOR_BUILD_VERSION') ?: '5.x-SNAPSHOT'
+    version = System.getenv('CI_VERSION') ?: '6.x-SNAPSHOT'
 }
 
 subprojects {

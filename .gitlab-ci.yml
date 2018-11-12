@@ -1,0 +1,36 @@
+image: docker:latest
+services:
+- docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+  CI_VERSION: '6.2.$${CI_PIPELINE_IID}'
+
+stages:
+- build
+- package
+
+build-backend:
+  image: openjdk:10.0.2-jdk-slim
+  stage: build
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+  cache:
+    paths:
+    - .gradle/wrapper
+    - .gradle/caches
+  script:
+    - ./gradlew assemble
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - jb-web/build/libs/JuniperBot.jar
+
+docker-build:
+  stage: package
+  script:
+    - docker build -t registry.gitlab.com/juniperbot/backend .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/juniperbot/backend
+  dependencies:
+    - build-backend

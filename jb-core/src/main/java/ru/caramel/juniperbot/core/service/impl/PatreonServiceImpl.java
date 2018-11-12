@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import lombok.Synchronized;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -168,6 +169,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Override
     @Transactional
+    @Synchronized
     public boolean processWebHook(String content, String trigger, String signature) {
         try {
             log.info("Incoming Patreon WebHook [{}]: {}", trigger, content);
