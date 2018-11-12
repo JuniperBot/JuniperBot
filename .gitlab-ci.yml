@@ -4,7 +4,7 @@ services:
 
 variables:
   DOCKER_DRIVER: overlay
-  CI_VERSION: '6.2.$${CI_PIPELINE_IID}'
+  CI_VERSION: '6.2.$CI_PIPELINE_IID'
 
 stages:
 - build
@@ -31,6 +31,7 @@ docker-build:
   script:
     - docker build -t registry.gitlab.com/juniperbot/backend .
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
     - docker push registry.gitlab.com/juniperbot/backend
   dependencies:
     - build-backend
