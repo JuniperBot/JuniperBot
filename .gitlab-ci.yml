@@ -25,6 +25,7 @@ build-backend:
     expire_in: 1 week
     paths:
       - jb-web/build/libs/JuniperBot.jar
+      - modules/jb-module-aiml/bots/
 
 docker-build:
   stage: package
