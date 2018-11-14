@@ -30,6 +30,7 @@ dependencies {
     compile(group: 'org.apache.commons', name: 'commons-lang3')
     compile(group: 'commons-io', name: 'commons-io', version: commonsIoVersion)
     compile(group: 'commons-validator', name: 'commons-validator', version: commonsValidatorVersion)
+    compile(group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion)
     compile(group: 'org.apache.commons', name: 'commons-collections4', version: commonsCollections4Version)
     compile(group: 'joda-time', name: 'joda-time')
     compile(group: 'com.google.code.gson', name: 'gson', version: gsonVersion)
@@ -51,7 +52,8 @@ dependencies {
     
     compile(group: 'com.sedmelluq', name: 'jda-nas', version: jdaNasVersion)
     compile(group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)
-    compile(group: 'com.patreon', name: 'patreon', version: patreonVersion)
+    compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
+
 
     // DATABASE DEPENDENCIES
     compile(group: 'javax.annotation', name: 'javax.annotation-api')

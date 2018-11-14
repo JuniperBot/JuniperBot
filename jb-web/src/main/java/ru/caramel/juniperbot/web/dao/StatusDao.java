@@ -122,7 +122,6 @@ public class StatusDao extends AbstractDao {
         if (metric instanceof Gauge) {
             Gauge gauge = (Gauge) metric;
             value = (T) gauge.getValue();
-
         }
         if (metric instanceof Counter) {
             Counter counter = (Counter) metric;

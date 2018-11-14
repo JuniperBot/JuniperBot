@@ -16,9 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
-import com.patreon.PatreonAPI;
-import com.patreon.resources.Pledge;
-import com.patreon.resources.User;
+import lombok.Synchronized;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,12 +28,14 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.feature.BaseOwnerFeatureSetProvider;
 import ru.caramel.juniperbot.core.model.FeatureProvider;
-import ru.caramel.juniperbot.core.model.PatreonMember;
+import ru.caramel.juniperbot.core.patreon.resources.Member;
 import ru.caramel.juniperbot.core.model.enums.FeatureSet;
+import ru.caramel.juniperbot.core.patreon.resources.User;
 import ru.caramel.juniperbot.core.persistence.entity.PatreonUser;
 import ru.caramel.juniperbot.core.persistence.repository.PatreonUserRepository;
 import ru.caramel.juniperbot.core.service.EmergencyService;
 import ru.caramel.juniperbot.core.service.PatreonService;
+import ru.caramel.juniperbot.core.patreon.PatreonAPI;
 import ru.caramel.juniperbot.core.utils.PatreonUtils;
 
 import javax.annotation.PostConstruct;
@@ -116,16 +116,17 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             patreonUsers.forEach(e -> e.setActive(false));
             Map<Long, Set<FeatureSet>> featureSets = new HashMap<>();
 
-            List<Pledge> pledges = creatorApi.fetchAllPledges(campaignId);
-            for (Pledge pledge : pledges) {
-                if (pledge.getPatron() == null) {
-                    log.warn("No patron found for Pledge {}", pledge.getId());
+            List<Member> members = creatorApi.fetchAllMembers(campaignId);
+            for (Member member : members) {
+                User patron = member.getUser();
+                if (member.getUser() == null) {
+                    log.warn("No patron found for Pledge {}", member.getUser());
                     continue;
                 }
 
-                String discordUserId = getDiscordId(pledge.getPatron());
+                String discordUserId = getDiscordId(patron);
 
-                PatreonUser patreon = patreonById.get(pledge.getPatron().getId());
+                PatreonUser patreon = patreonById.get(patron.getId());
 
                 if (patreon == null) {
                     if (discordUserId != null) {
@@ -140,12 +141,12 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     patreonUsers.add(patreon);
                 }
 
-                patreon.setPatreonId(pledge.getPatron().getId());
+                patreon.setPatreonId(patron.getId());
                 if (discordUserId != null) {
                     patreon.setUserId(discordUserId);
                 }
-                patreon.setActive(true);
-                patreon.setFeatureSets(getFeatureSets(pledge.getAmountCents()));
+                patreon.setActive(member.isActiveAndPaid());
+                patreon.setFeatureSets(getFeatureSets(member));
 
                 featureSets.put(Long.valueOf(patreon.getUserId()), patreon.getFeatureSets());
             }
@@ -168,6 +169,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Override
     @Transactional
+    @Synchronized
     public boolean processWebHook(String content, String trigger, String signature) {
         try {
             log.info("Incoming Patreon WebHook [{}]: {}", trigger, content);
@@ -176,7 +178,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 return false;
             }
 
-            PatreonMember member = PatreonUtils.parseMember(content);
+            Member member = PatreonUtils.parseMember(content);
             PatreonUser patron = getOrCreatePatron(member);
             if (patron == null) {
                 return true; // treat it is as success, we could not find such user yet
@@ -186,15 +188,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 case "members:pledge:create":
                 case "members:pledge:update":
                     patron.setActive(true);
-                    Set<FeatureSet> entitledFeatureSets = new HashSet<>();
-                    if ("paid".equalsIgnoreCase(member.getLastChargeStatus())) {
-                        if (member.getPledgeAmountCents() != null) {
-                            entitledFeatureSets.addAll(getFeatureSets(member.getPledgeAmountCents()));
-                        }
-                        if (member.getCurrentlyEntitledAmountCents() != null) {
-                            entitledFeatureSets.addAll(getFeatureSets(member.getCurrentlyEntitledAmountCents()));
-                        }
-                    }
+                    Set<FeatureSet> entitledFeatureSets = getFeatureSets(member);
                     patron.setFeatureSets(entitledFeatureSets);
                     featureSets.put(Long.valueOf(patron.getUserId()), entitledFeatureSets);
                     break;
@@ -211,7 +205,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         return true;
     }
 
-    private PatreonUser getOrCreatePatron(PatreonMember member) {
+    private PatreonUser getOrCreatePatron(Member member) {
         User user = member.getUser();
         if (user == null) {
             return null;
@@ -261,10 +255,15 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 ? user.getSocialConnections().getDiscord().getUser_id() : null;
     }
 
-    private static Set<FeatureSet> getFeatureSets(int cents) {
+    private static Set<FeatureSet> getFeatureSets(Member member) {
         Set<FeatureSet> pledgeSets = new HashSet<>();
-        if (cents >= 100) {
-            pledgeSets.add(FeatureSet.BONUS);
+        if (member.isActiveAndPaid()) {
+            Integer cents = member.getCurrentlyEntitledAmountCents();
+            if (member.getCurrentlyEntitledAmountCents() != null) {
+                if (cents >= 100) {
+                    pledgeSets.add(FeatureSet.BONUS);
+                }
+            }
         }
         return pledgeSets;
     }
