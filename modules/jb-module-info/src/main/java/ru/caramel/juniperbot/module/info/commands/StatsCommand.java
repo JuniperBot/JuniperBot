@@ -79,7 +79,7 @@ public class StatsCommand extends AbstractInfoCommand {
             date.setTime(date.getTime() - (long) e);
             return new PrettyTime(contextService.getLocale()).format(date);
         });
-        return new MessageEmbed.Field(messageService.getMessage("discord.command.stats.platform"), value, false);
+        return value != null ? new MessageEmbed.Field(messageService.getMessage("discord.command.stats.platform"), value, false) : null;
     }
 
     private String getCounterValue(Map<String,Metric> metricMap, String name) {
@@ -100,7 +100,7 @@ public class StatsCommand extends AbstractInfoCommand {
         if (metric instanceof Gauge) {
             Gauge gauge = (Gauge) metric;
             Object value = gauge.getValue();
-            if (valueExtractor != null) {
+            if (value != null && valueExtractor != null) {
                 value = valueExtractor.apply(value);
             }
             return messageService.getMessage("discord.command.stats.values." + name, value);
