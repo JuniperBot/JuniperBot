@@ -1,41 +1,41 @@
 image: docker:latest
 services:
-  - docker:dind
+- docker:dind
 
 variables:
   DOCKER_DRIVER: overlay
   CI_VERSION: '6.2.$CI_PIPELINE_IID'
 
 stages:
-  - build
-  - package
-  - trigger
+- build
+- package
+- trigger
 
 build-backend:
   image: openjdk:10.0.2-jdk-slim
   stage: build
   before_script:
-    - export GRADLE_USER_HOME=`pwd`/.gradle
+  - export GRADLE_USER_HOME=`pwd`/.gradle
   cache:
     paths:
     - .gradle/wrapper
     - .gradle/caches
   script:
-    - ./gradlew assemble
+  - ./gradlew assemble
   artifacts:
     expire_in: 1 week
     paths:
-      - jb-web/build/libs/JuniperBot.jar
+    - jb-web/build/libs/JuniperBot.jar
 
 docker-build:
   stage: package
   script:
-    - docker build -t registry.gitlab.com/juniperbot/backend -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker push registry.gitlab.com/juniperbot/backend
-    - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
+  - docker build -t registry.gitlab.com/juniperbot/backend -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - docker push registry.gitlab.com/juniperbot/backend
+  - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
   dependencies:
-    - build-backend
+  - build-backend
 
 trigger:
   stage: trigger
