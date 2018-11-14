@@ -36,6 +36,8 @@ docker-build:
   - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
   dependencies:
   - build-backend
+  only:
+  - master
 
 trigger:
   stage: trigger
