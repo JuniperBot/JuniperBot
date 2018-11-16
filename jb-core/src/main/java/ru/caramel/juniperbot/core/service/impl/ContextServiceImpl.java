@@ -50,7 +50,7 @@ import java.util.function.Consumer;
 @Service
 public class ContextServiceImpl implements ContextService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContextServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ContextServiceImpl.class);
 
     private static class ContextHolder {
         private Locale locale;
@@ -244,11 +244,17 @@ public class ContextServiceImpl implements ContextService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    action.run();
+                    try {
+                        action.run();
+                    } catch (ObjectOptimisticLockingFailureException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        log.error("Async task results in error", e);
+                    }
                 }
             });
         } catch (ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
         }
     }
 

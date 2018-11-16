@@ -16,142 +16,96 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.module.misc.model.DogBreedsResponse;
-import ru.caramel.juniperbot.module.misc.model.DogResponse;
+import ru.caramel.juniperbot.module.misc.model.dogapi.DogBreed;
+import ru.caramel.juniperbot.module.misc.model.dogapi.DogImage;
+import ru.caramel.juniperbot.module.misc.model.dogapi.DogMeasure;
+import ru.caramel.juniperbot.module.misc.model.dogapi.DogSearchQuery;
+import ru.caramel.juniperbot.module.misc.service.impl.DogApiService;
 
-import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Deque;
+import java.util.Locale;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @DiscordCommand(key = "discord.command.dog.key",
         description = "discord.command.dog.desc",
         group = "discord.command.group.fun",
         priority = 16)
-public class DogCommand extends AbstractCommand {
+public class DogCommand extends AbstractCommandAsync {
 
-    private final static String ENDPOINT_ALL = "https://dog.ceo/api/breeds/image/random";
+    private static final Logger log = LoggerFactory.getLogger(DogCommand.class);
 
-    private final static String ENDPOINT_BREEDS = "https://dog.ceo/api/breeds/list/all";
+    private final Deque<DogImage> images = new ConcurrentLinkedDeque<>();
 
-    private final static String ENDPOINT_BREED = "https://dog.ceo/api/breed/{breed}/images/random";
-
-    private final static String ENDPOINT_SUB_BREED = "https://dog.ceo/api/breed/{breed}/{sub}/images/random";
-
-    private RestTemplate restTemplate;
-
-    private final Supplier<DogBreedsResponse> breedsResult =
-            Suppliers.memoizeWithExpiration(this::getBreeds, 5, TimeUnit.HOURS);
-
-    @PostConstruct
-    public void init() {
-        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        httpRequestFactory.setConnectTimeout(3000);
-        this.restTemplate = new RestTemplate(httpRequestFactory);
-    }
+    @Autowired
+    private DogApiService dogApiService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        String keyWord = messageService.getMessageByLocale("discord.command.dog.breeds", context.getCommandLocale());
-        if (keyWord.equalsIgnoreCase(query)) {
-            return showBreeds(message);
-        }
-
-
-        if (StringUtils.isBlank(query)) {
-            return execute(message, ENDPOINT_ALL, Collections.emptyMap());
-        }
-        if (StringUtils.isAlpha(query)) {
-            return execute(message, ENDPOINT_BREED, Map.of("breed", query));
-        }
-        String[] parts = query.split(" ");
-        if (parts.length == 2 && StringUtils.isAlpha(parts[0]) && StringUtils.isAlpha(parts[1])) {
-            return execute(message, ENDPOINT_SUB_BREED, Map.of("breed", parts[1], "sub", parts[0]));
-        }
-
-        String commandKey = messageService.getMessageByLocale("discord.command.dog.key", context.getCommandLocale());
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
-
-        messageService.onMessage(message.getChannel(), "discord.command.dog.help", prefix, commandKey, keyWord);
-        return false;
-    }
-
-    private boolean showBreeds(MessageReceivedEvent message) {
+    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
         try {
-            DogBreedsResponse breeds = breedsResult.get();
-            StringBuilder builder = new StringBuilder("markdown\n");
-            breeds.getMessage().forEach((breed, subBreeds) -> {
-                builder
-                        .append("# ")
-                        .append(breed)
-                        .append("\n");
-                if (CollectionUtils.isNotEmpty(subBreeds)) {
-                    subBreeds.forEach(subBreed -> builder
-                            .append("  > ")
-                            .append(subBreed)
-                            .append("\n"));
+            DogImage image;
+            synchronized (images) {
+                if (images.isEmpty()) {
+                    images.addAll(dogApiService.search(DogSearchQuery.builder()
+                            .limit(25)
+                            .order(DogSearchQuery.Order.RANDOM)
+                            .build()));
                 }
-            });
-            String list = CommonUtils.trimTo(builder.toString().trim(), MessageEmbed.TEXT_MAX_LENGTH - 100);
-            messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.breeds.list", list);
-        } catch (HttpClientErrorException e) {
-            messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.breeds.error");
-        }
-        return true;
-    }
-
-    private DogBreedsResponse getBreeds() {
-        ResponseEntity<DogBreedsResponse> response = restTemplate.getForEntity(ENDPOINT_BREEDS, DogBreedsResponse.class);
-        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new IllegalStateException();
-        }
-        return response.getBody();
-    }
-
-    private boolean execute(MessageReceivedEvent message, String endPoint, Map<String, ?> uriVariables) {
-        contextService.withContextAsync(message.getGuild(), () -> {
-            try {
-                message.getChannel().sendTyping().queue();
-                ResponseEntity<DogResponse> response = restTemplate.getForEntity(endPoint, DogResponse.class, uriVariables);
-                if (response.getStatusCode() != HttpStatus.OK
-                        || response.getBody() == null
-                        || !response.getBody().isSuccess()
-                        || StringUtils.isEmpty(response.getBody().getMessage())) {
-                    messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
-                    return;
-                }
-                EmbedBuilder builder = messageService.getBaseEmbed();
-                builder.setImage(response.getBody().getMessage());
-                builder.setColor(null);
-                messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-            } catch (HttpClientErrorException e) {
-                switch (e.getStatusCode()) {
-                    case NOT_FOUND:
-                        messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error.notfound");
-                        break;
-                    default:
-                        messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
-                        break;
-                }
+                image = images.poll();
             }
 
-        });
-        return true;
+            if (image != null) {
+                sendImage(message, image);
+                return;
+            }
+        } catch (Exception e) {
+            log.warn("Could not get dog", e);
+        }
+        messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
+    }
+
+    private void sendImage(MessageReceivedEvent event, DogImage image) {
+        EmbedBuilder builder = messageService.getBaseEmbed();
+        builder.setImage(image.getUrl());
+        if (CollectionUtils.isNotEmpty(image.getBreeds())) {
+            DogBreed breed = image.getBreeds().get(0);
+            if (StringUtils.isNotEmpty(breed.getName())) {
+                builder.addField(messageService.getMessage("discord.command.dog.breed.title"), breed.getName(), true);
+            }
+            if (StringUtils.isNotEmpty(breed.getBreedGroup())) {
+                builder.addField(messageService.getMessage("discord.command.dog.breedGroup.title"), breed.getBreedGroup(), true);
+            }
+            if (StringUtils.isNotEmpty(breed.getBredFor())) {
+                builder.addField(messageService.getMessage("discord.command.dog.bredFor.title"), breed.getBredFor(), true);
+            }
+            if (StringUtils.isNotEmpty(breed.getTemperament())) {
+                builder.addField(messageService.getMessage("discord.command.dog.temperament.title"), breed.getTemperament(), true);
+            }
+            String weight = getMeasure(breed.getWeight());
+            if (StringUtils.isNotEmpty(weight)) {
+                builder.addField(messageService.getMessage("discord.command.dog.weight.title"), weight, true);
+            }
+            String height = getMeasure(breed.getHeight());
+            if (StringUtils.isNotEmpty(height)) {
+                builder.addField(messageService.getMessage("discord.command.dog.height.title"), height, true);
+            }
+        }
+        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
+    }
+
+    private String getMeasure(DogMeasure measure) {
+        if (measure == null) {
+            return null;
+        }
+        return Locale.US.equals(contextService.getLocale()) ? measure.getImperial() : measure.getMetric();
     }
 }

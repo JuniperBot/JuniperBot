@@ -7,6 +7,7 @@ out/
 !gradle/wrapper/gradle-wrapper.jar
 /logs/*
 /application.yml
+*.log
 
 ### STS ###
 .apt_generated
