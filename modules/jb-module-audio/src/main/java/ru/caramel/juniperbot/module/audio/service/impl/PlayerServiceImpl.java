@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerService, ModuleListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PlayerServiceImpl.class);
 
     private final static long TIMEOUT = 180000; // 3 minutes
 
@@ -232,7 +232,19 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     protected void onTrackException(PlaybackInstance instance, FriendlyException exception) {
-        LOGGER.warn("Track error", exception);
+        log.warn("Track error", exception);
+        Long textChannel = null;
+        if (instance.getCurrent() != null) {
+            textChannel = instance.getCurrent().getChannelId();
+        }
+        if (textChannel == null && CollectionUtils.isNotEmpty(instance.getPlaylist())) {
+            textChannel = instance.getPlaylist().get(0).getChannelId();
+        }
+        if (textChannel != null) {
+            final long channelId = textChannel;
+            contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueError(channelId,
+                    "discord.command.audio.remote.error", exception.getMessage()));
+        }
     }
 
     /* ========================================================
