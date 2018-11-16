@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -45,6 +47,8 @@ import java.util.concurrent.TimeUnit;
         group = "discord.command.group.fun",
         priority = 16)
 public class DogCommand extends AbstractCommand {
+
+    private static final Logger log = LoggerFactory.getLogger(DogCommand.class);
 
     private final static String ENDPOINT_ALL = "https://dog.ceo/api/breeds/image/random";
 
@@ -110,7 +114,8 @@ public class DogCommand extends AbstractCommand {
             });
             String list = CommonUtils.trimTo(builder.toString().trim(), MessageEmbed.TEXT_MAX_LENGTH - 100);
             messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.breeds.list", list);
-        } catch (HttpClientErrorException e) {
+        } catch (Exception e) {
+            log.warn("Could not get dog", e);
             messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.breeds.error");
         }
         return true;
@@ -140,15 +145,13 @@ public class DogCommand extends AbstractCommand {
                 builder.setImage(response.getBody().getMessage());
                 builder.setColor(null);
                 messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-            } catch (HttpClientErrorException e) {
-                switch (e.getStatusCode()) {
-                    case NOT_FOUND:
-                        messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error.notfound");
-                        break;
-                    default:
-                        messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
-                        break;
+            } catch (Exception e) {
+                log.warn("Could not get dog", e);
+                if (e instanceof HttpClientErrorException && ((HttpClientErrorException)e).getStatusCode() == HttpStatus.NOT_FOUND) {
+                    messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error.notfound");
+                    return;
                 }
+                messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
             }
 
         });

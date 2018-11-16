@@ -21,10 +21,11 @@ import com.google.common.base.Suppliers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -34,6 +35,8 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractPhotoCommand extends AbstractCommandAsync {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractPhotoCommand.class);
 
     private RestTemplate restTemplate;
 
@@ -70,7 +73,8 @@ public abstract class AbstractPhotoCommand extends AbstractCommandAsync {
             builder.setImage(response.getFile());
             builder.setColor(null);
             messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-        } catch (HttpClientErrorException e) {
+        } catch (Exception e) {
+            log.warn("Could not get photo");
             messageService.onEmbedMessage(message.getChannel(), getErrorCode());
         }
     }
