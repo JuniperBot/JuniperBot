@@ -83,10 +83,7 @@ public class MemberListener extends DiscordEventListener {
         if (event.getMember().getUser().isBot()) {
             return;
         }
-        LocalMember member = memberService.get(event.getMember());
-        if (member == null) {
-            return;
-        }
+        LocalMember member = memberService.getOrCreate(event.getMember());
         member.setLastKnownRoles( event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
@@ -101,7 +98,7 @@ public class MemberListener extends DiscordEventListener {
     @Override
     @Transactional
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {
-        LocalMember member = memberService.get(event.getMember());
+        LocalMember member = memberService.getOrCreate(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
             getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)
                     .withUser(member)
