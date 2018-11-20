@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 @Service
 public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RankingServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(RankingServiceImpl.class);
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
@@ -155,7 +155,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                                     sendAnnounce(config, c, content);
                                 });
                             } catch (Exception e) {
-                                LOGGER.warn("Could not open private channel for {}", event.getAuthor(), e);
+                                log.warn("Could not open private channel for {}", event.getAuthor(), e);
                             }
                         } else {
                             MessageChannel channel = config.getAnnouncementChannelId() != null ?

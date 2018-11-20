@@ -43,7 +43,7 @@ import java.util.*;
 @Service
 public class ContextEventManagerImpl implements JbEventManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContextEventManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ContextEventManagerImpl.class);
 
     private final List<EventListener> listeners = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class ContextEventManagerImpl implements JbEventManager {
             try {
                 taskExecutor.execute(() -> handleEvent(event));
             } catch (TaskRejectedException e) {
-                LOGGER.debug("Event rejected: {}", event);
+                log.debug("Event rejected: {}", event);
             }
         } else {
             handleEvent(event);
@@ -94,7 +94,7 @@ public class ContextEventManagerImpl implements JbEventManager {
                 loopListeners(event);
             }
         } catch (Exception e) {
-            LOGGER.error("Event manager caused an uncaught exception", e);
+            log.error("Event manager caused an uncaught exception", e);
         } finally {
             contextService.resetContext();
             cacheManager.clear();
@@ -106,7 +106,7 @@ public class ContextEventManagerImpl implements JbEventManager {
             try {
                 commandsService.onMessageReceived((MessageReceivedEvent) event);
             } catch (Exception e) {
-                LOGGER.error("Could not process command", e);
+                log.error("Could not process command", e);
             }
         }
 
@@ -114,7 +114,7 @@ public class ContextEventManagerImpl implements JbEventManager {
             try {
                 listener.onEvent(event);
             } catch (Throwable throwable) {
-                LOGGER.error("One of the EventListeners had an uncaught exception", throwable);
+                log.error("One of the EventListeners had an uncaught exception", throwable);
             }
         }
     }

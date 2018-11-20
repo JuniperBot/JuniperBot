@@ -44,7 +44,7 @@ import java.net.URLConnection;
 @RestController
 public class BlurImageController extends BasePublicRestController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlurImageController.class);
+    private static final Logger log = LoggerFactory.getLogger(BlurImageController.class);
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
@@ -78,7 +78,7 @@ public class BlurImageController extends BasePublicRestController {
         try {
             getCache();
         } catch (IOException e) {
-            LOGGER.error("Could not create blur cache folder", e);
+            log.error("Could not create blur cache folder", e);
         }
     }
 

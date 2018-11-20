@@ -33,6 +33,8 @@ import java.util.List;
 @Service
 public class MemberServiceImpl implements MemberService {
 
+    private final Object $lock = new Object[0];
+
     @Autowired
     private LocalMemberRepository memberRepository;
 
@@ -71,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
         }
         LocalMember localMember = get(member);
         if (localMember == null) {
-            synchronized (this) {
+            synchronized ($lock) {
                 localMember = get(member);
                 if (localMember == null) {
                     localMember = new LocalMember();

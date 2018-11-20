@@ -36,7 +36,7 @@ import java.io.IOException;
 @Service
 public class OpenCVService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpenCVService.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenCVService.class);
 
     @Getter
     private boolean initialized;
@@ -47,7 +47,7 @@ public class OpenCVService {
             nu.pattern.OpenCV.loadLocally();
             initialized = true;
         } catch (Exception e) {
-            LOGGER.info("OpenCV initialization failed", e);
+            log.info("OpenCV initialization failed", e);
         }
     }
 

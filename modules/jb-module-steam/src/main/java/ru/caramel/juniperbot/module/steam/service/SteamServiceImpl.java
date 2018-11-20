@@ -46,7 +46,7 @@ public class SteamServiceImpl implements SteamService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SteamServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SteamServiceImpl.class);
 
     private static final String APPS_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
 
@@ -66,7 +66,7 @@ public class SteamServiceImpl implements SteamService {
             try {
                 rebuildApps();
             } catch (Exception e) {
-                LOGGER.error("Cannot initiate app repository", e);
+                log.error("Cannot initiate app repository", e);
             }
         }
     }
@@ -77,10 +77,10 @@ public class SteamServiceImpl implements SteamService {
     public void rebuildApps() {
         ResponseEntity<GetAppListResponse> response = restTemplate.getForEntity(APPS_ENDPOINT, GetAppListResponse.class);
         if (!HttpStatus.OK.equals(response.getStatusCode())) {
-            LOGGER.warn("Could not get app list, endpoint returned {}", response.getStatusCode());
+            log.warn("Could not get app list, endpoint returned {}", response.getStatusCode());
         }
         if (response.getBody() == null) {
-            LOGGER.warn("Empty Apps list returned");
+            log.warn("Empty Apps list returned");
             return;
         }
         SteamAppEntry[] apps = response.getBody().getApps();
@@ -162,7 +162,7 @@ public class SteamServiceImpl implements SteamService {
                 }
 
             } catch (Exception e) {
-                LOGGER.info("Exception parsing app details for {}", steamApp, e);
+                log.info("Exception parsing app details for {}", steamApp, e);
             }
         }
         return cache != null ? cache.getDetails() : null;

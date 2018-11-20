@@ -30,6 +30,8 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final Object $lock = new Object[0];
+
     @Autowired
     private LocalUserRepository repository;
 
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
         }
         LocalUser localUser = get(user);
         if (localUser == null) {
-            synchronized (this) {
+            synchronized ($lock) {
                 localUser = get(user);
                 if (localUser == null) {
                     localUser = new LocalUser();

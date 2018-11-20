@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
 public class HelpCommand extends AbstractCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HelpCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(HelpCommand.class);
 
     private static final String COMMON_GROUP = "discord.command.group.common";
 
@@ -140,7 +140,7 @@ public class HelpCommand extends AbstractCommand {
                     message.getAuthor().openPrivateChannel()
                             .queue(channel -> send(message, channel, embedBuilder, true));
                 } catch (Exception e) {
-                    LOGGER.warn("Could not open private channel for {}", message.getAuthor(), e);
+                    log.warn("Could not open private channel for {}", message.getAuthor(), e);
                 }
             }
         } else {

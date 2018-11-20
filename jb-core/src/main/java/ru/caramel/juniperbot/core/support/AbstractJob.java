@@ -27,13 +27,13 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractJob implements Job {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJob.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractJob.class);
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
     protected void reschedule(JobExecutionContext context, TimeUnit unit, long duration) {
-        LOGGER.info("Rescheduling job {}", context.getJobDetail());
+        log.info("Rescheduling job {}", context.getJobDetail());
         Trigger newTrigger = TriggerBuilder
                 .newTrigger()
                 .startAt(DateTime.now().plus(unit.toMillis(duration)).toDate())
@@ -42,7 +42,7 @@ public abstract class AbstractJob implements Job {
         try {
             schedulerFactoryBean.getScheduler().rescheduleJob(context.getTrigger().getKey(), newTrigger);
         } catch (SchedulerException e) {
-            LOGGER.warn("Could not reschedule job {}", context.getJobDetail(), e);
+            log.warn("Could not reschedule job {}", context.getJobDetail(), e);
         }
     }
 }

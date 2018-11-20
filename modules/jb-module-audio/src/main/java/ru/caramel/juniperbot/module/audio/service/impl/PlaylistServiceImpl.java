@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlaylistServiceImpl implements PlaylistService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlaylistServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PlaylistServiceImpl.class);
 
     @Autowired
     private PlaylistRepository playlistRepository;
@@ -132,7 +132,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 }
                 playlistRepository.save(playlist);
             } catch (Exception e) {
-                LOGGER.warn("[store] Could not update playlist", e);
+                log.warn("[store] Could not update playlist", e);
             }
         }
     }
@@ -164,7 +164,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 playlistItemRepository.deleteAll(toRemove);
             }
         } catch (Exception e) {
-            LOGGER.warn("[shuffle] Could not update playlist", e);
+            log.warn("[shuffle] Could not update playlist", e);
         }
     }
 
@@ -184,7 +184,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 playlistItemRepository.deleteAll(toRemove.stream().filter(Objects::nonNull).collect(Collectors.toList()));
             }
         } catch (Exception e) {
-            LOGGER.warn("[shuffle] Could not clear playlist", e);
+            log.warn("[shuffle] Could not clear playlist", e);
         }
     }
 

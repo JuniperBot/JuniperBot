@@ -39,7 +39,7 @@ public class MafiaInstance extends FeatureInstance {
 
     public static final String IGNORED_REASON = "$end$";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MafiaInstance.class);
+    private static final Logger log = LoggerFactory.getLogger(MafiaInstance.class);
 
     private final String prefix;
 
