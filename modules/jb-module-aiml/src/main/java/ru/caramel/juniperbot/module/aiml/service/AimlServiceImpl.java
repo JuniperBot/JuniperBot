@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AimlServiceImpl implements AimlService, CommandHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AimlServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(AimlServiceImpl.class);
 
     @Value("${integrations.aiml.path:}")
     private String path;
@@ -98,7 +98,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
         try {
             return sessions.get(user, () -> new Chat(bot, false, user.getId()));
         } catch (ExecutionException e) {
-            LOGGER.error("Error creating session", e);
+            log.error("Error creating session", e);
         }
         return null;
     }

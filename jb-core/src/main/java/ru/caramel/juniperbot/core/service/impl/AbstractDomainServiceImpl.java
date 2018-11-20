@@ -37,7 +37,9 @@ import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends GuildRepository<T>> implements DomainService<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDomainServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractDomainServiceImpl.class);
+
+    private final Object $lock = new Object[0];
 
     protected final R repository;
 
@@ -114,7 +116,7 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     public T getOrCreate(long guildId) {
         T result = repository.findByGuildId(guildId);
         if (result == null) {
-            synchronized (this) {
+            synchronized ($lock) {
                 result = repository.findByGuildId(guildId);
                 if (result == null) {
                     result = createNew(guildId);
@@ -134,7 +136,7 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
                 }
             });
         } catch (ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
         }
     }
 

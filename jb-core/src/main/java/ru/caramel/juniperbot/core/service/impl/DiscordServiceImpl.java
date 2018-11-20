@@ -67,7 +67,7 @@ import java.util.function.Consumer;
 @Service
 public class DiscordServiceImpl extends ListenerAdapter implements DiscordService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
     @Getter
     @Value("${discord.engine.shards:2}")
@@ -133,7 +133,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             }
             shardManager = builder.build();
         } catch (LoginException e) {
-            LOGGER.error("Could not login user with specified token", e);
+            log.error("Could not login user with specified token", e);
         }
     }
 
@@ -145,7 +145,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                 try {
                     listener.onShutdown();
                 } catch (Exception e) {
-                    LOGGER.error("Could not shutdown listener [{}] correctly", listener, e);
+                    log.error("Could not shutdown listener [{}] correctly", listener, e);
                 }
             });
         }
@@ -169,7 +169,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onException(ExceptionEvent event) {
-        LOGGER.error("JDA error", event.getCause());
+        log.error("JDA error", event.getCause());
     }
 
     @Override
@@ -177,7 +177,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         if (message != null) {
             try (WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build()) {
                 client.send(message).exceptionally(e -> {
-                    LOGGER.error("Can't execute webhook: ", e);
+                    log.error("Can't execute webhook: ", e);
                     if (e.getMessage().contains("Request returned failure 404")) {
                         onAbsent.accept(webHook);
                     }
@@ -343,7 +343,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             try {
                 ResponseEntity<String> response = restTemplate.getForEntity(Requester.DISCORD_API_PREFIX + "/users/@me", String.class);
                 if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                    LOGGER.warn("Could not get userId, endpoint returned {}", response.getStatusCode());
+                    log.warn("Could not get userId, endpoint returned {}", response.getStatusCode());
                     continue;
                 }
                 JSONObject object = new JSONObject(response.getBody());
@@ -354,7 +354,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             } catch (Exception e) {
                 // fall down
             }
-            LOGGER.error("Could not request my own userId from Discord, will retry a few times");
+            log.error("Could not request my own userId from Discord, will retry a few times");
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException ignored) {

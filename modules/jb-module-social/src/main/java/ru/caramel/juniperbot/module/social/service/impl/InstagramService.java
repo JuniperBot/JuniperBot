@@ -20,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Synchronized;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,9 @@ import java.util.regex.Pattern;
 @Service
 public class InstagramService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramService.class);
+    private static final Logger log = LoggerFactory.getLogger(InstagramService.class);
+
+    private final Object $recentLock = new Object[0];
 
     public static final String ROOT_URL = "https://www.instagram.com/";
 
@@ -79,64 +82,62 @@ public class InstagramService {
         scheduler.scheduleWithFixedDelay(this::update, updateInterval);
     }
 
+    @Synchronized("$recentLock")
     public InstagramProfile getRecent() {
         try {
             long currentTimestamp = System.currentTimeMillis();
             if (currentTimestamp > latestUpdate + ttl) {
-                synchronized (this) {
+                ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL + pollUserName, String.class);
+                if (HttpStatus.OK == response.getStatusCode()) {
+                    String result = response.getBody();
 
-                    ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL + pollUserName, String.class);
-                    if (HttpStatus.OK == response.getStatusCode()) {
-                        String result = response.getBody();
+                    Matcher matcher = PATTERN.matcher(result);
+                    if (matcher.find()) {
+                        JsonParser parser = new JsonParser();
+                        JsonObject data = parser.parse(matcher.group(1)).getAsJsonObject();
 
-                        Matcher matcher = PATTERN.matcher(result);
-                        if (matcher.find()) {
-                            JsonParser parser = new JsonParser();
-                            JsonObject data = parser.parse(matcher.group(1)).getAsJsonObject();
+                        if (data != null) {
+                            data = data.getAsJsonObject("entry_data");
+                        }
+                        if (data != null) {
+                            JsonArray array = data.getAsJsonArray("ProfilePage");
+                            if (array != null && array.size() > 0) {
+                                data = array.get(0).getAsJsonObject();
+                            }
+                        }
+                        if (data != null) {
+                            data = data.getAsJsonObject("graphql");
+                        }
+                        if (data != null) {
+                            data = data.getAsJsonObject("user");
+                        }
 
-                            if (data != null) {
-                                data = data.getAsJsonObject("entry_data");
-                            }
-                            if (data != null) {
-                                JsonArray array = data.getAsJsonArray("ProfilePage");
-                                if (array != null && array.size() > 0) {
-                                    data = array.get(0).getAsJsonObject();
-                                }
-                            }
-                            if (data != null) {
-                                data = data.getAsJsonObject("graphql");
-                            }
-                            if (data != null) {
-                                data = data.getAsJsonObject("user");
-                            }
+                        InstagramProfile profile = new InstagramProfile();
 
-                            InstagramProfile profile = new InstagramProfile();
-
-                            if (data != null) {
-                                profile.setFullName(data.get("full_name").getAsString());
-                                profile.setImageUrl(data.get("profile_pic_url").getAsString());
-                                data = data.getAsJsonObject("edge_owner_to_timeline_media");
-                            }
-                            if (data != null) {
-                                JsonArray edges = data.getAsJsonArray("edges");
-                                if (edges != null && edges.size() > 0) {
-                                    List<InstagramMedia> mediaList = new ArrayList<>();
-                                    profile.setFeed(mediaList);
-                                    for (JsonElement edge : edges) {
-                                        JsonObject node = edge.getAsJsonObject().getAsJsonObject("node");
-                                        if (node != null && node.get("id") != null) {
-                                            InstagramMedia media = new InstagramMedia();
-                                            media.setId(node.get("id").getAsLong());
-                                            media.setImageUrl(node.get("display_url").getAsString());
-                                            media.setText(getCaption(node.getAsJsonObject("edge_media_to_caption")));
-                                            media.setDate(new Date(node.get("taken_at_timestamp").getAsLong() * 1000));
-                                            media.setLink(POST_URL + node.get("shortcode").getAsString());
-                                            mediaList.add(media);
-                                        }
+                        if (data != null) {
+                            profile.setFullName(data.get("full_name").getAsString());
+                            profile.setImageUrl(data.get("profile_pic_url").getAsString());
+                            data = data.getAsJsonObject("edge_owner_to_timeline_media");
+                        }
+                        if (data != null) {
+                            JsonArray edges = data.getAsJsonArray("edges");
+                            if (edges != null && edges.size() > 0) {
+                                List<InstagramMedia> mediaList = new ArrayList<>();
+                                profile.setFeed(mediaList);
+                                for (JsonElement edge : edges) {
+                                    JsonObject node = edge.getAsJsonObject().getAsJsonObject("node");
+                                    if (node != null && node.get("id") != null) {
+                                        InstagramMedia media = new InstagramMedia();
+                                        media.setId(node.get("id").getAsLong());
+                                        media.setImageUrl(node.get("display_url").getAsString());
+                                        media.setText(getCaption(node.getAsJsonObject("edge_media_to_caption")));
+                                        media.setDate(new Date(node.get("taken_at_timestamp").getAsLong() * 1000));
+                                        media.setLink(POST_URL + node.get("shortcode").getAsString());
+                                        mediaList.add(media);
                                     }
-                                    cache = profile;
-                                    latestUpdate = currentTimestamp;
                                 }
+                                cache = profile;
+                                latestUpdate = currentTimestamp;
                             }
                         }
                     }
@@ -145,7 +146,7 @@ public class InstagramService {
         } catch (ResourceAccessException e) {
             // skip
         } catch (Exception e) {
-            LOGGER.warn("Could not get Instagram data: {}", e.getMessage());
+            log.warn("Could not get Instagram data: {}", e.getMessage());
         }
         return cache;
     }

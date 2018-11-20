@@ -25,7 +25,7 @@ import ru.caramel.juniperbot.core.service.impl.CommandsServiceImpl;
 
 public abstract class AbstractCommandAsync extends AbstractCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandsServiceImpl.class);
 
     @Override
     public final boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
@@ -37,7 +37,7 @@ public abstract class AbstractCommandAsync extends AbstractCommand {
             } catch (DiscordException e) {
                 messageService.onError(message.getChannel(),
                         messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
-                LOGGER.error("Command {} execution error", this, e);
+                log.error("Command {} execution error", this, e);
             }
         });
         return true;

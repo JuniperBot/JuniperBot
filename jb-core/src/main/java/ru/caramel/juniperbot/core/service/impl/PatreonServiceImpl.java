@@ -47,6 +47,10 @@ import java.util.stream.Collectors;
 @FeatureProvider(priority = 2)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
 
+    private final Object $lock = new Object[0];
+
+    private final Object $webHookLock = new Object[0];
+
     private static final Logger log = LoggerFactory.getLogger(PatreonServiceImpl.class);
 
     @Value("${integrations.patreon.campaignId:1552419}")
@@ -169,7 +173,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Override
     @Transactional
-    @Synchronized
+    @Synchronized("$webHookLock")
     public boolean processWebHook(String content, String trigger, String signature) {
         try {
             log.info("Incoming Patreon WebHook [{}]: {}", trigger, content);
@@ -233,13 +237,13 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     public void setUpdateEnabled(boolean enabled) {
         this.updateEnabled = enabled;
         if (enabled && updateFuture == null) {
-            synchronized (this) {
+            synchronized ($lock) {
                 if (updateFuture == null) {
                     updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
                 }
             }
         } else if (!enabled && updateFuture != null) {
-            synchronized (this) {
+            synchronized ($lock) {
                 if (updateFuture != null) {
                     updateFuture.cancel(false);
                     updateFuture = null;

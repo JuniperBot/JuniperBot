@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.codahale.metrics.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Synchronized;
 import net.dv8tion.jda.core.JDA;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +48,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
+
+    private final Object $persistMetricsLock = new Object[0];
 
     private static final Logger log = LoggerFactory.getLogger(StatisticsServiceImpl.class);
 
@@ -163,31 +166,30 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Transactional
     @Scheduled(fixedDelay = 300000)
+    @Synchronized("$persistMetricsLock")
     public void persistMetrics() {
-        synchronized (this) {
-            Map<String, Metric> metricMap = metricRegistry.getMetrics();
-            if (MapUtils.isNotEmpty(metricMap)) {
-                metricMap = metricMap.entrySet().stream()
-                        .filter(e -> e.getKey().endsWith(".persist"))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            }
-            if (MapUtils.isEmpty(metricMap)) {
-                return;
-            }
-
-            metricMap.forEach((k, v) -> {
-                StoredMetric storedMetric = getOrNewMetric(k, v);
-                if (v instanceof Counter) {
-                    Counter counter = (Counter) v;
-                    storedMetric.setCount(counter.getCount());
-                }
-                if (v instanceof PersistentMetric) {
-                    PersistentMetric persistentMetric = (PersistentMetric) v;
-                    storedMetric.setData(persistentMetric.toMap());
-                }
-                metricRepository.save(storedMetric);
-            });
+        Map<String, Metric> metricMap = metricRegistry.getMetrics();
+        if (MapUtils.isNotEmpty(metricMap)) {
+            metricMap = metricMap.entrySet().stream()
+                    .filter(e -> e.getKey().endsWith(".persist"))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
+        if (MapUtils.isEmpty(metricMap)) {
+            return;
+        }
+
+        metricMap.forEach((k, v) -> {
+            StoredMetric storedMetric = getOrNewMetric(k, v);
+            if (v instanceof Counter) {
+                Counter counter = (Counter) v;
+                storedMetric.setCount(counter.getCount());
+            }
+            if (v instanceof PersistentMetric) {
+                PersistentMetric persistentMetric = (PersistentMetric) v;
+                storedMetric.setData(persistentMetric.toMap());
+            }
+            metricRepository.save(storedMetric);
+        });
     }
 
     @Override

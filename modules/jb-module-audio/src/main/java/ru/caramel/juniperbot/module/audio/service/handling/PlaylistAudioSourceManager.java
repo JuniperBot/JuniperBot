@@ -51,7 +51,7 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
 @Component
 public class PlaylistAudioSourceManager implements AudioSourceManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlaylistAudioSourceManager.class);
+    private static final Logger log = LoggerFactory.getLogger(PlaylistAudioSourceManager.class);
 
     private final static String PLAYLIST_PATTERN = "%s/playlist/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})";
 
@@ -81,7 +81,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
                     AudioReference.class, AudioLoadResultHandler.class, boolean[].class);
             sourceMethod.setAccessible(true);
         } catch (NoSuchMethodException e) {
-            LOGGER.warn("Could not get LavaPlayer init method");
+            log.warn("Could not get LavaPlayer init method");
         }
     }
 
@@ -176,7 +176,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
             Object result = sourceMethod.invoke(manager, reference, resultHandler, new boolean[1]);
             return Boolean.TRUE.equals(result);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOGGER.warn("Could not invoke checkSourcesForItem of LavaPlayer");
+            log.warn("Could not invoke checkSourcesForItem of LavaPlayer");
             return false;
         }
     }

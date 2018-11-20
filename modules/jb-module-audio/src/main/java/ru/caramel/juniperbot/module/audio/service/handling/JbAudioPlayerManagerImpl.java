@@ -46,7 +46,7 @@ import java.util.List;
 @Component
 public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implements JbAudioPlayerManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JbAudioPlayerManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(JbAudioPlayerManagerImpl.class);
 
     @Value("${discord.audio.resamplingQuality:MEDIUM}")
     private AudioConfiguration.ResamplingQuality resamplingQuality;
@@ -86,7 +86,7 @@ public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implemen
             encodeTrack(output, track);
             return outputStream.toByteArray();
         } catch (IOException e) {
-            LOGGER.warn("Could not encode track {}", track);
+            log.warn("Could not encode track {}", track);
         }
         return null;
     }
@@ -100,7 +100,7 @@ public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implemen
             DecodedTrackHolder holder = decodeTrack(new MessageInput(stream));
             return holder != null && holder.decodedTrack != null ? holder.decodedTrack : null;
         } catch (IOException e) {
-            LOGGER.warn("Could not decode track");
+            log.warn("Could not decode track");
         }
         return null;
     }

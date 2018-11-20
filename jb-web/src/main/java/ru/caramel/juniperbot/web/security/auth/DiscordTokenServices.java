@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class DiscordTokenServices implements ResourceServerTokenServices {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordTokenServices.class);
+    private static final Logger log = LoggerFactory.getLogger(DiscordTokenServices.class);
 
     private final String userInfoEndpointUrl;
 
@@ -165,8 +165,8 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
 
     @SuppressWarnings("unchecked")
     private <T> T executeRequest(Class<T> clazz, String path, String accessToken) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Getting user info from: " + path);
+        if (log.isDebugEnabled()) {
+            log.debug("Getting user info from: " + path);
         }
         try {
             return restTemplates.computeIfAbsent(accessToken, e -> {

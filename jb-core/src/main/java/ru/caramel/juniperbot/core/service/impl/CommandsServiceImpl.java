@@ -21,6 +21,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.Synchronized;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -59,7 +60,7 @@ import java.util.stream.Stream;
 @Service
 public class CommandsServiceImpl implements CommandsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandsServiceImpl.class);
 
     @Autowired
     private ConfigService configService;
@@ -170,10 +171,9 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
+    @Synchronized
     public void registerHandler(CommandHandler handler) {
-        synchronized (this) {
-            handlers.add(handler);
-        }
+        handlers.add(handler);
     }
 
     @Override
@@ -218,7 +218,7 @@ public class CommandsServiceImpl implements CommandsService {
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
             try {
-                LOGGER.info("Invoke command {} for userId={}, guildId={}",
+                log.info("Invoke command {} for userId={}, guildId={}",
                         command.getClass().getSimpleName(),
                         event.getAuthor() != null ? event.getAuthor().getId() : null,
                         event.getGuild() != null ? event.getGuild().getId() : null);
@@ -233,7 +233,7 @@ public class CommandsServiceImpl implements CommandsService {
             } catch (DiscordException e) {
                 messageService.onError(event.getChannel(),
                         messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
-                LOGGER.error("Command {} execution error", key, e);
+                log.error("Command {} execution error", key, e);
             } finally {
                 executions.mark();
             }
@@ -382,7 +382,7 @@ public class CommandsServiceImpl implements CommandsService {
             }
             messageService.sendMessageSilent(message.getChannel()::sendMessage, text);
         } catch (Exception e) {
-            LOGGER.error("Add emotion error", e);
+            log.error("Add emotion error", e);
         }
     }
 

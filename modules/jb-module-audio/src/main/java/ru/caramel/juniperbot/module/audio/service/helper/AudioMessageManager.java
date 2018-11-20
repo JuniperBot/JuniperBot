@@ -57,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class AudioMessageManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AudioMessageManager.class);
+    private static final Logger log = LoggerFactory.getLogger(AudioMessageManager.class);
 
     private static final int MAX_SHORT_QUEUE = 3;
 
@@ -138,7 +138,7 @@ public class AudioMessageManager {
                             }
                         });
             } catch (PermissionException e) {
-                LOGGER.warn("No permission to message", e);
+                log.warn("No permission to message", e);
             }
         });
     }
@@ -166,7 +166,7 @@ public class AudioMessageManager {
                 }
             }
         } catch (PermissionException e) {
-            LOGGER.warn("No permission to delete", e);
+            log.warn("No permission to delete", e);
         } catch (ErrorResponseException e) {
             if (e.getErrorCode() != 10008 /* Unknown message */) {
                 throw e;
@@ -403,7 +403,7 @@ public class AudioMessageManager {
                 });
             }
         } catch (PermissionException e) {
-            LOGGER.warn("No permission to update", e);
+            log.warn("No permission to update", e);
             cancelUpdate(request);
         } catch (ErrorResponseException e) {
             handleUpdateError(request, e);
@@ -417,7 +417,7 @@ public class AudioMessageManager {
                 cancelUpdate(request);
                 break;
             default:
-                LOGGER.error("Update message error", e);
+                log.error("Update message error", e);
                 break;
 
         }
@@ -551,7 +551,7 @@ public class AudioMessageManager {
                 try {
                     clear(deadUpdater);
                 } catch (Exception e) {
-                    LOGGER.warn("Could not clear dead updater");
+                    log.warn("Could not clear dead updater");
                 }
             }
         }

@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @DiscordEvent(priority = 10)
 public class WelcomeUserListener extends DiscordEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeUserListener.class);
+    private static final Logger log = LoggerFactory.getLogger(WelcomeUserListener.class);
 
     private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
@@ -135,7 +135,7 @@ public class WelcomeUserListener extends DiscordEventListener {
                     contextService.queue(guild, user.openPrivateChannel(),
                             c -> send(event, c, message.getJoinDmMessage(), message.isJoinDmRichEnabled()));
                 } catch (Exception e) {
-                    LOGGER.debug("Could not open private channel for user {}", user, e);
+                    log.debug("Could not open private channel for user {}", user, e);
                 }
             }
         });

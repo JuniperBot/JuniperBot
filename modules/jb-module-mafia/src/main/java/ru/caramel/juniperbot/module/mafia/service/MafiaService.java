@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Service
 public class MafiaService implements ModuleListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MafiaService.class);
+    private static final Logger log = LoggerFactory.getLogger(MafiaService.class);
 
     private final static long TIMEOUT = 1800000; // 30 minutes
 
@@ -121,7 +121,7 @@ public class MafiaService implements ModuleListener {
                     channel.sendMessage(builder.build()).queue();
                 }
             } catch (Exception e) {
-                LOGGER.warn("Cannot send end message", e);
+                log.warn("Cannot send end message", e);
             }
         }
 
@@ -134,7 +134,7 @@ public class MafiaService implements ModuleListener {
             try {
                 goonChannel.delete().queue();
             } catch (Exception e) {
-                LOGGER.warn("Cannot delete goon channel", e);
+                log.warn("Cannot delete goon channel", e);
             }
             instances.remove(goonChannel.getIdLong());
         }
@@ -175,7 +175,7 @@ public class MafiaService implements ModuleListener {
             try {
                 contextService.withContext(e.getGuild(), () -> stop(e));
             } catch (Exception ex) {
-                LOGGER.error("Could not stop correctly mafia {}", e.getChannelId(), ex);
+                log.error("Could not stop correctly mafia {}", e.getChannelId(), ex);
             }
         });
     }
