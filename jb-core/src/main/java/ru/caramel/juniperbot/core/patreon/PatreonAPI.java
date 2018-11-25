@@ -124,7 +124,7 @@ public class PatreonAPI {
         if (nextLink == null) {
             return null;
         }
-        String nextLinkString = nextLink.toString();
+        String nextLinkString = URLDecoder.decode(nextLink.toString(), StandardCharsets.UTF_8);
         MultiValueMap<String, String> queryParameters =
                 UriComponentsBuilder.fromUriString(nextLinkString).build().getQueryParams();
         return queryParameters.getFirst("page[cursor]");
