@@ -255,8 +255,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     public void loadAndPlay(final TextChannel channel, final Member requestedBy, String trackUrl) {
         final Long timeCode;
         if (!ResourceUtils.isUrl(trackUrl)) {
-            String result = youTubeService.searchForUrl(trackUrl);
-            trackUrl = result != null ? result : trackUrl;
+            trackUrl = "ytsearch:" + trackUrl;
             timeCode = null;
         } else {
             timeCode = youTubeService.extractTimecode(trackUrl);

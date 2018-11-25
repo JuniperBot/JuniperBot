@@ -22,6 +22,8 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
@@ -65,6 +67,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -79,7 +82,9 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=";
 
     @Value("${integrations.youTube.apiKey}")
-    private String apiKey;
+    private String[] apiKeys;
+
+    private volatile int keyCursor = 0;
 
     @Getter
     @Value("${integrations.youTube.pubSubSecret}")
@@ -105,8 +110,31 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final Cache<String, String> videoCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(7)
             .expireAfterWrite(7, TimeUnit.DAYS)
             .build();
+
+    private LoadingCache<String, Video> videoLoadingCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(7)
+            .expireAfterWrite(1, TimeUnit.DAYS)
+            .build(
+                    new CacheLoader<>() {
+                        public Video load(String token) {
+                            String[] parts = token.split("/");
+                            String part = parts[0];
+                            String videoId = parts[1];
+                            try {
+                                YouTube.Videos.List list = youTube.videos().list(part);
+                                list.setKey(getApiKey());
+                                list.setId(videoId);
+                                List<Video> items = list.execute().getItems();
+                                return CollectionUtils.isNotEmpty(items) ? items.get(0) : null;
+                            } catch (IOException e) {
+                                log.error("Could not get video by id={}", videoId, e);
+                            }
+                            return null;
+                        }
+                    });
 
     public YouTubeServiceImpl(@Autowired YouTubeConnectionRepository repository) {
         super(repository);
@@ -134,7 +162,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     public List<SearchResult> search(String queryTerm, long maxResults) {
         try {
             YouTube.Search.List search = youTube.search().list("id,snippet");
-            search.setKey(apiKey);
+            search.setKey(getApiKey());
             search.setQ(queryTerm);
             search.setType("video");
             search.setFields("items(id/videoId, snippet/title)");
@@ -150,12 +178,14 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     public List<Video> searchDetailed(String queryTerm, long maxResults) {
         try {
             List<SearchResult> results = search(queryTerm, maxResults);
-            YouTube.Videos.List list = youTube.videos().list("id,snippet,contentDetails");
-            list.setKey(apiKey);
-            list.setId(results.stream()
-                    .filter(e -> e.getId() != null && e.getId().getVideoId() != null)
-                    .map(e -> e.getId().getVideoId()).collect(Collectors.joining(",")));
-            return list.execute().getItems();
+            if (!results.isEmpty()) {
+                YouTube.Videos.List list = youTube.videos().list("id,snippet,contentDetails");
+                list.setKey(getApiKey());
+                list.setId(results.stream()
+                        .filter(e -> e.getId() != null && e.getId().getVideoId() != null)
+                        .map(e -> e.getId().getVideoId()).collect(Collectors.joining(",")));
+                return list.execute().getItems();
+            }
         } catch (IOException e) {
             log.error("Could not perform YouTube search", e);
         }
@@ -164,16 +194,12 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     @Override
     public Video getVideoById(String videoId, String part) {
+        if (part == null) {
+            part = "id,snippet,contentDetails";
+        }
         try {
-            if (part == null) {
-                part = "id,snippet,contentDetails";
-            }
-            YouTube.Videos.List list = youTube.videos().list(part);
-            list.setKey(apiKey);
-            list.setId(videoId);
-            List<Video> items = list.execute().getItems();
-            return CollectionUtils.isNotEmpty(items) ? items.get(0) : null;
-        } catch (IOException e) {
+            return videoLoadingCache.get(String.format("%s/%s", videoId, part));
+        } catch (ExecutionException e) {
             log.error("Could not get video by id={}", videoId, e);
         }
         return null;
@@ -183,7 +209,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     public List<SearchResult> searchChannel(String queryTerm, long maxResults) {
         try {
             YouTube.Search.List search = youTube.search().list("id,snippet");
-            search.setKey(apiKey);
+            search.setKey(getApiKey());
             search.setQ(queryTerm);
             search.setType("channel");
             search.setFields("items(id/channelId, snippet/channelTitle, snippet/thumbnails/default)");
@@ -198,7 +224,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     public Channel getChannelById(String id) {
         try {
             YouTube.Channels.List list = youTube.channels().list("id,snippet");
-            list.setKey(apiKey);
+            list.setKey(getApiKey());
             list.setId(id);
             List<Channel> channels = list.execute().getItems();
             return CollectionUtils.isNotEmpty(channels) ? channels.get(0) : null;
@@ -423,5 +449,15 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
         log.info("Finished YouTube channels resubscription in {} ms with successful {} of total {}",
                 System.currentTimeMillis() - start, successful, channels.size());
+    }
+
+    private synchronized String getApiKey() {
+        if (apiKeys == null || apiKeys.length == 0) {
+            return null;
+        }
+        if (keyCursor >= apiKeys.length) {
+            keyCursor = 0;
+        }
+        return apiKeys[keyCursor++];
     }
 }
