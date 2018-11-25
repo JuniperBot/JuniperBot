@@ -78,7 +78,7 @@ public class MuteCommand extends ModeratorCommandAsync {
     private void help(MessageReceivedEvent event, BotContext context, String globalKeyWord) {
         String muteCommand = messageService.getMessageByLocale("discord.command.mod.mute.key",
                 context.getCommandLocale());
-        messageService.onMessage(event.getChannel(),
+        messageService.onEmbedMessage(event.getChannel(),
                 "discord.command.mod.mute.mention",
                 context.getConfig().getPrefix(), muteCommand, globalKeyWord);
     }
