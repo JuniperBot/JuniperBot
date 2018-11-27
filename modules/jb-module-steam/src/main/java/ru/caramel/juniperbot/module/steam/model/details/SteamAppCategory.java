@@ -16,11 +16,13 @@
  */
 package ru.caramel.juniperbot.module.steam.model.details;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SteamAppCategory extends SteamAppObject {
     private static final long serialVersionUID = 6164093227983352695L;
 
