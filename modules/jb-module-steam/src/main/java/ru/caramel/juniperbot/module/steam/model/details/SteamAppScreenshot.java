@@ -16,12 +16,14 @@
  */
 package ru.caramel.juniperbot.module.steam.model.details;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SteamAppScreenshot extends SteamAppObject {
 
     private static final long serialVersionUID = 316006036135840230L;

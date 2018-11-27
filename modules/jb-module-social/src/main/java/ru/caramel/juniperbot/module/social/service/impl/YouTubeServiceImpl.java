@@ -121,8 +121,8 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
                     new CacheLoader<>() {
                         public Video load(String token) {
                             String[] parts = token.split("/");
-                            String part = parts[0];
-                            String videoId = parts[1];
+                            String videoId = parts[0];
+                            String part = parts[1];
                             try {
                                 YouTube.Videos.List list = youTube.videos().list(part);
                                 list.setKey(getApiKey());
