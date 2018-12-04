@@ -21,6 +21,10 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
+import lavalink.client.io.LavalinkSocket;
+import lavalink.client.io.Link;
+import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -35,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.FeatureSetService;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -432,8 +435,8 @@ public class AudioMessageManager {
         builder.setDescription(null);
 
         AudioTrackInfo info = request.getTrack().getInfo();
-
         PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
+        boolean bonusActive = featureSetService.isAvailable(instance.getGuildId());
 
         String durationText;
         if (request.getEndReason() != null) {
@@ -458,7 +461,7 @@ public class AudioMessageManager {
             reasonBuilder.append(CommonUtils.EMPTY_SYMBOL);
             durationText = reasonBuilder.toString();
         } else {
-            durationText = getTextProgress(instance, request.getTrack());
+            durationText = getTextProgress(instance, request.getTrack(), bonusActive);
         }
 
         if (instance.getPlaylistUuid() != null) {
@@ -481,8 +484,9 @@ public class AudioMessageManager {
                 getMemberName(request, false), true);
 
         if (request.getEndReason() == null) {
-            if (instance.getPlayer().getVolume() != 100) {
-                int volume = instance.getPlayer().getVolume();
+            IPlayer player = instance.getPlayer();
+            if (player.getVolume() != 100) {
+                int volume = player.getVolume();
                 builder.addField(messageService.getMessage("discord.command.audio.panel.volume"),
                         String.format("%d%% %s", volume, CommonUtils.getVolumeIcon(volume)), true);
             }
@@ -490,9 +494,30 @@ public class AudioMessageManager {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.repeatMode"),
                         instance.getMode().getEmoji(), true);
             }
-            if (instance.getPlayer().isPaused()) {
+            if (player.isPaused()) {
                 builder.addField(messageService.getMessage("discord.command.audio.panel.paused"),
                         "\u23F8", true);
+            }
+
+            if (player instanceof LavalinkPlayer) {
+                LavalinkPlayer lavalinkPlayer = (LavalinkPlayer) player;
+                Link link = lavalinkPlayer.getLink();
+                if (link != null) {
+                    LavalinkSocket socket = link.getNode(false);
+                    if (socket != null) {
+                        StringBuilder statsBuilder = new StringBuilder(messageService
+                                .getMessage("discord.command.audio.panel.poweredBy", socket.getName()));
+                        if (bonusActive && socket.getStats() != null) {
+                            long load = Math.round(socket.getStats().getLavalinkLoad() * 100);
+                            if (load < 0) load = 0;
+                            if (load > 100) load = 100;
+                            statsBuilder
+                                    .append(" ")
+                                    .append(messageService.getMessage("discord.command.audio.panel.load", load));
+                        }
+                        builder.setFooter(statsBuilder.toString(), null);
+                    }
+                }
             }
         }
         return builder;
@@ -509,21 +534,20 @@ public class AudioMessageManager {
         return builder;
     }
 
-    private String getTextProgress(PlaybackInstance instance, AudioTrack track) {
+    private String getTextProgress(PlaybackInstance instance, AudioTrack track, boolean bonusActive) {
         StringBuilder builder = new StringBuilder();
-        boolean showPosition = featureSetService.isAvailable(instance.getGuildId());
-        if (showPosition && instance.getPlayer().getPlayingTrack() != null) {
+        if (bonusActive && instance.getPlayer().getPlayingTrack() != null) {
             builder.append(CommonUtils.formatDuration(instance.getPosition()));
         }
         if (!track.getInfo().isStream) {
             if (track.getDuration() >= 0) {
-                if (showPosition && builder.length() > 0) {
+                if (bonusActive && builder.length() > 0) {
                     builder.append("/");
                 }
                 builder.append(CommonUtils.formatDuration(track.getDuration()));
             }
         } else {
-            builder.append(String.format(showPosition ? " (%s)" : "%s",
+            builder.append(String.format(bonusActive ? " (%s)" : "%s",
                     messageService.getMessage("discord.command.audio.panel.stream")));
         }
         return builder.toString();
