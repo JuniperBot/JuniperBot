@@ -475,7 +475,8 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (channel == null) {
             return null;
         }
-        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+        if (!channel.getGuild().getSelfMember().hasPermission(channel,
+                Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
             throw new DiscordException("discord.global.voice.noAccess");
         }
         try {
