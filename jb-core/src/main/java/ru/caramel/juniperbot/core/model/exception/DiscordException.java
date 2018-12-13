@@ -37,4 +37,11 @@ public class DiscordException extends Exception {
         super(message, cause);
         this.args = args;
     }
+
+    public DiscordException(String message, Throwable cause,
+                        boolean enableSuppression,
+                        boolean writableStackTrace, Object... args) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        this.args = args;
+    }
 }

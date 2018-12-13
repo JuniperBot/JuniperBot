@@ -72,7 +72,7 @@ public class InfoCommand extends AbstractInfoCommand {
                 messageService.getMessage("about.support.owner"), true);
 
         DateTimeFormatter formatter = DateTimeFormat
-                .fullDateTime()
+                .mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
         builder.addField(

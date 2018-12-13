@@ -37,7 +37,8 @@ public class MessageDeleteAuditForwardProvider extends MessageAuditForwardProvid
                 action.getChannel().getId(),
                 messageId));
 
-        addOldContentField(action, embedBuilder);
+        embedBuilder.addField(messageService.getMessage("audit.message.deletedContent.title"),
+                getMessageValue(action, OLD_CONTENT), false);
         addAuthorField(action, embedBuilder);
         addChannelField(action, embedBuilder);
 

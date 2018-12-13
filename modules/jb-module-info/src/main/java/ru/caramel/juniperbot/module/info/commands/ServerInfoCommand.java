@@ -46,6 +46,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
 
         builder.addField(getMemberListField(guild));
         builder.addField(getChannelListField(guild));
+        builder.addField(getShard(guild));
         builder.addField(getVerificationLevel(guild));
         builder.addField(getRegion(guild));
         builder.addField(getOwner(guild));
@@ -70,8 +71,13 @@ public class ServerInfoCommand extends AbstractInfoCommand {
                 messageService.getEnumTitle(guild.getRegion()), true);
     }
 
+    private MessageEmbed.Field getShard(Guild guild) {
+        return new MessageEmbed.Field(messageService.getMessage("discord.command.server.shard.title"),
+                String.format("#**%s**", guild.getJDA().getShardInfo().getShardId() + 1), true);
+    }
+
     private MessageEmbed.Field getCreatedAt(Guild guild, BotContext context) {
-        DateTimeFormatter formatter = DateTimeFormat.fullDateTime()
+        DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
         return getDateField(guild.getCreationTime().toEpochSecond(), "discord.command.server.createdAt",

@@ -66,8 +66,7 @@ public class MemberListener extends DiscordEventListener {
         if (event.getUser().isBot() || !event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             return;
         }
-        if (!actionsHolderService.isLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
-            actionsHolderService.setLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong());
+        if (actionsHolderService.tryLeaveNotified(event.getGuild().getIdLong(), event.getUser().getIdLong())) {
             event.getGuild().getBan(event.getUser()).queue(e -> {
                 getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
                         .withTargetUser(event.getUser())

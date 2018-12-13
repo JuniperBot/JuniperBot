@@ -65,7 +65,7 @@ public class StatusController extends BasePublicRestController {
         shards.forEach(jda -> {
             TimeWindowChart chart = chartMap.get(jda);
             if (chart != null) {
-                ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId(), jda.getPing()));
+                ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId() + 1, jda.getPing()));
                 dto.setId(jda.getShardInfo().getShardId());
                 Map<Long, Long> measurements = chart.getMeasurements();
                 if (measurements != null) {

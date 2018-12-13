@@ -56,7 +56,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        DateTimeFormatter formatter = DateTimeFormat.fullDateTime()
+        DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
         User author = message.getAuthor();
