@@ -474,7 +474,7 @@ public class AudioMessageManager {
             MusicConfig config = musicConfigService.getByGuildId(instance.getGuildId());
             if (config != null && config.isShowQueue()) {
                 List<TrackRequest> next = instance.getQueue().subList(1, Math.min(size, MAX_SHORT_QUEUE + 1));
-                addQueue(builder, instance, next, 1 + instance.getCursor(), true);
+                addQueue(builder, instance, next, 2 + instance.getCursor(), true);
             }
         }
 
