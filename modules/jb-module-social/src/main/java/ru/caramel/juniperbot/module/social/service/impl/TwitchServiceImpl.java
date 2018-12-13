@@ -95,7 +95,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         if (client == null) {
             return;
         }
-        log.debug("Twitch channels notification finished...");
+        log.debug("Twitch channels notification started...");
 
         List<Channel> channels = repository.findChannelIds().stream().map(e -> {
             Channel channel = new Channel();
@@ -110,7 +110,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         Set<Stream> liveStreams = new HashSet<>(channels.size());
 
         Lists.partition(channels, 100).forEach(e -> liveStreams.addAll(client.getStreamEndpoint()
-                .getLiveStreams(channels, null, null, null, 100, 0)));
+                .getLiveStreams(e, null, null, null, 100, 0)));
 
         if (liveStreams.isEmpty()) {
             liveStreamsCache.clear();
