@@ -41,13 +41,13 @@
         </encoder>
     </appender>
 
-    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/debug.log</file>
+    <appender name="RATELIMITER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/ratelimiter.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/debug.%d{yyyyMMdd}.log.gz</fileNamePattern>
+            <fileNamePattern>logs/ratelimiter.%d{yyyyMMdd}.log.gz</fileNamePattern>
             <maxHistory>5</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -75,9 +75,12 @@
         </filter>
     </appender>
 
-    <logger name="juniperbot" level="DEBUG" additivity="true">
-        <appender-ref ref="DEBUG"/>
+    <logger name="ru.caramel.juniperbot" level="ERROR" additivity="true">
         <appender-ref ref="ERROR"/>
+    </logger>
+
+    <logger name="net.dv8tion.jda.core.requests.RateLimiter" level="INFO" additivity="false">
+        <appender-ref ref="RATELIMITER"/>
     </logger>
 
     <root level="INFO">
