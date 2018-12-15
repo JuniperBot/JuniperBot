@@ -27,6 +27,4 @@ public interface ActionsHolderService {
     void setLeaveNotified(long guildId, long userId);
 
     boolean isLeaveNotified(long guildId, long userId);
-
-    boolean tryLeaveNotified(long guildId, long userId);
 }
