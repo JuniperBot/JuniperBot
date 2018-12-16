@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class ActionsHolderServiceImpl implements ActionsHolderService {
 
     private Cache<String, Boolean> leaveNotified = CacheBuilder.newBuilder()
-            .expireAfterWrite(1, TimeUnit.SECONDS)
+            .expireAfterWrite(5, TimeUnit.SECONDS)
             .build();
 
     private Cache<String, Boolean> messageDeleted = CacheBuilder.newBuilder()
@@ -22,15 +22,6 @@ public class ActionsHolderServiceImpl implements ActionsHolderService {
     @Override
     public boolean isLeaveNotified(long guildId, long userId) {
         return Boolean.TRUE.equals(leaveNotified.getIfPresent(getMemberKey(guildId, userId)));
-    }
-
-    @Override
-    public boolean tryLeaveNotified(long guildId, long userId) {
-        if (!isLeaveNotified(guildId, userId)) {
-            setLeaveNotified(guildId, userId);
-            return true;
-        }
-        return false;
     }
 
     @Override

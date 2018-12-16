@@ -488,7 +488,6 @@ public class ModerationServiceImpl
 
             notifyUserAction(e -> {
                 actionBuilder.save();
-                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
                 e.getGuild().getController().ban(e, delDays, reason).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
             return true;
