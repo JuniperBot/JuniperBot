@@ -65,30 +65,30 @@ public class MessageTemplate extends BaseEntity {
     private String color;
 
     @Column(name = "image_url", length = URL_MAX_LENGTH)
-    public String imageUrl;
+    private String imageUrl;
 
     @Column(name = "thumbnail_url", length = URL_MAX_LENGTH)
-    public String thumbnailUrl;
+    private String thumbnailUrl;
 
     @Column(columnDefinition = "text")
-    public String author;
+    private String author;
 
     @Column(name = "author_url", length = URL_MAX_LENGTH)
-    public String authorUrl;
+    private String authorUrl;
 
     @Column(name = "author_icon_url", length = URL_MAX_LENGTH)
-    public String authorIconUrl;
+    private String authorIconUrl;
 
     @Column(columnDefinition = "text")
-    public String title;
+    private String title;
 
     @Column(name = "title_url", length = URL_MAX_LENGTH)
-    public String titleUrl;
+    private String titleUrl;
 
     @Column(columnDefinition = "text")
-    public String footer;
+    private String footer;
 
     @Column(name = "footer_icon_url", length = URL_MAX_LENGTH)
-    public String footerIconUrl;
+    private String footerIconUrl;
 
 }
