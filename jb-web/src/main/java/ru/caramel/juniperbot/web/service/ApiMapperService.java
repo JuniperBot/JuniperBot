@@ -35,13 +35,11 @@ import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.web.dto.AuditActionDto;
-import ru.caramel.juniperbot.web.dto.NamedReferenceDto;
+import ru.caramel.juniperbot.web.dto.*;
 import ru.caramel.juniperbot.web.dto.config.*;
 import ru.caramel.juniperbot.web.dto.discord.*;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
-import ru.caramel.juniperbot.web.dto.RankingInfoDto;
 import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
@@ -249,6 +247,17 @@ public interface ApiMapperService {
             @Mapping(expression = "java(!source.isEnabled())", target = "disabled")
     })
     void updateCommandConfig(CommandDto source, @MappingTarget CommandConfig target);
+
+    MessageTemplateDto getTemplateDto(MessageTemplate template);
+
+    MessageTemplateFieldDto getTemplateFieldDto(MessageTemplateField templateField);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "fields", ignore = true)
+    })
+    void updateTemplate(MessageTemplateDto source, @MappingTarget MessageTemplate target);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;
