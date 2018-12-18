@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
 
@@ -32,7 +31,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
 @Table(name = "message_template")
 public class MessageTemplateField extends BaseEntity {
 

@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.core.persistence.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
@@ -35,7 +34,6 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
 @Table(name = "message_template")
 public class MessageTemplate extends BaseEntity {
 
@@ -49,7 +47,7 @@ public class MessageTemplate extends BaseEntity {
     private MessageTemplateType type = MessageTemplateType.TEXT;
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OrderColumn(name="index")
+    @OrderColumn(name = "index")
     private List<MessageTemplateField> fields;
 
     @Column(columnDefinition = "text")
