@@ -31,7 +31,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "message_template")
+@Table(name = "message_template_field")
 public class MessageTemplateField extends BaseEntity {
 
     private static final long serialVersionUID = 3637206110866462471L;

@@ -69,4 +69,43 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="6.4-18122018-2" author="caramel">
+        <addColumn tableName="message_template">
+            <column name="temp_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="ranking_config">
+            <column name="announce_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_ranking_config_message_template"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-3" author="caramel">
+        <sql>
+            <![CDATA[
+                INSERT INTO message_template (temp_id, version, tts, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  false,
+                  CASE is_embed
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  announcement,
+                  announcement_channel_id
+                  FROM ranking_config
+                  WHERE announcement IS NOT NULL;
+
+                UPDATE ranking_config c
+                SET announce_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+            ]]>
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
