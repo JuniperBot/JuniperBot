@@ -14,27 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.core.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.persistence.entity.MessageTemplateField;
 
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-
-@Getter
-@Setter
-public class MessageTemplateFieldDto implements Serializable {
-
-    private static final long serialVersionUID = 1623503754293776997L;
-
-    @Size(min = 1, max = MessageEmbed.TITLE_MAX_LENGTH)
-    private String name;
-
-    @Size(min = 1, max = MessageEmbed.VALUE_MAX_LENGTH)
-    private String value;
-
-    private boolean inline;
+@Repository
+public interface MessageTemplateFieldRepository extends JpaRepository<MessageTemplateField, Long> {
 
 }

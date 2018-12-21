@@ -16,18 +16,25 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
+import ru.caramel.juniperbot.core.persistence.repository.MessageTemplateFieldRepository;
 import ru.caramel.juniperbot.core.persistence.repository.MessageTemplateRepository;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
+
+import java.util.ArrayList;
 
 @Service
 public class MessageTemplateDao extends AbstractDao {
 
     @Autowired
     private MessageTemplateRepository repository;
+
+    @Autowired
+    private MessageTemplateFieldRepository fieldRepository;
 
     @Transactional
     public MessageTemplate updateOrCreate(MessageTemplateDto source, MessageTemplate target) {
@@ -38,8 +45,22 @@ public class MessageTemplateDao extends AbstractDao {
             target = new MessageTemplate();
         }
         apiMapper.updateTemplate(source, target);
+        if (CollectionUtils.isEmpty(target.getFields())) {
+            target.setFields(new ArrayList<>());
+        } else {
+            fieldRepository.deleteAll(target.getFields());
+            target.getFields().clear();
+        }
+
+        int index = 0;
+        if (CollectionUtils.isNotEmpty(source.getFields())) {
+            for (var field : apiMapper.getTemplateFields(source.getFields())) {
+                field.setTemplate(target);
+                field.setIndex(index++);
+                target.getFields().add(field);
+            }
+        }
         repository.save(target);
-        // todo fill fields
         return target;
     }
 }

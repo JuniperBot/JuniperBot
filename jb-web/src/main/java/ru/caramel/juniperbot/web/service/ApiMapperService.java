@@ -259,6 +259,10 @@ public interface ApiMapperService {
     })
     void updateTemplate(MessageTemplateDto source, @MappingTarget MessageTemplate target);
 
+    MessageTemplateField getTemplateField(MessageTemplateFieldDto source);
+
+    List<MessageTemplateField> getTemplateFields(List<MessageTemplateFieldDto> source);
+
     default String trimmed(String s) {
         return s != null ? s.trim() : null;
     }
