@@ -21,6 +21,7 @@ import lombok.Setter;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -35,6 +36,7 @@ public class RankingDto implements Serializable {
 
     private boolean announcementEnabled;
 
+    @Valid
     private MessageTemplateDto announceTemplate;
 
     @Deprecated(forRemoval = true)

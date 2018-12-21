@@ -21,12 +21,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.dto.ErrorDetailsDto;
+import ru.caramel.juniperbot.web.dto.validation.ValidationErrorDto;
 
 @RestControllerAdvice
 public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHandler {
@@ -48,6 +52,23 @@ public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHan
         return errorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        ValidationErrorDto dto = new ValidationErrorDto();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            String localizedErrorMessage = fieldError.getDefaultMessage();
+            String[] fieldErrorCodes = fieldError.getCodes();
+            if (fieldErrorCodes != null) {
+                localizedErrorMessage = fieldErrorCodes[0];
+            }
+            dto.addFieldError(fieldError.getField(), localizedErrorMessage);
+        }
+        return ResponseEntity.badRequest().body(dto);
+    }
+
     protected ResponseEntity<ErrorDetailsDto> errorResponse(Exception e, HttpStatus status) {
         if (e != null) {
             log.error("API error caught: " + e.getMessage(), e);
@@ -58,7 +79,7 @@ public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHan
         }
     }
 
-    private  <T> ResponseEntity<T> response(T body, HttpStatus status) {
+    private <T> ResponseEntity<T> response(T body, HttpStatus status) {
         return new ResponseEntity<>(body, new HttpHeaders(), status);
     }
 }

@@ -38,6 +38,9 @@ public class RankingDao extends AbstractDao {
     @Autowired
     private RankingService rankingService;
 
+    @Autowired
+    private MessageTemplateDao templateDao;
+
     @Transactional
     public RankingDto get(long guildId) {
         RankingConfig config = rankingService.getOrCreate(guildId);
@@ -69,6 +72,8 @@ public class RankingDao extends AbstractDao {
             config.setAnnouncementChannelId(StringUtils.isNumeric(dto.getAnnouncementChannelId())
                     ? Long.parseLong(dto.getAnnouncementChannelId()) : null);
         }
+
+        config.setAnnounceTemplate(templateDao.updateOrCreate(dto.getAnnounceTemplate(), config.getAnnounceTemplate()));
 
         if (dto.getRewards() != null) {
             config.setRewards(dto.getRewards().stream()

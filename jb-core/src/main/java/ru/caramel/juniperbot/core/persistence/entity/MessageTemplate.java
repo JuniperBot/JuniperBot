@@ -39,7 +39,7 @@ public class MessageTemplate extends BaseEntity {
 
     private static final long serialVersionUID = -831681014535402042L;
 
-    private static final int URL_MAX_LENGTH = 2000;
+    public static final int URL_MAX_LENGTH = 2000;
 
     @Column
     @Enumerated(EnumType.STRING)

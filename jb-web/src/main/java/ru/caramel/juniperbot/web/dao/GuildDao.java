@@ -98,6 +98,7 @@ public class GuildDao extends AbstractDao {
                 .name(config.getName())
                 .prefix(config.getPrefix())
                 .locale(config.getLocale())
+                .color(config.getColor())
                 .commandLocale(config.getCommandLocale())
                 .id(String.valueOf(config.getGuildId()))
                 .icon(config.getIconUrl())

@@ -34,7 +34,7 @@
             </column>
             <column name="content" type="TEXT"/>
             <column name="channel_id" type="VARCHAR(255)"/>
-            <column name="tts" type="BOOLEAN">
+            <column name="tts" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false" />
             </column>
             <column name="color" type="VARCHAR(7)"/>
@@ -47,6 +47,7 @@
             <column name="title_url" type="VARCHAR(2000)"/>
             <column name="footer" type="TEXT"/>
             <column name="footer_icon_url" type="VARCHAR(2000)"/>
+            <column name="temp_id" type="BIGINT"/>
         </createTable>
         <createTable tableName="message_template_field">
             <column name="id" type="BIGSERIAL">
@@ -67,12 +68,8 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
-    </changeSet>
 
-    <changeSet id="6.4-18122018-2" author="caramel">
-        <addColumn tableName="message_template">
-            <column name="temp_id" type="BIGINT"/>
-        </addColumn>
+        <!-- Replacement Links -->
         <addColumn tableName="ranking_config">
             <column name="announce_template_id" type="BIGINT">
                 <constraints nullable="true"
@@ -85,16 +82,18 @@
     <changeSet id="6.4-18122018-3" author="caramel">
         <sql>
             <![CDATA[
-                INSERT INTO message_template (temp_id, version, tts, type, content, channel_id) SELECT
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
                   id,
                   0,
-                  false,
                   CASE is_embed
                     WHEN true THEN 'EMBED'
                     WHEN false THEN 'TEXT'
                   END,
                   announcement,
-                  announcement_channel_id
+                  CASE is_whisper
+                    WHEN true THEN '-1'
+                    WHEN false THEN announcement_channel_id
+                  END
                   FROM ranking_config
                   WHERE announcement IS NOT NULL;
 

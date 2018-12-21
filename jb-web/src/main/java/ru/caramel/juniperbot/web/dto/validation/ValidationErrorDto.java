@@ -14,30 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.web.dto;
+package ru.caramel.juniperbot.web.dto.validation;
 
 import lombok.Getter;
-import lombok.Setter;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@Setter
-public class MessageTemplateFieldDto implements Serializable {
+public class ValidationErrorDto implements Serializable {
 
-    private static final long serialVersionUID = 1623503754293776997L;
+    private static final long serialVersionUID = 935347542836894839L;
 
-    @NotEmpty
-    @Size(max = MessageEmbed.TITLE_MAX_LENGTH)
-    private String name;
+    private List<FieldErrorDto> fieldErrors = new ArrayList<>();
 
-    @NotEmpty
-    @Size(max = MessageEmbed.VALUE_MAX_LENGTH)
-    private String value;
-
-    private boolean inline;
-
+    public void addFieldError(String path, String message) {
+        FieldErrorDto error = new FieldErrorDto(path, message);
+        fieldErrors.add(error);
+    }
 }
