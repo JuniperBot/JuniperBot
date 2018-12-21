@@ -39,6 +39,7 @@ public class MessageTemplateDto implements Serializable {
     @NotNull
     private MessageTemplateType type = MessageTemplateType.TEXT;
 
+    @Size(max = 25)
     private List<MessageTemplateFieldDto> fields;
 
     @Size(max = 1800)
