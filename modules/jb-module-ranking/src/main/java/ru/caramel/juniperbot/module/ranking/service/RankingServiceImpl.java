@@ -147,7 +147,8 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 if (newLevel < 1000 && level != newLevel) {
                     if (config.isAnnouncementEnabled()) {
                         templateService
-                                .createMessage(config.getAnnounceTemplate())
+                                // it is lazy and out of current session
+                                .createMessage(templateService.getById(config.getAnnounceTemplate().getId()))
                                 .withFallbackContent("discord.command.rank.levelup")
                                 .withGuild(guild)
                                 .withMember(event.getMember())

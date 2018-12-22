@@ -26,6 +26,8 @@ public interface MessageTemplateService {
 
     String DM_CHANNEL = "-1";
 
+    MessageTemplate getById(long id);
+
     /**
      * Creates a message compiler for specified template
      * @param template Template for compiler

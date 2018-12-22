@@ -32,6 +32,7 @@ import ru.caramel.juniperbot.core.model.MessageTemplateCompiler;
 import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplateField;
+import ru.caramel.juniperbot.core.persistence.repository.MessageTemplateRepository;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
@@ -57,6 +58,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
     @Autowired
     private DiscordService discordService;
+
+    @Autowired
+    private MessageTemplateRepository repository;
 
     public Message compile(MessageTemplateCompiler compiler) {
         try {
@@ -240,6 +244,11 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
     private static String processField(String value) {
         return processField(value, null, null);
+    }
+
+    @Override
+    public MessageTemplate getById(long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
