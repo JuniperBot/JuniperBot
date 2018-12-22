@@ -132,7 +132,6 @@ public interface ApiMapperService {
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
 
     @Mappings({
-            @Mapping(expression = "java(ApiMapperService.toString(source.getAnnouncementChannelId()))", target = "announcementChannelId"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels")
     })
     RankingDto getRankingDto(RankingConfig source);
@@ -259,6 +258,12 @@ public interface ApiMapperService {
     })
     void updateTemplate(MessageTemplateDto source, @MappingTarget MessageTemplate target);
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "template", ignore = true),
+            @Mapping(target = "index", ignore = true)
+    })
     MessageTemplateField getTemplateField(MessageTemplateFieldDto source);
 
     List<MessageTemplateField> getTemplateFields(List<MessageTemplateFieldDto> source);

@@ -107,4 +107,20 @@
         </sql>
     </changeSet>
 
+    <changeSet id="6.4-18122018-4" author="caramel">
+        <comment>Удалить ненужное из ranking_config</comment>
+        <dropColumn tableName="ranking_config">
+            <column name="is_whisper"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="is_embed"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="announcement_channel_id"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="announcement"/>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>

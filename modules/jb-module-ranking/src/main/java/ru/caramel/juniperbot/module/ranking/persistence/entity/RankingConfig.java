@@ -46,25 +46,8 @@ public class RankingConfig extends GuildEntity {
     @JoinColumn(name = "announce_template_id")
     private MessageTemplate announceTemplate;
 
-    @Column(name = "is_whisper")
-    @Deprecated(forRemoval = true)
-    private boolean whisper;
-
-    @Column(name = "is_embed")
-    @Deprecated(forRemoval = true)
-    private boolean embed;
-
-    @Column(name = "announcement_channel_id")
-    @Deprecated(forRemoval = true)
-    private Long announcementChannelId;
-
     @Column(name = "reset_on_leave")
     private boolean resetOnLeave;
-
-    @Column
-    @Size(max = 1800)
-    @Deprecated(forRemoval = true)
-    private String announcement;
 
     @Column(name = "banned_roles", columnDefinition = "text[]")
     @Type(type = "string-array")
