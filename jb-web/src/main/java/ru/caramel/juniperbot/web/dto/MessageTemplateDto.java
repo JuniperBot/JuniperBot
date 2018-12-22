@@ -21,6 +21,8 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -45,7 +47,7 @@ public class MessageTemplateDto implements Serializable {
     @Size(max = 1800)
     private String content;
 
-    @Pattern(regexp = "^(-?\\d{1,19})?$")
+    @DiscordEntity(value = DiscordEntityType.TEXT_CHANNEL, allowDm = true)
     private String channelId;
 
     private boolean tts;

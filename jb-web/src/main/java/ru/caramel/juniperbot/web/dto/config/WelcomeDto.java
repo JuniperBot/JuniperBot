@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -41,6 +43,7 @@ public class WelcomeDto implements Serializable {
     @Size(max = 1800)
     private String joinMessage;
 
+    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
     private String joinChannelId;
 
     private boolean joinDmEnabled;
@@ -57,5 +60,6 @@ public class WelcomeDto implements Serializable {
     @Size(max = 1800)
     private String leaveMessage;
 
+    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
     private String leaveChannelId;
 }

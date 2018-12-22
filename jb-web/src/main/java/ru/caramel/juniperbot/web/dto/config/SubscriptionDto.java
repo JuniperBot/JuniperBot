@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
@@ -45,6 +47,7 @@ public class SubscriptionDto implements Serializable {
 
     private boolean available;
 
+    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
     private String channelId;
 
     private Map<String, Object> attributes = new HashMap<>();

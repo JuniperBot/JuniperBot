@@ -25,6 +25,8 @@ import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
  */
 public interface MessageTemplateService {
 
+    String DM_CHANNEL = "-1";
+
     /**
      * Compiles template exposing variables and builds it to JDA Message instance
      *
