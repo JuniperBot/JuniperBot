@@ -25,6 +25,7 @@ import java.awt.*;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface ContextService {
 
@@ -58,7 +59,11 @@ public interface ContextService {
 
     void initContext(Guild guild);
 
-    void withContext(long guildId, Runnable action);
+    <T> T withContext(Long guildId, Supplier<T> action);
+
+    <T> T withContext(Guild guildId, Supplier<T> action);
+
+    void withContext(Long guildId, Runnable action);
 
     void withContext(Guild guild, Runnable action);
 
@@ -73,4 +78,6 @@ public interface ContextService {
     void resetContext();
 
     <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success);
+
+    <T> void queue(Long guildId, RestAction<T> action, Consumer<T> success);
 }

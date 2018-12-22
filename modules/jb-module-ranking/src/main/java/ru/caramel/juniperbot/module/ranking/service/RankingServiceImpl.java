@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Sets;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -34,12 +33,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
@@ -59,8 +56,6 @@ import java.util.stream.Collectors;
 public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingService {
 
     private static final Logger log = LoggerFactory.getLogger(RankingServiceImpl.class);
-
-    private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
     @Autowired
     private LocalMemberRepository memberRepository;
@@ -82,6 +77,9 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private MessageTemplateService templateService;
 
     private static Object DUMMY = new Object();
 
@@ -148,21 +146,16 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
                 if (newLevel < 1000 && level != newLevel) {
                     if (config.isAnnouncementEnabled()) {
-                        if (config.isWhisper()) {
-                            try {
-                                contextService.queue(guild, event.getAuthor().openPrivateChannel(), c -> {
-                                    String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
-                                    sendAnnounce(config, c, content);
-                                });
-                            } catch (Exception e) {
-                                log.warn("Could not open private channel for {}", event.getAuthor(), e);
-                            }
-                        } else {
-                            MessageChannel channel = config.getAnnouncementChannelId() != null ?
-                                    guild.getTextChannelById(config.getAnnouncementChannelId()) : null;
-                            String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
-                            sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
-                        }
+                        templateService
+                                .createMessage(config.getAnnounceTemplate())
+                                .withFallbackContent("discord.command.rank.levelup")
+                                .withGuild(guild)
+                                .withMember(event.getMember())
+                                .withFallbackChannel(event.getChannel())
+                                .withDirectAllowed(true)
+                                .withVariable("level", newLevel)
+                                .withVariable("user", event.getMember().getAsMention())
+                                .compileAndSend();
                     }
                     updateRewards(config, event.getMember(), ranking);
                 }
@@ -186,14 +179,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                     }
                 }
             });
-        }
-    }
-
-    private void sendAnnounce(RankingConfig config, MessageChannel channel, String content) {
-        if (config.isEmbed()) {
-            messageService.onEmbedMessage(channel, content);
-        } else {
-            messageService.sendMessageSilent(channel::sendMessage, content);
         }
     }
 
@@ -314,17 +299,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             return false;
         }
         return config.getIgnoredChannels().contains(channel.getIdLong());
-    }
-
-    private String getAnnounce(RankingConfig config, String mention, int level) {
-        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("user", mention);
-        resolver.put("level", String.valueOf(level));
-        String announce = config.getAnnouncement();
-        if (StringUtils.isBlank(announce)) {
-            announce = messageService.getMessage("discord.command.rank.levelup");
-        }
-        return placeholderHelper.replacePlaceholders(announce, resolver);
     }
 
     @Transactional

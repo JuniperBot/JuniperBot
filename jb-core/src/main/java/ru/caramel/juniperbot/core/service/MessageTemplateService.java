@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
+import ru.caramel.juniperbot.core.model.MessageTemplateCompiler;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 
 /**
@@ -28,21 +27,9 @@ public interface MessageTemplateService {
     String DM_CHANNEL = "-1";
 
     /**
-     * Compiles template exposing variables and builds it to JDA Message instance
-     *
-     * @param template Message template to compile
-     * @param guild    Related guild instance
-     * @return The compiled message instance
-     * @see Message
+     * Creates a message compiler for specified template
+     * @param template Template for compiler
+     * @return Compiler instance
      */
-    Message compile(MessageTemplate template, Guild guild);
-
-    /**
-     * Compiles and sends message if channel specified in template
-     *
-     * @param template Message template to compile and send
-     * @param guild    Related guild instance
-     * @see MessageTemplate#channelId
-     */
-    void compileAndSend(MessageTemplate template, Guild guild);
+    MessageTemplateCompiler createMessage(MessageTemplate template);
 }

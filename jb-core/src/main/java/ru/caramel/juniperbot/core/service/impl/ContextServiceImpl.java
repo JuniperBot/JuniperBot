@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Service
 public class ContextServiceImpl implements ContextService {
@@ -205,7 +206,30 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void withContext(long guildId, Runnable action) {
+    @SuppressWarnings("unchecked")
+    public <T> T withContext(Long guildId, Supplier<T> action) {
+        Object[] holder = new Object[1];
+        withContext(guildId, () -> {
+            holder[0] = action.get();
+        });
+        return (T) holder[0];
+    }
+
+    @Override
+    public <T> T withContext(Guild guild, Supplier<T> action) {
+        Object[] holder = new Object[1];
+        withContext(guild, () -> {
+            holder[0] = action.get();
+        });
+        return (T) holder[0];
+    }
+
+    @Override
+    public void withContext(Long guildId, Runnable action) {
+        if (guildId == null) {
+            action.run();
+            return;
+        }
         ContextHolder currentContext = getContext();
         resetContext();
         initContext(guildId);
@@ -261,6 +285,11 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success) {
         action.queue(e -> withContext(guild, () -> success.accept(e)));
+    }
+
+    @Override
+    public <T> void queue(Long guildId, RestAction<T> action, Consumer<T> success) {
+        action.queue(e -> withContext(guildId, () -> success.accept(e)));
     }
 
     @Override

@@ -52,6 +52,8 @@ public interface DiscordService {
 
     Guild getGuildById(long guildId);
 
+    User getUserById(long userId);
+
     TextChannel getTextChannelById(long channelId);
 
     TextChannel getTextChannelById(String channelId);

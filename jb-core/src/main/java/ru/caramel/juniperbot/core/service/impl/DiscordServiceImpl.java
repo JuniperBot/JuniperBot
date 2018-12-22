@@ -218,6 +218,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     @Override
+    public User getUserById(long userId) {
+        return shardManager.getUserById(userId);
+    }
+
+    @Override
     public TextChannel getTextChannelById(long channelId) {
         return shardManager.getTextChannelById(channelId);
     }
