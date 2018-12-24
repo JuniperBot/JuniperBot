@@ -265,17 +265,15 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void inTransaction(Runnable action) {
         try {
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        action.run();
-                    } catch (ObjectOptimisticLockingFailureException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        log.error("Async task results in error", e);
-                    }
+            transactionTemplate.execute(status -> {
+                try {
+                    action.run();
+                } catch (ObjectOptimisticLockingFailureException e) {
+                    throw e;
+                } catch (Exception e) {
+                    log.error("Async task results in error", e);
                 }
+                return null;
             });
         } catch (ObjectOptimisticLockingFailureException e) {
             log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);

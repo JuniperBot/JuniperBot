@@ -29,6 +29,9 @@ public class WelcomeDao extends AbstractDao {
     @Autowired
     private WelcomeService welcomeService;
 
+    @Autowired
+    private MessageTemplateDao templateDao;
+
     @Transactional
     public WelcomeDto get(long guildId) {
         WelcomeMessage welcomeMessage = welcomeService.getByGuildId(guildId);
@@ -38,8 +41,16 @@ public class WelcomeDao extends AbstractDao {
     @Transactional
     public void save(WelcomeDto dto, long guildId) {
         WelcomeMessage welcomeMessage = welcomeService.getOrCreate(guildId);
-        dto.setJoinChannelId(filterTextChannel(guildId, dto.getJoinChannelId()));
-        dto.setLeaveChannelId(filterTextChannel(guildId, dto.getLeaveChannelId()));
+
+        welcomeMessage.setJoinTemplate(templateDao.updateOrCreate(dto.getJoinTemplate(),
+                welcomeMessage.getJoinTemplate()));
+
+        welcomeMessage.setJoinDmTemplate(templateDao.updateOrCreate(dto.getJoinDmTemplate(),
+                welcomeMessage.getJoinDmTemplate()));
+
+        welcomeMessage.setLeaveTemplate(templateDao.updateOrCreate(dto.getLeaveTemplate(),
+                welcomeMessage.getLeaveTemplate()));
+
         apiMapper.updateWelcome(dto, welcomeMessage);
         welcomeService.save(welcomeMessage);
     }

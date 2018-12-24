@@ -139,8 +139,6 @@ public interface ApiMapperService {
     RankingInfoDto getRankingInfoDto(RankingInfo info);
 
     @Mappings({
-            @Mapping(expression = "java(ApiMapperService.toString(source.getJoinChannelId()))", target = "joinChannelId"),
-            @Mapping(expression = "java(ApiMapperService.toString(source.getLeaveChannelId()))", target = "leaveChannelId"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getJoinRoles()))", target = "joinRoles"),
     })
     WelcomeDto getWelcomeDto(WelcomeMessage source);
@@ -149,8 +147,9 @@ public interface ApiMapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
-            @Mapping(expression = "java(ApiMapperService.toLong(source.getJoinChannelId()))", target = "joinChannelId"),
-            @Mapping(expression = "java(ApiMapperService.toLong(source.getLeaveChannelId()))", target = "leaveChannelId"),
+            @Mapping(target = "joinTemplate", ignore = true),
+            @Mapping(target = "joinDmTemplate", ignore = true),
+            @Mapping(target = "leaveTemplate", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);

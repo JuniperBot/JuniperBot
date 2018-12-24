@@ -229,6 +229,17 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         if (resolver != null) {
             value = PLACEHOLDER_HELPER.replacePlaceholders(value, resolver);
         }
+
+        /*
+        TODO channels
+        if (message.contains("#")) {
+            for (TextChannel textChannel : event.getGuild().getTextChannels()) {
+                message = message.replace("#" + textChannel.getName(), textChannel.getAsMention());
+            }
+        }
+
+         */
+
         if (StringUtils.isBlank(value)) {
             return null; // check it second time
         }

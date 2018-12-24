@@ -21,12 +21,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
+import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -48,38 +46,23 @@ public class WelcomeMessage extends GuildEntity {
     @Column(name = "join_enabled")
     private boolean joinEnabled;
 
-    @Column(name = "join_rich_enabled")
-    private boolean joinRichEnabled;
-
-    @Column(name = "join_message")
-    @Size(max = 1800)
-    private String joinMessage;
-
-    @Column(name = "join_channel_id")
-    private Long joinChannelId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "join_template_id")
+    private MessageTemplate joinTemplate;
 
     @Column(name = "join_dm_enabled")
     private boolean joinDmEnabled;
 
-    @Column(name = "join_dm_rich_enabled")
-    private boolean joinDmRichEnabled;
-
-    @Column(name = "join_dm_message")
-    @Size(max = 1800)
-    private String joinDmMessage;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "join_dm_template_id")
+    private MessageTemplate joinDmTemplate;
 
     @Column(name = "leave_enabled")
     private boolean leaveEnabled;
 
-    @Column(name = "leave_rich_enabled")
-    private boolean leaveRichEnabled;
-
-    @Column(name = "leave_message")
-    @Size(max = 1800)
-    private String leaveMessage;
-
-    @Column(name = "leave_channel_id")
-    private Long leaveChannelId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "leave_template_id")
+    private MessageTemplate leaveTemplate;
 
     public WelcomeMessage(long guildId) {
         this.guildId = guildId;

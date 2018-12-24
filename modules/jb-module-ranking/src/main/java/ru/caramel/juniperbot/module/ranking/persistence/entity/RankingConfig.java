@@ -42,7 +42,7 @@ public class RankingConfig extends GuildEntity {
     @Column(name = "announcement_enabled")
     private boolean announcementEnabled;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "announce_template_id")
     private MessageTemplate announceTemplate;
 

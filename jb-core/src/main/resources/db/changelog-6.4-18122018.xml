@@ -123,4 +123,101 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="6.4-18122018-5" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="join_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_join"
+                             references="message_template(id)" />
+            </column>
+            <column name="join_dm_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_join_dm"
+                             references="message_template(id)" />
+            </column>
+            <column name="leave_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_leave"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-6" author="caramel">
+        <sql>
+            <![CDATA[
+
+                -- migrate join message
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  CASE join_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  join_message,
+                  join_channel_id::varchar
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET join_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+                -- migrate leave message
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  CASE leave_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  leave_message,
+                  leave_channel_id::varchar
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET leave_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+                -- migrate join dm message
+                INSERT INTO message_template (temp_id, version, type, content) SELECT
+                  id,
+                  0,
+                  CASE join_dm_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  join_dm_message
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET join_dm_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-7" author="caramel">
+        <comment>Удалить ненужное из welcome_message</comment>
+        <dropColumn tableName="welcome_message">
+            <column name="join_rich_enabled"/>
+            <column name="join_message"/>
+            <column name="join_channel_id"/>
+            <column name="join_dm_rich_enabled"/>
+            <column name="join_dm_message"/>
+            <column name="leave_rich_enabled"/>
+            <column name="leave_message"/>
+            <column name="leave_channel_id"/>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>
