@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -25,8 +26,6 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
@@ -48,10 +47,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class MessageServiceImpl implements MessageService {
-
-    private static final Logger log = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
 

@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.social.service.impl;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import me.philippheuer.twitch4j.TwitchClient;
 import me.philippheuer.twitch4j.TwitchClientBuilder;
 import me.philippheuer.twitch4j.model.Channel;
@@ -27,8 +28,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,10 +45,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection, Stream, User> implements TwitchService {
-
-    private static final Logger log = LoggerFactory.getLogger(TwitchServiceImpl.class);
 
     private static final Color TWITCH_COLOR = CommonUtils.hex2Rgb("64439A");
 

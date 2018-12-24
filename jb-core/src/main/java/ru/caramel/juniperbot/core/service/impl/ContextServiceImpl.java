@@ -17,14 +17,13 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +31,6 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -48,10 +45,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@Slf4j
 @Service
 public class ContextServiceImpl implements ContextService {
-
-    private static final Logger log = LoggerFactory.getLogger(ContextServiceImpl.class);
 
     private static class ContextHolder {
         private Locale locale;

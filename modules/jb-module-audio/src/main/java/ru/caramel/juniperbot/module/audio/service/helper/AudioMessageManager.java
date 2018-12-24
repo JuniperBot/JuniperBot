@@ -25,6 +25,7 @@ import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -32,8 +33,6 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -57,10 +56,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 @Service
 public class AudioMessageManager {
-
-    private static final Logger log = LoggerFactory.getLogger(AudioMessageManager.class);
 
     private static final int MAX_SHORT_QUEUE = 3;
 

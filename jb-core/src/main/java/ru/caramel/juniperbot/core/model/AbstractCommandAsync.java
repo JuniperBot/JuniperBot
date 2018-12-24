@@ -16,16 +16,13 @@
  */
 package ru.caramel.juniperbot.core.model;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.core.service.impl.CommandsServiceImpl;
 
+@Slf4j
 public abstract class AbstractCommandAsync extends AbstractCommand {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandsServiceImpl.class);
 
     @Override
     public final boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {

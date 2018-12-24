@@ -17,14 +17,14 @@
 package ru.caramel.juniperbot.module.mafia.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.caramel.juniperbot.core.model.FeatureInstance;
 import ru.caramel.juniperbot.module.mafia.service.base.MafiaStateHandler;
 
@@ -33,13 +33,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Getter
 @Setter
 public class MafiaInstance extends FeatureInstance {
 
     public static final String IGNORED_REASON = "$end$";
-
-    private static final Logger log = LoggerFactory.getLogger(MafiaInstance.class);
 
     private final String prefix;
 
@@ -71,8 +70,7 @@ public class MafiaInstance extends FeatureInstance {
 
     private Map<MafiaActionType, MafiaPlayer> dailyActions = new ConcurrentHashMap<>();
 
-    public MafiaInstance(TextChannel channel, Locale locale, String prefix) {
-        Objects.requireNonNull(channel);
+    public MafiaInstance(@NonNull TextChannel channel, Locale locale, String prefix) {
         this.jda = channel.getJDA();
         this.channelId = channel.getIdLong();
         this.guildId = channel.getGuild().getIdLong();

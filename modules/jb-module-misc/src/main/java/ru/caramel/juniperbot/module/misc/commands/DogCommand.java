@@ -16,12 +16,11 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -36,13 +35,12 @@ import java.util.Deque;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+@Slf4j
 @DiscordCommand(key = "discord.command.dog.key",
         description = "discord.command.dog.desc",
         group = "discord.command.group.fun",
         priority = 16)
 public class DogCommand extends AbstractCommandAsync {
-
-    private static final Logger log = LoggerFactory.getLogger(DogCommand.class);
 
     private final Deque<DogImage> images = new ConcurrentLinkedDeque<>();
 

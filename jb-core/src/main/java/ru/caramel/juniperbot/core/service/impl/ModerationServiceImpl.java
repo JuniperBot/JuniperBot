@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.service.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -563,8 +564,7 @@ public class ModerationServiceImpl
 
     @Override
     @Transactional
-    public void removeWarn(MemberWarning warning) {
-        Objects.requireNonNull(warning, "No warning specified to remove");
+    public void removeWarn(@NonNull MemberWarning warning) {
         warning.setActive(false);
         warningRepository.save(warning);
     }

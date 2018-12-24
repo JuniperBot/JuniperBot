@@ -18,6 +18,8 @@ package ru.caramel.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -25,8 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,10 +52,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingService {
-
-    private static final Logger log = LoggerFactory.getLogger(RankingServiceImpl.class);
 
     @Autowired
     private LocalMemberRepository memberRepository;
@@ -212,8 +211,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     @Transactional
     @Override
-    public void setLevel(long guildId, String userId, int level) {
-        Objects.requireNonNull(userId);
+    public void setLevel(long guildId, @NonNull String userId, int level) {
         if (level > RankingUtils.MAX_LEVEL) {
             level = RankingUtils.MAX_LEVEL;
         } else if (level < 0) {

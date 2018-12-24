@@ -24,10 +24,9 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessageType;
 import com.vk.api.sdk.objects.wall.Wallpost;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -45,10 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
 import java.util.*;
 
+@Slf4j
 @RestController
 public class CallbackController extends BasePublicRestController {
-
-    private static final Logger log = LoggerFactory.getLogger(CallbackController.class);
 
     private final Gson gson = GsonUtils.create();
 

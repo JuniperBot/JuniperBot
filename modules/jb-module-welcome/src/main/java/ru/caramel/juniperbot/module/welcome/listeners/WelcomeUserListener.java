@@ -16,14 +16,13 @@
  */
 package ru.caramel.juniperbot.module.welcome.listeners;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
@@ -44,10 +43,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @DiscordEvent(priority = 10)
 public class WelcomeUserListener extends DiscordEventListener {
-
-    private static final Logger log = LoggerFactory.getLogger(WelcomeUserListener.class);
 
     @Autowired
     private MessageService messageService;

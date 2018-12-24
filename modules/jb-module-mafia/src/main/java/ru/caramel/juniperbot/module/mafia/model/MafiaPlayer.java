@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.mafia.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -43,8 +44,7 @@ public class MafiaPlayer {
 
     private int health = MAX_HEALTH;
 
-    public MafiaPlayer(Member member) {
-        Objects.requireNonNull(member);
+    public MafiaPlayer(@NonNull Member member) {
         this.jda = member.getJDA();
         this.guildId = member.getGuild().getIdLong();
         this.memberId = member.getUser().getIdLong();

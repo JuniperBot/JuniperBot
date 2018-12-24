@@ -20,6 +20,7 @@ import ch.qos.logback.classic.LoggerContext;
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
 import io.sentry.logback.SentryAppender;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +29,9 @@ import ru.caramel.juniperbot.core.service.impl.DiscordServiceImpl;
 
 import javax.annotation.PostConstruct;
 
+@Slf4j
 @Component
 public class SentryService {
-
-    private static final Logger log = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
     @Value("${spring.application.version}")
     private String appVersion;

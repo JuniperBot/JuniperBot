@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.web.controller.base;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +31,9 @@ import ru.caramel.juniperbot.core.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.dto.ErrorDetailsDto;
 import ru.caramel.juniperbot.web.dto.validation.ValidationErrorDto;
 
+@Slf4j
 @RestControllerAdvice
 public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(ResponseEntityExceptionHandlerEx.class);
 
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity handleNotFound(NotFoundException e) {

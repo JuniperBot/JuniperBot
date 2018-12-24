@@ -17,11 +17,10 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
@@ -44,14 +43,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
+@Slf4j
 @FeatureProvider(priority = 2)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
 
     private final Object $lock = new Object[0];
 
     private final Object $webHookLock = new Object[0];
-
-    private static final Logger log = LoggerFactory.getLogger(PatreonServiceImpl.class);
 
     @Value("${integrations.patreon.campaignId:1552419}")
     private String campaignId;

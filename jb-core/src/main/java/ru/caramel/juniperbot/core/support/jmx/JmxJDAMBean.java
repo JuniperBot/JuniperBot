@@ -16,10 +16,9 @@
  */
 package ru.caramel.juniperbot.core.support.jmx;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.ReflectionUtils;
@@ -27,10 +26,9 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+@Slf4j
 @ManagedResource
 public class JmxJDAMBean implements JmxNamedResource {
-
-    private static final Logger log = LoggerFactory.getLogger(JmxJDAMBean.class);
 
     private final JDA jda;
 
