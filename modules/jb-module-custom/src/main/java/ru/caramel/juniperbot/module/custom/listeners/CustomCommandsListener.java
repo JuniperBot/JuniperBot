@@ -46,6 +46,9 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
     private MessageService messageService;
 
     @Autowired
+    private MessageTemplateService templateService;
+
+    @Autowired
     private CustomCommandRepository commandRepository;
 
     @Autowired
@@ -99,21 +102,35 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
             }
         }
 
-        String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
-        if (StringUtils.isEmpty(commandContent)) {
-            return false;
+        if (!moderationService.isModerator(event.getMember())) {
+            content = CommonUtils.maskPublicMentions(content);
         }
+
         switch (command.getType()) {
             case ALIAS:
+                String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
+                if (StringUtils.isEmpty(commandContent)) {
+                    return false;
+                }
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
-                    commandContent = commandContent.substring(args[0].length(), commandContent.length()).trim();
+                    commandContent = commandContent.substring(args[0].length()).trim();
                     return commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
                 }
                 break;
             case MESSAGE:
-                messageService.sendMessageSilent(event.getChannel()::sendMessage,
-                        CommonUtils.trimTo(commandContent, 2000));
+                if (command.getMessageTemplate() != null) {
+                    templateService
+                            .createMessage(command.getMessageTemplate())
+                            .withGuild(event.getGuild())
+                            .withMember(event.getMember())
+                            .withFallbackChannel(event.getTextChannel())
+                            .withVariable("guild", event.getGuild().getName())
+                            .withVariable("author", event.getAuthor().getAsMention())
+                            .withVariable("content", content)
+                            .compileAndSend();
+
+                }
                 return true;
         }
         return false;
@@ -128,9 +145,6 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
         resolver.put("author", event.getAuthor().getAsMention());
         resolver.put("guild", event.getGuild().getName());
-        if (!moderationService.isModerator(event.getMember())) {
-            content = CommonUtils.maskPublicMentions(content);
-        }
         resolver.put("content", content);
         return resolver;
     }

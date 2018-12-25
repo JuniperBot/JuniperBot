@@ -220,4 +220,34 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="6.4-18122018-8" author="caramel">
+        <addColumn tableName="custom_command">
+            <column name="message_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_custom_command_message_template"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+        <sql>
+            <![CDATA[
+
+                INSERT INTO message_template (temp_id, version, type, content) SELECT
+                  id,
+                  0,
+                  'TEXT',
+                  content
+                  FROM custom_command c
+                  WHERE c.type = 'MESSAGE' AND c.content IS NOT NULL;
+
+                UPDATE custom_command c
+                SET message_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+            ]]>
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

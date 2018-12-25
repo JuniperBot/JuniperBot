@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.dto.config;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.module.custom.model.CommandType;
+import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -44,4 +45,6 @@ public class CustomCommandDto extends CommandDto {
     @NotBlank(message = "{validation.commands.content.NotBlank.message}")
     @Size(max = 2000, message = "{validation.commands.content.Size.message}")
     private String content;
+
+    private MessageTemplateDto messageTemplate;
 }

@@ -73,6 +73,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
                 }
                 MessageBuilder messageBuilder = new MessageBuilder();
                 messageBuilder.setContent(content);
+                if (compiler.getTemplate() != null) {
+                    messageBuilder.setTTS(compiler.getTemplate().isTts());
+                }
                 return messageBuilder.build();
             }
 

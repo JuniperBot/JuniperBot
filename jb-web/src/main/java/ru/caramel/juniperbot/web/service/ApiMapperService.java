@@ -182,7 +182,8 @@ public interface ApiMapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
-            @Mapping(target = "commandConfig", ignore = true)
+            @Mapping(target = "commandConfig", ignore = true),
+            @Mapping(target = "messageTemplate", ignore = true)
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 
