@@ -49,6 +49,7 @@ import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.social.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.VkConnectionRepository;
@@ -236,7 +237,7 @@ public class VkServiceImpl implements VkService {
         }
 
         if (connection.isMentionEveryone()) {
-            content = CommonUtils.trimTo(content != null ? CommonUtils.EVERYONE + content : CommonUtils.EVERYONE,
+            content = CommonUtils.trimTo(content != null ? DiscordUtils.EVERYONE + content : DiscordUtils.EVERYONE,
                     2000);
         }
         WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(content);

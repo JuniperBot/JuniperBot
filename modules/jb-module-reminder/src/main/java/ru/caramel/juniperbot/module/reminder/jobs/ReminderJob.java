@@ -23,8 +23,8 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.service.ModerationService;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +76,7 @@ public class ReminderJob extends AbstractJob {
             channel = shardManager.getPrivateChannelById(channelId);
         }
         if (maskMentions) {
-            messageRaw = CommonUtils.maskPublicMentions(messageRaw);
+            messageRaw = DiscordUtils.maskPublicMentions(messageRaw);
         }
         message.append(messageRaw);
         if (channel == null && user != null) {

@@ -25,7 +25,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 @DiscordCommand(
         key = "discord.command.server.key",
@@ -63,7 +63,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
 
     private MessageEmbed.Field getOwner(Guild guild) {
         return new MessageEmbed.Field(messageService.getMessage("discord.command.server.owner"),
-                CommonUtils.formatUser(guild.getOwner().getUser()), true);
+                DiscordUtils.formatUser(guild.getOwner().getUser()), true);
     }
 
     private MessageEmbed.Field getRegion(Guild guild) {

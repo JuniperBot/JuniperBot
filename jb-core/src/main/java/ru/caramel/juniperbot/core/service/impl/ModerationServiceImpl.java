@@ -48,6 +48,7 @@ import ru.caramel.juniperbot.core.persistence.entity.MuteState;
 import ru.caramel.juniperbot.core.persistence.repository.MemberWarningRepository;
 import ru.caramel.juniperbot.core.persistence.repository.ModerationConfigRepository;
 import ru.caramel.juniperbot.core.persistence.repository.MuteStateRepository;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.awt.*;
 import java.util.*;
@@ -143,7 +144,7 @@ public class ModerationServiceImpl
                         .setName(roleName)
                         .complete();
 
-                Role highestRole = CommonUtils.getHighestRole(self, Permission.MANAGE_ROLES);
+                Role highestRole = DiscordUtils.getHighestRole(self, Permission.MANAGE_ROLES);
                 if (highestRole != null) {
                     controller.modifyRolePositions()
                             .selectPosition(role)

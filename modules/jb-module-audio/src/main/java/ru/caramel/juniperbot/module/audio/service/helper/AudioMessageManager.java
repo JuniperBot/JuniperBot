@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.model.EndReason;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
@@ -525,7 +526,7 @@ public class AudioMessageManager {
         AudioTrackInfo info = request.getTrack().getInfo();
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), getUrl(info));
-        String artworkUri = CommonUtils.getUrl(info.artworkUri);
+        String artworkUri = DiscordUtils.getUrl(info.artworkUri);
         builder.setAuthor(getArtist(info), getUrl(info), artworkUri);
         builder.setThumbnail(artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
@@ -562,7 +563,7 @@ public class AudioMessageManager {
     }
 
     public String getUrl(AudioTrackInfo info) {
-        return CommonUtils.getUrl(info.uri);
+        return DiscordUtils.getUrl(info.uri);
     }
 
     public void monitor(Set<Long> alive) {

@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioRepository;
 import ru.caramel.juniperbot.module.ranking.commands.RankCommand;
@@ -111,7 +112,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
     }
 
     private StringBuilder getName(StringBuilder commonBuilder, User user, Member member) {
-        String userName = CommonUtils.formatUser(user);
+        String userName = DiscordUtils.formatUser(user);
         if (member != null && !Objects.equals(user.getName(), member.getEffectiveName())) {
             userName += String.format(" (%s)", member.getEffectiveName());
         }

@@ -29,6 +29,7 @@ import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.WebHookService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -62,7 +63,7 @@ public class WebHookServiceImpl implements WebHookService {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
                         webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32))
-                                .setAvatar(CommonUtils.getIcon(iconUrl))
+                                .setAvatar(DiscordUtils.createIcon(iconUrl))
                                 .complete();
                         webHooks.invalidate(guild);
                     }

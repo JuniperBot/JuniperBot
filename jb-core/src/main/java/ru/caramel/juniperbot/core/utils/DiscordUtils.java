@@ -17,16 +17,22 @@
 package ru.caramel.juniperbot.core.utils;
 
 import lombok.NonNull;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class DiscordUtils {
+
+    public final static String EVERYONE = "@everyone";
 
     private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
@@ -104,8 +110,7 @@ public final class DiscordUtils {
                 replacementList = new String[mentioned.size()];
                 for (Member member : mentioned) {
                     int index = i++;
-                    User user = member.getUser();
-                    searchList[index] =  String.format("@%s#%s", user.getName(), user.getDiscriminator());
+                    searchList[index] =  "@" + formatUser(member.getUser());
                     replacementList[index] =  member.getAsMention();
                 }
                 content = StringUtils.replaceEach(content, searchList, replacementList);
@@ -169,5 +174,68 @@ public final class DiscordUtils {
             }
         }
         return content;
+    }
+
+    public static String maskPublicMentions(String value) {
+        if (value == null) {
+            return null;
+        }
+        value = value.replace("@everyone", "@\u2063everyone");
+        value = value.replace("@here", "@\u2063here");
+        return value;
+    }
+
+    public static String formatUser(User user) {
+        return String.format("%s#%s", user.getName(), user.getDiscriminator());
+    }
+
+    public static String getUrl(String url) {
+        if (StringUtils.isEmpty(url) || url.length() > MessageEmbed.URL_MAX_LENGTH) {
+            return null;
+        }
+        if (EmbedBuilder.URL_PATTERN.matcher(url).matches()) {
+            return url;
+        }
+        try {
+            String result = java.net.URLDecoder.decode(url, "UTF-8");
+            if (EmbedBuilder.URL_PATTERN.matcher(result).matches()) {
+                return result;
+            }
+        } catch (Exception e) {
+            // nah I don't care
+        }
+        return null;
+    }
+
+    public static Role getHighestRole(Member member, Permission... permission) {
+        if (member == null || CollectionUtils.isEmpty(member.getRoles())) {
+            return null;
+        }
+        return member.getRoles().stream()
+                .sorted(Comparator.comparingInt(Role::getPosition))
+                .filter(e -> permission == null || permission.length == 0 || e.hasPermission(permission))
+                .findFirst().orElse(null);
+    }
+
+    public static Icon createIcon(String iconUrl) {
+        if (UrlValidator.getInstance().isValid(iconUrl)) {
+            try {
+                return Icon.from(new URL(iconUrl).openStream());
+            } catch (Exception e) {
+                // fall down
+            }
+        }
+        return null;
+    }
+
+    public static MessageChannel getChannel(JDA jda, ChannelType type, long channelId) {
+        switch (type) {
+            case TEXT:
+                return jda.getTextChannelById(channelId);
+            case PRIVATE:
+                return jda.getPrivateChannelById(channelId);
+            default:
+                return null;
+        }
     }
 }

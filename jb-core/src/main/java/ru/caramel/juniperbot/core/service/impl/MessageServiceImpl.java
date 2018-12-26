@@ -34,7 +34,7 @@ import ru.caramel.juniperbot.core.service.ActionsHolderService;
 import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MessageService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.core.utils.PluralUtils;
 
 import java.awt.*;
@@ -174,7 +174,7 @@ public class MessageServiceImpl implements MessageService {
             long channelId = message.getChannel().getIdLong();
             ChannelType type = message.getChannelType();
             scheduler.schedule(() -> {
-                MessageChannel channel = CommonUtils.getChannel(jda, type, channelId);
+                MessageChannel channel = DiscordUtils.getChannel(jda, type, channelId);
                 if (channel != null) {
                     channel.getMessageById(messageId).queue(this::delete);
                 }

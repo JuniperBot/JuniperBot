@@ -16,14 +16,9 @@
  */
 package ru.caramel.juniperbot.core.utils;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -31,7 +26,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.web.util.UriUtils;
 
 import java.awt.*;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -49,8 +43,6 @@ import java.util.stream.Stream;
 public final class CommonUtils {
 
     public final static String EMPTY_SYMBOL = "\u2800";
-
-    public final static String EVERYONE = "@everyone";
 
     private final static DateTimeFormatter HOURS_FORMAT = DateTimeFormat.forPattern("HH:mm:ss").withZone(DateTimeZone.UTC);
 
@@ -190,10 +182,6 @@ public final class CommonUtils {
         return value;
     }
 
-    public static String formatUser(User user) {
-        return String.format("%s#%s", user.getName(), user.getDiscriminator());
-    }
-
     public static DateTime getDate(OffsetDateTime offsetDateTime) {
         return new DateTime(offsetDateTime.toEpochSecond() * 1000).withZone(DateTimeZone.UTC);
     }
@@ -217,34 +205,6 @@ public final class CommonUtils {
                 Integer.valueOf(colorStr.substring(4, 6), 16));
     }
 
-    public static Role getHighestRole(Member member, Permission... permission) {
-        if (member == null || CollectionUtils.isEmpty(member.getRoles())) {
-            return null;
-        }
-        return member.getRoles().stream()
-                .sorted(Comparator.comparingInt(Role::getPosition))
-                .filter(e -> permission == null || permission.length == 0 || e.hasPermission(permission))
-                .findFirst().orElse(null);
-    }
-
-    public static String getUrl(String url) {
-        if (StringUtils.isEmpty(url) || url.length() > MessageEmbed.URL_MAX_LENGTH) {
-            return null;
-        }
-        if (EmbedBuilder.URL_PATTERN.matcher(url).matches()) {
-            return url;
-        }
-        try {
-            String result = java.net.URLDecoder.decode(url, "UTF-8");
-            if (EmbedBuilder.URL_PATTERN.matcher(result).matches()) {
-                return result;
-            }
-        } catch (Exception e) {
-            // nah I don't care
-        }
-        return null;
-    }
-
     public static <T extends Enum<T>> Set<T> safeEnumSet(Collection<?> collection, Class<T> type) {
         return Stream.of(type.getEnumConstants())
                 .filter(e -> collection.contains(e.name()))
@@ -259,26 +219,6 @@ public final class CommonUtils {
         return CollectionUtils.isNotEmpty(enums) ? enums.stream().map(Enum::name).collect(Collectors.joining(",")) : null;
     }
 
-    public static String maskPublicMentions(String value) {
-        if (value == null) {
-            return null;
-        }
-        value = value.replace("@everyone", "@\u2063everyone");
-        value = value.replace("@here", "@\u2063here");
-        return value;
-    }
-
-    public static Icon getIcon(String iconUrl) {
-        if (UrlValidator.getInstance().isValid(iconUrl)) {
-            try {
-                return Icon.from(new URL(iconUrl).openStream());
-            } catch (Exception e) {
-                // fall down
-            }
-        }
-        return null;
-    }
-
     public static String getUTCOffset(DateTimeZone zone) {
         int offset = zone.getOffset(DateTime.now());
 
@@ -286,17 +226,6 @@ public final class CommonUtils {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(offset - TimeUnit.HOURS.toMillis(hours));
 
         return String.format("UTC%s%d:%02d", hours > 0 ? '+' : '-', hours, minutes);
-    }
-
-    public static MessageChannel getChannel(JDA jda, ChannelType type, long channelId) {
-        switch (type) {
-            case TEXT:
-                return jda.getTextChannelById(channelId);
-            case PRIVATE:
-                return jda.getPrivateChannelById(channelId);
-            default:
-                return null;
-        }
     }
 
     public static String urlEncode(String value) {

@@ -27,6 +27,7 @@ import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
 import ru.caramel.juniperbot.core.service.ModerationService;
@@ -103,7 +104,7 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
         }
 
         if (!moderationService.isModerator(event.getMember())) {
-            content = CommonUtils.maskPublicMentions(content);
+            content = DiscordUtils.maskPublicMentions(content);
         }
 
         switch (command.getType()) {
