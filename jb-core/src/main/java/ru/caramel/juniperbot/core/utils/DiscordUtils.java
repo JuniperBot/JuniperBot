@@ -21,19 +21,16 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.PropertyPlaceholderHelper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class DiscordUtils {
 
-    private static Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
+    private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
-    private static Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?):");
+    private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)~?(\\d+)?:");
 
     private static final Permission[] CHANNEL_WRITE_PERMISSIONS = new Permission[] {
             Permission.MESSAGE_READ,
@@ -132,20 +129,42 @@ public final class DiscordUtils {
 
         if (content.contains(":")) {
             Matcher m = EMOTE_PATTERN.matcher(content);
-            Set<Emote> mentioned = new HashSet<>();
+
+            List<String> emotePlaceholders = new LinkedList<>();
+            List<String> emoteMentions = new LinkedList<>();
+
             while (m.find()) {
-                mentioned.addAll(guild.getEmotesByName(m.group(1), false));
+                String replacement = m.group(1);
+                List<Emote> emotes = guild.getEmotesByName(replacement, false);
+                emotes.sort(Comparator.comparing(Emote::getCreationTime));
+                if (emotes.isEmpty()) {
+                    continue;
+                }
+                Emote emote = emotes.get(0);
+
+                if (StringUtils.isNumeric(m.group(2))) {
+                    replacement += "~" + m.group(2);
+                    try {
+                        int num = Integer.parseInt(m.group(2));
+                        if (num < emotes.size()) {
+                            emote = emotes.get(num);
+                            emotePlaceholders.add(0, ":" + replacement + ":");
+                            emoteMentions.add(0, emote.getAsMention());
+                        }
+                    } catch (NumberFormatException e) {
+                        // fall down
+                    }
+                    continue;
+                }
+                emotePlaceholders.add(":" + replacement + ":");
+                emoteMentions.add(emote.getAsMention());
             }
 
-            if (CollectionUtils.isNotEmpty(mentioned)) {
-                i = 0;
-                searchList = new String[mentioned.size()];
-                replacementList = new String[mentioned.size()];
-                for (Emote emote : mentioned) {
-                    int index = i++;
-                    searchList[index] =  String.format(":%s:", emote.getName());
-                    replacementList[index] =  emote.getAsMention();
-                }
+            if (CollectionUtils.isNotEmpty(emotePlaceholders)) {
+                searchList = new String[emotePlaceholders.size()];
+                replacementList = new String[emoteMentions.size()];
+                emotePlaceholders.toArray(searchList);
+                emoteMentions.toArray(replacementList);
                 content = StringUtils.replaceEach(content, searchList, replacementList);
             }
         }
