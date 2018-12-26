@@ -27,7 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PropertyPlaceholderHelper;
-import ru.caramel.juniperbot.core.messaging.MessageTemplatePropertyResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.GuildPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.MessageTemplatePlaceholderResolver;
 import ru.caramel.juniperbot.core.model.MessageTemplateCompiler;
 import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
@@ -62,7 +63,7 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         try {
             String content = getContent(compiler);
 
-            MessageTemplatePropertyResolver resolver = getPropertyResolver(compiler);
+            MessageTemplatePlaceholderResolver resolver = getPropertyResolver(compiler);
 
             if (compiler.getTemplate() == null || compiler.getTemplate().getType() == MessageTemplateType.TEXT) {
                 content = processField(content, resolver, compiler, Message.MAX_CONTENT_LENGTH);
@@ -207,15 +208,18 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         return messageService.getMessage(compiler.getFallbackContent());
     }
 
-    private MessageTemplatePropertyResolver getPropertyResolver(@NonNull MessageTemplateCompiler compiler) {
+    private MessageTemplatePlaceholderResolver getPropertyResolver(@NonNull MessageTemplateCompiler compiler) {
         Set<PropertyPlaceholderHelper.PlaceholderResolver> resolvers = new HashSet<>();
         resolvers.add(compiler.getVariables());
-        // to do add more
-        return new MessageTemplatePropertyResolver(resolvers);
+        if (compiler.getGuild() != null) {
+            resolvers.add(GuildPlaceholderResolver.of(compiler.getGuild(), "guild"));
+        }
+        // TODO add member resolver
+        return new MessageTemplatePlaceholderResolver(resolvers);
     }
 
     private static String processField(String value,
-                                       MessageTemplatePropertyResolver resolver,
+                                       MessageTemplatePlaceholderResolver resolver,
                                        MessageTemplateCompiler compiler,
                                        Integer maxLength) {
         value = value != null ? value.trim() : null;

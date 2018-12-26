@@ -14,24 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.messaging;
+package ru.caramel.juniperbot.core.messaging.placeholder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.util.*;
 
-public class MessageTemplatePropertyResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
+public class MessageTemplatePlaceholderResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
 
     private final Map<String, String> values = new HashMap<>();
 
     private final Set<? extends PropertyPlaceholderHelper.PlaceholderResolver> resolvers;
 
-    public MessageTemplatePropertyResolver(PropertyPlaceholderHelper.PlaceholderResolver... resolvers) {
+    public MessageTemplatePlaceholderResolver(PropertyPlaceholderHelper.PlaceholderResolver... resolvers) {
         this(resolvers != null ? Arrays.asList(resolvers) : Collections.emptySet());
     }
 
-    public MessageTemplatePropertyResolver(Collection<? extends PropertyPlaceholderHelper.PlaceholderResolver> resolvers) {
+    public MessageTemplatePlaceholderResolver(Collection<? extends PropertyPlaceholderHelper.PlaceholderResolver> resolvers) {
         this.resolvers = Set.copyOf(resolvers);
     }
 

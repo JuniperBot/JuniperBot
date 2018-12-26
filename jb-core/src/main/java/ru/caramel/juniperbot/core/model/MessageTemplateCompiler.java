@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.core.model;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
-import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.MapPlaceholderResolver;
 
 import java.io.Serializable;
 

@@ -26,7 +26,7 @@ import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.MapPlaceholderResolver;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
@@ -126,7 +126,6 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
                             .withGuild(event.getGuild())
                             .withMember(event.getMember())
                             .withFallbackChannel(event.getTextChannel())
-                            .withVariable("guild", event.getGuild().getName())
                             .withVariable("author", event.getAuthor().getAsMention())
                             .withVariable("content", content)
                             .compileAndSend();

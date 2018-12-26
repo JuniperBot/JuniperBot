@@ -127,7 +127,6 @@ public class WelcomeUserListener extends DiscordEventListener {
                         .withMember(event.getMember())
                         .withFallbackChannel(channel)
                         .withVariable("user", event.getUser().getAsMention())
-                        .withVariable("guild", event.getGuild().getName())
                         .compileAndSend();
             }
 
@@ -138,7 +137,6 @@ public class WelcomeUserListener extends DiscordEventListener {
                         .withGuild(guild)
                         .withMember(event.getMember())
                         .withVariable("user", event.getUser().getAsMention())
-                        .withVariable("guild", event.getGuild().getName())
                         .compile();
 
                 if (compiledMessage != null) {
