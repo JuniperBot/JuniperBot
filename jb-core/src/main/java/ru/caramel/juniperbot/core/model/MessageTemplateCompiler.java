@@ -19,18 +19,18 @@ package ru.caramel.juniperbot.core.model;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
 
 import java.io.Serializable;
 
 @Getter
 public abstract class MessageTemplateCompiler {
 
-    private Long guildId;
+    private Guild guild;
 
-    private Long memberId;
+    private Member member;
 
-    private Long fallbackChannelId;
+    private TextChannel fallbackChannel;
 
     private String fallbackContent;
 
@@ -44,31 +44,19 @@ public abstract class MessageTemplateCompiler {
         this.template = template;
     }
 
-    public MessageTemplateCompiler withGuildId(Long guildId) {
-        this.guildId = guildId;
-        return this;
-    }
-
     public MessageTemplateCompiler withGuild(Guild guild) {
-        return withGuildId(guild != null ? guild.getIdLong() : null);
-    }
-
-    public MessageTemplateCompiler withMemberId(Long memberId) {
-        this.memberId = memberId;
+        this.guild = guild;
         return this;
     }
 
     public MessageTemplateCompiler withMember(Member member) {
-        return withMemberId(member != null ? member.getUser().getIdLong() : null);
-    }
-
-    public MessageTemplateCompiler withFallbackChannelId(Long fallbackChannelId) {
-        this.fallbackChannelId = fallbackChannelId;
+        this.member = member;
         return this;
     }
 
     public MessageTemplateCompiler withFallbackChannel(TextChannel fallbackChannel) {
-        return withFallbackChannelId(fallbackChannel != null ? fallbackChannel.getIdLong() : null);
+        this.fallbackChannel = fallbackChannel;
+        return this;
     }
 
     public MessageTemplateCompiler withFallbackContent(String fallbackContent) {

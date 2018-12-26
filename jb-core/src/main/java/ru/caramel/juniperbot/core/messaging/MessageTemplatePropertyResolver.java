@@ -40,7 +40,7 @@ public class MessageTemplatePropertyResolver implements PropertyPlaceholderHelpe
         return values.computeIfAbsent(placeholderName, p -> {
             for (PropertyPlaceholderHelper.PlaceholderResolver resolver : resolvers) {
                 String value = resolver.resolvePlaceholder(p);
-                if (StringUtils.isNotEmpty(value)) {
+                if (value != null) {
                     return value;
                 }
             }

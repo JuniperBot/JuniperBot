@@ -51,7 +51,7 @@ import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.EmergencyService;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeChannelRepository;

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.TwitchConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.TwitchService;
