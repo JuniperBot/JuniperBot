@@ -17,11 +17,10 @@
 package ru.caramel.juniperbot.core.messaging.placeholder;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.messaging.placeholder.node.FunctionalNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.messaging.placeholder.node.SingletonNodePlaceholderResolver;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.TriFunction;
 
 import java.util.Collections;
@@ -29,45 +28,44 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<Guild> {
+public class ChannelPlaceholderResolver extends FunctionalNodePlaceholderResolver<TextChannel> {
 
-    private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS;
+    private final static Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> ACCESSORS;
 
     static {
-        Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
-        accessors.put("id", (g, l, c) -> g.getId());
-        accessors.put("name", (g, l, c) -> g.getName());
-        accessors.put("region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()));
-        accessors.put("afkTimeout", (g, l, c) ->  g.getAfkTimeout().getSeconds());
-        accessors.put("afkChannel", (g, l, c) ->  g.getAfkChannel() != null ? g.getAfkChannel().getName() : "");
-        accessors.put("memberCount", (g, l, c) ->  g.getMembers().size());
-        accessors.put("createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getCreationTime(), l, g, c));
+        Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
+        accessors.put("id", (t, l, c) -> t.getId());
+        accessors.put("name", (t, l, c) -> t.getName());
+        accessors.put("mention", (t, l, c) -> t.getAsMention());
+        accessors.put("topic", (t, l, c) -> t.getTopic() != null ? t.getTopic() : "");
+        accessors.put("position", (t, l, c) -> t.getPosition());
+        accessors.put("createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getCreationTime(), l, t.getGuild(), c));
         ACCESSORS = Collections.unmodifiableMap(accessors);
     }
 
-    private final Guild guild;
+    private final TextChannel channel;
 
-    public GuildPlaceholderResolver(@NonNull Guild guild,
-                                    @NonNull Locale locale,
-                                    @NonNull ApplicationContext applicationContext) {
+    public ChannelPlaceholderResolver(@NonNull TextChannel channel,
+                                      @NonNull Locale locale,
+                                      @NonNull ApplicationContext applicationContext) {
         super(ACCESSORS, locale, applicationContext);
-        this.guild = guild;
+        this.channel = channel;
     }
 
     @Override
-    protected Guild getObject() {
-        return guild;
+    protected TextChannel getObject() {
+        return channel;
     }
 
     @Override
     public Object getValue() {
-        return guild.getName();
+        return channel.getName();
     }
 
-    public static SingletonNodePlaceholderResolver of(@NonNull Guild guild,
+    public static SingletonNodePlaceholderResolver of(@NonNull TextChannel channel,
                                                       @NonNull Locale locale,
                                                       @NonNull ApplicationContext context,
                                                       @NonNull String name) {
-        return new SingletonNodePlaceholderResolver(name, new GuildPlaceholderResolver(guild, locale, context));
+        return new SingletonNodePlaceholderResolver(name, new ChannelPlaceholderResolver(channel, locale, context));
     }
 }

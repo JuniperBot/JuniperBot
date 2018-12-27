@@ -36,7 +36,7 @@ public final class DiscordUtils {
 
     private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
-    private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)~?(\\d+)?:");
+    private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)(~\\d+)?:");
 
     private static final Permission[] CHANNEL_WRITE_PERMISSIONS = new Permission[] {
             Permission.MESSAGE_READ,
@@ -140,6 +140,9 @@ public final class DiscordUtils {
 
             while (m.find()) {
                 String replacement = m.group(1);
+                if (StringUtils.isEmpty(replacement)) {
+                    continue;
+                }
                 List<Emote> emotes = guild.getEmotesByName(replacement, false);
                 emotes.sort(Comparator.comparing(Emote::getCreationTime));
                 if (emotes.isEmpty()) {
@@ -147,10 +150,10 @@ public final class DiscordUtils {
                 }
                 Emote emote = emotes.get(0);
 
-                if (StringUtils.isNumeric(m.group(2))) {
-                    replacement += "~" + m.group(2);
+                if (StringUtils.isNotEmpty(m.group(2))) {
+                    replacement += m.group(2);
                     try {
-                        int num = Integer.parseInt(m.group(2));
+                        int num = Integer.parseInt(m.group(2).substring(1));
                         if (num < emotes.size()) {
                             emote = emotes.get(num);
                             emotePlaceholders.add(0, ":" + replacement + ":");

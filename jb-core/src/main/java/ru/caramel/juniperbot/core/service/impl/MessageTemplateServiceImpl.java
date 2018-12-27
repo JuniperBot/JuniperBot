@@ -25,9 +25,12 @@ import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PropertyPlaceholderHelper;
+import ru.caramel.juniperbot.core.messaging.placeholder.ChannelPlaceholderResolver;
 import ru.caramel.juniperbot.core.messaging.placeholder.GuildPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.MemberPlaceholderResolver;
 import ru.caramel.juniperbot.core.messaging.placeholder.MessageTemplatePlaceholderResolver;
 import ru.caramel.juniperbot.core.model.MessageTemplateCompiler;
 import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
@@ -42,6 +45,7 @@ import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.awt.*;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @Slf4j
@@ -59,6 +63,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
     @Autowired
     private MessageTemplateRepository repository;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     public Message compile(@NonNull MessageTemplateCompiler compiler) {
         try {
             String content = getContent(compiler);
@@ -66,7 +73,7 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             MessageTemplatePlaceholderResolver resolver = getPropertyResolver(compiler);
 
             if (compiler.getTemplate() == null || compiler.getTemplate().getType() == MessageTemplateType.TEXT) {
-                content = processField(content, resolver, compiler, Message.MAX_CONTENT_LENGTH);
+                content = processContent(content, resolver, compiler, Message.MAX_CONTENT_LENGTH, false);
                 if (StringUtils.isBlank(content)) {
                     return null;
                 }
@@ -81,9 +88,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             MessageTemplate template = compiler.getTemplate();
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setDescription(processField(content, resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH));
-            embedBuilder.setThumbnail(processField(template.getThumbnailUrl()));
-            embedBuilder.setImage(processField(template.getImageUrl()));
+            embedBuilder.setDescription(processContent(content, resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false));
+            embedBuilder.setThumbnail(processContent(template.getThumbnailUrl()));
+            embedBuilder.setImage(processContent(template.getImageUrl()));
             if (StringUtils.isNotEmpty(template.getColor())) {
                 embedBuilder.setColor(Color.decode(template.getColor()));
             } else {
@@ -91,27 +98,29 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             }
 
             embedBuilder.setAuthor(
-                    processField(template.getAuthor(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH),
-                    processField(template.getAuthorUrl()),
-                    processField(template.getAuthorIconUrl()));
+                    processContent(template.getAuthor(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),
+                    processContent(template.getAuthorUrl()),
+                    processContent(template.getAuthorIconUrl()));
 
             embedBuilder.setTitle(
-                    processField(template.getTitle(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH),
-                    processField(template.getAuthorUrl()));
+                    processContent(template.getTitle(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),
+                    processContent(template.getAuthorUrl()));
 
             embedBuilder.setFooter(
-                    processField(template.getFooter(), resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH),
-                    processField(template.getFooterIconUrl()));
+                    processContent(template.getFooter(), resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false),
+                    processContent(template.getFooterIconUrl()));
 
             int length = embedBuilder.length();
 
             if (CollectionUtils.isNotEmpty(template.getFields())) {
                 for (MessageTemplateField templateField : template.getFields()) {
-                    String name = processField(templateField.getName(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH);
+                    String name = processContent(templateField.getName(), resolver, compiler,
+                            MessageEmbed.TITLE_MAX_LENGTH, false);
                     if (StringUtils.isEmpty(name)) {
                         name = "";
                     }
-                    String value = processField(templateField.getValue(), resolver, compiler, MessageEmbed.VALUE_MAX_LENGTH);
+                    String value = processContent(templateField.getValue(), resolver, compiler,
+                            MessageEmbed.VALUE_MAX_LENGTH, false);
                     if (StringUtils.isEmpty(value)) {
                         value = "";
                     }
@@ -130,9 +139,29 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             messageBuilder.setEmbed(embedBuilder.build());
             return messageBuilder.build();
         } catch (IllegalArgumentException e) {
-            log.warn("Cannot compile message", e);
+            log.error("Cannot compile message", e);
         }
         return null;
+    }
+
+    private TextChannel getTargetChannel(@NonNull MessageTemplateCompiler compiler) {
+        MessageTemplate template = compiler.getTemplate();
+        Guild guild = compiler.getGuild();
+        if (guild == null || template != null && DM_CHANNEL.equals(template.getChannelId())) {
+            return null;
+        }
+
+        TextChannel channel = null;
+        if (template != null && StringUtils.isNotEmpty(template.getChannelId())) {
+            channel = guild.getTextChannelById(template.getChannelId());
+        }
+
+        if (canTalk(channel)) {
+            return channel;
+        }
+
+        channel = compiler.getFallbackChannel();
+        return canTalk(channel) ? channel : null;
     }
 
     private void compileAndSend(@NonNull MessageTemplateCompiler compiler) {
@@ -163,27 +192,15 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             return;
         }
 
-        if (guild == null) {
-            return;
-        }
-
-        contextService.withContext(guild, () -> {
-            TextChannel channel = null;
-            if (template != null && StringUtils.isNotEmpty(template.getChannelId())) {
-                channel = guild.getTextChannelById(template.getChannelId());
-            }
-
-            if (!canTalk(channel) && compiler.getFallbackChannel() != null) {
-                channel = fallbackChannel;
-            }
-
-            if (canTalk(channel)) {
+        TextChannel channel = getTargetChannel(compiler);
+        if (channel != null) {
+            contextService.withContext(channel.getGuild(), () -> {
                 Message message = compile(compiler);
                 if (message != null) {
                     messageService.sendMessageSilent(channel::sendMessage, message);
                 }
-            }
-        });
+            });
+        }
     }
 
     private boolean canTalk(TextChannel channel) {
@@ -211,21 +228,41 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
     private MessageTemplatePlaceholderResolver getPropertyResolver(@NonNull MessageTemplateCompiler compiler) {
         Set<PropertyPlaceholderHelper.PlaceholderResolver> resolvers = new HashSet<>();
         resolvers.add(compiler.getVariables());
+        Locale locale = null;
         if (compiler.getGuild() != null) {
-            resolvers.add(GuildPlaceholderResolver.of(compiler.getGuild(), "guild"));
+            locale = contextService.getLocale(compiler.getGuild());
+            resolvers.add(GuildPlaceholderResolver.of(compiler.getGuild(), locale, applicationContext, "server"));
         }
-        // TODO add member resolver
+        if (compiler.getMember() != null) {
+            if (locale == null) {
+                locale = contextService.getLocale(compiler.getMember().getGuild());
+            }
+            resolvers.add(MemberPlaceholderResolver.of(compiler.getMember(), locale, applicationContext, "member"));
+        }
+        TextChannel channel = getTargetChannel(compiler);
+        if (channel != null) {
+            if (locale == null) {
+                locale = contextService.getLocale(channel.getGuild());
+            }
+            resolvers.add(ChannelPlaceholderResolver.of(channel, locale, applicationContext, "channel"));
+        }
         return new MessageTemplatePlaceholderResolver(resolvers);
     }
 
-    private static String processField(String value,
-                                       MessageTemplatePlaceholderResolver resolver,
-                                       MessageTemplateCompiler compiler,
-                                       Integer maxLength) {
+    private static String processContent(String value,
+                                         MessageTemplatePlaceholderResolver resolver,
+                                         MessageTemplateCompiler compiler,
+                                         Integer maxLength,
+                                         boolean placeholdersOnly) {
         value = value != null ? value.trim() : null;
         if (StringUtils.isBlank(value)) {
             return null;
         }
+
+        if (!placeholdersOnly && compiler != null && compiler.getGuild() != null) {
+            value = DiscordUtils.replaceReferences(value, compiler.getGuild());
+        }
+
         if (resolver != null) {
             value = PLACEHOLDER_HELPER.replacePlaceholders(value, resolver);
         }
@@ -234,18 +271,14 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             return null; // check it second time
         }
 
-        if (compiler != null && compiler.getGuild() != null) {
-            value = DiscordUtils.replaceReferences(value, compiler.getGuild());
-        }
-
         if (maxLength != null && value.length() > maxLength) {
             value = CommonUtils.trimTo(value, maxLength);
         }
         return value;
     }
 
-    private static String processField(String value) {
-        return processField(value, null, null, null);
+    private static String processContent(String value) {
+        return processContent(value, null, null, null, false);
     }
 
     @Override
@@ -265,6 +298,12 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             @Override
             public void compileAndSend() {
                 MessageTemplateServiceImpl.this.compileAndSend(this);
+            }
+
+            @Override
+            public String processContent(String content, boolean placeholdersOnly) {
+                MessageTemplatePlaceholderResolver resolver = getPropertyResolver(this);
+                return MessageTemplateServiceImpl.processContent(content, resolver, this, null, placeholdersOnly);
             }
         };
     }

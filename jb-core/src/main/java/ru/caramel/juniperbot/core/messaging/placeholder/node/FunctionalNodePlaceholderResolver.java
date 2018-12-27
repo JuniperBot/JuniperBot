@@ -18,21 +18,29 @@ package ru.caramel.juniperbot.core.messaging.placeholder.node;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.context.ApplicationContext;
+import ru.caramel.juniperbot.core.utils.TriFunction;
 
+import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
 
 @AllArgsConstructor
 public abstract class FunctionalNodePlaceholderResolver<T> extends AbstractNodePlaceholderResolver {
 
     @NonNull
-    private final Map<String, Function<T, ?>> accessors;
+    private final Map<String, TriFunction<T, Locale, ApplicationContext, ?>> accessors;
+
+    @NonNull
+    protected final Locale locale;
+
+    @NonNull
+    protected final ApplicationContext applicationContext;
 
     protected abstract T getObject();
 
     @Override
     public Object getChild(String name) {
-        Function<T, ?> function = accessors.get(name);
-        return function != null ? function.apply(getObject()) : null;
+        TriFunction<T, Locale, ApplicationContext, ?> function = accessors.get(name);
+        return function != null ? function.apply(getObject(), locale, applicationContext) : null;
     }
 }

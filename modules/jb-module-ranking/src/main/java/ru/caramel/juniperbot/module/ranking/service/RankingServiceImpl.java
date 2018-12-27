@@ -154,7 +154,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                                 .withFallbackChannel(event.getChannel())
                                 .withDirectAllowed(true)
                                 .withVariable("level", newLevel)
-                                .withVariable("user", event.getMember().getAsMention())
                                 .compileAndSend();
                     }
                     updateRewards(config, event.getMember(), ranking);

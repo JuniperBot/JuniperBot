@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.messaging.placeholder;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.messaging.placeholder.node.FunctionalNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.messaging.placeholder.node.SingletonNodePlaceholderResolver;
@@ -29,45 +29,47 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<Guild> {
+public class MemberPlaceholderResolver extends FunctionalNodePlaceholderResolver<Member> {
 
-    private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS;
+    private final static Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> ACCESSORS;
 
     static {
-        Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
-        accessors.put("id", (g, l, c) -> g.getId());
-        accessors.put("name", (g, l, c) -> g.getName());
-        accessors.put("region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()));
-        accessors.put("afkTimeout", (g, l, c) ->  g.getAfkTimeout().getSeconds());
-        accessors.put("afkChannel", (g, l, c) ->  g.getAfkChannel() != null ? g.getAfkChannel().getName() : "");
-        accessors.put("memberCount", (g, l, c) ->  g.getMembers().size());
-        accessors.put("createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getCreationTime(), l, g, c));
+        Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
+        accessors.put("id", (m, l, c) -> m.getUser().getId());
+        accessors.put("mention", (m, l, c) -> m.getAsMention());
+        accessors.put("nickname", (m, l, c) -> m.getEffectiveName());
+        accessors.put("name", (m, l, c) -> m.getUser().getName());
+        accessors.put("discriminator", (m, l, c) -> m.getUser().getDiscriminator());
+        accessors.put("joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getJoinDate(), l, m.getGuild(), c));
+        accessors.put("createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getCreationTime(), l, m.getGuild(), c));
+        accessors.put("status", (m, l, c) -> c.getBean(MessageService.class).getEnumTitle(m.getOnlineStatus()));
+        accessors.put("avatarUrl", (m, l, c) -> m.getUser().getEffectiveAvatarUrl());
         ACCESSORS = Collections.unmodifiableMap(accessors);
     }
 
-    private final Guild guild;
+    private final Member member;
 
-    public GuildPlaceholderResolver(@NonNull Guild guild,
-                                    @NonNull Locale locale,
-                                    @NonNull ApplicationContext applicationContext) {
+    public MemberPlaceholderResolver(@NonNull Member member,
+                                     @NonNull Locale locale,
+                                     @NonNull ApplicationContext applicationContext) {
         super(ACCESSORS, locale, applicationContext);
-        this.guild = guild;
+        this.member = member;
     }
 
     @Override
-    protected Guild getObject() {
-        return guild;
+    protected Member getObject() {
+        return member;
     }
 
     @Override
     public Object getValue() {
-        return guild.getName();
+        return member.getAsMention();
     }
 
-    public static SingletonNodePlaceholderResolver of(@NonNull Guild guild,
+    public static SingletonNodePlaceholderResolver of(@NonNull Member member,
                                                       @NonNull Locale locale,
                                                       @NonNull ApplicationContext context,
                                                       @NonNull String name) {
-        return new SingletonNodePlaceholderResolver(name, new GuildPlaceholderResolver(guild, locale, context));
+        return new SingletonNodePlaceholderResolver(name, new MemberPlaceholderResolver(member, locale, context));
     }
 }

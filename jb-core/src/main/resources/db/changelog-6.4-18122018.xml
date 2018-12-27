@@ -250,4 +250,17 @@
         </sql>
     </changeSet>
 
+    <changeSet id="6.4-18122018-9" author="caramel">
+        <sql>
+            <![CDATA[
+                UPDATE message_template SET content = REPLACE(content, '{guild}', '{server}');
+                UPDATE message_template SET content = REPLACE(content, '{author}', '{member}');
+                UPDATE message_template SET content = REPLACE(content, '{user}', '{member}');
+
+                UPDATE custom_command SET content = REPLACE(content, '{guild}', '{server}');
+                UPDATE custom_command SET content = REPLACE(content, '{author}', '{member}');
+            ]]>
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

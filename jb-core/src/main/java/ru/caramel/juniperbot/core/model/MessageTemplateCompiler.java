@@ -77,4 +77,6 @@ public abstract class MessageTemplateCompiler {
     public abstract Message compile();
 
     public abstract void compileAndSend();
+
+    public abstract String processContent(String content, boolean placeholdersOnly);
 }

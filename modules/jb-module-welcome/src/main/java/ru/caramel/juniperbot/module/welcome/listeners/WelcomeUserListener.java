@@ -126,7 +126,6 @@ public class WelcomeUserListener extends DiscordEventListener {
                         .withGuild(guild)
                         .withMember(event.getMember())
                         .withFallbackChannel(channel)
-                        .withVariable("user", event.getUser().getAsMention())
                         .compileAndSend();
             }
 
@@ -136,7 +135,6 @@ public class WelcomeUserListener extends DiscordEventListener {
                         .withFallbackContent("welcome.join.dm.message")
                         .withGuild(guild)
                         .withMember(event.getMember())
-                        .withVariable("user", event.getUser().getAsMention())
                         .compile();
 
                 if (compiledMessage != null) {
@@ -169,8 +167,7 @@ public class WelcomeUserListener extends DiscordEventListener {
                     .withFallbackContent("welcome.leave.message")
                     .withGuild(guild)
                     .withFallbackChannel(channel)
-                    .withVariable("user", event.getUser().getName())
-                    .withVariable("guild", event.getGuild().getName())
+                    .withMember(event.getMember())
                     .compileAndSend();
         });
     }
