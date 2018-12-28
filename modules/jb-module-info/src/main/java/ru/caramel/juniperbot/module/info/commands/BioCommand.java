@@ -30,12 +30,14 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioRepository;
 
-@DiscordCommand(key = "discord.command.bio.key",
+@DiscordCommand(key = BioCommand.KEY,
         description = "discord.command.bio.desc",
         group = "discord.command.group.info",
         source = ChannelType.TEXT,
         priority = 15)
 public class BioCommand extends AbstractInfoCommand {
+
+    public static final String KEY = "discord.command.bio.key";
 
     @Autowired
     private MemberService memberService;

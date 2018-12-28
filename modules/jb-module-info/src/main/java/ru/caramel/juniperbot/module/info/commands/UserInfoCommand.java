@@ -99,13 +99,17 @@ public class UserInfoCommand extends AbstractInfoCommand {
             }
             MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), user.getId());
             String bio = memberBio != null ? memberBio.getBio() : null;
-            if (StringUtils.isEmpty(bio) && Objects.equals(author, user)) {
+            if (StringUtils.isEmpty(bio)
+                    && Objects.equals(author, user)
+                    && !commandsService.isRestricted(BioCommand.KEY, message.getTextChannel(), message.getMember())) {
                 String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
                         context.getCommandLocale());
                 bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
                         bioCommand);
             }
-            builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
+            if (StringUtils.isNotEmpty(bio)) {
+                builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
+            }
         }
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
