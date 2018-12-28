@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,7 +201,7 @@ public final class DiscordUtils {
             return url;
         }
         try {
-            String result = java.net.URLDecoder.decode(url, "UTF-8");
+            String result = java.net.URLDecoder.decode(url, StandardCharsets.UTF_8);
             if (EmbedBuilder.URL_PATTERN.matcher(result).matches()) {
                 return result;
             }

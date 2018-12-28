@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 
 public abstract class AbstractDetails implements Serializable {
 
+    private static final long serialVersionUID = -1042698159134221318L;
+
     @Getter
     @Setter(AccessLevel.PROTECTED)
     protected String id;

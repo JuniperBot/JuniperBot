@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -53,11 +51,8 @@ import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider.*;
 
 import static ru.caramel.juniperbot.core.audit.MemberWarnAuditForwardProvider.*;
 

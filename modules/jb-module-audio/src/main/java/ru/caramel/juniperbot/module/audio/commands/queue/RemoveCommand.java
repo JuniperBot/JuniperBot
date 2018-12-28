@@ -43,7 +43,7 @@ public class RemoveCommand extends AudioCommand {
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (StringUtils.isNumeric(content)) {
-            Integer index = 0;
+            Integer index;
             try {
                 index = Integer.parseInt(content) - 1;
                 if (index >= 0) {

@@ -110,8 +110,8 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
                         return new StoredPlaylist(playlist, tracks);
                     }
                 }
+                onError(playlist, "discord.command.audio.playlist.notFound");
             }
-            onError(playlist, "discord.command.audio.playlist.notFound");
         }
         return null;
     }

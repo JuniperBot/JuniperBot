@@ -25,6 +25,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class UserEntity extends BaseEntity {
 
+    private static final long serialVersionUID = 3926942599513804008L;
+
     @Setter
     @Getter
     @Column(name = "user_id")

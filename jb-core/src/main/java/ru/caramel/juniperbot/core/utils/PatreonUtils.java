@@ -23,7 +23,7 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import ru.caramel.juniperbot.core.patreon.resources.Member;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class PatreonUtils {
 
@@ -45,14 +45,10 @@ public class PatreonUtils {
     }
 
     public static Member parseMember(String content) {
-        try {
-            JSONAPIDocument<Member> document = converter.readDocument(
-                    content.getBytes("UTF-8"),
-                    Member.class
-            );
-            return document.get();
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        JSONAPIDocument<Member> document = converter.readDocument(
+                content.getBytes(StandardCharsets.UTF_8),
+                Member.class
+        );
+        return document.get();
     }
 }

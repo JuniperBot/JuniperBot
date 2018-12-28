@@ -61,6 +61,10 @@ public class UnMuteJob extends AbstractJob {
             moderationService.clearState(Long.parseLong(guildId), userId, channelId);
         }
 
+        if (StringUtils.isEmpty(guildId)) {
+            return;
+        }
+
         Guild guild = shardManager.getGuildById(guildId);
         if (guild != null) {
             if (!guild.isAvailable()) {

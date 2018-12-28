@@ -37,8 +37,12 @@ public class JmxJDAMBean implements JmxNamedResource {
     public JmxJDAMBean(JDA jda) {
         this.jda = jda;
         Field rateLimitPoolField = ReflectionUtils.findField(JDAImpl.class, "rateLimitPool");
-        rateLimitPoolField.setAccessible(true);
-        this.rateLimitPool = getField(ScheduledThreadPoolExecutor.class, rateLimitPoolField);
+        if (rateLimitPoolField != null) {
+            rateLimitPoolField.setAccessible(true);
+            this.rateLimitPool = getField(ScheduledThreadPoolExecutor.class, rateLimitPoolField);
+        } else {
+            this.rateLimitPool = null;
+        }
         if (this.rateLimitPool == null) {
             log.warn("No rateLimitPool found in JDA instance!");
         }

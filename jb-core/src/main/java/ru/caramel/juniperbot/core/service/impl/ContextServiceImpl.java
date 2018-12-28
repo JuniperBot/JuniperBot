@@ -212,6 +212,7 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T withContext(Guild guild, Supplier<T> action) {
         Object[] holder = new Object[1];
         withContext(guild, () -> {

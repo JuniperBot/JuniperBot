@@ -26,8 +26,6 @@ import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 
-import java.util.List;
-
 @Repository
 public interface RankingRepository extends JpaRepository<Ranking, Long> {
 

@@ -346,7 +346,7 @@ public class VkServiceImpl implements VkService {
                 String artist = null;
                 if (StringUtils.isNotEmpty(audio.getArtist())) {
                     artist = HtmlUtils.htmlUnescape(audio.getArtist());
-                    String artistUrl = CommonUtils.makeLink(artist, String.format(AUDIO_URL, UriUtils.encode(artist, "UTF-8")));;
+                    String artistUrl = CommonUtils.makeLink(artist, String.format(AUDIO_URL, UriUtils.encode(artist, "UTF-8")));
                     addField(message, builders, messageService.getMessage("vk.message.audio.artist"), artistUrl, true);
                 }
                 if (StringUtils.isNotEmpty(audio.getTitle())) {

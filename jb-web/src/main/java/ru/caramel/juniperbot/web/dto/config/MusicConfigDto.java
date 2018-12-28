@@ -30,6 +30,8 @@ import java.util.Set;
 @Setter
 public class MusicConfigDto implements Serializable {
 
+    private static final long serialVersionUID = 7176312892290286477L;
+
     @DiscordEntity(DiscordEntityType.VOICE_CHANNEL)
     private String channelId;
 

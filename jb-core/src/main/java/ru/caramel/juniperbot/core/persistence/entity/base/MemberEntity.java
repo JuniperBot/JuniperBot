@@ -25,6 +25,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class MemberEntity extends GuildEntity {
 
+    private static final long serialVersionUID = 1240509529142059969L;
+
     @Setter
     @Getter
     @Column(name = "user_id")

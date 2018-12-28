@@ -22,8 +22,6 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.Objects;
-
 @ManagedResource
 public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
 

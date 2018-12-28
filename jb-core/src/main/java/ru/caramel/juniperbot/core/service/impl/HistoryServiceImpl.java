@@ -40,7 +40,6 @@ import ru.caramel.juniperbot.core.service.MemberService;
 import java.util.Date;
 import java.util.Objects;
 
-import static ru.caramel.juniperbot.core.audit.MessageAuditForwardProvider.*;
 import static ru.caramel.juniperbot.core.audit.MessageEditAuditForwardProvider.*;
 
 @Service

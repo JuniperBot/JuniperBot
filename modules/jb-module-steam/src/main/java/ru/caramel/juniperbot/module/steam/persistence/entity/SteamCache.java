@@ -25,7 +25,6 @@ import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "steam_cache")

@@ -36,7 +36,7 @@ public class GuildInfoRequest implements Serializable {
     public enum PartType {
         TEXT_CHANNELS,
         VOICE_CHANNELS,
-        ROLES;
+        ROLES
     }
 
     public GuildInfoRequest(long id) {

@@ -88,6 +88,9 @@ public class InstagramService {
                 ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL + pollUserName, String.class);
                 if (HttpStatus.OK == response.getStatusCode()) {
                     String result = response.getBody();
+                    if (result == null) {
+                        return cache;
+                    }
 
                     Matcher matcher = PATTERN.matcher(result);
                     if (matcher.find()) {

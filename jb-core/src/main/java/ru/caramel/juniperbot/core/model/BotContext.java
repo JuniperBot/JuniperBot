@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.core.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.Guild;
 import org.joda.time.DateTimeZone;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.ContextService;

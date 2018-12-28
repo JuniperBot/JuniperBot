@@ -30,7 +30,6 @@ import ru.caramel.juniperbot.module.wikifur.utils.SearchQuery;
 import ru.caramel.juniperbot.module.wikifur.utils.TextConverter;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 

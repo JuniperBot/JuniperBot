@@ -29,7 +29,6 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
-import ru.caramel.juniperbot.core.service.ModerationService;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;

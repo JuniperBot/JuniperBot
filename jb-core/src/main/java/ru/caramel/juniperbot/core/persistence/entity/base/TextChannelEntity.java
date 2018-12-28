@@ -25,6 +25,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class TextChannelEntity extends GuildEntity {
 
+    private static final long serialVersionUID = -1103451982451538548L;
+
     @Setter
     @Getter
     @Column(name = "channel_id")

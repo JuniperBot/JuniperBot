@@ -32,6 +32,8 @@ public abstract class AbstractArrayTypeDescriptor<T>
         extends AbstractTypeDescriptor<T>
         implements DynamicParameterizedType {
 
+    private static final long serialVersionUID = 8996147933030468081L;
+
     private Class<T> arrayObjectClass;
 
     @Override
@@ -48,6 +50,8 @@ public abstract class AbstractArrayTypeDescriptor<T>
         super(
                 arrayObjectClass,
                 (MutabilityPlan<T>) new MutableMutabilityPlan<Object>() {
+                    private static final long serialVersionUID = 5441650086018349126L;
+
                     @Override
                     protected T deepCopyNotNull(Object value) {
                         return ArrayUtil.deepCopy(value);

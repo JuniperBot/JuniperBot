@@ -30,6 +30,8 @@ import javax.validation.constraints.Size;
 @Setter
 public abstract class MemberMessageEntity extends MemberEntity {
 
+    private static final long serialVersionUID = -3480359468078209437L;
+
     @Size(max = MessageEmbed.TEXT_MAX_LENGTH)
     @Basic
     protected String message;
