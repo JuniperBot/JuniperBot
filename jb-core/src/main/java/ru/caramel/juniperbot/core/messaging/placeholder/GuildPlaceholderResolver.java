@@ -24,26 +24,20 @@ import ru.caramel.juniperbot.core.messaging.placeholder.node.SingletonNodePlaceh
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.TriFunction;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<Guild> {
 
-    private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS;
-
-    static {
-        Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
-        accessors.put("id", (g, l, c) -> g.getId());
-        accessors.put("name", (g, l, c) -> g.getName());
-        accessors.put("region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()));
-        accessors.put("afkTimeout", (g, l, c) ->  g.getAfkTimeout().getSeconds());
-        accessors.put("afkChannel", (g, l, c) ->  g.getAfkChannel() != null ? g.getAfkChannel().getName() : "");
-        accessors.put("memberCount", (g, l, c) ->  g.getMembers().size());
-        accessors.put("createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getCreationTime(), l, g, c));
-        ACCESSORS = Collections.unmodifiableMap(accessors);
-    }
+    private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
+            "id", (g, l, c) -> g.getId(),
+            "name", (g, l, c) -> g.getName(),
+            "region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()),
+            "afkTimeout", (g, l, c) -> g.getAfkTimeout().getSeconds() / 60,
+            "afkChannel", (g, l, c) -> g.getAfkChannel() != null ? g.getAfkChannel().getName() : "",
+            "memberCount", (g, l, c) -> g.getMembers().size(),
+            "createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getCreationTime(), l, g, c)
+    );
 
     private final Guild guild;
 

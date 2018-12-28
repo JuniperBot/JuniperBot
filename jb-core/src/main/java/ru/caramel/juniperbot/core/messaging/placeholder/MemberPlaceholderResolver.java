@@ -24,28 +24,22 @@ import ru.caramel.juniperbot.core.messaging.placeholder.node.SingletonNodePlaceh
 import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.core.utils.TriFunction;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class MemberPlaceholderResolver extends FunctionalNodePlaceholderResolver<Member> {
 
-    private final static Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> ACCESSORS;
-
-    static {
-        Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
-        accessors.put("id", (m, l, c) -> m.getUser().getId());
-        accessors.put("mention", (m, l, c) -> m.getAsMention());
-        accessors.put("nickname", (m, l, c) -> m.getEffectiveName());
-        accessors.put("name", (m, l, c) -> m.getUser().getName());
-        accessors.put("discriminator", (m, l, c) -> m.getUser().getDiscriminator());
-        accessors.put("joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getJoinDate(), l, m.getGuild(), c));
-        accessors.put("createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getCreationTime(), l, m.getGuild(), c));
-        accessors.put("status", (m, l, c) -> c.getBean(MessageService.class).getEnumTitle(m.getOnlineStatus()));
-        accessors.put("avatarUrl", (m, l, c) -> m.getUser().getEffectiveAvatarUrl());
-        ACCESSORS = Collections.unmodifiableMap(accessors);
-    }
+    private final static Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
+            "id", (m, l, c) -> m.getUser().getId(),
+            "mention", (m, l, c) -> m.getAsMention(),
+            "nickname", (m, l, c) -> m.getEffectiveName(),
+            "name", (m, l, c) -> m.getUser().getName(),
+            "discriminator", (m, l, c) -> m.getUser().getDiscriminator(),
+            "joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getJoinDate(), l, m.getGuild(), c),
+            "createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getCreationTime(), l, m.getGuild(), c),
+            "status", (m, l, c) -> c.getBean(MessageService.class).getEnumTitle(m.getOnlineStatus()),
+            "avatarUrl", (m, l, c) -> m.getUser().getEffectiveAvatarUrl()
+    );
 
     private final Member member;
 

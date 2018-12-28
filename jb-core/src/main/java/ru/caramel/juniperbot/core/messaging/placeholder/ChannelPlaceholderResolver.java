@@ -23,25 +23,19 @@ import ru.caramel.juniperbot.core.messaging.placeholder.node.FunctionalNodePlace
 import ru.caramel.juniperbot.core.messaging.placeholder.node.SingletonNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.utils.TriFunction;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class ChannelPlaceholderResolver extends FunctionalNodePlaceholderResolver<TextChannel> {
 
-    private final static Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> ACCESSORS;
-
-    static {
-        Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> accessors = new HashMap<>();
-        accessors.put("id", (t, l, c) -> t.getId());
-        accessors.put("name", (t, l, c) -> t.getName());
-        accessors.put("mention", (t, l, c) -> t.getAsMention());
-        accessors.put("topic", (t, l, c) -> t.getTopic() != null ? t.getTopic() : "");
-        accessors.put("position", (t, l, c) -> t.getPosition());
-        accessors.put("createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getCreationTime(), l, t.getGuild(), c));
-        ACCESSORS = Collections.unmodifiableMap(accessors);
-    }
+    private final static Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
+            "id", (t, l, c) -> t.getId(),
+            "name", (t, l, c) -> t.getName(),
+            "mention", (t, l, c) -> t.getAsMention(),
+            "topic", (t, l, c) -> t.getTopic() != null ? t.getTopic() : "",
+            "position", (t, l, c) -> t.getPosition() + 1,
+            "createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getCreationTime(), l, t.getGuild(), c)
+    );
 
     private final TextChannel channel;
 
@@ -59,7 +53,7 @@ public class ChannelPlaceholderResolver extends FunctionalNodePlaceholderResolve
 
     @Override
     public Object getValue() {
-        return channel.getName();
+        return channel.getAsMention();
     }
 
     public static SingletonNodePlaceholderResolver of(@NonNull TextChannel channel,

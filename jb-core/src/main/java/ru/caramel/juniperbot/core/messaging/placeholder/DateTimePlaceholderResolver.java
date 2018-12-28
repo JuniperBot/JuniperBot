@@ -57,7 +57,6 @@ public class DateTimePlaceholderResolver extends AbstractNodePlaceholderResolver
     @Override
     public Object getChild(String name) {
         switch (name) {
-            // formats
             case "shortTime":
                 return format(DateTimeFormat.shortTime());
             case "mediumTime":
@@ -71,7 +70,7 @@ public class DateTimePlaceholderResolver extends AbstractNodePlaceholderResolver
             case "mediumDate":
                 return format(DateTimeFormat.mediumDate());
             case "longDate":
-                return format(DateTimeFormat.longDate());
+                return format(DateTimeFormat.longDate()); // The same as medium
             case "fullDate":
                 return format(DateTimeFormat.fullDate());
             case "shortDateTime":
@@ -97,17 +96,15 @@ public class DateTimePlaceholderResolver extends AbstractNodePlaceholderResolver
         if (timeZone != null) {
             return timeZone;
         }
-        if (guild == null) {
-            return timeZone = DateTimeZone.UTC;
-        }
-        GuildConfig config = applicationContext.getBean(ConfigService.class).get(guild);
-        if (config == null) {
-            return timeZone = DateTimeZone.UTC;
-        }
-        try {
-            return timeZone = DateTimeZone.forID(config.getTimeZone());
-        } catch (IllegalArgumentException e) {
-            // fall down
+        if (guild != null) {
+            GuildConfig config = applicationContext.getBean(ConfigService.class).get(guild);
+            if (config != null) {
+                try {
+                    return timeZone = DateTimeZone.forID(config.getTimeZone());
+                } catch (IllegalArgumentException e) {
+                    // fall down
+                }
+            }
         }
         return timeZone = DateTimeZone.UTC;
     }
