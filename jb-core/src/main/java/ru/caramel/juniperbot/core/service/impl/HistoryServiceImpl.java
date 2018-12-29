@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ import ru.caramel.juniperbot.core.service.MemberService;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.caramel.juniperbot.core.audit.MessageEditAuditForwardProvider.*;
 
@@ -86,11 +88,11 @@ public class HistoryServiceImpl implements HistoryService {
             return;
         }
         String oldContent = history.getMessage();
-        String newContent = message.getContentStripped();
+        String newContent = getContent(message);
         if (Objects.equals(oldContent, newContent)) {
             return;
         }
-        history.setMessage(message.getContentStripped());
+        history.setMessage(newContent);
         history.setUpdateDate(new Date());
         historyRepository.save(history);
 
@@ -157,10 +159,26 @@ public class HistoryServiceImpl implements HistoryService {
         messageHistory.setGuildId(message.getGuild().getIdLong());
         messageHistory.setUserId(message.getAuthor().getId());
         messageHistory.setChannelId(message.getTextChannel().getId());
-        messageHistory.setMessage(message.getContentStripped());
+        messageHistory.setMessage(getContent(message));
         messageHistory.setMessageId(message.getId());
         messageHistory.setCreateDate(new Date());
         messageHistory.setUpdateDate(messageHistory.getCreateDate());
         return messageHistory;
+    }
+
+    private static String getContent(Message message) {
+        StringBuilder builder = new StringBuilder(message.getContentStripped());
+        String attachmentsPart = message.getAttachments().stream()
+                .map(Message.Attachment::getUrl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(",\n"));
+        if (StringUtils.isNotEmpty(attachmentsPart)) {
+            if (builder.length() > 0) {
+                builder.append("\n");
+            }
+            builder.append("---");
+            builder.append(attachmentsPart);
+        }
+        return builder.toString();
     }
 }
