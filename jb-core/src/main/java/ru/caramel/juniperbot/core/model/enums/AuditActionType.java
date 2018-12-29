@@ -28,6 +28,7 @@ public enum AuditActionType {
     MEMBER_LEAVE("#EAD967"),
     MEMBER_WARN("#FFCA59"),
     MEMBER_BAN("#FF686B"),
+    MEMBER_UNBAN("#85EA8A"),
     MEMBER_KICK("#FFA154"),
     MEMBER_MUTE("#FFCA59"),
     MEMBER_UNMUTE("#85EA8A"),

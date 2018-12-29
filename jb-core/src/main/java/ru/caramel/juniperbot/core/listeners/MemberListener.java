@@ -17,6 +17,7 @@ package ru.caramel.juniperbot.core.listeners;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
+import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.ModerationAuditForwardProvider;
 import ru.caramel.juniperbot.core.audit.NicknameChangeAuditForwardProvider;
+import ru.caramel.juniperbot.core.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
@@ -72,6 +74,21 @@ public class MemberListener extends DiscordEventListener {
                     .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
                     .save();
         });
+    }
+
+    @Override
+    public void onGuildUnban(GuildUnbanEvent event) {
+        if (event.getUser().isBot() || !event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
+            return;
+        }
+        AuditActionBuilder actionBuilder = getAuditService().log(event.getGuild(), AuditActionType.MEMBER_UNBAN);
+        LocalMember member = memberService.get(event.getGuild(), event.getUser());
+        if (member != null) {
+            actionBuilder.withTargetUser(member);
+        } else {
+            actionBuilder.withTargetUser(event.getUser());
+        }
+        actionBuilder.save();
     }
 
     @Override
