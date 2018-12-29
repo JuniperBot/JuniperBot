@@ -350,8 +350,11 @@ public class AudioMessageManager {
             if (nextHint && i == 0) {
                 name = messageService.getMessage("discord.command.audio.queue.next");
             }
+
+            String duration = info.isStream ? "" : String.format("`[%s]`", CommonUtils.formatDuration(track.getDuration()));
+            String icon = info.isStream ? ":red_circle: " : ":musical_note: ";
             String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
-                    CommonUtils.formatDuration(track.getDuration()), !nextHint && rowNum - instance.getCursor() == 1 ? ":musical_note: " : "",
+                    duration, !nextHint && rowNum - instance.getCursor() == 1 ? icon : "",
                     getTitle(info), getUrl(info), getMemberName(request, false));
             builder.addField(name, title, false);
         }
