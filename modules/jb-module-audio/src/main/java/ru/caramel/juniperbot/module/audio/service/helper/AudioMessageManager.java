@@ -145,6 +145,11 @@ public class AudioMessageManager {
         });
     }
 
+    public void onResetMessage(TrackRequest request) {
+        request.setResetMessage(true);
+        updateMessage(request);
+    }
+
     public void onTrackEnd(TrackRequest request) {
         syncByGuild(request, () -> {
             cancelUpdate(request);

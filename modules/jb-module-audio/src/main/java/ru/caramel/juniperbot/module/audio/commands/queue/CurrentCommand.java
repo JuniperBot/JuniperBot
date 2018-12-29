@@ -40,7 +40,7 @@ public class CurrentCommand extends AudioCommand {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;
         }
-        current.setResetMessage(true);
+        messageManager.onResetMessage(current);
         return true;
     }
 
