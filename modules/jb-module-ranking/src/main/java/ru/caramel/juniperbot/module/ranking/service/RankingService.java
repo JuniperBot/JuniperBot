@@ -38,9 +38,9 @@ public interface RankingService extends DomainService<RankingConfig> {
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
-    void setLevel(long guildId, String userId, int level);
+    void update(long guildId, String userId, Integer level, boolean resetCookies);
 
-    void resetAll(long guildId);
+    void resetAll(long guildId, boolean levels, boolean cookies);
 
     boolean isBanned(RankingConfig config, Member member);
 

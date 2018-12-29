@@ -48,7 +48,7 @@ public class RankingListener extends DiscordEventListener {
         taskExecutor.execute(() -> {
             RankingConfig config = rankingService.get(event.getGuild());
             if (config != null && config.isResetOnLeave()) {
-                rankingService.setLevel(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0);
+                rankingService.update(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0, true);
             }
         });
     }

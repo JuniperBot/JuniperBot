@@ -66,9 +66,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     private CookieRepository cookieRepository;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -210,16 +207,20 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     @Transactional
     @Override
-    public void setLevel(long guildId, @NonNull String userId, int level) {
-        if (level > RankingUtils.MAX_LEVEL) {
-            level = RankingUtils.MAX_LEVEL;
-        } else if (level < 0) {
-            level = 0;
-        }
+    public void update(long guildId, @NonNull String userId, Integer level, boolean resetCookies) {
         LocalMember localMember = memberRepository.findByGuildIdAndUserId(guildId, userId);
-
         Ranking ranking = getRanking(localMember);
-        if (ranking != null) {
+        if (ranking == null) {
+            return;
+        }
+
+        if (level != null) {
+            if (level > RankingUtils.MAX_LEVEL) {
+                level = RankingUtils.MAX_LEVEL;
+            } else if (level < 0) {
+                level = 0;
+            }
+
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
             rankingRepository.save(ranking);
             rankingRepository.recalculateRank(guildId);
@@ -234,13 +235,25 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 }
             }
         }
+
+        if (resetCookies) {
+            cookieRepository.deleteByRecipient(guildId, userId);
+            ranking.setCookies(0);
+            rankingRepository.save(ranking);
+        }
     }
 
     @Transactional
     @Override
-    public void resetAll(long guildId) {
-        rankingRepository.resetAll(guildId);
-        rankingRepository.recalculateRank(guildId);
+    public void resetAll(long guildId, boolean levels, boolean cookies) {
+        if (levels) {
+            rankingRepository.resetAll(guildId);
+            rankingRepository.recalculateRank(guildId);
+        }
+        if (cookies) {
+            cookieRepository.deleteByGuild(guildId);
+            rankingRepository.resetCookies(guildId);
+        }
     }
 
     private void updateRewards(RankingConfig config, Member member, Ranking ranking) {

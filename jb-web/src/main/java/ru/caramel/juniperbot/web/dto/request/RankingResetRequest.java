@@ -19,19 +19,15 @@ package ru.caramel.juniperbot.web.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Getter
 @Setter
-public class RankingUpdateRequest implements Serializable {
+public class RankingResetRequest implements Serializable {
 
-    private static final long serialVersionUID = -3799974593630579892L;
+    private static final long serialVersionUID = 9096430469848467143L;
 
-    @NotNull
-    private String userId;
+    private boolean levels;
 
-    private Integer level;
-
-    private boolean resetCookies;
+    private boolean cookies;
 }

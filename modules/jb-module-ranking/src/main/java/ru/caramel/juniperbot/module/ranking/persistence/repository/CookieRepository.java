@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.module.ranking.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,14 @@ public interface CookieRepository extends JpaRepository<Cookie, Long> {
 
     @Query("SELECT r.id, count(c) from Cookie c, LocalMember r WHERE c.recipient.id = r.id AND r IN :recipients GROUP BY r.id")
     List<Object[]> countByRecipients(@Param("recipients") Collection<LocalMember> recipients);
+
+    @Modifying
+    @Query("DELETE FROM Cookie c WHERE c.recipient IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
+    void deleteByGuild(@Param("guildId") long guildId);
+
+    @Modifying
+    @Query("DELETE FROM Cookie c WHERE c.recipient IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId AND m.user.userId = :recipientId)")
+    void deleteByRecipient(@Param("guildId") long guildId, @Param("recipientId") String recipientId);
 
     long countByRecipient(LocalMember recipient);
 }
