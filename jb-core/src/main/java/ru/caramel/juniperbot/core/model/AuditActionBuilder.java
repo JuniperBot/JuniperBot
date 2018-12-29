@@ -65,7 +65,7 @@ public abstract class AuditActionBuilder {
         return this;
     }
 
-    public AuditActionBuilder withSTargetUser(Member user) {
+    public AuditActionBuilder withTargetUser(Member user) {
         this.action.setTargetUser(getReference(user));
         return this;
     }

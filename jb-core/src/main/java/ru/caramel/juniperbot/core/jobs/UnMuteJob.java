@@ -74,7 +74,7 @@ public class UnMuteJob extends AbstractJob {
             Member member = guild.getMemberById(userId);
             if (member != null) {
                 TextChannel channel = StringUtils.isNotBlank(channelId) ? guild.getTextChannelById(channelId) : null;
-                moderationService.unmute(channel, member);
+                moderationService.unmute(null, channel, member);
             }
         }
     }

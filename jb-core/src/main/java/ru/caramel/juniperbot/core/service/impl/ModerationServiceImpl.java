@@ -37,15 +37,15 @@ import ru.caramel.juniperbot.core.jobs.UnMuteJob;
 import ru.caramel.juniperbot.core.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.service.*;
-import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.persistence.entity.MemberWarning;
 import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
 import ru.caramel.juniperbot.core.persistence.entity.MuteState;
 import ru.caramel.juniperbot.core.persistence.repository.MemberWarningRepository;
 import ru.caramel.juniperbot.core.persistence.repository.ModerationConfigRepository;
 import ru.caramel.juniperbot.core.persistence.repository.MuteStateRepository;
+import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.awt.*;
@@ -225,6 +225,9 @@ public class ModerationServiceImpl
 
     private static void checkPermission(Channel channel, Role role, PermissionMode mode, Permission permission) {
         PermissionOverride override = channel.getPermissionOverride(role);
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
+            return;
+        }
         if (override == null) {
             switch (mode) {
                 case DENY:
@@ -255,58 +258,67 @@ public class ModerationServiceImpl
     }
 
     @Override
-    public boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason) {
-        return mute(channel, member, global, duration, reason, false);
+    public boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason) {
+        return mute(author, channel, member, global, duration, reason, true, false);
     }
 
-    private boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason, boolean stateless) {
-        // TODO reason will be implemented in audit
+    private boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason, boolean log, boolean stateless) {
+
+        AuditActionBuilder actionBuilder = log ? getAuditService()
+                .log(author.getGuild(), AuditActionType.MEMBER_MUTE)
+                .withUser(author)
+                .withTargetUser(member)
+                .withChannel(global ? null : channel)
+                .withAttribute(REASON_ATTR, reason)
+                .withAttribute(DURATION_ATTR, duration)
+                .withAttribute(GLOBAL_ATTR, global) : null;
+
+        Consumer<Boolean> schedule = g -> {
+            contextService.inTransaction(() -> {
+                if (!stateless) {
+                    if (duration != null) {
+                        scheduleUnMute(g, channel, member, duration);
+                    }
+                    storeState(g, channel, member, duration, reason);
+                }
+                if (actionBuilder != null) {
+                    actionBuilder.save();
+                }
+            });
+        };
+
         if (global) {
-            Role mutedRole = getMutedRole(member.getGuild());
+            Guild guild = member.getGuild();
+            Role mutedRole = getMutedRole(guild);
             if (!member.getRoles().contains(mutedRole)) {
-                member.getGuild()
-                        .getController()
+                guild.getController()
                         .addRolesToMember(member, mutedRole)
                         .queue();
-                member.getGuild().getController().setMute(member, true).queue(e -> {
-                    contextService.inTransaction(() -> {
-                        if (!stateless) {
-                            if (duration != null) {
-                                scheduleUnMute(true, channel, member, duration);
-                            }
-                            storeState(true, channel, member, duration, reason);
-                        }
-                    });
-                });
+                guild.getController()
+                        .setMute(member, true)
+                        .queue(e -> schedule.accept(true));
                 return true;
             }
         } else {
             PermissionOverride override = channel.getPermissionOverride(member);
-            if (override != null && !override.getDenied().contains(Permission.MESSAGE_WRITE)) {
-                override.getManager().deny(Permission.MESSAGE_WRITE).queue();
-                return true;
+            if (override != null && override.getDenied().contains(Permission.MESSAGE_WRITE)) {
+                return false;
             }
             if (override == null) {
                 channel.createPermissionOverride(member)
                         .setDeny(Permission.MESSAGE_WRITE)
-                        .queue(e -> {
-                            if (!stateless) {
-                                if (duration != null) {
-                                    scheduleUnMute(false, channel, member, duration);
-                                }
-                                storeState(false, channel, member, duration, reason);
-                            }
-
-                        });
-                return true;
+                        .queue(e -> schedule.accept(false));
+            } else {
+                override.getManager().deny(Permission.MESSAGE_WRITE).queue(e -> schedule.accept(false));
             }
+            return true;
         }
         return false;
     }
 
     @Override
     @Transactional
-    public boolean unmute(TextChannel channel, Member member) {
+    public boolean unmute(Member author, TextChannel channel, Member member) {
         boolean result = false;
         Role mutedRole = getMutedRole(member.getGuild());
         if (member.getRoles().contains(mutedRole)) {
@@ -325,6 +337,14 @@ public class ModerationServiceImpl
             }
         }
         removeUnMuteSchedule(member, channel);
+        if (result) {
+            getAuditService()
+                    .log(member.getGuild(), AuditActionType.MEMBER_UNMUTE)
+                    .withUser(author)
+                    .withTargetUser(member)
+                    .withChannel(channel)
+                    .save();
+        }
         return result;
     }
 
@@ -353,7 +373,7 @@ public class ModerationServiceImpl
             String channelId = data.getString(UnMuteJob.ATTR_CHANNEL_ID);
             TextChannel textChannel = channelId != null ? member.getGuild().getTextChannelById(channelId) : null;
             if (global || textChannel != null) {
-                mute(textChannel, member, global, null, null);
+                mute(null, textChannel, member, global, null, null, false, false);
             }
         } catch (SchedulerException e) {
             // fall down, we don't care
@@ -407,7 +427,7 @@ public class ModerationServiceImpl
         }
 
         Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
-        mute(textChannel, member, muteState.isGlobal(), duration, muteState.getReason(), true);
+        mute(null, textChannel, member, muteState.isGlobal(), duration, muteState.getReason(), false, true);
         return true;
     }
 
@@ -446,7 +466,7 @@ public class ModerationServiceImpl
             AuditActionBuilder actionBuilder = getAuditService()
                     .log(self.getGuild(), AuditActionType.MEMBER_KICK)
                     .withUser(author)
-                    .withSTargetUser(member)
+                    .withTargetUser(member)
                     .withAttribute(REASON_ATTR, reason);
 
             notifyUserAction(e -> {
@@ -480,7 +500,7 @@ public class ModerationServiceImpl
             AuditActionBuilder actionBuilder = getAuditService()
                     .log(self.getGuild(), AuditActionType.MEMBER_BAN)
                     .withUser(author)
-                    .withSTargetUser(member)
+                    .withTargetUser(member)
                     .withAttribute(REASON_ATTR, reason);
 
             notifyUserAction(e -> {
@@ -543,7 +563,7 @@ public class ModerationServiceImpl
                     success = kick(author, member, reason);
                     break;
                 case MUTE:
-                    mute(null, member, true, moderationConfig.getMuteCount(), reason);
+                    mute(author, null, member, true, moderationConfig.getMuteCount(), reason, true, false);
                     break;
             }
             if (success) {

@@ -70,7 +70,8 @@ public class MuteCommand extends ModeratorCommandAsync {
             }
         }
         boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
-        boolean muted = moderationService.mute(event.getTextChannel(), mentioned, global, duration, m.group(3));
+        boolean muted = moderationService.mute(event.getMember(), event.getTextChannel(), mentioned, global, duration,
+                m.group(3));
         messageService.onEmbedMessage(event.getChannel(), muted
                 ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
     }

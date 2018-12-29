@@ -39,13 +39,6 @@ public abstract class MessageAuditForwardProvider extends LoggingAuditForwardPro
         }
     }
 
-    protected void addChannelField(AuditAction action, EmbedBuilder embedBuilder) {
-        if (action.getChannel() != null) {
-            embedBuilder.addField(messageService.getMessage("audit.channel.title"),
-                    getReferenceContent(action.getChannel(), true), true);
-        }
-    }
-
     protected String getMessageValue(AuditAction action, String key) {
         String oldContent = action.getAttribute(key, String.class);
         return StringUtils.isBlank(oldContent)
