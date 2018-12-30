@@ -39,7 +39,12 @@ public class SlowModeCommand extends ModeratorCommand {
             return showHelp(channel, context);
         }
 
-        int seconds = Integer.parseInt(query);
+        int seconds;
+        try {
+            seconds = Integer.parseInt(query);
+        } catch (NumberFormatException e) {
+            return showHelp(channel, context);
+        }
         if (seconds < 0 || seconds > 120) {
             return showHelp(channel, context);
         }

@@ -412,9 +412,12 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Scheduled(cron="0 0 0 * * ?")
     @Transactional
     public synchronized void resubscribeAll() {
+        log.info("Starting YouTube resubscription.");
+
         Date currentDate = new Date();
         List<YouTubeChannel> channels = repository.findToResubscribe(currentDate);
         if (CollectionUtils.isEmpty(channels)) {
+            log.info("Nothing to resubscribe.");
             return;
         }
         AtomicLong failed = new AtomicLong();

@@ -263,4 +263,8 @@
         </sql>
     </changeSet>
 
+    <changeSet id="6.4-18122018-10" author="caramel">
+        <modifyDataType tableName="twitch_connection" columnName="description" newDataType="VARCHAR(300)"/>
+    </changeSet>
+
 </databaseChangeLog>

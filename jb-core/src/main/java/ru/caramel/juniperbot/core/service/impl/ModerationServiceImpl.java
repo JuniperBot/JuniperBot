@@ -98,7 +98,6 @@ public class ModerationServiceImpl
     }
 
     @Override
-    @Cacheable(value = "ModerationServiceImpl.isModerator", cacheManager = RequestScopedCacheManager.NAME)
     @Transactional(readOnly = true)
     public boolean isModerator(Member member) {
         if (member == null) {

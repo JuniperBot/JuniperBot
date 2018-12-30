@@ -167,7 +167,9 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     private static String getContent(Message message) {
-        StringBuilder builder = new StringBuilder(message.getContentStripped());
+        StringBuilder builder = new StringBuilder(message
+                .getContentStripped()
+                .replaceAll("\u0000", ""));
         String attachmentsPart = message.getAttachments().stream()
                 .map(Message.Attachment::getUrl)
                 .filter(Objects::nonNull)

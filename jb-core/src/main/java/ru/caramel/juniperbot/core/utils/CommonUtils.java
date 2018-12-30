@@ -61,6 +61,9 @@ public final class CommonUtils {
     }
 
     public static String formatDuration(long millis) {
+        if (millis < 0) {
+            millis = 0;
+        }
         String format = "mm:ss";
         if (millis > 3600000) {
             format = "HH:mm:ss";
