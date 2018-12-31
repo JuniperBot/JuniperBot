@@ -104,7 +104,7 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
             embedBuilder.setTitle(
                     processContent(template.getTitle(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),
-                    processContent(template.getAuthorUrl()));
+                    processContent(template.getTitleUrl()));
 
             embedBuilder.setFooter(
                     processContent(template.getFooter(), resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false),
