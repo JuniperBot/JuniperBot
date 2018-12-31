@@ -34,6 +34,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
+import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
@@ -142,9 +143,11 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
                 if (newLevel < 1000 && level != newLevel) {
                     if (config.isAnnouncementEnabled()) {
+                        // it is lazy and out of current session
+                        MessageTemplate template = config.getAnnounceTemplate() != null
+                                ? templateService.getById(config.getAnnounceTemplate().getId()) : null;
                         templateService
-                                // it is lazy and out of current session
-                                .createMessage(templateService.getById(config.getAnnounceTemplate().getId()))
+                                .createMessage(template)
                                 .withFallbackContent("discord.command.rank.levelup")
                                 .withGuild(guild)
                                 .withMember(event.getMember())
