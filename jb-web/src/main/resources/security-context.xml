@@ -133,8 +133,6 @@
         <constructor-arg ref="oauthResource"/>
     </bean>
 
-    <oauth2:rest-template id="restTemplate" resource="oauthResource" access-token-provider="tokenProvider"/>
-
     <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
     <bean id="oauth2AuthenticationFilter"
       class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
@@ -155,8 +153,7 @@
 
     <bean id="oAuth2TokenRequestFilter"
           class="ru.caramel.juniperbot.web.security.auth.OAuth2TokenRequestFilter"
-          p:tokenServices-ref="discordTokenServices"
-          p:restTemplate-ref="restTemplate">
+          p:tokenServices-ref="discordTokenServices">
         <constructor-arg name="defaultFilterProcessesUrl" value="/api/oauth2/token"/>
         <property name="authenticationSuccessHandler">
             <bean class="ru.caramel.juniperbot.web.security.auth.TokenRequestSuccessHandler"/>
