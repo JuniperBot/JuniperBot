@@ -11,7 +11,6 @@ import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.service.MessageService;
 import ru.caramel.juniperbot.module.wikifur.service.WikiFurService;
 
 import java.util.List;

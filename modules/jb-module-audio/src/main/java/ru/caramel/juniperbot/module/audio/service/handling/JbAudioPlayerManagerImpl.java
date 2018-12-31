@@ -29,10 +29,9 @@ import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.DecodedTrackHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,10 +42,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implements JbAudioPlayerManager {
-
-    private static final Logger log = LoggerFactory.getLogger(JbAudioPlayerManagerImpl.class);
 
     @Value("${discord.audio.resamplingQuality:MEDIUM}")
     private AudioConfiguration.ResamplingQuality resamplingQuality;

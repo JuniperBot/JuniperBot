@@ -39,6 +39,8 @@ public class GuildDto implements Serializable {
 
     private String locale;
 
+    private String color;
+
     private String commandLocale;
 
     private String icon;

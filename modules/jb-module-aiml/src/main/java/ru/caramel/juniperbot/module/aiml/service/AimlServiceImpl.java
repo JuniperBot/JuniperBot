@@ -20,6 +20,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -29,8 +30,6 @@ import org.goldrenard.jb.core.Chat;
 import org.goldrenard.jb.configuration.BotConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.goldrenard.jb.model.Request;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,10 +46,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class AimlServiceImpl implements AimlService, CommandHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(AimlServiceImpl.class);
 
     @Value("${integrations.aiml.path:}")
     private String path;

@@ -20,16 +20,15 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
+import ru.caramel.juniperbot.core.model.MessageTemplateCompiler;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
 import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
-import ru.caramel.juniperbot.core.service.ModerationService;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
@@ -37,13 +36,14 @@ import java.util.regex.Pattern;
 @Component
 public class CustomCommandsListener implements CommandSender, CommandHandler {
 
-    private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
-
     @Autowired
     private CommandsService commandsService;
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private MessageTemplateService templateService;
 
     @Autowired
     private CustomCommandRepository commandRepository;
@@ -99,21 +99,28 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
             }
         }
 
-        String commandContent = placeholderHelper.replacePlaceholders(command.getContent(), getResolver(event, content));
-        if (StringUtils.isEmpty(commandContent)) {
-            return false;
+        if (!moderationService.isModerator(event.getMember())) {
+            content = DiscordUtils.maskPublicMentions(content);
         }
+
+        MessageTemplateCompiler templateCompiler = templateService
+                .createMessage(command.getMessageTemplate())
+                .withGuild(event.getGuild())
+                .withMember(event.getMember())
+                .withFallbackChannel(event.getTextChannel())
+                .withVariable("content", content);
+
         switch (command.getType()) {
             case ALIAS:
+                String commandContent = templateCompiler.processContent(command.getContent(), true);
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
-                    commandContent = commandContent.substring(args[0].length(), commandContent.length()).trim();
+                    commandContent = commandContent.substring(args[0].length()).trim();
                     return commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
                 }
                 break;
             case MESSAGE:
-                messageService.sendMessageSilent(event.getChannel()::sendMessage,
-                        CommonUtils.trimTo(commandContent, 2000));
+                templateCompiler.compileAndSend();
                 return true;
         }
         return false;
@@ -122,16 +129,5 @@ public class CustomCommandsListener implements CommandSender, CommandHandler {
     @Override
     public int getPriority() {
         return 1;
-    }
-
-    private MapPlaceholderResolver getResolver(MessageReceivedEvent event, String content) {
-        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("author", event.getAuthor().getAsMention());
-        resolver.put("guild", event.getGuild().getName());
-        if (!moderationService.isModerator(event.getMember())) {
-            content = CommonUtils.maskPublicMentions(content);
-        }
-        resolver.put("content", content);
-        return resolver;
     }
 }

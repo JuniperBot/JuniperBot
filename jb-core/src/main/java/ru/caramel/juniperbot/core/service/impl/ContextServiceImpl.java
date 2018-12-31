@@ -17,14 +17,13 @@
 package ru.caramel.juniperbot.core.service.impl;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +31,6 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.caramel.juniperbot.core.service.ConfigService;
 import ru.caramel.juniperbot.core.service.ContextService;
@@ -46,11 +43,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+@Slf4j
 @Service
 public class ContextServiceImpl implements ContextService {
-
-    private static final Logger log = LoggerFactory.getLogger(ContextServiceImpl.class);
 
     private static class ContextHolder {
         private Locale locale;
@@ -205,7 +202,31 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void withContext(long guildId, Runnable action) {
+    @SuppressWarnings("unchecked")
+    public <T> T withContext(Long guildId, Supplier<T> action) {
+        Object[] holder = new Object[1];
+        withContext(guildId, () -> {
+            holder[0] = action.get();
+        });
+        return (T) holder[0];
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T withContext(Guild guild, Supplier<T> action) {
+        Object[] holder = new Object[1];
+        withContext(guild, () -> {
+            holder[0] = action.get();
+        });
+        return (T) holder[0];
+    }
+
+    @Override
+    public void withContext(Long guildId, Runnable action) {
+        if (guildId == null) {
+            action.run();
+            return;
+        }
         ContextHolder currentContext = getContext();
         resetContext();
         initContext(guildId);
@@ -241,17 +262,15 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public void inTransaction(Runnable action) {
         try {
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        action.run();
-                    } catch (ObjectOptimisticLockingFailureException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        log.error("Async task results in error", e);
-                    }
+            transactionTemplate.execute(status -> {
+                try {
+                    action.run();
+                } catch (ObjectOptimisticLockingFailureException e) {
+                    throw e;
+                } catch (Exception e) {
+                    log.error("Async task results in error", e);
                 }
+                return null;
             });
         } catch (ObjectOptimisticLockingFailureException e) {
             log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
@@ -261,6 +280,11 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success) {
         action.queue(e -> withContext(guild, () -> success.accept(e)));
+    }
+
+    @Override
+    public <T> void queue(Long guildId, RestAction<T> action, Consumer<T> success) {
+        action.queue(e -> withContext(guildId, () -> success.accept(e)));
     }
 
     @Override

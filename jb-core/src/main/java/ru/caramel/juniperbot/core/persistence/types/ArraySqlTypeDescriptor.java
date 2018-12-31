@@ -29,6 +29,8 @@ import java.sql.*;
 public class ArraySqlTypeDescriptor
         implements SqlTypeDescriptor {
 
+    private static final long serialVersionUID = -2825316581273628400L;
+
     public static final ArraySqlTypeDescriptor INSTANCE =
             new ArraySqlTypeDescriptor();
 

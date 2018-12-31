@@ -18,7 +18,8 @@ package ru.caramel.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Sets;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -26,20 +27,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.persistence.repository.LocalMemberRepository;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
@@ -55,12 +52,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingService {
-
-    private static final Logger log = LoggerFactory.getLogger(RankingServiceImpl.class);
-
-    private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
     @Autowired
     private LocalMemberRepository memberRepository;
@@ -72,9 +66,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     private CookieRepository cookieRepository;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -82,6 +73,9 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private MessageTemplateService templateService;
 
     private static Object DUMMY = new Object();
 
@@ -148,21 +142,16 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
                 if (newLevel < 1000 && level != newLevel) {
                     if (config.isAnnouncementEnabled()) {
-                        if (config.isWhisper()) {
-                            try {
-                                contextService.queue(guild, event.getAuthor().openPrivateChannel(), c -> {
-                                    String content = getAnnounce(config, event.getAuthor().getAsMention(), newLevel);
-                                    sendAnnounce(config, c, content);
-                                });
-                            } catch (Exception e) {
-                                log.warn("Could not open private channel for {}", event.getAuthor(), e);
-                            }
-                        } else {
-                            MessageChannel channel = config.getAnnouncementChannelId() != null ?
-                                    guild.getTextChannelById(config.getAnnouncementChannelId()) : null;
-                            String content = getAnnounce(config, event.getMember().getAsMention(), newLevel);
-                            sendAnnounce(config, channel != null ? channel : event.getChannel(), content);
-                        }
+                        templateService
+                                // it is lazy and out of current session
+                                .createMessage(templateService.getById(config.getAnnounceTemplate().getId()))
+                                .withFallbackContent("discord.command.rank.levelup")
+                                .withGuild(guild)
+                                .withMember(event.getMember())
+                                .withFallbackChannel(event.getChannel())
+                                .withDirectAllowed(true)
+                                .withVariable("level", newLevel)
+                                .compileAndSend();
                     }
                     updateRewards(config, event.getMember(), ranking);
                 }
@@ -186,14 +175,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                     }
                 }
             });
-        }
-    }
-
-    private void sendAnnounce(RankingConfig config, MessageChannel channel, String content) {
-        if (config.isEmbed()) {
-            messageService.onEmbedMessage(channel, content);
-        } else {
-            messageService.sendMessageSilent(channel::sendMessage, content);
         }
     }
 
@@ -226,17 +207,20 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
     @Transactional
     @Override
-    public void setLevel(long guildId, String userId, int level) {
-        Objects.requireNonNull(userId);
-        if (level > RankingUtils.MAX_LEVEL) {
-            level = RankingUtils.MAX_LEVEL;
-        } else if (level < 0) {
-            level = 0;
-        }
+    public void update(long guildId, @NonNull String userId, Integer level, boolean resetCookies) {
         LocalMember localMember = memberRepository.findByGuildIdAndUserId(guildId, userId);
-
         Ranking ranking = getRanking(localMember);
-        if (ranking != null) {
+        if (ranking == null) {
+            return;
+        }
+
+        if (level != null) {
+            if (level > RankingUtils.MAX_LEVEL) {
+                level = RankingUtils.MAX_LEVEL;
+            } else if (level < 0) {
+                level = 0;
+            }
+
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
             rankingRepository.save(ranking);
             rankingRepository.recalculateRank(guildId);
@@ -251,13 +235,25 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 }
             }
         }
+
+        if (resetCookies) {
+            cookieRepository.deleteByRecipient(guildId, userId);
+            ranking.setCookies(0);
+            rankingRepository.save(ranking);
+        }
     }
 
     @Transactional
     @Override
-    public void resetAll(long guildId) {
-        rankingRepository.resetAll(guildId);
-        rankingRepository.recalculateRank(guildId);
+    public void resetAll(long guildId, boolean levels, boolean cookies) {
+        if (levels) {
+            rankingRepository.resetAll(guildId);
+            rankingRepository.recalculateRank(guildId);
+        }
+        if (cookies) {
+            cookieRepository.deleteByGuild(guildId);
+            rankingRepository.resetCookies(guildId);
+        }
     }
 
     private void updateRewards(RankingConfig config, Member member, Ranking ranking) {
@@ -314,17 +310,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             return false;
         }
         return config.getIgnoredChannels().contains(channel.getIdLong());
-    }
-
-    private String getAnnounce(RankingConfig config, String mention, int level) {
-        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("user", mention);
-        resolver.put("level", String.valueOf(level));
-        String announce = config.getAnnouncement();
-        if (StringUtils.isBlank(announce)) {
-            announce = messageService.getMessage("discord.command.rank.levelup");
-        }
-        return placeholderHelper.replacePlaceholders(announce, resolver);
     }
 
     @Transactional

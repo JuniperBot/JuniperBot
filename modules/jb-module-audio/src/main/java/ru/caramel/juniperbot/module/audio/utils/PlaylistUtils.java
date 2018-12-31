@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.utils;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 
@@ -54,7 +55,7 @@ public class PlaylistUtils {
                 info.length,
                 CommonUtils.trimTo(info.identifier, 1000),
                 info.isStream,
-                CommonUtils.trimTo(CommonUtils.getUrl(info.uri), 1000),
-                CommonUtils.trimTo(CommonUtils.getUrl(info.artworkUri), 1000));
+                CommonUtils.trimTo(DiscordUtils.getUrl(info.uri), 1000),
+                CommonUtils.trimTo(DiscordUtils.getUrl(info.artworkUri), 1000));
     }
 }

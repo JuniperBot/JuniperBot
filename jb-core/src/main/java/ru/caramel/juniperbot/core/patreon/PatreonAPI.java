@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.patreon;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.Link;
 import com.github.jasminb.jsonapi.Links;
+import lombok.NonNull;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -43,8 +44,7 @@ public class PatreonAPI {
 
     private final RestTemplate restTemplate;
 
-    public PatreonAPI(String accessToken) {
-        Objects.requireNonNull(accessToken, "Access Token cannot be null");
+    public PatreonAPI(@NonNull String accessToken) {
 
         this.restTemplate = new RestTemplateBuilder()
                 .rootUri(BASE_URI)

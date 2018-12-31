@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.utils;
+package ru.caramel.juniperbot.core.messaging.placeholder;
 
 import org.springframework.util.PropertyPlaceholderHelper;
 

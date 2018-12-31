@@ -25,6 +25,8 @@ public class StringArrayType
         extends AbstractSingleColumnStandardBasicType<String[]>
         implements DynamicParameterizedType {
 
+    private static final long serialVersionUID = 9076773772784243089L;
+
     public StringArrayType() {
         super(
                 ArraySqlTypeDescriptor.INSTANCE,

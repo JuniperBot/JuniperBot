@@ -19,11 +19,10 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.codahale.metrics.Timer;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,10 +39,9 @@ import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class ContextEventManagerImpl implements JbEventManager {
-
-    private static final Logger log = LoggerFactory.getLogger(ContextEventManagerImpl.class);
 
     private final List<EventListener> listeners = new ArrayList<>();
 

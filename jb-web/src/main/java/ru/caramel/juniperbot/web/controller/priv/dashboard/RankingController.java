@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.RankingDao;
 import ru.caramel.juniperbot.web.dto.config.RankingDto;
+import ru.caramel.juniperbot.web.dto.request.RankingResetRequest;
 import ru.caramel.juniperbot.web.dto.request.RankingUpdateRequest;
 
 @RestController
@@ -49,14 +50,15 @@ public class RankingController extends BaseRestController {
 
     @RequestMapping(value = "/ranking/reset/{guildId}", method = RequestMethod.POST)
     public void resetAll(
-            @GuildId @PathVariable("guildId") long guildId) {
-        rankingService.resetAll(guildId);
+            @GuildId @PathVariable("guildId") long guildId,
+            @RequestBody @Validated RankingResetRequest request) {
+        rankingService.resetAll(guildId, request.isLevels(), request.isCookies());
     }
 
     @RequestMapping(value = "/ranking/update/{guildId}", method = RequestMethod.POST)
     public void update(
             @GuildId @PathVariable("guildId") long guildId,
             @RequestBody @Validated RankingUpdateRequest request) {
-        rankingService.setLevel(guildId, request.getUserId(), request.getLevel());
+        rankingService.update(guildId, request.getUserId(), request.getLevel(), request.isResetCookies());
     }
 }

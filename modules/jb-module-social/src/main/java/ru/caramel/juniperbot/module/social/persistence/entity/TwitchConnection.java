@@ -38,7 +38,7 @@ public class TwitchConnection extends BaseSubscriptionEntity {
     @Column(name = "announce_message")
     private String announceMessage;
 
-    @Column
+    @Column(length = 300)
     private String description;
 
     @Column

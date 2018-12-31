@@ -16,12 +16,11 @@
  */
 package ru.caramel.juniperbot.core.support.jmx;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.util.Objects;
 
 @ManagedResource
 public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
@@ -33,8 +32,7 @@ public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
         this(null, taskExecutor);
     }
 
-    public ThreadPoolTaskExecutorMBean(String name, ThreadPoolTaskExecutor taskExecutor) {
-        Objects.requireNonNull(taskExecutor);
+    public ThreadPoolTaskExecutorMBean(String name, @NonNull ThreadPoolTaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
         this.objectName = StringUtils.isNoneBlank(name) ? name : getClass().getSimpleName();
     }

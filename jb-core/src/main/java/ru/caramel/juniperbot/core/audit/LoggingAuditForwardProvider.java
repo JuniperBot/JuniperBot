@@ -95,6 +95,13 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
         });
     }
 
+    protected void addChannelField(AuditAction action, EmbedBuilder embedBuilder) {
+        if (action.getChannel() != null) {
+            embedBuilder.addField(messageService.getMessage("audit.channel.title"),
+                    getReferenceContent(action.getChannel(), true), true);
+        }
+    }
+
     protected String getReferenceContent(NamedReference reference, boolean channel) {
         return messageService.getMessage("audit.reference.content",
                 reference.getName(),

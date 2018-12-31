@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioRepository;
 import ru.caramel.juniperbot.module.ranking.commands.RankCommand;
@@ -98,20 +99,24 @@ public class UserInfoCommand extends AbstractInfoCommand {
             }
             MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), user.getId());
             String bio = memberBio != null ? memberBio.getBio() : null;
-            if (StringUtils.isEmpty(bio) && Objects.equals(author, user)) {
+            if (StringUtils.isEmpty(bio)
+                    && Objects.equals(author, user)
+                    && !commandsService.isRestricted(BioCommand.KEY, message.getTextChannel(), message.getMember())) {
                 String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
                         context.getCommandLocale());
                 bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
                         bioCommand);
             }
-            builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
+            if (StringUtils.isNotEmpty(bio)) {
+                builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
+            }
         }
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
     }
 
     private StringBuilder getName(StringBuilder commonBuilder, User user, Member member) {
-        String userName = CommonUtils.formatUser(user);
+        String userName = DiscordUtils.formatUser(user);
         if (member != null && !Objects.equals(user.getName(), member.getEffectiveName())) {
             userName += String.format(" (%s)", member.getEffectiveName());
         }

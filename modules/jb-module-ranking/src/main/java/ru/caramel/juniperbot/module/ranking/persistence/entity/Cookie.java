@@ -33,6 +33,8 @@ import java.util.Date;
 @Table(name = "cookie")
 public class Cookie extends BaseEntity {
 
+    private static final long serialVersionUID = -204805679480675530L;
+
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "sender_id")
     private LocalMember sender;

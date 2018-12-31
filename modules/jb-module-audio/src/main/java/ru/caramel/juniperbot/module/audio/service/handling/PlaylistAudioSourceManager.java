@@ -21,10 +21,9 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -48,10 +47,9 @@ import java.util.regex.Pattern;
 
 import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.COMMON;
 
+@Slf4j
 @Component
 public class PlaylistAudioSourceManager implements AudioSourceManager {
-
-    private static final Logger log = LoggerFactory.getLogger(PlaylistAudioSourceManager.class);
 
     private final static String PLAYLIST_PATTERN = "%s/playlist/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})";
 
@@ -112,8 +110,8 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
                         return new StoredPlaylist(playlist, tracks);
                     }
                 }
+                onError(playlist, "discord.command.audio.playlist.notFound");
             }
-            onError(playlist, "discord.command.audio.playlist.notFound");
         }
         return null;
     }

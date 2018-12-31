@@ -33,6 +33,9 @@ public class CustomCommandsDao extends AbstractDao {
     @Autowired
     private CustomCommandRepository commandRepository;
 
+    @Autowired
+    private MessageTemplateDao templateDao;
+
     @Transactional
     public List<CustomCommandDto> get(long guildId) {
         return commandRepository.findAllByGuildId(guildId).stream().map(e -> {
@@ -59,9 +62,6 @@ public class CustomCommandsDao extends AbstractDao {
 
         // update existing
         dtos.stream().filter(e -> e.getId() != null).forEach(e -> {
-            if (e.getId() < 0) {
-                e.setId(null);
-            }
             CustomCommand command = customCommands.stream().filter(e1 -> Objects.equals(e1.getId(), e.getId())).findFirst().orElse(null);
             if (command != null) {
                 CommandConfig commandConfig = command.getCommandConfig();
@@ -73,6 +73,7 @@ public class CustomCommandsDao extends AbstractDao {
                 commandConfig.setKey(e.getKey());
                 apiMapper.updateCommandConfig(e, command.getCommandConfig());
                 apiMapper.updateCustomCommand(e, command);
+                command.setMessageTemplate(templateDao.updateOrCreate(e.getMessageTemplate(), command.getMessageTemplate()));
                 result.add(command);
             }
         });
@@ -88,6 +89,7 @@ public class CustomCommandsDao extends AbstractDao {
             customCommand.setCommandConfig(commandConfig);
             apiMapper.updateCommandConfig(e, commandConfig);
             apiMapper.updateCustomCommand(e, customCommand);
+            customCommand.setMessageTemplate(templateDao.updateOrCreate(e.getMessageTemplate(), null));
             return customCommand;
         }).collect(Collectors.toList()));
 

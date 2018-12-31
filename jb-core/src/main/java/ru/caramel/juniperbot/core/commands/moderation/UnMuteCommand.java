@@ -38,7 +38,7 @@ public class UnMuteCommand extends ModeratorCommandAsync {
             messageService.onError(event.getChannel(), "discord.command.mod.unmute.mention");
             return;
         }
-        boolean unmuted = moderationService.unmute(event.getTextChannel(), mentioned);
+        boolean unmuted = moderationService.unmute(event.getMember(), event.getTextChannel(), mentioned);
         messageService.onEmbedMessage(event.getChannel(), unmuted
                 ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
     }

@@ -20,13 +20,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
@@ -43,21 +41,12 @@ public class RankingConfig extends GuildEntity {
     @Column(name = "announcement_enabled")
     private boolean announcementEnabled;
 
-    @Column(name = "is_whisper")
-    private boolean whisper;
-
-    @Column(name = "is_embed")
-    private boolean embed;
-
-    @Column(name = "announcement_channel_id")
-    private Long announcementChannelId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "announce_template_id")
+    private MessageTemplate announceTemplate;
 
     @Column(name = "reset_on_leave")
     private boolean resetOnLeave;
-
-    @Column
-    @Size(max = 1800)
-    private String announcement;
 
     @Column(name = "banned_roles", columnDefinition = "text[]")
     @Type(type = "string-array")

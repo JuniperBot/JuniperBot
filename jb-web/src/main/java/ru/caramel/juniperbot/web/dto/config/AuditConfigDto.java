@@ -19,6 +19,8 @@ package ru.caramel.juniperbot.web.dto.config;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
+import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +35,7 @@ public class AuditConfigDto implements Serializable {
 
     private boolean forwardEnabled;
 
+    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
     private String forwardChannelId;
 
     private List<AuditActionType> forwardActions;

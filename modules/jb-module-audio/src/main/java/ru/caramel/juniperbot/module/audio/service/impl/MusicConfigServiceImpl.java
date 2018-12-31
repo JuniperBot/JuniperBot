@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;

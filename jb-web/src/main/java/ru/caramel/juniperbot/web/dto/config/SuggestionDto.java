@@ -25,6 +25,8 @@ import java.io.Serializable;
 @Setter
 public class SuggestionDto implements Serializable {
 
+    private static final long serialVersionUID = -102310821775478237L;
+
     private String id;
     private String name;
     private String iconUrl;

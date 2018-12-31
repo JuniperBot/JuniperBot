@@ -25,6 +25,7 @@ import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -32,8 +33,6 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.model.EndReason;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
@@ -57,10 +57,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 @Service
 public class AudioMessageManager {
-
-    private static final Logger log = LoggerFactory.getLogger(AudioMessageManager.class);
 
     private static final int MAX_SHORT_QUEUE = 3;
 
@@ -144,6 +143,11 @@ public class AudioMessageManager {
                 log.warn("No permission to message", e);
             }
         });
+    }
+
+    public void onResetMessage(TrackRequest request) {
+        request.setResetMessage(true);
+        updateMessage(request);
     }
 
     public void onTrackEnd(TrackRequest request) {
@@ -351,8 +355,11 @@ public class AudioMessageManager {
             if (nextHint && i == 0) {
                 name = messageService.getMessage("discord.command.audio.queue.next");
             }
+
+            String duration = info.isStream ? "" : String.format("`[%s]`", CommonUtils.formatDuration(track.getDuration()));
+            String icon = info.isStream ? ":red_circle: " : ":musical_note: ";
             String title = messageService.getMessage("discord.command.audio.queue.list.entry", rowNum,
-                    CommonUtils.formatDuration(track.getDuration()), !nextHint && rowNum - instance.getCursor() == 1 ? ":musical_note: " : "",
+                    duration, !nextHint && rowNum - instance.getCursor() == 1 ? icon : "",
                     getTitle(info), getUrl(info), getMemberName(request, false));
             builder.addField(name, title, false);
         }
@@ -527,7 +534,7 @@ public class AudioMessageManager {
         AudioTrackInfo info = request.getTrack().getInfo();
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), getUrl(info));
-        String artworkUri = CommonUtils.getUrl(info.artworkUri);
+        String artworkUri = DiscordUtils.getUrl(info.artworkUri);
         builder.setAuthor(getArtist(info), getUrl(info), artworkUri);
         builder.setThumbnail(artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));
@@ -564,7 +571,7 @@ public class AudioMessageManager {
     }
 
     public String getUrl(AudioTrackInfo info) {
-        return CommonUtils.getUrl(info.uri);
+        return DiscordUtils.getUrl(info.uri);
     }
 
     public void monitor(Set<Long> alive) {

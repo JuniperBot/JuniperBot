@@ -22,6 +22,8 @@ public class StringArrayTypeDescriptor
     public static final StringArrayTypeDescriptor INSTANCE =
             new StringArrayTypeDescriptor();
 
+    private static final long serialVersionUID = -1765253029020298410L;
+
     public StringArrayTypeDescriptor() {
         super(String[].class);
     }

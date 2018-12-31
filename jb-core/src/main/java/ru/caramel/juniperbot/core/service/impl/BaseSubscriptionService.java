@@ -16,9 +16,8 @@
  */
 package ru.caramel.juniperbot.core.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.webhook.WebhookMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +31,8 @@ import ru.caramel.juniperbot.core.service.*;
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ScheduledFuture;
 
+@Slf4j
 public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, S, U> implements SubscriptionService<T, S, U> {
-
-    private static final Logger log = LoggerFactory.getLogger(BaseSubscriptionService.class);
 
     protected static PropertyPlaceholderHelper PLACEHOLDER = new PropertyPlaceholderHelper("{", "}");
 

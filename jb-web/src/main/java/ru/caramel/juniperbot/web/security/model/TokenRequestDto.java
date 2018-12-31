@@ -25,6 +25,8 @@ import java.io.Serializable;
 @Setter
 public class TokenRequestDto implements Serializable {
 
+    private static final long serialVersionUID = 884120014332877213L;
+
     private String code;
 
     private String clientId;

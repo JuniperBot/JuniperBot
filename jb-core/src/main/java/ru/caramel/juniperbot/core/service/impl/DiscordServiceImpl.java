@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.service.impl;
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Gauge;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
@@ -37,8 +38,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,10 +63,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+@Slf4j
 @Service
 public class DiscordServiceImpl extends ListenerAdapter implements DiscordService {
-
-    private static final Logger log = LoggerFactory.getLogger(DiscordServiceImpl.class);
 
     @Getter
     @Value("${discord.engine.shards:2}")
@@ -215,6 +213,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public Guild getGuildById(long guildId) {
         return shardManager.getGuildById(guildId);
+    }
+
+    @Override
+    public User getUserById(long userId) {
+        return shardManager.getUserById(userId);
     }
 
     @Override

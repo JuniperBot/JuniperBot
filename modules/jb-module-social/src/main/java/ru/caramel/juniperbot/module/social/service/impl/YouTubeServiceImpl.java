@@ -25,6 +25,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import net.dv8tion.jda.webhook.WebhookMessageBuilder;
@@ -33,9 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -52,7 +52,7 @@ import ru.caramel.juniperbot.core.service.BrandingService;
 import ru.caramel.juniperbot.core.service.EmergencyService;
 import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.messaging.placeholder.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeChannelRepository;
@@ -72,10 +72,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnection, Video, Channel> implements YouTubeService {
-
-    private static final Logger log = LoggerFactory.getLogger(YouTubeServiceImpl.class);
 
     private static final String PUSH_ENDPOINT = "https://pubsubhubbub.appspot.com/subscribe";
 
@@ -294,17 +293,22 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
         }
 
         try {
-            List<YouTubeConnection> connections = repository.findActiveConnections(channelId);
-            if (CollectionUtils.isEmpty(connections)) {
-                return;
-            }
-
             Video video = getVideoById(videoId, "id,snippet");
             if (video == null) {
                 log.error("No suitable video found for id={}", videoId);
                 return;
             }
-            connections.forEach(e -> notifyConnection(video, e));
+
+            if (video.getSnippet() != null && video.getSnippet().getPublishedAt() != null) {
+                var publishedAt = video.getSnippet().getPublishedAt();
+                LocalDate dateTime = new DateTime(publishedAt.getValue()).toLocalDate();
+                if (Days.daysBetween(dateTime, LocalDate.now()).getDays() >= 1) {
+                    return;
+                }
+            }
+            repository
+                    .findActiveConnections(channelId)
+                    .forEach(e -> notifyConnection(video, e));
         } catch (Exception e) {
             videoCache.invalidate(videoId);
             throw e;
@@ -414,9 +418,12 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Scheduled(cron="0 0 0 * * ?")
     @Transactional
     public synchronized void resubscribeAll() {
+        log.info("Starting YouTube resubscription.");
+
         Date currentDate = new Date();
         List<YouTubeChannel> channels = repository.findToResubscribe(currentDate);
         if (CollectionUtils.isEmpty(channels)) {
+            log.info("Nothing to resubscribe.");
             return;
         }
         AtomicLong failed = new AtomicLong();

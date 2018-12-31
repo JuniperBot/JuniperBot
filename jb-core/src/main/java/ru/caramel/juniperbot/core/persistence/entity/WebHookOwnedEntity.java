@@ -30,6 +30,8 @@ import javax.persistence.OneToOne;
 @MappedSuperclass
 public abstract class WebHookOwnedEntity extends GuildEntity {
 
+    private static final long serialVersionUID = 8394546023862008654L;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "web_hook_id")
     private WebHook webHook;

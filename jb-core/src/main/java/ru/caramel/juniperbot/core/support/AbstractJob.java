@@ -16,18 +16,16 @@
  */
 package ru.caramel.juniperbot.core.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public abstract class AbstractJob implements Job {
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractJob.class);
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;

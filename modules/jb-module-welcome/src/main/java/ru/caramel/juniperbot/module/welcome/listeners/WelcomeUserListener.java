@@ -16,26 +16,22 @@
  */
 package ru.caramel.juniperbot.module.welcome.listeners;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.PropertyPlaceholderHelper;
 import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.model.DiscordEvent;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.MemberService;
 import ru.caramel.juniperbot.core.service.MessageService;
-import ru.caramel.juniperbot.core.utils.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.service.MessageTemplateService;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
@@ -47,12 +43,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @DiscordEvent(priority = 10)
 public class WelcomeUserListener extends DiscordEventListener {
-
-    private static final Logger log = LoggerFactory.getLogger(WelcomeUserListener.class);
-
-    private static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("{", "}");
 
     @Autowired
     private MessageService messageService;
@@ -68,6 +61,9 @@ public class WelcomeUserListener extends DiscordEventListener {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private MessageTemplateService templateService;
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
@@ -122,20 +118,33 @@ public class WelcomeUserListener extends DiscordEventListener {
                 }
             }
 
-            if (message.isJoinEnabled()
-                    && StringUtils.isNotBlank(message.getJoinMessage())
-                    && message.getJoinChannelId() != null) {
-                MessageChannel channel = guild.getTextChannelById(message.getJoinChannelId());
-                send(event, channel, message.getJoinMessage(), message.isJoinRichEnabled());
+            if (message.isJoinEnabled() && message.getJoinTemplate() != null) {
+                TextChannel channel = DiscordUtils.getDefaultWriteableChannel(event.getGuild());
+                templateService
+                        .createMessage(message.getJoinTemplate())
+                        .withFallbackContent("welcome.join.message")
+                        .withGuild(guild)
+                        .withMember(event.getMember())
+                        .withFallbackChannel(channel)
+                        .compileAndSend();
             }
 
-            if (message.isJoinDmEnabled() && StringUtils.isNotBlank(message.getJoinDmMessage())) {
-                User user = event.getUser();
-                try {
-                    contextService.queue(guild, user.openPrivateChannel(),
-                            c -> send(event, c, message.getJoinDmMessage(), message.isJoinDmRichEnabled()));
-                } catch (Exception e) {
-                    log.debug("Could not open private channel for user {}", user, e);
+            if (message.isJoinDmEnabled() && message.getJoinDmTemplate() != null) {
+                Message compiledMessage = templateService
+                        .createMessage(message.getJoinDmTemplate())
+                        .withFallbackContent("welcome.join.dm.message")
+                        .withGuild(guild)
+                        .withMember(event.getMember())
+                        .compile();
+
+                if (compiledMessage != null) {
+                    User user = event.getUser();
+                    try {
+                        contextService.queue(guild, user.openPrivateChannel(),
+                                c -> messageService.sendMessageSilent(c::sendMessage, compiledMessage));
+                    } catch (Exception e) {
+                        log.debug("Could not open private channel for user {}", user, e);
+                    }
                 }
             }
         });
@@ -149,42 +158,17 @@ public class WelcomeUserListener extends DiscordEventListener {
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
             WelcomeMessage message = welcomeService.getByGuildId(event.getGuild().getIdLong());
-            if (message == null || !message.isLeaveEnabled() || message.getLeaveChannelId() == null) {
+            if (message == null || !message.isLeaveEnabled() || message.getLeaveTemplate() == null) {
                 return;
             }
-
-            MessageChannel channel = event.getGuild().getTextChannelById(message.getLeaveChannelId());
-            send(event, channel, message.getLeaveMessage(), message.isLeaveRichEnabled());
+            TextChannel channel = DiscordUtils.getDefaultWriteableChannel(event.getGuild());
+            templateService
+                    .createMessage(message.getLeaveTemplate())
+                    .withFallbackContent("welcome.leave.message")
+                    .withGuild(guild)
+                    .withFallbackChannel(channel)
+                    .withMember(event.getMember())
+                    .compileAndSend();
         });
-    }
-
-    private void send(GenericGuildMemberEvent event, MessageChannel channel, String message, boolean rich) {
-        if (channel == null) {
-            return;
-        }
-
-        // process message
-        MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("user", event instanceof GuildMemberLeaveEvent
-                ? event.getUser().getName() : event.getUser().getAsMention());
-        resolver.put("guild", event.getGuild().getName());
-        message = placeholderHelper.replacePlaceholders(message, resolver);
-        if (message.contains("#")) {
-            for (TextChannel textChannel : event.getGuild().getTextChannels()) {
-                message = message.replace("#" + textChannel.getName(), textChannel.getAsMention());
-            }
-        }
-
-        MessageBuilder builder = new MessageBuilder();
-        if (rich) {
-            Guild guild = event.getGuild();
-            EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-            embedBuilder.setAuthor(guild.getName(), null, guild.getIconUrl());
-            embedBuilder.setDescription(message);
-            builder.setEmbed(embedBuilder.build());
-        } else {
-            builder.append(message);
-        }
-        messageService.sendMessageSilent(channel::sendMessage, builder.build());
     }
 }

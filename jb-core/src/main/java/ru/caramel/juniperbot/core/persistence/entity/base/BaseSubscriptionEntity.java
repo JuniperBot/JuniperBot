@@ -27,6 +27,8 @@ import javax.persistence.*;
 @MappedSuperclass
 public abstract class BaseSubscriptionEntity extends WebHookOwnedEntity {
 
+    private static final long serialVersionUID = 1266381731856301682L;
+
     @Column
     private String name;
 

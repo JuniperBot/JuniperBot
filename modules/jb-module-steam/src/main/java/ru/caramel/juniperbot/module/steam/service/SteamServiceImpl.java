@@ -18,9 +18,8 @@ package ru.caramel.juniperbot.module.steam.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
@@ -41,12 +40,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class SteamServiceImpl implements SteamService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final Logger log = LoggerFactory.getLogger(SteamServiceImpl.class);
 
     private static final String APPS_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
 

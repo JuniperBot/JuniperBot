@@ -35,13 +35,11 @@ import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.web.dto.AuditActionDto;
-import ru.caramel.juniperbot.web.dto.NamedReferenceDto;
+import ru.caramel.juniperbot.web.dto.*;
 import ru.caramel.juniperbot.web.dto.config.*;
 import ru.caramel.juniperbot.web.dto.discord.*;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
-import ru.caramel.juniperbot.web.dto.RankingInfoDto;
 import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
@@ -134,7 +132,6 @@ public interface ApiMapperService {
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
 
     @Mappings({
-            @Mapping(expression = "java(ApiMapperService.toString(source.getAnnouncementChannelId()))", target = "announcementChannelId"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels")
     })
     RankingDto getRankingDto(RankingConfig source);
@@ -142,8 +139,6 @@ public interface ApiMapperService {
     RankingInfoDto getRankingInfoDto(RankingInfo info);
 
     @Mappings({
-            @Mapping(expression = "java(ApiMapperService.toString(source.getJoinChannelId()))", target = "joinChannelId"),
-            @Mapping(expression = "java(ApiMapperService.toString(source.getLeaveChannelId()))", target = "leaveChannelId"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getJoinRoles()))", target = "joinRoles"),
     })
     WelcomeDto getWelcomeDto(WelcomeMessage source);
@@ -152,8 +147,9 @@ public interface ApiMapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
-            @Mapping(expression = "java(ApiMapperService.toLong(source.getJoinChannelId()))", target = "joinChannelId"),
-            @Mapping(expression = "java(ApiMapperService.toLong(source.getLeaveChannelId()))", target = "leaveChannelId"),
+            @Mapping(target = "joinTemplate", ignore = true),
+            @Mapping(target = "joinDmTemplate", ignore = true),
+            @Mapping(target = "leaveTemplate", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
@@ -186,7 +182,8 @@ public interface ApiMapperService {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
-            @Mapping(target = "commandConfig", ignore = true)
+            @Mapping(target = "commandConfig", ignore = true),
+            @Mapping(target = "messageTemplate", ignore = true)
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 
@@ -249,6 +246,27 @@ public interface ApiMapperService {
             @Mapping(expression = "java(!source.isEnabled())", target = "disabled")
     })
     void updateCommandConfig(CommandDto source, @MappingTarget CommandConfig target);
+
+    MessageTemplateDto getTemplateDto(MessageTemplate template);
+
+    MessageTemplateFieldDto getTemplateFieldDto(MessageTemplateField templateField);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "fields", ignore = true)
+    })
+    void updateTemplate(MessageTemplateDto source, @MappingTarget MessageTemplate target);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "template", ignore = true),
+            @Mapping(target = "index", ignore = true)
+    })
+    MessageTemplateField getTemplateField(MessageTemplateFieldDto source);
+
+    List<MessageTemplateField> getTemplateFields(List<MessageTemplateFieldDto> source);
 
     default String trimmed(String s) {
         return s != null ? s.trim() : null;

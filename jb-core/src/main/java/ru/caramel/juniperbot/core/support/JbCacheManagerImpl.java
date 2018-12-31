@@ -38,6 +38,9 @@ public class JbCacheManagerImpl extends ConcurrentMapCacheManager implements JbC
     @SuppressWarnings("unchecked")
     public <T, K> T get(String cacheName, K key, Function<K, T> supplier) {
         Cache cache = getCache(cacheName);
+        if (cache == null) {
+            return null;
+        }
         Cache.ValueWrapper valueWrapper = cache.get(key);
         if (valueWrapper != null && valueWrapper.get() != null) {
             return (T) valueWrapper.get();
@@ -49,7 +52,10 @@ public class JbCacheManagerImpl extends ConcurrentMapCacheManager implements JbC
 
     @Override
     public <K> void evict(String cacheName, K key) {
-        getCache(cacheName).evict(key);
+        Cache cache = getCache(cacheName);
+        if (cache != null) {
+            cache.evict(key);
+        }
     }
 
     private String getCacheName(Class<?> clazz) {

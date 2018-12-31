@@ -31,5 +31,7 @@ public class RankingUpdateRequest implements Serializable {
     @NotNull
     private String userId;
 
-    private int level;
+    private Integer level;
+
+    private boolean resetCookies;
 }

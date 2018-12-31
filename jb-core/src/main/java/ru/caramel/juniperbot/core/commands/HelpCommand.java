@@ -16,13 +16,12 @@
  */
 package ru.caramel.juniperbot.core.commands;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
@@ -37,10 +36,9 @@ import ru.caramel.juniperbot.core.service.ConfigService;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
 public class HelpCommand extends AbstractCommand {
-
-    private static final Logger log = LoggerFactory.getLogger(HelpCommand.class);
 
     private static final String COMMON_GROUP = "discord.command.group.common";
 

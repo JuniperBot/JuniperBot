@@ -26,8 +26,6 @@ import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
 
-import java.util.List;
-
 @Repository
 public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
@@ -49,6 +47,10 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
     @Modifying
     @Query("UPDATE Ranking r SET r.exp = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
     int resetAll(@Param("guildId") long guildId);
+
+    @Modifying
+    @Query("UPDATE Ranking r SET r.cookies = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
+    int resetCookies(@Param("guildId") long guildId);
 
     @Query(value = "SELECT recalculate_rank(?1)", nativeQuery = true)
     int recalculateRank(long guildId);

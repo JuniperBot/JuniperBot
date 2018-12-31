@@ -23,14 +23,12 @@ import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,13 +39,10 @@ import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class DefaultAudioServiceImpl implements LavaAudioService {
-
-    private static final Logger log = LoggerFactory.getLogger(DefaultAudioServiceImpl.class);
 
     @Value("${discord.audio.engine.jdaNAS:true}")
     private boolean jdaNAS;

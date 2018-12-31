@@ -25,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.MessageService;
 
 import java.util.Date;
 import java.util.Map;

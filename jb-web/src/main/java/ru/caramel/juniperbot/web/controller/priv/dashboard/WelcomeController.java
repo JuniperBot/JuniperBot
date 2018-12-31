@@ -18,10 +18,8 @@ package ru.caramel.juniperbot.web.controller.priv.dashboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
-import ru.caramel.juniperbot.web.common.validation.WelcomeValidator;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.WelcomeDao;
 import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
@@ -31,14 +29,6 @@ public class WelcomeController extends BaseRestController {
 
     @Autowired
     private WelcomeDao welcomeDao;
-
-    @Autowired
-    private WelcomeValidator validator;
-
-    @InitBinder
-    public void init(WebDataBinder binder) {
-        binder.setValidator(validator);
-    }
 
     @RequestMapping(value = "/welcome/{guildId}", method = RequestMethod.GET)
     @ResponseBody

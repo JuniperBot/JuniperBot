@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,26 +36,13 @@ public class WelcomeDto implements Serializable {
 
     private boolean joinEnabled;
 
-    private boolean joinRichEnabled;
-
-    @Size(max = 1800)
-    private String joinMessage;
-
-    private String joinChannelId;
+    private MessageTemplateDto joinTemplate;
 
     private boolean joinDmEnabled;
 
-    private boolean joinDmRichEnabled;
-
-    @Size(max = 1800)
-    private String joinDmMessage;
+    private MessageTemplateDto joinDmTemplate;
 
     private boolean leaveEnabled;
 
-    private boolean leaveRichEnabled;
-
-    @Size(max = 1800)
-    private String leaveMessage;
-
-    private String leaveChannelId;
+    private MessageTemplateDto leaveTemplate;
 }

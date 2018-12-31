@@ -19,8 +19,9 @@ package ru.caramel.juniperbot.web.dto.config;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
+import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -34,14 +35,10 @@ public class RankingDto implements Serializable {
 
     private boolean announcementEnabled;
 
-    private boolean embed;
-
-    private String announcementChannelId;
+    @Valid
+    private MessageTemplateDto announceTemplate;
 
     private boolean resetOnLeave;
-
-    @Size(max = 1800)
-    private String announcement;
 
     private String[] bannedRoles;
 

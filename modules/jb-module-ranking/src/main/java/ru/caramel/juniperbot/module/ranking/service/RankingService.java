@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
 import ru.caramel.juniperbot.core.service.DomainService;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
@@ -39,9 +38,9 @@ public interface RankingService extends DomainService<RankingConfig> {
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
-    void setLevel(long guildId, String userId, int level);
+    void update(long guildId, String userId, Integer level, boolean resetCookies);
 
-    void resetAll(long guildId);
+    void resetAll(long guildId, boolean levels, boolean cookies);
 
     boolean isBanned(RankingConfig config, Member member);
 

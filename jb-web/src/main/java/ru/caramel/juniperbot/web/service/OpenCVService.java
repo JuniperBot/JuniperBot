@@ -17,13 +17,12 @@
 package ru.caramel.juniperbot.web.service;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -33,10 +32,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Slf4j
 @Service
 public class OpenCVService {
-
-    private static final Logger log = LoggerFactory.getLogger(OpenCVService.class);
 
     @Getter
     private boolean initialized;

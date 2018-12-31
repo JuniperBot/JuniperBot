@@ -102,7 +102,11 @@ public class ClearCommand extends ModeratorCommandAsync {
             if (!matcher.find()) {
                 throw new ValidationException("discord.mode.clear.help");
             }
-            result = Integer.parseInt(matcher.group(1));
+            try {
+                result = Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException e) {
+                result = MAX_MESSAGES;
+            }
         }
         return Math.min(result, MAX_MESSAGES);
     }

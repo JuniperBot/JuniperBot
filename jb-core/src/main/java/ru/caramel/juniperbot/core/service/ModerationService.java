@@ -36,9 +36,9 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     Role getMutedRole(Guild guild);
 
-    boolean mute(TextChannel channel, Member member, boolean global, Integer duration, String reason);
+    boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason);
 
-    boolean unmute(TextChannel channel, Member member);
+    boolean unmute(Member author, TextChannel channel, Member member);
 
     void refreshMute(Member member);
 

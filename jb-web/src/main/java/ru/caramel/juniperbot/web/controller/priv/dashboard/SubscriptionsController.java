@@ -35,6 +35,7 @@ import ru.caramel.juniperbot.web.model.SubscriptionType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -87,20 +88,26 @@ public class SubscriptionsController extends BaseRestController {
         switch (type) {
             case YOUTUBE:
                 List<SearchResult> results = youTubeService.searchChannel(search, 25);
-                return results.stream().map(e -> {
-                    SuggestionDto dto = new SuggestionDto();
-                    dto.setId(e.getId().getChannelId());
+                return results.stream()
+                        .map(e -> {
+                            SuggestionDto dto = new SuggestionDto();
+                            if (e.getId() == null) {
+                                return null;
+                            }
+                            dto.setId(e.getId().getChannelId());
 
-                    SearchResultSnippet snippet = e.getSnippet();
-                    if (snippet == null) {
-                        return null;
-                    }
-                    dto.setName(snippet.getChannelTitle());
-                    if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
-                        dto.setIconUrl(snippet.getThumbnails().getDefault().getUrl());
-                    }
-                    return dto;
-                }).collect(Collectors.toList());
+                            SearchResultSnippet snippet = e.getSnippet();
+                            if (snippet == null) {
+                                return null;
+                            }
+                            dto.setName(snippet.getChannelTitle());
+                            if (snippet.getThumbnails() != null && snippet.getThumbnails().getDefault() != null) {
+                                dto.setIconUrl(snippet.getThumbnails().getDefault().getUrl());
+                            }
+                            return dto;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
 
             default:
                 return Collections.emptyList();

@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
 import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -43,7 +43,7 @@ public class RemoveCommand extends AudioCommand {
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         if (StringUtils.isNumeric(content)) {
-            Integer index = 0;
+            Integer index;
             try {
                 index = Integer.parseInt(content) - 1;
                 if (index >= 0) {
@@ -55,7 +55,7 @@ public class RemoveCommand extends AudioCommand {
                     if (request != null) {
                         messageManager.onMessage(message.getChannel(), "discord.command.audio.remove.done",
                                 messageManager.getTitle(request.getTrack().getInfo()),
-                                CommonUtils.getUrl(request.getTrack().getInfo().uri));
+                                DiscordUtils.getUrl(request.getTrack().getInfo().uri));
                         return true;
                     }
                 }

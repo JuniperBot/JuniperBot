@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.custom.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.persistence.entity.CommandConfig;
+import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
 import ru.caramel.juniperbot.module.custom.model.CommandType;
 
@@ -50,4 +51,9 @@ public class CustomCommand extends GuildEntity {
     @Column(columnDefinition = "text")
     @NotNull
     private String content;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "message_template_id")
+    private MessageTemplate messageTemplate;
+
 }

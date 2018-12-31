@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.model.AbstractCommand;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.service.ContextService;
 import ru.caramel.juniperbot.module.steam.model.details.*;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamApp;
 import ru.caramel.juniperbot.module.steam.service.SteamService;
@@ -146,7 +145,7 @@ public class SteamCommand extends AbstractCommand {
             double newPrice = price.getPrice() / Math.pow(10, unit.getDefaultFractionDigits());
             Money priceMoney = Money.of(unit, newPrice);
 
-            MoneyFormatter formatter = null;
+            MoneyFormatter formatter;
             if (CurrencyUnit.USD.equals(unit)) {
                 formatter = new MoneyFormatterBuilder()
                         .appendCurrencySymbolLocalized()

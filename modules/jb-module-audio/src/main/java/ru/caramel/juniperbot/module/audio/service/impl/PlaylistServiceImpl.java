@@ -17,11 +17,10 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.track.*;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.Member;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
@@ -42,10 +41,9 @@ import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PlaylistServiceImpl implements PlaylistService {
-
-    private static final Logger log = LoggerFactory.getLogger(PlaylistServiceImpl.class);
 
     @Autowired
     private PlaylistRepository playlistRepository;
