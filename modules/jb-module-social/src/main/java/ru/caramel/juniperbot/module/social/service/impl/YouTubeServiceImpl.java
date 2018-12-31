@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -292,17 +293,22 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
         }
 
         try {
-            List<YouTubeConnection> connections = repository.findActiveConnections(channelId);
-            if (CollectionUtils.isEmpty(connections)) {
-                return;
-            }
-
             Video video = getVideoById(videoId, "id,snippet");
             if (video == null) {
                 log.error("No suitable video found for id={}", videoId);
                 return;
             }
-            connections.forEach(e -> notifyConnection(video, e));
+
+            if (video.getSnippet() != null && video.getSnippet().getPublishedAt() != null) {
+                var publishedAt = video.getSnippet().getPublishedAt();
+                LocalDate dateTime = new DateTime(publishedAt.getValue()).toLocalDate();
+                if (Days.daysBetween(dateTime, LocalDate.now()).getDays() >= 1) {
+                    return;
+                }
+            }
+            repository
+                    .findActiveConnections(channelId)
+                    .forEach(e -> notifyConnection(video, e));
         } catch (Exception e) {
             videoCache.invalidate(videoId);
             throw e;
