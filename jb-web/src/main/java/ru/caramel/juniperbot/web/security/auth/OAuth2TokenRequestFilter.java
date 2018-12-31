@@ -19,13 +19,16 @@ package ru.caramel.juniperbot.web.security.auth;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -46,9 +49,11 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
 
     private final static Gson gson = GsonUtils.create();
 
-    @Getter
-    @Setter
-    private OAuth2RestTemplate restTemplate;
+    @Autowired
+    private OAuth2ProtectedResourceDetails resource;
+
+    @Autowired
+    private AuthorizationCodeAccessTokenProvider tokenProvider;
 
     @Getter
     @Setter
@@ -65,6 +70,9 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         TokenRequestDto requestDto = gson.fromJson(request.getReader(), TokenRequestDto.class);
+
+        OAuth2RestTemplate restTemplate = createRestTemplate();
+
         if (requestDto.getCode() != null) {
             AccessTokenRequest tokenRequest = restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
             tokenRequest.setCurrentUri(requestDto.getRedirectUri());
@@ -89,6 +97,12 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
         } catch (InvalidTokenException e) {
             throw new BadCredentialsException("Could not obtain user details from token", e);
         }
+    }
+
+    private OAuth2RestTemplate createRestTemplate() {
+        OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);
+        restTemplate.setAccessTokenProvider(tokenProvider);
+        return restTemplate;
     }
 
     private static class NoopAuthenticationManager implements AuthenticationManager {
