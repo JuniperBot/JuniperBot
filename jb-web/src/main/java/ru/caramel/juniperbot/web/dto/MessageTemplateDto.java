@@ -36,8 +36,6 @@ public class MessageTemplateDto implements Serializable {
 
     private static final long serialVersionUID = 929677926296424697L;
 
-    private static final String URL_PATTERN = "^(https?://.*)?";
-
     @NotNull
     private MessageTemplateType type = MessageTemplateType.TEXT;
 
@@ -56,36 +54,30 @@ public class MessageTemplateDto implements Serializable {
     private String color;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String imageUrl;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String thumbnailUrl;
 
     @Size(max = MessageEmbed.TITLE_MAX_LENGTH)
     public String author;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String authorUrl;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String authorIconUrl;
 
     @Size(max = MessageEmbed.TITLE_MAX_LENGTH)
     public String title;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String titleUrl;
 
     @Size(max = 1800)
     public String footer;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
-    @Pattern(regexp = URL_PATTERN, flags = Pattern.Flag.CASE_INSENSITIVE)
     public String footerIconUrl;
 
 }

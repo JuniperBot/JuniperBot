@@ -48,6 +48,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import static net.dv8tion.jda.core.EmbedBuilder.URL_PATTERN;
+
 @Slf4j
 @Service
 public class MessageTemplateServiceImpl implements MessageTemplateService {
@@ -89,8 +91,8 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setDescription(processContent(content, resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false));
-            embedBuilder.setThumbnail(processContent(template.getThumbnailUrl()));
-            embedBuilder.setImage(processContent(template.getImageUrl()));
+            embedBuilder.setThumbnail(processUrl(template.getThumbnailUrl(), resolver, compiler));
+            embedBuilder.setImage(processUrl(template.getImageUrl(), resolver, compiler));
             if (StringUtils.isNotEmpty(template.getColor())) {
                 embedBuilder.setColor(Color.decode(template.getColor()));
             } else {
@@ -99,16 +101,16 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
             embedBuilder.setAuthor(
                     processContent(template.getAuthor(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),
-                    processContent(template.getAuthorUrl()),
-                    processContent(template.getAuthorIconUrl()));
+                    processUrl(template.getAuthorUrl(), resolver, compiler),
+                    processUrl(template.getAuthorIconUrl(), resolver, compiler));
 
             embedBuilder.setTitle(
                     processContent(template.getTitle(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),
-                    processContent(template.getTitleUrl()));
+                    processUrl(template.getTitleUrl(), resolver, compiler));
 
             embedBuilder.setFooter(
                     processContent(template.getFooter(), resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false),
-                    processContent(template.getFooterIconUrl()));
+                    processUrl(template.getFooterIconUrl(), resolver, compiler));
 
             int length = embedBuilder.length();
 
@@ -277,8 +279,11 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         return value;
     }
 
-    private static String processContent(String value) {
-        return processContent(value, null, null, null, false);
+    private static String processUrl(String url,
+                                     MessageTemplatePlaceholderResolver resolver,
+                                     MessageTemplateCompiler compiler) {
+        url = processContent(url, resolver, compiler, MessageEmbed.URL_MAX_LENGTH, true);
+        return StringUtils.isNotBlank(url) && URL_PATTERN.matcher(url).matches() ? url : null;
     }
 
     @Override
