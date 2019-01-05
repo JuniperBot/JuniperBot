@@ -35,6 +35,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+import static ru.caramel.juniperbot.core.utils.CommonUtils.HTTP_TIMEOUT_DURATION;
+
 @Service
 public class DogApiService {
 
@@ -53,6 +55,8 @@ public class DogApiService {
         if (StringUtils.isNotEmpty(apiKey)) {
             this.restTemplate = new RestTemplateBuilder()
                     .rootUri(BASE_URI)
+                    .setConnectTimeout(HTTP_TIMEOUT_DURATION)
+                    .setReadTimeout(HTTP_TIMEOUT_DURATION)
                     .uriTemplateHandler(new DefaultUriBuilderFactory(BASE_URI))
                     .additionalInterceptors((request, body, execution) -> {
                         HttpHeaders headers = request.getHeaders();

@@ -25,12 +25,16 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
+import static ru.caramel.juniperbot.core.utils.CommonUtils.HTTP_TIMEOUT;
+
 public class DiscordHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
     private final String token;
 
     public DiscordHttpRequestFactory(String token) {
         this.token = token;
+        setConnectTimeout(HTTP_TIMEOUT);
+        setReadTimeout(HTTP_TIMEOUT);
     }
 
     @Override

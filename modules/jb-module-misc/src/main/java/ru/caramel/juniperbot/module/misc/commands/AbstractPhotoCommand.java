@@ -24,10 +24,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.model.AbstractCommandAsync;
 import ru.caramel.juniperbot.core.model.BotContext;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.misc.model.RandomPhotoResponse;
 
 import javax.annotation.PostConstruct;
@@ -43,9 +43,7 @@ public abstract class AbstractPhotoCommand extends AbstractCommandAsync {
 
     @PostConstruct
     public void init() {
-        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        httpRequestFactory.setConnectTimeout(3000);
-        this.restTemplate = new RestTemplate(httpRequestFactory);
+        this.restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
     }
 
     private RandomPhotoResponse getPhoto() {

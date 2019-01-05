@@ -106,7 +106,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
 
     private YouTubeConnectionRepository repository;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
     private final Cache<String, String> videoCache = CacheBuilder.newBuilder()
             .concurrencyLevel(7)

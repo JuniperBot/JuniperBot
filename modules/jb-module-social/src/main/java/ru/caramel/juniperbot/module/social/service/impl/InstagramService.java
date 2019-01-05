@@ -31,6 +31,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.model.InstagramMedia;
 import ru.caramel.juniperbot.module.social.model.InstagramProfile;
 
@@ -76,7 +77,7 @@ public class InstagramService {
 
     @PostConstruct
     public void init() {
-        restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
         scheduler.scheduleWithFixedDelay(this::update, updateInterval);
     }
 
