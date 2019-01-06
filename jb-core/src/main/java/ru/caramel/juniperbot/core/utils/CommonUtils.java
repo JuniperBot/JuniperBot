@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.util.UriUtils;
 
 import java.awt.*;
@@ -31,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
@@ -41,6 +43,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class CommonUtils {
+
+    public final static int HTTP_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
+
+    public final static Duration HTTP_TIMEOUT_DURATION = Duration.ofSeconds(10);
 
     public final static String EMPTY_SYMBOL = "\u2800";
 
@@ -58,6 +64,14 @@ public final class CommonUtils {
 
     private CommonUtils() {
         // helper class
+    }
+
+    public static HttpComponentsClientHttpRequestFactory createRequestFactory() {
+        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectTimeout(HTTP_TIMEOUT);
+        httpRequestFactory.setReadTimeout(HTTP_TIMEOUT);
+        httpRequestFactory.setConnectionRequestTimeout(HTTP_TIMEOUT);
+        return httpRequestFactory;
     }
 
     public static String formatDuration(long millis) {

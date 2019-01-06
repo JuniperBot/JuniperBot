@@ -38,6 +38,7 @@ import ru.caramel.juniperbot.core.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.persistence.entity.StoredMetric;
 import ru.caramel.juniperbot.core.persistence.repository.StoredMetricRepository;
 import ru.caramel.juniperbot.core.service.StatisticsService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -55,7 +56,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private static final String PW_ENDPOINT = "https://bots.discord.pw/api/bots/{clientId}/stats";
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
     @Value("${discord.oauth.clientId}")
     private String clientId;

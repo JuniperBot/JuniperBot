@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.steam.model.GetAppListResponse;
 import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
 import ru.caramel.juniperbot.module.steam.model.SteamAppEntry;
@@ -56,7 +57,7 @@ public class SteamServiceImpl implements SteamService {
     @Autowired
     private SteamCacheRepository cacheRepository;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
     @PostConstruct
     public void init() {

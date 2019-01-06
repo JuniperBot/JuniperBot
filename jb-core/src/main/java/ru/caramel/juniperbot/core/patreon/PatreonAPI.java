@@ -38,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.caramel.juniperbot.core.utils.CommonUtils.HTTP_TIMEOUT_DURATION;
+
 public class PatreonAPI {
 
     private static final String BASE_URI = "https://www.patreon.com/api/oauth2/v2/";
@@ -48,6 +50,8 @@ public class PatreonAPI {
 
         this.restTemplate = new RestTemplateBuilder()
                 .rootUri(BASE_URI)
+                .setConnectTimeout(HTTP_TIMEOUT_DURATION)
+                .setReadTimeout(HTTP_TIMEOUT_DURATION)
                 .uriTemplateHandler(new DefaultUriBuilderFactory(BASE_URI))
                 .additionalInterceptors((request, body, execution) -> {
                     HttpHeaders headers = request.getHeaders();
