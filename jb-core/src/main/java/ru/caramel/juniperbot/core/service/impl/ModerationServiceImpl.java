@@ -28,7 +28,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,6 @@ import ru.caramel.juniperbot.core.persistence.repository.MemberWarningRepository
 import ru.caramel.juniperbot.core.persistence.repository.ModerationConfigRepository;
 import ru.caramel.juniperbot.core.persistence.repository.MuteStateRepository;
 import ru.caramel.juniperbot.core.service.*;
-import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
@@ -212,8 +210,7 @@ public class ModerationServiceImpl
             checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
         }
         for (VoiceChannel channel : guild.getVoiceChannels()) {
-            // remove muted state for existing roles
-            checkPermission(channel, role, PermissionMode.UNCHECKED, Permission.VOICE_SPEAK);
+            checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
         }
         return role;
     }
@@ -292,10 +289,10 @@ public class ModerationServiceImpl
             if (!member.getRoles().contains(mutedRole)) {
                 guild.getController()
                         .addRolesToMember(member, mutedRole)
-                        .queue();
+                        .queue(e -> schedule.accept(true));
                 guild.getController()
                         .setMute(member, true)
-                        .queue(e -> schedule.accept(true));
+                        .queue();
                 return true;
             }
         } else {
@@ -318,14 +315,16 @@ public class ModerationServiceImpl
     @Override
     @Transactional
     public boolean unmute(Member author, TextChannel channel, Member member) {
+        Guild guild = member.getGuild();
         boolean result = false;
-        Role mutedRole = getMutedRole(member.getGuild());
+        Role mutedRole = getMutedRole(guild);
         if (member.getRoles().contains(mutedRole)) {
-            member.getGuild()
-                    .getController()
+            guild.getController()
                     .removeRolesFromMember(member, mutedRole)
                     .queue();
-            member.getGuild().getController().setMute(member, false).queue();
+            guild.getController()
+                    .setMute(member, false)
+                    .queue();
             result = true;
         }
         if (channel != null) {
@@ -338,7 +337,7 @@ public class ModerationServiceImpl
         removeUnMuteSchedule(member, channel);
         if (result) {
             getAuditService()
-                    .log(member.getGuild(), AuditActionType.MEMBER_UNMUTE)
+                    .log(guild, AuditActionType.MEMBER_UNMUTE)
                     .withUser(author)
                     .withTargetUser(member)
                     .withChannel(channel)
