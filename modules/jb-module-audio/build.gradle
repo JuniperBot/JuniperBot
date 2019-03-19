@@ -19,7 +19,8 @@ description = 'JuniperBot Module: Audio'
 dependencies {
     compile project(':jb-core')
     compile project(':modules:jb-module-social')
-    compile(group: 'com.sedmelluq', name: 'lavaplayer', version: lavaplayerVersion)
+    //compile(group: 'com.sedmelluq', name: 'lavaplayer', version: lavaplayerVersion)
+    compile(group: 'org.goldrenard', name: 'lavaplayer', version: jbLavaplayerVersion)
     compile(group: 'com.github.FredBoat', name: 'Lavalink-Client', version: lavalinkVersion) {
         exclude group: 'com.sedmelluq', module: 'lavaplayer'
     }
