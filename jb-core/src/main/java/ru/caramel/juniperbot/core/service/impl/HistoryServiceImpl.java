@@ -23,11 +23,13 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.model.enums.AuditActionType;
 import ru.caramel.juniperbot.core.persistence.entity.AuditConfig;
@@ -54,6 +56,7 @@ public class HistoryServiceImpl implements HistoryService {
     private MemberService memberService;
 
     @Autowired
+    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
     protected TaskScheduler scheduler;
 
     @Autowired

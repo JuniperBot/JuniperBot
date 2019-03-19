@@ -16,7 +16,12 @@ spring:
     formcontent:
       filter:
         enabled: "false"
-
+  cloud:
+    consul:
+      enabled: false
+      discovery:
+        healthCheckPath: /api/public/status
+        healthCheckInterval: 15s
   application:
     version: "@build.version@"
     timestamp: "@build.timestamp@"

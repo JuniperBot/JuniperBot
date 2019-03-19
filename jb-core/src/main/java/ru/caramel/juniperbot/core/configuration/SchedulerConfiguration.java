@@ -33,6 +33,8 @@ import javax.sql.DataSource;
 @Configuration
 public class SchedulerConfiguration implements SchedulerFactoryBeanCustomizer {
 
+    public static final String COMMON_SCHEDULER_NAME = "jbCommonTaskScheduler";
+
     @Value("${core.scheduler.poolSize:10}")
     private int schedulerPoolSize;
 
@@ -44,7 +46,7 @@ public class SchedulerConfiguration implements SchedulerFactoryBeanCustomizer {
         return new SpringBeanJobFactory();
     }
 
-    @Bean
+    @Bean(name = COMMON_SCHEDULER_NAME)
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(schedulerPoolSize);

@@ -64,6 +64,7 @@ subprojects {
 
         // Common Properties
         springBootVersion                  = "${springBootVersion}"
+        springCloudVersion                 = 'Greenwich.RELEASE'
         springOauthVersion                 = '2.1.0.RELEASE'
         hibernateVersion                   = '5.3.7.Final'
         lombokVersion                      = '1.18.4'
