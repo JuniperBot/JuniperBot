@@ -30,7 +30,7 @@ build-backend:
 build-docker:
   stage: package
   script:
-  - docker build -t registry.gitlab.com/juniperbot/backend -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
+  - docker build -t registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
   - docker push registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME
   - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
