@@ -86,6 +86,9 @@ subprojects {
         opencvVersion                      = '3.2.0'
         sentryVersion                      = '1.7.9'
         jacksonVersion                     = '2.9.7'
+        
+        jmxRemote                          = '4.1.1'
+        jmxRemoteLegacy                    = '1.0-b01-ea'
 
         // Integration Properties
         jdaVersion                         = '3.8.1_439'
