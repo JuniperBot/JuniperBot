@@ -29,9 +29,15 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.service.DiscordService;
 import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
@@ -39,6 +45,10 @@ import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -54,8 +64,17 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     @Autowired
     private AudioPlayerManager playerManager;
 
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    @Autowired
+    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
+    private TaskScheduler scheduler;
+
     @Getter
     private JdaLavalink lavaLink = null;
+
+    private Set<URI> registeredInstances = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
@@ -63,12 +82,13 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
             builder.setAudioSendFactory(new NativeAudioSendFactory());
         }
         if (configuration.isEnabled()) {
+            lavaLink = new JdaLavalink(
+                    discordService.getUserId(),
+                    discordService.getShardsNum(),
+                    discordService::getShardById
+            );
+            builder.addEventListeners(lavaLink);
             if (CollectionUtils.isNotEmpty(configuration.getNodes())) {
-                lavaLink = new JdaLavalink(
-                        discordService.getUserId(),
-                        discordService.getShardsNum(),
-                        discordService::getShardById
-                );
                 configuration.getNodes().forEach(e -> {
                     try {
                         lavaLink.addNode(e.getName(), new URI(e.getUrl()), e.getPassword());
@@ -76,9 +96,11 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                         log.warn("Could not add node {}", e, e1);
                     }
                 });
-                builder.addEventListeners(lavaLink);
-            } else {
-                log.warn("Lavalink is enabled but no valid nodes was specified");
+            }
+
+            var discovery = configuration.getDiscovery();
+            if (discovery != null && discovery.isEnabled() && StringUtils.isNotEmpty(discovery.getServiceName())) {
+                scheduler.scheduleWithFixedDelay(this::lookUpDiscovery, 60000);
             }
         }
     }
@@ -119,6 +141,29 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
             lavaLink.shutdown();
         }
         playerManager.shutdown();
+    }
+
+    private void lookUpDiscovery() {
+        var discovery = configuration.getDiscovery();
+        if (discovery == null || !discovery.isEnabled() || StringUtils.isEmpty(discovery.getServiceName())) {
+            return;
+        }
+
+        try {
+            List<ServiceInstance> instanceList = discoveryClient.getInstances(discovery.getServiceName());
+            for (ServiceInstance instance : instanceList) {
+                try {
+                    URI uri = new URI(String.format("ws://%s:%s", instance.getHost(), instance.getPort()));
+                    if (registeredInstances.add(uri)) {
+                        lavaLink.addNode(instance.getInstanceId(), uri, discovery.getPassword());
+                    }
+                } catch (URISyntaxException e) {
+                    log.warn("Could not add node {}", instance, e);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not initialize Lavalink services", e);
+        }
     }
 
     @Override

@@ -20,7 +20,7 @@ spring:
     consul:
       enabled: false
       discovery:
-        healthCheckPath: /api/public/status
+        healthCheckPath: /api/public/health
         healthCheckInterval: 15s
   application:
     version: "@build.version@"
