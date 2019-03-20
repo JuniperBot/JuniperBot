@@ -17,6 +17,7 @@
 package ru.caramel.juniperbot.core.configuration;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -25,6 +26,7 @@ import ru.caramel.juniperbot.core.support.*;
 
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
+@EnableDiscoveryClient
 @EntityScan("ru.caramel.juniperbot")
 @EnableJpaRepositories("ru.caramel.juniperbot")
 @ComponentScan("ru.caramel.juniperbot")

@@ -63,7 +63,7 @@ public class RandCommand extends AbstractCommand {
     }
 
     private boolean showResult(MessageReceivedEvent message, long min, long max) {
-        message.getChannel().sendMessage(String.valueOf(RandomUtils.nextLong(min, max))).queue();
+        message.getChannel().sendMessage(String.valueOf(RandomUtils.nextLong(min, max + 1))).queue();
         return true;
     }
 }

@@ -19,9 +19,11 @@ package ru.caramel.juniperbot.core.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.persistence.entity.WebHook;
 import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
 import ru.caramel.juniperbot.core.persistence.repository.WebHookRepository;
@@ -46,6 +48,7 @@ public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, 
     protected ContextService contextService;
 
     @Autowired
+    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
     protected TaskScheduler scheduler;
 
     @Autowired

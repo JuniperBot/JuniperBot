@@ -30,19 +30,21 @@ build-backend:
 build-docker:
   stage: package
   script:
-  - docker build -t registry.gitlab.com/juniperbot/backend -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
+  - docker build -t registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-  - docker push registry.gitlab.com/juniperbot/backend
+  - docker push registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME
   - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
   dependencies:
   - build-backend
   only:
   - master
+  - develop
 
 trigger-deploy:
   stage: trigger
   script:
   - apk add --update curl && rm -rf /var/cache/apk/*
-  - curl --request POST --form "token=$CI_JOB_TOKEN" --form ref=master https://gitlab.com/api/v4/projects/$INFRASTRUCTURE_PROJECT_ID/trigger/pipeline
+  - curl --request POST --form "token=$CI_JOB_TOKEN" --form "ref=$CI_COMMIT_REF_NAME" https://gitlab.com/api/v4/projects/$INFRASTRUCTURE_PROJECT_ID/trigger/pipeline
   only:
   - master
+  - develop

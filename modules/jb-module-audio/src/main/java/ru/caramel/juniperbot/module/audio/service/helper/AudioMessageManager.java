@@ -34,10 +34,12 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.model.BotContext;
 import ru.caramel.juniperbot.core.service.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
@@ -67,6 +69,7 @@ public class AudioMessageManager {
     private Long playRefreshInterval;
 
     @Autowired
+    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
     private TaskScheduler scheduler;
 
     @Autowired

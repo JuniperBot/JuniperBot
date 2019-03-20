@@ -42,6 +42,12 @@ public class StatusController extends BasePublicRestController {
 
     private Supplier<List<ChartDto>> pingCache = Suppliers.memoizeWithExpiration(this::getPing, 5, TimeUnit.SECONDS);
 
+    @RequestMapping("/health")
+    @ResponseBody
+    public String getHealth() {
+        return "OK";
+    }
+
     @RequestMapping("/status")
     @ResponseBody
     public StatusDto get() {

@@ -22,9 +22,11 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.feature.BaseOwnerFeatureSetProvider;
 import ru.caramel.juniperbot.core.model.FeatureProvider;
 import ru.caramel.juniperbot.core.patreon.resources.Member;
@@ -76,6 +78,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     private PatreonUserRepository repository;
 
     @Autowired
+    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
     private TaskScheduler scheduler;
 
     private PatreonAPI creatorApi;

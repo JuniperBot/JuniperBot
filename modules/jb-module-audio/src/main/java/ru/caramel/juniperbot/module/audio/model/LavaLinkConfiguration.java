@@ -32,7 +32,17 @@ import java.util.List;
 public class LavaLinkConfiguration {
 
     private boolean enabled;
+    private Discovery discovery;
     private List<Node> nodes = new ArrayList<>();
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Discovery {
+        private boolean enabled;
+        private String serviceName;
+        private String password;
+    }
 
     @Getter
     @Setter
