@@ -155,7 +155,9 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                 try {
                     URI uri = new URI(String.format("ws://%s:%s", instance.getHost(), instance.getPort()));
                     if (registeredInstances.add(uri)) {
-                        lavaLink.addNode(instance.getInstanceId(), uri, discovery.getPassword());
+                        String instanceName = instance.getMetadata()
+                                .getOrDefault("instanceName", instance.getInstanceId());
+                        lavaLink.addNode(instanceName, uri, discovery.getPassword());
                     }
                 } catch (URISyntaxException e) {
                     log.warn("Could not add node {}", instance, e);
