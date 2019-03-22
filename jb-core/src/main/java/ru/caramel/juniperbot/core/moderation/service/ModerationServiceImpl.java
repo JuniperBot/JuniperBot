@@ -597,7 +597,7 @@ public class ModerationServiceImpl
         }
         String finalCode = code;
         try {
-            Object[] args = new Object[] { member.getGuild().getName() };
+            Object[] args = new Object[]{member.getGuild().getName()};
             if (ArrayUtils.isNotEmpty(objects)) {
                 args = ArrayUtils.addAll(args, objects);
             }

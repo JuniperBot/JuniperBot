@@ -25,7 +25,7 @@ public interface JbCacheManager extends CacheManager {
 
     <T extends BaseEntity> T get(Class<T> clazz, Long id, Function<Long, T> supplier);
 
-    <T extends BaseEntity>  void evict(Class<T> clazz, Long id);
+    <T extends BaseEntity> void evict(Class<T> clazz, Long id);
 
     <T, K> T get(String cacheName, K key, Function<K, T> supplier);
 

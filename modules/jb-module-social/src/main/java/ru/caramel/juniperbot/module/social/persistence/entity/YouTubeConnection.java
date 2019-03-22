@@ -30,7 +30,7 @@ public class YouTubeConnection extends BaseSubscriptionEntity {
     private static final long serialVersionUID = 2146901528074674595L;
 
     @ManyToOne
-    @JoinColumn(name="channel_id")
+    @JoinColumn(name = "channel_id")
     private YouTubeChannel channel;
 
     @Column

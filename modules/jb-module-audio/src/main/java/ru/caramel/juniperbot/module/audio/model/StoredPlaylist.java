@@ -35,8 +35,8 @@ public class StoredPlaylist extends BasicAudioPlaylist {
     private String playlistUuid;
 
     /**
-     * @param playlist       Playlist
-     * @param tracks         List of tracks in the playlist
+     * @param playlist Playlist
+     * @param tracks   List of tracks in the playlist
      */
     public StoredPlaylist(Playlist playlist, List<AudioTrack> tracks) {
         super(playlist.getUuid(), tracks, null, false);

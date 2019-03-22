@@ -61,7 +61,7 @@ public class WebHookServiceImpl implements WebHookService {
                 if (webhook == null) {
                     TextChannel channel = guild.getTextChannelById(channelId);
                     if (channel != null && guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2,32))
+                        webhook = channel.createWebhook(CommonUtils.trimTo(name, 2, 32))
                                 .setAvatar(DiscordUtils.createIcon(iconUrl))
                                 .complete();
                         webHooks.invalidate(guild);

@@ -33,7 +33,7 @@ public class LocalMember extends GuildEntity {
     private static final long serialVersionUID = -1439894653981742656L;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private LocalUser user;
 
     @Column(name = "effective_name")

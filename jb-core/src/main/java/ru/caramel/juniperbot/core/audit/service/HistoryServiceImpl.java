@@ -135,7 +135,7 @@ public class HistoryServiceImpl implements HistoryService {
         builder.save();
     }
 
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void runCleanUp() {
         runCleanUp(this.durationDays);

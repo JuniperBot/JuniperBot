@@ -33,7 +33,7 @@ public class MemberBio extends BaseEntity {
 
     private static final long serialVersionUID = -7130871042602254396L;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "member_id")
     private LocalMember member;
 

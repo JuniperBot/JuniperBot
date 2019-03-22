@@ -22,13 +22,18 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = DiscordEntityValidator.class)
-@Target( { ElementType.METHOD, ElementType.FIELD })
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DiscordEntity {
     DiscordEntityType value();
+
     boolean allowDm() default false;
+
     boolean strict() default true;
+
     String message() default "Invalid discord entity";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

@@ -39,7 +39,7 @@ public class StopCommand extends AudioCommand {
             return ok(message, "discord.command.audio.stop.member", message.getMember().getEffectiveName());
         }
         fail(message);
-        messageManager.onMessage(message.getChannel(),"discord.command.audio.notStarted");
+        messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
         return true;
     }
 }

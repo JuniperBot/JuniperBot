@@ -20,6 +20,7 @@ import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 
 /**
  * Message template type
+ *
  * @see MessageTemplate
  */
 public enum MessageTemplateType {

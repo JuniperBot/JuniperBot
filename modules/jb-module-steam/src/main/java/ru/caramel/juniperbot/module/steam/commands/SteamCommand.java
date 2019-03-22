@@ -41,7 +41,7 @@ import java.util.List;
         priority = 15)
 public class SteamCommand extends AbstractCommand {
 
-    private static final String APP_PAGE =  "http://store.steampowered.com/app/";
+    private static final String APP_PAGE = "http://store.steampowered.com/app/";
 
     @Autowired
     private SteamService steamService;

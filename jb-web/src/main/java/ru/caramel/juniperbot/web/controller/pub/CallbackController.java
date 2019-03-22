@@ -143,8 +143,8 @@ public class CallbackController extends BasePublicRestController {
 
     @RequestMapping(value = "/patreon/callback", method = RequestMethod.POST)
     public void patreonCallback(@RequestBody String content,
-                          @RequestHeader("X-Patreon-Event") String event,
-                          @RequestHeader("X-Patreon-Signature") String signature) {
+                                @RequestHeader("X-Patreon-Event") String event,
+                                @RequestHeader("X-Patreon-Signature") String signature) {
         if (!patreonService.processWebHook(content, event, signature)) {
             throw new AccessDeniedException();
         }

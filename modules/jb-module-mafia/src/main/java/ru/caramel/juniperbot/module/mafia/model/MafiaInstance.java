@@ -122,7 +122,7 @@ public class MafiaInstance {
                 scheduledStep = null;
             }
         }
-        return handler == null || handler.onEnd(user,this);
+        return handler == null || handler.onEnd(user, this);
     }
 
     public void stop() {

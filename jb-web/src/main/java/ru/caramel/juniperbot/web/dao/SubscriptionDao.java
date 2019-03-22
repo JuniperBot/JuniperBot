@@ -102,7 +102,7 @@ public class SubscriptionDao extends AbstractDao {
     }
 
     @SuppressWarnings("unchecked")
-    private  <T> SubscriptionDto getSubscription(T object) {
+    private <T> SubscriptionDto getSubscription(T object) {
         SubscriptionHandler<T> handler = (SubscriptionHandler<T>) handlersByClass.get(object.getClass());
         return handler != null ? handler.getSubscription(object) : null;
     }

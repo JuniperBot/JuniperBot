@@ -82,7 +82,7 @@ public class UnMuteJob extends AbstractJob {
     public static JobDetail createDetails(boolean global, TextChannel channel, Member member) {
         return JobBuilder
                 .newJob(UnMuteJob.class)
-                .withIdentity(channel != null ? getKey(member,channel) : getKey(member))
+                .withIdentity(channel != null ? getKey(member, channel) : getKey(member))
                 .usingJobData(ATTR_GUILD_ID, member.getGuild().getId())
                 .usingJobData(ATTR_GLOBAL_ID, String.valueOf(global))
                 .usingJobData(ATTR_USER_ID, member.getUser().getId())

@@ -30,6 +30,7 @@ public interface MessageTemplateService {
 
     /**
      * Creates a message compiler for specified template
+     *
      * @param template Template for compiler
      * @return Compiler instance
      */

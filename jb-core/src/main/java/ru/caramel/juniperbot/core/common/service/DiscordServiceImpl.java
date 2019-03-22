@@ -240,7 +240,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public JDA getShard(long guildId) {
-        return shardManager.getShardById((int)((guildId >> 22) % shardsNum));
+        return shardManager.getShardById((int) ((guildId >> 22) % shardsNum));
     }
 
     @Override

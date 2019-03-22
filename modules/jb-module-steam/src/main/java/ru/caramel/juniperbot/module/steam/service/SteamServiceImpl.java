@@ -71,7 +71,7 @@ public class SteamServiceImpl implements SteamService {
         }
     }
 
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     @Override
     public void rebuildApps() {

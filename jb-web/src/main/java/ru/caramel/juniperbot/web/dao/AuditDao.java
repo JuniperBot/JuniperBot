@@ -86,7 +86,7 @@ public class AuditDao extends AbstractDao {
     }
 
     private static Specification<AuditAction> rootAuditSpec(long withGuildId) {
-        return (root, query, builder) ->  {
+        return (root, query, builder) -> {
             query.orderBy(builder.desc(root.get(AuditAction_.actionDate)));
             return builder.equal(root.get(AuditAction_.guildId), withGuildId);
         };

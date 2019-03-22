@@ -64,7 +64,7 @@ public class SubscriptionsController extends BaseRestController {
 
     @RequestMapping(value = "/subscriptions/{guildId}", method = RequestMethod.PUT)
     public SubscriptionCreateResponse create(@GuildId @PathVariable long guildId,
-                               @RequestBody @Validated SubscriptionCreateRequest request) {
+                                             @RequestBody @Validated SubscriptionCreateRequest request) {
         SubscriptionCreateResponse result = subscriptionDao.create(guildId, request);
         if (result == null) {
             throw new AccessDeniedException();
@@ -74,8 +74,8 @@ public class SubscriptionsController extends BaseRestController {
 
     @RequestMapping(value = "/subscriptions/{guildId}/{type}/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(@GuildId @PathVariable long guildId,
-                                  @PathVariable SubscriptionType type,
-                                  @PathVariable long id) {
+                                 @PathVariable SubscriptionType type,
+                                 @PathVariable long id) {
         if (subscriptionDao.delete(type, id)) {
             return ResponseEntity.ok().build();
         }

@@ -98,7 +98,7 @@ public class MemberListener extends DiscordEventListener {
             return;
         }
         LocalMember member = memberService.getOrCreate(event.getMember());
-        member.setLastKnownRoles( event.getMember().getRoles().stream()
+        member.setLastKnownRoles(event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
 

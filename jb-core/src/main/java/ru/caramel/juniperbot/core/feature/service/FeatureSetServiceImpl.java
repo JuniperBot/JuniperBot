@@ -71,8 +71,8 @@ public class FeatureSetServiceImpl implements FeatureSetService {
             this.providers = new ArrayList<>(providers);
             this.providers.sort(Comparator.comparingInt(e ->
                     e != null && e.getClass().isAnnotationPresent(FeatureProvider.class)
-                    ? e.getClass().getAnnotation(FeatureProvider.class).priority()
-                    : Integer.MAX_VALUE));
+                            ? e.getClass().getAnnotation(FeatureProvider.class).priority()
+                            : Integer.MAX_VALUE));
         }
     }
 

@@ -102,12 +102,12 @@ public class StatusDao extends AbstractDao {
         return result;
     }
 
-    private static Long getMetricGauge(Map<String,Metric> metricMap, String name) {
+    private static Long getMetricGauge(Map<String, Metric> metricMap, String name) {
         return getMetricValue(metricMap, name, Long.class, 0L);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getMetricValue(Map<String,Metric> metricMap, String name, Class<T> type, T defaultValue) {
+    private static <T> T getMetricValue(Map<String, Metric> metricMap, String name, Class<T> type, T defaultValue) {
         Object result = getMetricValue(metricMap, name, null);
         if (result != null && type.isAssignableFrom(result.getClass())) {
             return (T) result;
@@ -116,7 +116,7 @@ public class StatusDao extends AbstractDao {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getMetricValue(Map<String,Metric> metricMap, String name, Function<Object, T> valueExtractor) {
+    private static <T> T getMetricValue(Map<String, Metric> metricMap, String name, Function<Object, T> valueExtractor) {
         Metric metric = metricMap.get(name);
         T value = null;
         if (metric instanceof Gauge) {

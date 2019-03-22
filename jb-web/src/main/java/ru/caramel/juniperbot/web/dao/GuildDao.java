@@ -139,11 +139,11 @@ public class GuildDao extends AbstractDao {
 
                 case TEXT_CHANNELS:
                     builder.textChannels(guild.getTextChannels().stream()
-                        .map(e -> {
-                            TextChannelDto dto = apiMapper.getTextChannelDto(e);
-                            dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
-                            return dto;
-                        }).collect(Collectors.toList()));
+                            .map(e -> {
+                                TextChannelDto dto = apiMapper.getTextChannelDto(e);
+                                dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
+                                return dto;
+                            }).collect(Collectors.toList()));
                     break;
 
                 case VOICE_CHANNELS:

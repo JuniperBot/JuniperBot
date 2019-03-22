@@ -35,7 +35,7 @@ public class Playlist extends GuildEntity {
     private static final long serialVersionUID = -6922210268108996339L;
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OrderColumn(name="index")
+    @OrderColumn(name = "index")
     private List<PlaylistItem> items;
 
     @Column

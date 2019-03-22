@@ -415,7 +415,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
      * Appspot PubSubHubBub subscriptions expires each 10 days so we should resubscribe all
      */
     @Override
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public synchronized void resubscribeAll() {
         log.info("Starting YouTube resubscription.");

@@ -48,7 +48,7 @@ public class AvatarCommand extends AbstractCommand {
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setDescription(messageService.getMessage("discord.command.avatar.text", name));
         builder.setImage(user.getAvatarUrl());
-        messageService.sendMessageSilent(message.getChannel():: sendMessage, builder.build());
+        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
     }
 }

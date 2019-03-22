@@ -36,7 +36,7 @@ public class Ranking extends BaseEntity {
 
     private static final long serialVersionUID = -1815192299879652747L;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "member_id")
     private LocalMember member;
 

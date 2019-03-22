@@ -37,7 +37,7 @@ public class StartCommand extends AudioCommand {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;
         }
-        if (playerService.resume(message.getGuild(),true)) {
+        if (playerService.resume(message.getGuild(), true)) {
             return ok(message);
         }
         return fail(message);

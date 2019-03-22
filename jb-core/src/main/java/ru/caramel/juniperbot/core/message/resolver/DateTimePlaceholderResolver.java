@@ -110,9 +110,9 @@ public class DateTimePlaceholderResolver extends AbstractNodePlaceholderResolver
     }
 
     public static DateTimePlaceholderResolver of(@NonNull OffsetDateTime offsetDateTime,
-                                                      @NonNull Locale locale,
-                                                      @NonNull Guild guild,
-                                                      @NonNull ApplicationContext context) {
+                                                 @NonNull Locale locale,
+                                                 @NonNull Guild guild,
+                                                 @NonNull ApplicationContext context) {
         return new DateTimePlaceholderResolver(new DateTime(offsetDateTime.toEpochSecond() * 1000), locale, guild, context);
     }
 

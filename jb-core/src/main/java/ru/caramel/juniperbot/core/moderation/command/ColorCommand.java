@@ -77,7 +77,7 @@ public class ColorCommand extends ModeratorCommandAsync {
                 .filter(e -> e.getColor() != null && !self.canInteract(e))
                 .findAny().orElse(null);
         if (conflicting != null) {
-            messageService.onError(event.getChannel(), null,"discord.command.mod.color.conflict", conflicting.getName());
+            messageService.onError(event.getChannel(), null, "discord.command.mod.color.conflict", conflicting.getName());
             return;
         }
 

@@ -83,7 +83,7 @@ public class HelpCommand extends AbstractCommand {
 
         Map<String, List<DiscordCommand>> groupedCommands = new TreeMap<>();
         for (DiscordCommand command : discordCommands) {
-            for (String group: command.group()) {
+            for (String group : command.group()) {
                 List<DiscordCommand> groupList = groupedCommands.computeIfAbsent(group, e -> new ArrayList<>());
                 groupList.add(command);
             }

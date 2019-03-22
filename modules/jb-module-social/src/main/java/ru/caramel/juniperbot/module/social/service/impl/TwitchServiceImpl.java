@@ -135,7 +135,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                                 }
                                 notifyConnection(stream, c);
                             }
-                });
+                        });
                 repository.saveAll(toSave);
             } catch (Exception ex) {
                 log.warn("Could not notify twitch partition", ex);
