@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.core.metrics.service;
 
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
+import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 
 @DiscordEvent
 public class StatisticsListener extends DiscordEventListener {

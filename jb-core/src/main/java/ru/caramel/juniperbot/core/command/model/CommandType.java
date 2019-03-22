@@ -14,8 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-description = 'JuniperBot Module: Commands (Custom)'
+package ru.caramel.juniperbot.core.command.model;
 
-dependencies {
-    compile project(':jb-core')
+public enum CommandType {
+    MESSAGE, ALIAS;
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "." + name();
+    }
 }

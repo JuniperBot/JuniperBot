@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;

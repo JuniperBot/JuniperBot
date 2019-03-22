@@ -14,19 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.custom;
+package ru.caramel.juniperbot.core.command.persistence;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
+import org.springframework.stereotype.Repository;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
 
-@Configuration
-public class CustomConfiguration {
+@Repository
+public interface CustomCommandRepository extends GuildRepository<CustomCommand> {
+    CustomCommand findByKeyAndGuildId(String key, long guildId);
 
-    @Bean
-    public ModuleMessageSourceImpl customMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("custom-jbmessages");
-        return source;
-    }
+    boolean existsByKeyAndGuildId(String key, long guildId);
+
 }

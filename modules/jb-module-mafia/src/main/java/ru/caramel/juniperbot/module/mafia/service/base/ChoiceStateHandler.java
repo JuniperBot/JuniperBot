@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.mafia.model.*;
 
 import java.util.*;

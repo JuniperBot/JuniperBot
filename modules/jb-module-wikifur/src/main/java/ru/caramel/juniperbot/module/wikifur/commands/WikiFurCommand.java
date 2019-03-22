@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;

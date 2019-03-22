@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.custom.persistence.entity;
+package ru.caramel.juniperbot.core.command.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
-import ru.caramel.juniperbot.module.custom.model.CommandType;
+import ru.caramel.juniperbot.core.command.model.CommandType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

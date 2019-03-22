@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.springframework.context.ApplicationContext;
-import ru.caramel.juniperbot.core.listeners.ReactionsListener;
+import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;

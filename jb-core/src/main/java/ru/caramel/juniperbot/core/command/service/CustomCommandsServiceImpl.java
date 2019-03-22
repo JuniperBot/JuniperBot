@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.custom.listeners;
+package ru.caramel.juniperbot.core.command.service;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.model.CommandSender;
@@ -33,14 +34,14 @@ import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
-import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
-import ru.caramel.juniperbot.module.custom.persistence.repository.CustomCommandRepository;
+import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
+import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 
-@Component
-public class CustomCommandsListener implements CommandSender, CommandHandler {
+@Service
+public class CustomCommandsServiceImpl implements CustomCommandsService {
 
     @Autowired
     private CommandsService commandsService;

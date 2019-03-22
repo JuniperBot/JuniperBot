@@ -14,19 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.groovy;
+package ru.caramel.juniperbot.core.command.service;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
+import ru.caramel.juniperbot.core.command.model.CommandHandler;
+import ru.caramel.juniperbot.core.command.model.CommandSender;
 
-@Configuration
-public class GroovyConfiguration {
-
-    @Bean
-    public ModuleMessageSourceImpl groovyMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("groovy-jbmessages");
-        return source;
-    }
+public interface CustomCommandsService extends CommandSender, CommandHandler {
 }

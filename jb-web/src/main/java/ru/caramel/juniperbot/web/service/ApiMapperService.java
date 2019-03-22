@@ -36,7 +36,7 @@ import ru.caramel.juniperbot.core.common.persistence.base.NamedReference;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
-import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
+import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;

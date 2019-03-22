@@ -25,9 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.CommandExtension;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
+import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
+import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
 import ru.caramel.juniperbot.core.command.service.CommandConfigService;
 import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
@@ -42,6 +43,8 @@ public class HelpCommand extends AbstractCommand {
 
     private static final String COMMON_GROUP = "discord.command.group.common";
 
+    public static final String CUSTOM_GROUP = "discord.command.group.custom";
+
     @Autowired
     private CommandsHolderService holderService;
 
@@ -54,8 +57,8 @@ public class HelpCommand extends AbstractCommand {
     @Autowired
     private ConfigService configService;
 
-    @Autowired(required = false)
-    private List<CommandExtension> extensions;
+    @Autowired
+    private CustomCommandRepository customCommandRepository;
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
@@ -125,9 +128,28 @@ public class HelpCommand extends AbstractCommand {
                                 .collect(Collectors.joining(" ")), false);
             });
 
-            if (CollectionUtils.isNotEmpty(extensions)) {
-                for (CommandExtension extension : extensions) {
-                    extension.extendHelp(message, context, embedBuilder);
+            // Пользовательские команды
+            if (message.getChannelType().isGuild() && context.getConfig() != null) {
+                List<CustomCommand> commands = customCommandRepository.findAllByGuildId(context.getConfig().getGuildId()).stream()
+                        .filter(e -> {
+                            CommandConfig config = e.getCommandConfig();
+                            return config == null || !config.isDisabled()
+                                    && !commandsService.isRestricted(config, message.getTextChannel())
+                                    && !commandsService.isRestricted(config, message.getMember());
+                        })
+                        .collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(commands)) {
+                    StringBuilder list = new StringBuilder();
+                    commands.forEach(e -> {
+                        if (list.length() > 0) {
+                            list.append(", ");
+                        }
+                        list.append('`').append(context.getConfig().getPrefix()).append(e.getKey()).append('`');
+                    });
+                    if (list.length() > 0) {
+                        embedBuilder.addField(messageService.getMessage(CUSTOM_GROUP) + ":",
+                                list.toString(), false);
+                    }
                 }
             }
         }

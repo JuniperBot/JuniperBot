@@ -12,18 +12,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.core.audit.service;
 
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.audit.service.ActionsHolderService;
-import ru.caramel.juniperbot.core.audit.service.HistoryService;
+import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 
 @DiscordEvent
-public class MessageListener extends DiscordEventListener {
+public class HistoryListener extends DiscordEventListener {
 
     @Autowired
     private HistoryService historyService;

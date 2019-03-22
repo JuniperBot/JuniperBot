@@ -30,7 +30,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
 import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;

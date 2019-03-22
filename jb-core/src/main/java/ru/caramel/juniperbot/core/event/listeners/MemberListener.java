@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.listeners;
+package ru.caramel.juniperbot.core.event.listeners;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;

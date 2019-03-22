@@ -19,8 +19,6 @@ package ru.caramel.juniperbot.module.full;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.caramel.juniperbot.module.audio.AudioConfiguration;
-import ru.caramel.juniperbot.module.custom.CustomConfiguration;
-import ru.caramel.juniperbot.module.groovy.GroovyConfiguration;
 import ru.caramel.juniperbot.module.info.InfoConfiguration;
 import ru.caramel.juniperbot.module.mafia.MafiaConfiguration;
 import ru.caramel.juniperbot.module.misc.MiscConfiguration;
@@ -34,7 +32,6 @@ import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
 @Import({
         AudioConfiguration.class,
         SteamConfiguration.class,
-        GroovyConfiguration.class,
         WikiFurConfiguration.class,
         WelcomeConfiguration.class,
         SocialConfiguration.class,
@@ -42,7 +39,6 @@ import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
         RankingConfiguration.class,
         InfoConfiguration.class,
         ReminderConfiguration.class,
-        CustomConfiguration.class,
         MafiaConfiguration.class
 })
 @Configuration

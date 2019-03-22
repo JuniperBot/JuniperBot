@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.listeners.DiscordEventListener;
+import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.event.service.ContextService;

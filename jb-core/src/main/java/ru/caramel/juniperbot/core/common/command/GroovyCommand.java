@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.groovy.commands;
+package ru.caramel.juniperbot.core.common.command;
 
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -27,7 +27,7 @@ import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.module.groovy.service.GroovyService;
+import ru.caramel.juniperbot.core.common.service.GroovyService;
 
 import java.awt.*;
 
