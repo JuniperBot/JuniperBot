@@ -38,7 +38,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
-import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;

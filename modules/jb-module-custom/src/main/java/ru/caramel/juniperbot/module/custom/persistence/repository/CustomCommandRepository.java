@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.custom.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
 import ru.caramel.juniperbot.module.custom.persistence.entity.CustomCommand;
 
 @Repository

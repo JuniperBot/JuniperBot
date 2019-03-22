@@ -18,9 +18,9 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.service.ActionsHolderService;
-import ru.caramel.juniperbot.core.service.HistoryService;
+import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.audit.service.ActionsHolderService;
+import ru.caramel.juniperbot.core.audit.service.HistoryService;
 
 @DiscordEvent
 public class MessageListener extends DiscordEventListener {

@@ -22,8 +22,8 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.event.service.ContextService;
 
 import java.util.Collection;
 import java.util.Map;

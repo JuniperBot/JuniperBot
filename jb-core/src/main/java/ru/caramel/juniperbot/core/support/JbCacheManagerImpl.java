@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.core.support;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 
 import java.util.function.Function;
 

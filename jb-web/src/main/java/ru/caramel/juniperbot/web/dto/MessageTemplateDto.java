@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import ru.caramel.juniperbot.core.model.enums.MessageTemplateType;
-import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
+import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 

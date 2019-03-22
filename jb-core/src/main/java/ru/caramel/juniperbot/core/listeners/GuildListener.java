@@ -20,12 +20,12 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.service.ContextService;
-import ru.caramel.juniperbot.core.service.MessageService;
+import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.common.service.ConfigService;
+import ru.caramel.juniperbot.core.event.service.ContextService;
+import ru.caramel.juniperbot.core.message.service.MessageService;
 
 import java.util.function.Function;
 

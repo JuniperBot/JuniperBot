@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.support;
 
 import org.springframework.cache.CacheManager;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 
 import java.util.function.Function;
 

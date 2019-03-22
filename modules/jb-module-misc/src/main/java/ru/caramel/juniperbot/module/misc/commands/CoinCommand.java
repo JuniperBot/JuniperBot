@@ -17,9 +17,9 @@
 package ru.caramel.juniperbot.module.misc.commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
-import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.command.model.AbstractCommand;
+import ru.caramel.juniperbot.core.command.model.BotContext;
+import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.coin.key",
         description = "discord.command.coin.desc",

@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
-import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.dto.ErrorDetailsDto;
 import ru.caramel.juniperbot.web.dto.validation.ValidationErrorDto;
 

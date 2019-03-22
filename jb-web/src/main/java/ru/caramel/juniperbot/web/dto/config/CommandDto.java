@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.model.enums.CoolDownMode;
+import ru.caramel.juniperbot.core.command.model.CoolDownMode;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

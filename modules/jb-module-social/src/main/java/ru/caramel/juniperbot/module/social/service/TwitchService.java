@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.social.service;
 
 import me.philippheuer.twitch4j.model.Stream;
 import me.philippheuer.twitch4j.model.User;
-import ru.caramel.juniperbot.core.service.SubscriptionService;
+import ru.caramel.juniperbot.core.subscription.service.SubscriptionService;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 
 public interface TwitchService extends SubscriptionService<TwitchConnection, Stream, User> {

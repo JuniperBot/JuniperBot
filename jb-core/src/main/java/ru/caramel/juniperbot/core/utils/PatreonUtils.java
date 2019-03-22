@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
-import ru.caramel.juniperbot.core.patreon.resources.Member;
+import ru.caramel.juniperbot.core.patreon.model.Member;
 
 import java.nio.charset.StandardCharsets;
 

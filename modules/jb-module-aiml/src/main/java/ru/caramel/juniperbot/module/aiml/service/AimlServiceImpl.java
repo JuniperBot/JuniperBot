@@ -33,9 +33,9 @@ import org.goldrenard.jb.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.CommandHandler;
-import ru.caramel.juniperbot.core.service.CommandsService;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.command.model.CommandHandler;
+import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.event.service.ContextService;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;

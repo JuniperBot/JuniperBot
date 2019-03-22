@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
-import ru.caramel.juniperbot.core.service.AuditService;
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.audit.service.AuditService;
+import ru.caramel.juniperbot.core.event.service.ContextService;
 
 public abstract class DiscordEventListener extends ListenerAdapter {
 

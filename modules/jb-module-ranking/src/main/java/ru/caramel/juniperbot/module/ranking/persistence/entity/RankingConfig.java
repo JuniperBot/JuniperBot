@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
-import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 
 import javax.persistence.*;

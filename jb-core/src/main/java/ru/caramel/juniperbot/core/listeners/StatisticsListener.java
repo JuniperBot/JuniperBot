@@ -20,8 +20,8 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.DiscordEvent;
-import ru.caramel.juniperbot.core.service.StatisticsService;
+import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
 
 @DiscordEvent
 public class StatisticsListener extends DiscordEventListener {
