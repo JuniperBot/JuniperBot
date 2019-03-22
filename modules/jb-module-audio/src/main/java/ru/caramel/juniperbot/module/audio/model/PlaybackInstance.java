@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.managers.AudioManager;
-import ru.caramel.juniperbot.core.model.FeatureInstance;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class PlaybackInstance extends FeatureInstance {
+public class PlaybackInstance {
 
     private final IPlayer player;
 
@@ -48,6 +47,8 @@ public class PlaybackInstance extends FeatureInstance {
 
     private String playlistUuid;
 
+    private Long activeTime;
+
     public PlaybackInstance(long guildId, IPlayer player) {
         this.guildId = guildId;
         this.player = player;
@@ -60,6 +61,10 @@ public class PlaybackInstance extends FeatureInstance {
         player.stopTrack();
         cursor = -1;
         tick();
+    }
+
+    public synchronized void tick() {
+        activeTime = System.currentTimeMillis();
     }
 
     public synchronized void play(TrackRequest request) {

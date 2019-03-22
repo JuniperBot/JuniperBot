@@ -22,10 +22,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.persistence.entity.LocalUser;
-import ru.caramel.juniperbot.core.service.FeatureSetService;
-import ru.caramel.juniperbot.core.service.MemberService;
+import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import ru.caramel.juniperbot.core.common.persistence.LocalUser;
+import ru.caramel.juniperbot.core.common.service.MemberService;
+import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.discord.RoleDto;
@@ -139,11 +139,11 @@ public class GuildDao extends AbstractDao {
 
                 case TEXT_CHANNELS:
                     builder.textChannels(guild.getTextChannels().stream()
-                        .map(e -> {
-                            TextChannelDto dto = apiMapper.getTextChannelDto(e);
-                            dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
-                            return dto;
-                        }).collect(Collectors.toList()));
+                            .map(e -> {
+                                TextChannelDto dto = apiMapper.getTextChannelDto(e);
+                                dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
+                                return dto;
+                            }).collect(Collectors.toList()));
                     break;
 
                 case VOICE_CHANNELS:

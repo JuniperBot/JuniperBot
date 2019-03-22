@@ -43,6 +43,7 @@ dependencies {
     compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')
     compile(group: 'io.dropwizard.metrics', name: 'metrics-jvm')
     compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
+    compile(group: 'org.codehaus.groovy', name: 'groovy')
 
     // INTEGRATION DEPENDENCIES
     compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {

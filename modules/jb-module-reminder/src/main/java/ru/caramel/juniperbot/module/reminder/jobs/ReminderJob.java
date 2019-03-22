@@ -21,9 +21,9 @@ import net.dv8tion.jda.core.entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
-import ru.caramel.juniperbot.core.service.ModerationService;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.util.UUID;

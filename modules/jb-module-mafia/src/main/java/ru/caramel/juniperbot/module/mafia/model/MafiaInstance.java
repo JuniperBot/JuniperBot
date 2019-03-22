@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import ru.caramel.juniperbot.core.model.FeatureInstance;
 import ru.caramel.juniperbot.module.mafia.service.base.MafiaStateHandler;
 
 import java.util.*;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Getter
 @Setter
-public class MafiaInstance extends FeatureInstance {
+public class MafiaInstance {
 
     public static final String IGNORED_REASON = "$end$";
 
@@ -70,6 +69,8 @@ public class MafiaInstance extends FeatureInstance {
 
     private Map<MafiaActionType, MafiaPlayer> dailyActions = new ConcurrentHashMap<>();
 
+    private Long activeTime;
+
     public MafiaInstance(@NonNull TextChannel channel, Locale locale, String prefix) {
         this.jda = channel.getJDA();
         this.channelId = channel.getIdLong();
@@ -95,6 +96,10 @@ public class MafiaInstance extends FeatureInstance {
         return jda.getGuildById(guildId);
     }
 
+    public synchronized void tick() {
+        activeTime = System.currentTimeMillis();
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T putAttribute(String key, T value) {
         return (T) attributes.put(key, value);
@@ -117,7 +122,7 @@ public class MafiaInstance extends FeatureInstance {
                 scheduledStep = null;
             }
         }
-        return handler == null || handler.onEnd(user,this);
+        return handler == null || handler.onEnd(user, this);
     }
 
     public void stop() {

@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.model.enums.AuditActionType;
+import ru.caramel.juniperbot.core.audit.model.AuditActionType;
 
 import java.io.Serializable;
 import java.util.Date;

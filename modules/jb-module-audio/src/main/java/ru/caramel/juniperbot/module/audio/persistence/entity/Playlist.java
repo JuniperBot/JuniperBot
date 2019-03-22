@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.audio.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.GuildEntity;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,7 +35,7 @@ public class Playlist extends GuildEntity {
     private static final long serialVersionUID = -6922210268108996339L;
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OrderColumn(name="index")
+    @OrderColumn(name = "index")
     private List<PlaylistItem> items;
 
     @Column

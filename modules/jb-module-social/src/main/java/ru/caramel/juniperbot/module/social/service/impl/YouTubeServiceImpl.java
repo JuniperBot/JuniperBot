@@ -48,11 +48,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.service.BrandingService;
-import ru.caramel.juniperbot.core.service.EmergencyService;
-import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
+import ru.caramel.juniperbot.core.common.service.BrandingService;
+import ru.caramel.juniperbot.core.common.service.EmergencyService;
+import ru.caramel.juniperbot.core.message.resolver.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.subscription.service.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.messaging.placeholder.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeChannelRepository;
@@ -415,7 +415,7 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
      * Appspot PubSubHubBub subscriptions expires each 10 days so we should resubscribe all
      */
     @Override
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public synchronized void resubscribeAll() {
         log.info("Starting YouTube resubscription.");

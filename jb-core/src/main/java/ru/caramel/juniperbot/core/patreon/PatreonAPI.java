@@ -28,10 +28,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.caramel.juniperbot.core.patreon.resources.Member;
-import ru.caramel.juniperbot.core.patreon.resources.User;
-import ru.caramel.juniperbot.core.patreon.resources.shared.BaseResource;
-import ru.caramel.juniperbot.core.patreon.resources.shared.Field;
+import ru.caramel.juniperbot.core.patreon.model.Member;
+import ru.caramel.juniperbot.core.patreon.model.User;
+import ru.caramel.juniperbot.core.patreon.model.shared.BaseResource;
+import ru.caramel.juniperbot.core.patreon.model.shared.Field;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

@@ -19,9 +19,10 @@ package ru.caramel.juniperbot.module.social.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.caramel.juniperbot.core.persistence.entity.WebHookOwnedEntity;
+import ru.caramel.juniperbot.core.subscription.persistence.WebHookOwnedEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "junipost")

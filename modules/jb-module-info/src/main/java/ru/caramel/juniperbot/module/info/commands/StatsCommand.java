@@ -22,10 +22,10 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.model.DiscordCommand;
-import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.service.DiscordService;
+import ru.caramel.juniperbot.core.command.model.BotContext;
+import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.common.service.DiscordService;
 
 import java.util.Date;
 import java.util.Map;
@@ -58,10 +58,10 @@ public class StatsCommand extends AbstractInfoCommand {
     private MessageEmbed.Field getCommonStats(Map<String, Metric> metricMap) {
         String value =
                 getGaugeValue(metricMap, DiscordService.GAUGE_GUILDS) + "\n" +
-                getGaugeValue(metricMap, DiscordService.GAUGE_USERS) + "\n" +
-                getGaugeValue(metricMap, DiscordService.GAUGE_TEXT_CHANNELS) + "\n" +
-                getGaugeValue(metricMap, DiscordService.GAUGE_PING) + "\n" +
-                getGaugeValue(metricMap, "player.activeConnections") + "\n";
+                        getGaugeValue(metricMap, DiscordService.GAUGE_USERS) + "\n" +
+                        getGaugeValue(metricMap, DiscordService.GAUGE_TEXT_CHANNELS) + "\n" +
+                        getGaugeValue(metricMap, DiscordService.GAUGE_PING) + "\n" +
+                        getGaugeValue(metricMap, "player.activeConnections") + "\n";
         return new MessageEmbed.Field(messageService.getMessage("discord.command.stats.common"), value, true);
     }
 
@@ -80,7 +80,7 @@ public class StatsCommand extends AbstractInfoCommand {
         return value != null ? new MessageEmbed.Field(messageService.getMessage("discord.command.stats.platform"), value, false) : null;
     }
 
-    private String getCounterValue(Map<String,Metric> metricMap, String name) {
+    private String getCounterValue(Map<String, Metric> metricMap, String name) {
         Metric metric = metricMap.get(name);
         if (metric instanceof Counter) {
             Counter counter = (Counter) metric;
@@ -89,11 +89,11 @@ public class StatsCommand extends AbstractInfoCommand {
         return null;
     }
 
-    private String getGaugeValue(Map<String,Metric> metricMap, String name) {
+    private String getGaugeValue(Map<String, Metric> metricMap, String name) {
         return getGaugeValue(metricMap, name, null);
     }
 
-    private String getGaugeValue(Map<String,Metric> metricMap, String name, Function<Object, String> valueExtractor) {
+    private String getGaugeValue(Map<String, Metric> metricMap, String name, Function<Object, String> valueExtractor) {
         Metric metric = metricMap.get(name);
         if (metric instanceof Gauge) {
             Gauge gauge = (Gauge) metric;
@@ -106,7 +106,7 @@ public class StatsCommand extends AbstractInfoCommand {
         return null;
     }
 
-    private String getMeterValue(Map<String,Metric> metricMap, String name) {
+    private String getMeterValue(Map<String, Metric> metricMap, String name) {
         Metric metric = metricMap.get(name);
         if (metric instanceof Meter) {
             Meter meter = (Meter) metric;

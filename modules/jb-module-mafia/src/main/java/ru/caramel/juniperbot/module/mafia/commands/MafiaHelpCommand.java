@@ -20,8 +20,8 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.model.DiscordCommand;
+import ru.caramel.juniperbot.core.command.model.BotContext;
+import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.help.key",
         description = "discord.command.mafia.help.desc",
@@ -36,10 +36,10 @@ public class MafiaHelpCommand extends MafiaCommand {
         builder.setDescription(messageService.getMessage("mafia.help.description") +
                 "\n" + EmbedBuilder.ZERO_WIDTH_SPACE);
 
-        builder.addField(getField("mafia.team.mafia","mafia.help.team.mafia"));
-        builder.addField(getField("mafia.team.innocent","mafia.help.team.innocent"));
-        builder.addField(getField("mafia.help.day.title","mafia.help.day.content"));
-        builder.addField(getField("mafia.help.order.title","mafia.help.order.content"));
+        builder.addField(getField("mafia.team.mafia", "mafia.help.team.mafia"));
+        builder.addField(getField("mafia.team.innocent", "mafia.help.team.innocent"));
+        builder.addField(getField("mafia.help.day.title", "mafia.help.day.content"));
+        builder.addField(getField("mafia.help.order.title", "mafia.help.order.content"));
 
         messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;

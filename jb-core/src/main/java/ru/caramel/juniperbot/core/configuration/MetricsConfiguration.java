@@ -17,9 +17,9 @@
 package ru.caramel.juniperbot.core.configuration;
 
 import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.jvm.JvmAttributeGaugeSet;
-import com.codahale.metrics.MetricRegistry;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

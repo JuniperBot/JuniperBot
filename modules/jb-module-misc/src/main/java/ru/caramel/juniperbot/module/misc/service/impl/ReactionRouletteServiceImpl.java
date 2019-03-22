@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.misc.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.impl.AbstractDomainServiceImpl;
+import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.persistence.repository.ReactionRouletteRepository;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;

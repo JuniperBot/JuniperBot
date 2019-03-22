@@ -22,15 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.steam.model.GetAppListResponse;
-import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
 import ru.caramel.juniperbot.module.steam.model.SteamAppEntry;
+import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamApp;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamCache;
 import ru.caramel.juniperbot.module.steam.persistence.repository.SteamAppRepository;
@@ -70,7 +71,7 @@ public class SteamServiceImpl implements SteamService {
         }
     }
 
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     @Override
     public void rebuildApps() {

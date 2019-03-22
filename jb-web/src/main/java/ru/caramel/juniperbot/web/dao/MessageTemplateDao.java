@@ -20,9 +20,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.MessageTemplate;
-import ru.caramel.juniperbot.core.persistence.repository.MessageTemplateFieldRepository;
-import ru.caramel.juniperbot.core.persistence.repository.MessageTemplateRepository;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplateFieldRepository;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplateRepository;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
 import java.util.ArrayList;

@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.web.common.aspect;
 
-import java.lang.annotation.Annotation;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,10 +23,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
-import ru.caramel.juniperbot.core.model.exception.NotFoundException;
+import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
+
+import java.lang.annotation.Annotation;
 
 @Component
 @Aspect

@@ -20,8 +20,8 @@ package ru.caramel.juniperbot.module.ranking.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,11 +35,11 @@ public class Cookie extends BaseEntity {
 
     private static final long serialVersionUID = -204805679480675530L;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "sender_id")
     private LocalMember sender;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "recipient_id")
     private LocalMember recipient;
 

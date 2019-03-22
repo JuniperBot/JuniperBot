@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.info.commands;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
+import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 
 public abstract class AbstractInfoCommand extends AbstractCommand {
 

@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.Permission;
-import ru.caramel.juniperbot.core.model.enums.AvatarType;
+import ru.caramel.juniperbot.core.common.model.AvatarType;
 
 import java.util.List;
 import java.util.Map;

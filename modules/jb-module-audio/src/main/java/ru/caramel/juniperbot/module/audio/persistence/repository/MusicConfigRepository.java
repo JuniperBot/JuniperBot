@@ -21,14 +21,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.repository.base.GuildRepository;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
 @Repository
 public interface MusicConfigRepository extends GuildRepository<MusicConfig> {
 
     @Modifying
-    @Transactional // it's bad to manage transactions on repository layer but in this usage case it doesn't break anything
+    @Transactional
+    // it's bad to manage transactions on repository layer but in this usage case it doesn't break anything
     @Query("UPDATE MusicConfig m SET m.voiceVolume = :voiceVolume WHERE m.guildId = :guildId")
     void updateVolume(@Param("guildId") long guildId, @Param("voiceVolume") int voiceVolume);
 

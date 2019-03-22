@@ -30,8 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.model.exception.AccessDeniedException;
-import ru.caramel.juniperbot.core.service.PatreonService;
+import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
+import ru.caramel.juniperbot.core.patreon.service.PatreonService;
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.service.VkService;
@@ -42,7 +42,8 @@ import ru.caramel.juniperbot.web.utils.FeedUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -142,8 +143,8 @@ public class CallbackController extends BasePublicRestController {
 
     @RequestMapping(value = "/patreon/callback", method = RequestMethod.POST)
     public void patreonCallback(@RequestBody String content,
-                          @RequestHeader("X-Patreon-Event") String event,
-                          @RequestHeader("X-Patreon-Signature") String signature) {
+                                @RequestHeader("X-Patreon-Event") String event,
+                                @RequestHeader("X-Patreon-Signature") String signature) {
         if (!patreonService.processWebHook(content, event, signature)) {
             throw new AccessDeniedException();
         }

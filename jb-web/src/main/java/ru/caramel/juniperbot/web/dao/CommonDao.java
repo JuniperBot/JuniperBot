@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.GuildConfig;
-import ru.caramel.juniperbot.core.service.ConfigService;
-import ru.caramel.juniperbot.core.persistence.entity.ModerationConfig;
-import ru.caramel.juniperbot.core.service.ModerationService;
+import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import ru.caramel.juniperbot.core.common.service.ConfigService;
+import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
+import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
 import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
 

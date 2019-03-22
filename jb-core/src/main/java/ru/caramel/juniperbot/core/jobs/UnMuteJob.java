@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.service.DiscordService;
-import ru.caramel.juniperbot.core.service.ModerationService;
+import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
 
 import java.util.concurrent.TimeUnit;
@@ -82,7 +82,7 @@ public class UnMuteJob extends AbstractJob {
     public static JobDetail createDetails(boolean global, TextChannel channel, Member member) {
         return JobBuilder
                 .newJob(UnMuteJob.class)
-                .withIdentity(channel != null ? getKey(member,channel) : getKey(member))
+                .withIdentity(channel != null ? getKey(member, channel) : getKey(member))
                 .usingJobData(ATTR_GUILD_ID, member.getGuild().getId())
                 .usingJobData(ATTR_GLOBAL_ID, String.valueOf(global))
                 .usingJobData(ATTR_USER_ID, member.getUser().getId())

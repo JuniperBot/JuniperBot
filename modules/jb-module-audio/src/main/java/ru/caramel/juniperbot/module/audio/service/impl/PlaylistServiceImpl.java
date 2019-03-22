@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.service.impl;
 
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.Member;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,8 +26,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.service.*;
+import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.caramel.juniperbot.core.common.service.MemberService;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;

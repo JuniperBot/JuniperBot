@@ -39,7 +39,7 @@ public final class DiscordUtils {
 
     private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)(~\\d+)?:");
 
-    private static final Permission[] CHANNEL_WRITE_PERMISSIONS = new Permission[] {
+    private static final Permission[] CHANNEL_WRITE_PERMISSIONS = new Permission[]{
             Permission.MESSAGE_READ,
             Permission.MESSAGE_WRITE,
             Permission.MESSAGE_EMBED_LINKS
@@ -88,8 +88,8 @@ public final class DiscordUtils {
             replacementList = new String[channels.size()];
             for (TextChannel channel : channels) {
                 int index = i++;
-                searchList[index] =  "#" + channel.getName();
-                replacementList[index] =  channel.getAsMention();
+                searchList[index] = "#" + channel.getName();
+                replacementList[index] = channel.getAsMention();
             }
             content = StringUtils.replaceEach(content, searchList, replacementList);
         }
@@ -111,8 +111,8 @@ public final class DiscordUtils {
                 replacementList = new String[mentioned.size()];
                 for (Member member : mentioned) {
                     int index = i++;
-                    searchList[index] =  "@" + formatUser(member.getUser());
-                    replacementList[index] =  member.getAsMention();
+                    searchList[index] = "@" + formatUser(member.getUser());
+                    replacementList[index] = member.getAsMention();
                 }
                 content = StringUtils.replaceEach(content, searchList, replacementList);
             }
@@ -125,8 +125,8 @@ public final class DiscordUtils {
                     replacementList = new String[roles.size()];
                     for (Role channel : roles) {
                         int index = i++;
-                        searchList[index] =  "@" + channel.getName();
-                        replacementList[index] =  channel.getAsMention();
+                        searchList[index] = "@" + channel.getName();
+                        replacementList[index] = channel.getAsMention();
                     }
                     content = StringUtils.replaceEach(content, searchList, replacementList);
                 }

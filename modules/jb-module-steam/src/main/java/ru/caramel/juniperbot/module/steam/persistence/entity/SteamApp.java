@@ -19,9 +19,11 @@ package ru.caramel.juniperbot.module.steam.persistence.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "steam_app")

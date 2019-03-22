@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.utils;
 
-import ru.caramel.juniperbot.core.service.ContextService;
+import ru.caramel.juniperbot.core.event.service.ContextService;
 
 import java.util.*;
 import java.util.regex.Pattern;

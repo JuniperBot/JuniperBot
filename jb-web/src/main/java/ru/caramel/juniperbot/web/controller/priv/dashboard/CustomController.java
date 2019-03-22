@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.service.CommandsHolderService;
+import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;

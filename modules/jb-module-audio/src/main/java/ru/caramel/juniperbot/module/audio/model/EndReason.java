@@ -37,7 +37,7 @@ public enum EndReason {
     }
 
     public static EndReason getForLavaPlayer(AudioTrackEndReason lavaReason) {
-        for (EndReason reason: values()) {
+        for (EndReason reason : values()) {
             if (ArrayUtils.contains(reason.trackEndReason, lavaReason)) {
                 return reason;
             }

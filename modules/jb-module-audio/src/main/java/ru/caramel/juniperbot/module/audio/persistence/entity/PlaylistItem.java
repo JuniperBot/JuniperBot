@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.persistence.*;
@@ -38,10 +38,10 @@ public class PlaylistItem extends BaseEntity {
     private static final long serialVersionUID = -3967389800974743538L;
 
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name="playlist_id")
+    @JoinColumn(name = "playlist_id")
     public Playlist playlist;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "requested_by_id")
     private LocalMember requestedBy;
 
@@ -72,7 +72,7 @@ public class PlaylistItem extends BaseEntity {
     @Column(name = "artwork_url")
     private String artworkUri;
 
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     @Column
     private byte[] data;
 

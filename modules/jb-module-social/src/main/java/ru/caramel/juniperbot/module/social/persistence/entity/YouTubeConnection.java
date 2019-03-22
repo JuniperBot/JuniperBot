@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.social.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseSubscriptionEntity;
+import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionEntity;
 
 import javax.persistence.*;
 
@@ -30,7 +30,7 @@ public class YouTubeConnection extends BaseSubscriptionEntity {
     private static final long serialVersionUID = 2146901528074674595L;
 
     @ManyToOne
-    @JoinColumn(name="channel_id")
+    @JoinColumn(name = "channel_id")
     private YouTubeChannel channel;
 
     @Column

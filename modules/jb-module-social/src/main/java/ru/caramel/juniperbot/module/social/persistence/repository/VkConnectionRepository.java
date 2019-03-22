@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.social.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.persistence.repository.base.BaseSubscriptionRepository;
+import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionRepository;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 
 @Repository

@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.module.info.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.persistence.entity.LocalMember;
-import ru.caramel.juniperbot.core.persistence.entity.base.BaseEntity;
+import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
 
 import javax.persistence.*;
 
@@ -33,7 +33,7 @@ public class MemberBio extends BaseEntity {
 
     private static final long serialVersionUID = -7130871042602254396L;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "member_id")
     private LocalMember member;
 

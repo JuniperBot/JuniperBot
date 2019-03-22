@@ -20,8 +20,6 @@ dependencies {
     compile project(':jb-core')
     compile project(':modules:jb-module-aiml')
     compile project(':modules:jb-module-audio')
-    compile project(':modules:jb-module-custom')
-    compile project(':modules:jb-module-groovy')
     compile project(':modules:jb-module-info')
     compile project(':modules:jb-module-mafia')
     compile project(':modules:jb-module-misc')

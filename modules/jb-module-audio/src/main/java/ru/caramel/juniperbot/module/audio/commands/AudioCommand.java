@@ -20,14 +20,14 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.model.AbstractCommand;
-import ru.caramel.juniperbot.core.model.BotContext;
-import ru.caramel.juniperbot.core.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.model.exception.ValidationException;
-import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
+import ru.caramel.juniperbot.core.command.model.AbstractCommand;
+import ru.caramel.juniperbot.core.command.model.BotContext;
+import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
+import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 
 public abstract class AudioCommand extends AbstractCommand {
 

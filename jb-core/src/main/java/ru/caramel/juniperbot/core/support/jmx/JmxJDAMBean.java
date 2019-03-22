@@ -165,6 +165,6 @@ public class JmxJDAMBean implements JmxNamedResource {
 
     @Override
     public String[] getJmxPath() {
-        return new String[] { "JDA" };
+        return new String[]{"JDA"};
     }
 }

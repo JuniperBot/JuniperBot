@@ -31,9 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.service.impl.BaseSubscriptionService;
+import ru.caramel.juniperbot.core.message.resolver.MapPlaceholderResolver;
+import ru.caramel.juniperbot.core.subscription.service.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.messaging.placeholder.MapPlaceholderResolver;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.TwitchConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.TwitchService;
@@ -135,7 +135,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                                 }
                                 notifyConnection(stream, c);
                             }
-                });
+                        });
                 repository.saveAll(toSave);
             } catch (Exception ex) {
                 log.warn("Could not notify twitch partition", ex);
