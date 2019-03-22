@@ -18,7 +18,9 @@ package ru.caramel.juniperbot.core.audit.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import ru.caramel.juniperbot.core.audit.persistence.AuditAction;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.persistence.LocalUser;

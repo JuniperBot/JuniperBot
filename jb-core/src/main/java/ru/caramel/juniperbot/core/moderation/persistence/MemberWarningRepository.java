@@ -22,7 +22,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
-import ru.caramel.juniperbot.core.moderation.persistence.MemberWarning;
 
 import java.util.List;
 

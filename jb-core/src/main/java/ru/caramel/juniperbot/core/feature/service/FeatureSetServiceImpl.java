@@ -20,11 +20,11 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.feature.provider.FeatureSetProvider;
-import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
-import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.common.service.BrandingService;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
+import ru.caramel.juniperbot.core.feature.model.FeatureSet;
+import ru.caramel.juniperbot.core.feature.provider.FeatureSetProvider;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.utils.TriFunction;
 

@@ -23,7 +23,9 @@ import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.audit.model.AuditActionType;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.List;
 
 @Getter

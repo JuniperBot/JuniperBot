@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 

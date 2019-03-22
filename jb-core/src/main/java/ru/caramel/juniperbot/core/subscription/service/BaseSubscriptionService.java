@@ -27,10 +27,10 @@ import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionEntity;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHookRepository;
 import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionRepository;
+import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
+import ru.caramel.juniperbot.core.subscription.persistence.WebHookRepository;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ScheduledFuture;

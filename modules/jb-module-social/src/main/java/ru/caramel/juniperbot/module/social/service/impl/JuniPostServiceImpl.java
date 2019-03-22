@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.module.social.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
+import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.social.persistence.repository.JuniPostRepository;
 import ru.caramel.juniperbot.module.social.service.JuniPostService;

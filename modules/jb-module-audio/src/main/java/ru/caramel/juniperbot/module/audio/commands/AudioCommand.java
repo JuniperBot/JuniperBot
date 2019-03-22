@@ -24,10 +24,10 @@ import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
-import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 
 public abstract class AudioCommand extends AbstractCommand {
 

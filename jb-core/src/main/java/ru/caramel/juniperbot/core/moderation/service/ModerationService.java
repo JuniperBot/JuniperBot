@@ -20,9 +20,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.core.common.service.DomainService;
 import ru.caramel.juniperbot.core.moderation.persistence.MemberWarning;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
-import ru.caramel.juniperbot.core.common.service.DomainService;
 
 import java.util.List;
 

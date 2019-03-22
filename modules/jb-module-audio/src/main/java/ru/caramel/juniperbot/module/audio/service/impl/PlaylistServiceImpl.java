@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.service.impl;
 
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.Member;
 import org.apache.commons.collections4.CollectionUtils;

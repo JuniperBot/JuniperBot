@@ -17,8 +17,6 @@
 package ru.caramel.juniperbot.core.subscription.persistence;
 
 import org.springframework.data.repository.NoRepositoryBean;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHookOwnedEntity;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
 
 @NoRepositoryBean

@@ -22,7 +22,9 @@ import ru.caramel.juniperbot.core.common.persistence.base.UserEntity;
 import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.util.Set;
 
 @Getter

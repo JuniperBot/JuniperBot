@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.core.audit.provider;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import ru.caramel.juniperbot.core.audit.model.ForwardProvider;
 import ru.caramel.juniperbot.core.audit.model.AuditActionType;
+import ru.caramel.juniperbot.core.audit.model.ForwardProvider;
 import ru.caramel.juniperbot.core.audit.persistence.AuditAction;
 
 @ForwardProvider(AuditActionType.MEMBER_BAN)

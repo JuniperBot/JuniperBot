@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.core.moderation.persistence;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;

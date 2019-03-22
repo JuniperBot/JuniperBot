@@ -23,8 +23,8 @@ import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.social.service.JuniPostService;
 import ru.caramel.juniperbot.module.social.service.impl.PostService;
-import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 

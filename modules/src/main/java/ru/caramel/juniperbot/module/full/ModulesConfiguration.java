@@ -24,8 +24,8 @@ import ru.caramel.juniperbot.module.mafia.MafiaConfiguration;
 import ru.caramel.juniperbot.module.misc.MiscConfiguration;
 import ru.caramel.juniperbot.module.ranking.RankingConfiguration;
 import ru.caramel.juniperbot.module.reminder.ReminderConfiguration;
-import ru.caramel.juniperbot.module.steam.SteamConfiguration;
 import ru.caramel.juniperbot.module.social.SocialConfiguration;
+import ru.caramel.juniperbot.module.steam.SteamConfiguration;
 import ru.caramel.juniperbot.module.welcome.WelcomeConfiguration;
 import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
 

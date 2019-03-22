@@ -23,12 +23,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 import ru.caramel.juniperbot.module.social.service.TwitchService;
-import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
+import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class TwitchSubscriptionHandler extends AbstractSubscriptionHandler<TwitchConnection> {

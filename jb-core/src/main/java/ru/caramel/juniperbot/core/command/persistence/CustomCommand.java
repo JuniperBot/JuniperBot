@@ -18,10 +18,9 @@ package ru.caramel.juniperbot.core.command.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
-import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 import ru.caramel.juniperbot.core.command.model.CommandType;
+import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
+import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

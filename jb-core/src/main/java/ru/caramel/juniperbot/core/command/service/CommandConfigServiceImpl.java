@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfigRepository;
-import ru.caramel.juniperbot.core.command.service.CommandConfigService;
 
 import java.util.List;
 import java.util.Map;

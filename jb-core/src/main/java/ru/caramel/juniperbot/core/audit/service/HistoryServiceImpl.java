@@ -29,14 +29,14 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 import ru.caramel.juniperbot.core.audit.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.audit.model.AuditActionType;
 import ru.caramel.juniperbot.core.audit.persistence.AuditConfig;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.audit.persistence.MessageHistory;
 import ru.caramel.juniperbot.core.audit.persistence.MessageHistoryRepository;
+import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.service.MemberService;
+import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
 
 import java.util.Date;
 import java.util.Objects;

@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.persistence.LocalMemberRepository;
-import ru.caramel.juniperbot.core.common.service.MemberService;
-import ru.caramel.juniperbot.core.common.service.UserService;
 
 import java.util.List;
 

@@ -26,8 +26,8 @@ import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.common.service.GroovyService;
+import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import java.awt.*;
 

@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import javax.annotation.PostConstruct;
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -25,6 +23,8 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class GroovyService {

@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
-import java.util.List;
-
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -26,6 +24,8 @@ import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
+
+import java.util.List;
 
 @DiscordCommand(
         key = "discord.command.server.key",

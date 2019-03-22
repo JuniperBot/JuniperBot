@@ -22,7 +22,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import ru.caramel.juniperbot.core.support.*;
+import ru.caramel.juniperbot.core.support.JbMessageSource;
+import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
 
 @EnableAspectJAutoProxy
 @EnableTransactionManagement

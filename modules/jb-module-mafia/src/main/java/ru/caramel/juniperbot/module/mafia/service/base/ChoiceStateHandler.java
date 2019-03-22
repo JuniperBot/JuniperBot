@@ -24,7 +24,10 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
-import ru.caramel.juniperbot.module.mafia.model.*;
+import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
+import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
+import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
+import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

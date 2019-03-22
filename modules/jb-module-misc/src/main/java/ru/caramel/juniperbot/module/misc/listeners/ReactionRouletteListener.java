@@ -24,8 +24,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 

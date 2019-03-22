@@ -28,7 +28,8 @@ import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 import ru.caramel.juniperbot.module.mafia.service.individual.BrokerHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class GoonHandler extends ChoiceStateHandler {

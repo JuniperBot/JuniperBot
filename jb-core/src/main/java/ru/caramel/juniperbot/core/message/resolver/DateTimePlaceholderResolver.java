@@ -24,10 +24,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.context.ApplicationContext;
-import ru.caramel.juniperbot.core.message.resolver.node.AbstractNodePlaceholderResolver;
-import ru.caramel.juniperbot.core.message.resolver.node.SingletonNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
+import ru.caramel.juniperbot.core.message.resolver.node.AbstractNodePlaceholderResolver;
+import ru.caramel.juniperbot.core.message.resolver.node.SingletonNodePlaceholderResolver;
 
 import java.time.OffsetDateTime;
 import java.util.Locale;

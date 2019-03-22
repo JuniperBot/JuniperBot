@@ -20,7 +20,9 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Getter
 @Setter

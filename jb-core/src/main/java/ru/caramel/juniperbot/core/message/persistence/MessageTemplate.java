@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.core.message.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
 import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

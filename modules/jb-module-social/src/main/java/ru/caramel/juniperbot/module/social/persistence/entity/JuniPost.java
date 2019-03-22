@@ -21,7 +21,8 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.caramel.juniperbot.core.subscription.persistence.WebHookOwnedEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "junipost")

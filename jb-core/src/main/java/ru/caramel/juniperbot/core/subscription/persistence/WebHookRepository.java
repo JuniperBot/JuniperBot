@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.core.subscription.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 
 @Repository
 public interface WebHookRepository extends JpaRepository<WebHook, Long> {

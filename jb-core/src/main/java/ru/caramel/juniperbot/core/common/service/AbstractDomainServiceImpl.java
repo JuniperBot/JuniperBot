@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
+import ru.caramel.juniperbot.core.audit.service.AuditService;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
-import ru.caramel.juniperbot.core.audit.service.AuditService;
 import ru.caramel.juniperbot.core.support.JbCacheManager;
 
 @Slf4j

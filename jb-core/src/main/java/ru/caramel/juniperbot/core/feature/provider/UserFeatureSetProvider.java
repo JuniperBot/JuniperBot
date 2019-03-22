@@ -21,10 +21,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
-import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.common.persistence.LocalUser;
 import ru.caramel.juniperbot.core.common.persistence.LocalUserRepository;
+import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
+import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import java.util.Set;
