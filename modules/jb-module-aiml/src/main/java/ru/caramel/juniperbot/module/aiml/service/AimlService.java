@@ -27,8 +27,6 @@ public interface AimlService {
 
     void setEnabled(boolean enabled);
 
-    Set<Long> getIgnoredGuilds();
-
     Chat getSession(String botName, User user);
 
     void clear();

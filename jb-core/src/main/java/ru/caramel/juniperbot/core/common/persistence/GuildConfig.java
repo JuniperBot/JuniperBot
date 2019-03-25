@@ -69,6 +69,9 @@ public class GuildConfig extends GuildEntity {
     @Column(name = "time_zone")
     private String timeZone;
 
+    @Column(name = "is_assistant_enabled")
+    private boolean assistantEnabled;
+
     public GuildConfig(long guildId) {
         this.guildId = guildId;
     }
