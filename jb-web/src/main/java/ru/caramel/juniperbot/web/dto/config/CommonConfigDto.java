@@ -53,6 +53,8 @@ public class CommonConfigDto implements Serializable {
 
     private boolean privateHelp;
 
+    private boolean assistantEnabled;
+
     @Valid
     private ModerationConfigDto modConfig;
 }

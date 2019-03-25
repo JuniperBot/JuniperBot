@@ -216,7 +216,7 @@ public final class DiscordUtils {
             return null;
         }
         return member.getRoles().stream()
-                .sorted(Comparator.comparingInt(Role::getPosition))
+                .sorted(Comparator.comparingInt(Role::getPosition).reversed())
                 .filter(e -> permission == null || permission.length == 0 || e.hasPermission(permission))
                 .findFirst().orElse(null);
     }

@@ -70,6 +70,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -79,6 +81,8 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     private static final String PUSH_ENDPOINT = "https://pubsubhubbub.appspot.com/subscribe";
 
     private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=";
+
+    private static final Pattern CHANNEL_URL_PATTERN = Pattern.compile("(?:(?:https|http)\\:\\/\\/)?(?:[\\w]+\\.)?youtube\\.com\\/(?:c\\/|channel\\/)?([a-zA-Z0-9\\-]{1,})");
 
     @Value("${integrations.youTube.apiKey}")
     private String[] apiKeys;
@@ -207,6 +211,10 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
     @Override
     public List<SearchResult> searchChannel(String queryTerm, long maxResults) {
         try {
+            SearchResult result = probeSearchByChannelUrl(queryTerm);
+            if (result != null) {
+                return Collections.singletonList(result);
+            }
             YouTube.Search.List search = youTube.search().list("id,snippet");
             search.setKey(getApiKey());
             search.setQ(queryTerm);
@@ -218,6 +226,34 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
             log.error("Could not perform YouTube search", e);
         }
         return Collections.emptyList();
+    }
+
+    private SearchResult probeSearchByChannelUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+        Matcher matcher = CHANNEL_URL_PATTERN.matcher(url);
+        if (!matcher.find()) {
+            return null;
+        }
+        Channel channel = getChannelById(matcher.group(1));
+        if (channel == null) {
+            return null;
+        }
+
+        SearchResult result = new SearchResult();
+        ResourceId resourceId = new ResourceId();
+        resourceId.setChannelId(channel.getId());
+        result.setId(resourceId);
+
+        SearchResultSnippet snippet = new SearchResultSnippet();
+        snippet.setChannelId(channel.getId());
+        if (channel.getSnippet() != null) {
+            snippet.setChannelTitle(channel.getSnippet().getTitle());
+            snippet.setThumbnails(channel.getSnippet().getThumbnails());
+        }
+        result.setSnippet(snippet);
+        return result;
     }
 
     public Channel getChannelById(String id) {

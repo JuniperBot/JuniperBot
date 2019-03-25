@@ -35,13 +35,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -58,15 +57,15 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
     @Value("${integrations.aiml.enabled:true}")
     private boolean enabled;
 
-    @Getter
-    private final Set<Long> ignoredGuilds = Collections.synchronizedSet(new HashSet<>());
-
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
     private Cache<User, Chat> sessions = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
             .expireAfterAccess(1, TimeUnit.HOURS)
             .build();
+
+    @Autowired
+    private ConfigService configService;
 
     @Autowired
     private CommandsService commandsService;
@@ -109,12 +108,14 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Override
     public boolean handleMessage(MessageReceivedEvent event) {
-        if (!enabled || StringUtils.isEmpty(path) || event.getAuthor() == null) {
+        if (!enabled || StringUtils.isEmpty(path) || event.getAuthor() == null || event.getGuild() == null) {
             return false;
         }
-        JDA jda = event.getJDA();
+
+        GuildConfig config = configService.get(event.getGuild());
         if (event.getChannelType() != ChannelType.TEXT
-                || ignoredGuilds.contains(event.getGuild().getIdLong())
+                || config == null
+                || !config.isAssistantEnabled()
                 || !event.getMessage().isMentioned(event.getJDA().getSelfUser())
                 || !event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
             return false;
@@ -124,6 +125,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             return false;
         }
 
+        JDA jda = event.getJDA();
         boolean usingMention;
         String mention = jda.getSelfUser().getAsMention();
         if (!(usingMention = content.startsWith(mention))) {

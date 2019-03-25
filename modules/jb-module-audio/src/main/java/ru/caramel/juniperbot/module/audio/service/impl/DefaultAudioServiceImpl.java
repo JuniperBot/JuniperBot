@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.module.audio.service.impl;
 
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
@@ -54,9 +53,6 @@ import java.util.Set;
 @Service
 public class DefaultAudioServiceImpl implements LavaAudioService {
 
-    @Value("${discord.audio.engine.jdaNAS:true}")
-    private boolean jdaNAS;
-
     @Autowired
     @Getter
     private LavaLinkConfiguration configuration;
@@ -78,9 +74,6 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     @Override
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
-        if (jdaNAS) {
-            builder.setAudioSendFactory(new NativeAudioSendFactory());
-        }
         if (configuration.isEnabled()) {
             lavaLink = new JdaLavalink(
                     discordService.getUserId(),

@@ -142,7 +142,7 @@ public class AudioMessageManager {
                                 contextService.withContext(request.getGuildId(),
                                         () -> markAsPassed(request, oldController, isKeepMessage(request)));
                             }
-                            if (featureSetService.isAvailable(request.getGuildId())) {
+                            if (isRefreshable(request.getGuildId())) {
                                 runUpdater(request);
                             }
                         });
@@ -233,7 +233,7 @@ public class AudioMessageManager {
             if (request.isResetOnResume()) {
                 deleteMessage(request);
                 onTrackStart(request);
-            } else if (featureSetService.isAvailable(request.getGuildId())) {
+            } else if (isRefreshable(request.getGuildId())) {
                 runUpdater(request);
             } else {
                 updateMessage(request);
@@ -450,7 +450,7 @@ public class AudioMessageManager {
 
         AudioTrackInfo info = request.getTrack().getInfo();
         PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
-        boolean bonusActive = featureSetService.isAvailable(instance.getGuildId());
+        boolean refreshable = isRefreshable(instance.getGuildId());
 
         String durationText;
         if (request.getEndReason() != null) {
@@ -475,7 +475,7 @@ public class AudioMessageManager {
             reasonBuilder.append(CommonUtils.EMPTY_SYMBOL);
             durationText = reasonBuilder.toString();
         } else {
-            durationText = getTextProgress(instance, request.getTrack(), bonusActive);
+            durationText = getTextProgress(instance, request.getTrack(), refreshable);
         }
 
         if (instance.getPlaylistUuid() != null) {
@@ -521,7 +521,7 @@ public class AudioMessageManager {
                     if (socket != null) {
                         StringBuilder statsBuilder = new StringBuilder(messageService
                                 .getMessage("discord.command.audio.panel.poweredBy", socket.getName()));
-                        if (bonusActive && socket.getStats() != null) {
+                        if (refreshable && socket.getStats() != null) {
                             long load = Math.round(socket.getStats().getLavalinkLoad() * 100);
                             if (load < 0) load = 0;
                             if (load > 100) load = 100;
@@ -535,6 +535,11 @@ public class AudioMessageManager {
             }
         }
         return builder;
+    }
+
+    private boolean isRefreshable(long guildId) {
+        MusicConfig config = musicConfigService.getByGuildId(guildId);
+        return featureSetService.isAvailable(guildId) && (config != null && config.isAutoRefresh());
     }
 
     private EmbedBuilder getBasicMessage(TrackRequest request) {
