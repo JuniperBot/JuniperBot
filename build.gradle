@@ -91,12 +91,11 @@ subprojects {
         jmxRemoteLegacy                    = '1.0-b01-ea'
 
         // Integration Properties
-        jdaVersion                         = '3.8.1_439'
+        jdaVersion                         = '3.8.3_462'
         opusJavaVersion                    = '1.0.4' // CHECK ITS VERSION ON JDA UPDATE!
-        jdaNasVersion                      = '1.0.6'
         lavaplayerVersion                  = '1.3.10'
         jbLavaplayerVersion                = '1.3.10.5'
-        lavalinkVersion                    = 'fbd297512f'
+        lavalinkVersion                    = '1a4b0f58af'
         googleApiServicesYoutubeVersion    = 'v3-rev205-1.25.0'
         jwbfVersion                        = '4.0.0-SNAPSHOT'
         wikitextVersion                    = '3.1.6'

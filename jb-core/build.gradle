@@ -51,8 +51,7 @@ dependencies {
     }
     // we need to include it manually because in JDA it scoped as POM and included in fat libraries by bootJar task
     compile(group: 'club.minnced', name: 'opus-java', version: opusJavaVersion)
-    
-    compile(group: 'com.sedmelluq', name: 'jda-nas', version: jdaNasVersion)
+
     compile(group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)
     compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
 
