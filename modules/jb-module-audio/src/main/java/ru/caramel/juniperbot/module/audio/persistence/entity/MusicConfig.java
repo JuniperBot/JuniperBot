@@ -75,6 +75,9 @@ public class MusicConfig extends GuildEntity {
     @Column(name = "remove_messages")
     private boolean removeMessages;
 
+    @Column(name = "auto_refresh")
+    private boolean autoRefresh;
+
     public MusicConfig(long guildId) {
         this.guildId = guildId;
     }

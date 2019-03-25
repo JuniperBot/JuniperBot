@@ -29,4 +29,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.5-25032019-2" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="auto_refresh" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

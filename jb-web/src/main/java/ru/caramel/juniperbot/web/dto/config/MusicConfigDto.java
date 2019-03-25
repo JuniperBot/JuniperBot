@@ -61,4 +61,6 @@ public class MusicConfigDto implements Serializable {
     private boolean showQueue;
 
     private boolean removeMessages;
+
+    private boolean autoRefresh;
 }
