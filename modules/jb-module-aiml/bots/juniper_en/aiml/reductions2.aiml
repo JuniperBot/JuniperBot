@@ -1224,7 +1224,7 @@
 <template><srai>PLAY <star/></srai></template>
 </category>
 <category><pattern>CAN YOU SAY HELLO *</pattern>
-<template><srai>SAY HELLO <star/></srai></template>
+<template>Hello <star/></template>
 </category>
 <category><pattern>CAN YOU SET A REMINDER</pattern>
 <template><srai>SET ALARM</srai></template>
