@@ -522,7 +522,7 @@ public class AudioMessageManager {
                         StringBuilder statsBuilder = new StringBuilder(messageService
                                 .getMessage("discord.command.audio.panel.poweredBy", socket.getName()));
                         if (refreshable && socket.getStats() != null) {
-                            long load = Math.round(socket.getStats().getLavalinkLoad() * 100);
+                            long load = Math.round(socket.getStats().getSystemLoad() * 100);
                             if (load < 0) load = 0;
                             if (load > 100) load = 100;
                             statsBuilder

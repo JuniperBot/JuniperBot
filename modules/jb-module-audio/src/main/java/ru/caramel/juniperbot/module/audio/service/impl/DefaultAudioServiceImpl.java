@@ -17,11 +17,13 @@
 package ru.caramel.juniperbot.module.audio.service.impl;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -44,10 +46,8 @@ import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -136,6 +136,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
         playerManager.shutdown();
     }
 
+    @Synchronized
     private void lookUpDiscovery() {
         var discovery = configuration.getDiscovery();
         if (discovery == null || !discovery.isEnabled() || StringUtils.isEmpty(discovery.getServiceName())) {
@@ -144,9 +145,11 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
         try {
             List<ServiceInstance> instanceList = discoveryClient.getInstances(discovery.getServiceName());
+            Set<URI> liveInstances = new HashSet<>(instanceList.size());
             for (ServiceInstance instance : instanceList) {
                 try {
                     URI uri = new URI(String.format("ws://%s:%s", instance.getHost(), instance.getPort()));
+                    liveInstances.add(uri);
                     if (registeredInstances.add(uri)) {
                         String instanceName = instance.getMetadata()
                                 .getOrDefault("instanceName", instance.getInstanceId());
@@ -156,6 +159,18 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                     log.warn("Could not add node {}", instance, e);
                 }
             }
+
+            // remove dead nodes from LavaLink
+            Collection<URI> deadInstances = CollectionUtils.subtract(registeredInstances, liveInstances);
+            Set<LavalinkSocket> deadNodes = lavaLink.getNodes().stream()
+                    .filter(e -> deadInstances.contains(e.getRemoteUri()))
+                    .collect(Collectors.toSet());
+            deadNodes.forEach(e -> {
+                if (lavaLink.getNodes().remove(e)) {
+                    e.close();
+                    registeredInstances.remove(e.getRemoteUri());
+                }
+            });
         } catch (Exception e) {
             log.warn("Could not initialize Lavalink services", e);
         }
