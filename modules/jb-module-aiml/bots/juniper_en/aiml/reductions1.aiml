@@ -3440,7 +3440,7 @@
 <template><srai>HOW ARE YOU</srai></template>
 </category>
 <category><pattern>HOW TO SAY *</pattern>
-<template><srai>SAY <star/></srai></template>
+<template>Somehow.</template>
 </category>
 <category><pattern>I NEED SOME *</pattern>
 <template><srai>I WANT SOME <star/></srai></template>
@@ -3701,7 +3701,7 @@
 <template><srai>CHILDREN</srai></template>
 </category>
 <category><pattern>HOW DO YOU SAY *</pattern>
-<template><srai>SAY <star/></srai></template>
+<template>Somehow.</template>
 </category>
 <category><pattern>HOW IS YOUR DAY</pattern>
 <template><srai>HOW ARE YOU</srai> <srai>DOING</srai></template>

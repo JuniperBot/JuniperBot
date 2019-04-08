@@ -1466,7 +1466,7 @@ neighbor's.</template>
 <template><response/></template>
 </category>
 <category><pattern>SAY *</pattern>
-<template><star/>.</template>
+<template>I'm not repeating machine!</template>
 </category>
 <category><pattern>SAY IT AGAIN</pattern>
 <template><response/></template>
