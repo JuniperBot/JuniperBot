@@ -75,16 +75,13 @@
         </filter>
     </appender>
 
-    <logger name="ru.caramel.juniperbot" level="ERROR" additivity="true">
-        <appender-ref ref="ERROR"/>
-    </logger>
-
     <logger name="net.dv8tion.jda.core.requests.RateLimiter" level="INFO" additivity="false">
         <appender-ref ref="RATELIMITER"/>
     </logger>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ERROR" />
         <appender-ref ref="FILE" />
         <appender-ref ref="SENTRY"/>
     </root>

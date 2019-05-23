@@ -42,6 +42,7 @@ import javax.annotation.PostConstruct;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -93,7 +94,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         if (client == null) {
             return;
         }
-        log.debug("Twitch channels notification started...");
+        log.info("Twitch channels notification started...");
 
         List<Channel> channels = repository.findChannelIds().stream().map(e -> {
             Channel channel = new Channel();
@@ -102,6 +103,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         }).collect(Collectors.toList());
 
         if (channels.isEmpty()) {
+            log.info("No Twitch connections found to retrieve, exiting...");
             return;
         }
 
@@ -111,6 +113,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                 .getLiveStreams(e, null, null, null, 100, 0)));
 
         if (liveStreams.isEmpty()) {
+            log.info("No live streams found for {} connections, exiting...", channels.size());
             liveStreamsCache.clear();
             return;
         }
@@ -119,32 +122,33 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                 .filter(e -> !liveStreamsCache.contains(e.getId()))
                 .collect(Collectors.toList());
 
+        AtomicInteger notifyCounter = new AtomicInteger();
+
         Lists.partition(streamsToNotify, 1000).forEach(e -> {
-            try {
-                List<TwitchConnection> toSave = new ArrayList<>(e.size());
-                Map<Long, Stream> streamMap = e.stream().collect(Collectors.toMap(s -> s.getChannel().getId(),
-                        Function.identity()));
-                repository.findActiveConnections(e.stream()
-                        .map(s -> s.getChannel().getId())
-                        .collect(Collectors.toSet()))
-                        .forEach(c -> {
-                            Stream stream = streamMap.get(c.getUserId());
-                            if (stream != null) {
-                                if (updateIfRequired(stream.getChannel(), c)) {
-                                    toSave.add(c);
-                                }
-                                notifyConnection(stream, c);
+            List<TwitchConnection> toSave = new ArrayList<>(e.size());
+            Map<Long, Stream> streamMap = e.stream().collect(Collectors.toMap(s -> s.getChannel().getId(),
+                    Function.identity()));
+            repository.findActiveConnections(e.stream()
+                    .map(s -> s.getChannel().getId())
+                    .collect(Collectors.toSet()))
+                    .forEach(c -> {
+                        Stream stream = streamMap.get(c.getUserId());
+                        if (stream != null) {
+                            if (updateIfRequired(stream.getChannel(), c)) {
+                                toSave.add(c);
                             }
-                        });
-                repository.saveAll(toSave);
-            } catch (Exception ex) {
-                log.warn("Could not notify twitch partition", ex);
-            }
+                            if (notifyConnection(stream, c)) {
+                                notifyCounter.incrementAndGet();
+                            }
+                        }
+                    });
+            repository.saveAll(toSave);
         });
 
         liveStreamsCache.clear();
         liveStreamsCache.addAll(liveStreams.stream().map(Stream::getId).collect(Collectors.toSet()));
-        log.debug("Twitch channels notification finished...");
+        log.info("Twitch channels notification finished: [Channels={}, Online={}, Notified={}]", channels.size(),
+                liveStreams.size(), notifyCounter.intValue());
     }
 
     private boolean updateIfRequired(Channel channel, TwitchConnection connection) {
