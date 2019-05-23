@@ -81,7 +81,7 @@ public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, 
         }
     }
 
-    protected void notifyConnection(S subscription, T connection) {
+    protected boolean notifyConnection(S subscription, T connection) {
         try {
             contextService.withContext(connection.getGuildId(), () -> {
                 discordService.executeWebHook(connection.getWebHook(), createMessage(subscription, connection), e -> {
@@ -89,9 +89,11 @@ public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, 
                     hookRepository.save(e);
                 });
             });
-        } catch (Exception ex) {
-            log.warn("Could not notify {}[id={}]", connection.getClass().getSimpleName(), connection.getId(), ex);
+        } catch (Exception e) {
+            log.warn("Could not notify {}[id={}]", connection.getClass().getSimpleName(), connection.getId(), e);
+            return false;
         }
+        return true;
     }
 
     protected abstract WebhookMessage createMessage(S subscription, T connection);
