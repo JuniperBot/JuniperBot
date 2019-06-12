@@ -63,6 +63,8 @@ public abstract class AbstractCommand implements Command {
 
     private AuditService auditService;
 
+    private DiscordCommand annotation;
+
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
         return true;
@@ -112,5 +114,17 @@ public abstract class AbstractCommand implements Command {
             auditService = applicationContext.getBean(AuditService.class);
         }
         return auditService;
+    }
+
+    @Override
+    public DiscordCommand getAnnotation() {
+        if (annotation == null) {
+            synchronized (this) {
+                if (annotation == null) {
+                    annotation = getClass().getDeclaredAnnotation(DiscordCommand.class);
+                }
+            }
+        }
+        return annotation;
     }
 }

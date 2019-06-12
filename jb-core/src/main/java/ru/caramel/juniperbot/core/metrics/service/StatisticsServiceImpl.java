@@ -17,8 +17,6 @@
 package ru.caramel.juniperbot.core.metrics.service;
 
 import com.codahale.metrics.*;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.dropwizard.DropwizardExports;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -106,8 +104,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @PostConstruct
     public void init() {
-        CollectorRegistry.defaultRegistry.clear();
-        new DropwizardExports(metricRegistry).register();
         try {
             loadMetrics();
         } catch (Exception e) {

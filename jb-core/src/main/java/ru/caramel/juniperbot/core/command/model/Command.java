@@ -29,17 +29,20 @@ public interface Command {
 
     boolean isAvailable(User user, Member member, Guild guild);
 
+    DiscordCommand getAnnotation();
+
     default String getKey() {
-        if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
-            return null;
-        }
-        return getClass().getAnnotation(DiscordCommand.class).key();
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null ? annotation.key() : null;
+    }
+
+    default boolean isHidden() {
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null && annotation.hidden();
     }
 
     default Permission[] getPermissions() {
-        if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
-            return null;
-        }
-        return getClass().getAnnotation(DiscordCommand.class).permissions();
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null ? annotation.permissions() : null;
     }
 }

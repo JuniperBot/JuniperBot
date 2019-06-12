@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.core.metrics.service;
 
-import net.dv8tion.jda.core.JDA;
-import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
+import ru.caramel.juniperbot.core.command.model.Command;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-public interface DiscordMetricsProvider {
+public interface DiscordMetricsRegistry {
 
     String GAUGE_GUILDS = "discord.guilds";
 
@@ -33,7 +33,7 @@ public interface DiscordMetricsProvider {
 
     String GAUGE_VOICE_CHANNELS = "discord.voiceChannels";
 
-    String GAUGE_PING = "discord.ping";
+    String GAUGE_PING = "discord.average.ping";
 
     long getGuildCount();
 
@@ -47,5 +47,9 @@ public interface DiscordMetricsProvider {
 
     double getAveragePing();
 
-    Map<JDA, TimeWindowChart> getPingCharts();
+    Map<Integer, Long> getShardPings();
+
+    void incrementCommand(Command command);
+
+    Map<Command, AtomicLong> getCommandExecutions();
 }

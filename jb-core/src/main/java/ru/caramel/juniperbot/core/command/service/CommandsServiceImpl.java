@@ -43,6 +43,7 @@ import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
@@ -80,6 +81,9 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Autowired
     private ModerationService moderationService;
+
+    @Autowired
+    private DiscordMetricsRegistry registry;
 
     private Cache<Long, BotContext> contexts = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.DAYS)
@@ -234,6 +238,7 @@ public class CommandsServiceImpl implements CommandsService {
                 log.error("Command {} execution error", key, e);
             } finally {
                 executions.mark();
+                registry.incrementCommand(command);
             }
         });
         return true;
