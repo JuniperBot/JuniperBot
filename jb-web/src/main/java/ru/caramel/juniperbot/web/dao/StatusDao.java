@@ -61,14 +61,6 @@ public class StatusDao extends AbstractDao {
         result.setExecutedCommands(getMetricGauge(metricMap, "commands.executions.persist"));
         result.setUptimeDuration(getMetricGauge(metricMap, "jvm.uptime"));
 
-        Meter commandRate = (Meter) metricMap.get("commands.executions.rate");
-        if (commandRate != null) {
-            result.setCommandsRateMean(commandRate.getMeanRate());
-            result.setCommandsRate1m(commandRate.getOneMinuteRate());
-            result.setCommandsRate5m(commandRate.getFiveMinuteRate());
-            result.setCommandsRate15m(commandRate.getFifteenMinuteRate());
-        }
-
         result.setShards(discordService.getShardManager().getShards().stream()
                 .sorted(Comparator.comparing(e -> e.getShardInfo().getShardId()))
                 .map(e -> {

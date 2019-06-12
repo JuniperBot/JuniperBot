@@ -43,14 +43,6 @@ public class StatusDto implements Serializable {
 
     private long executedCommands;
 
-    private double commandsRateMean;
-
-    private double commandsRate1m;
-
-    private double commandsRate5m;
-
-    private double commandsRate15m;
-
     private List<ShardDto> shards = Collections.emptyList();
 
     private List<LavaLinkNodeDto> linkNodes = Collections.emptyList();
