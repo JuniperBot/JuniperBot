@@ -33,7 +33,7 @@ public class DiscordExports extends io.prometheus.client.Collector implements io
 
     private final static String COMMANDS_METRIC_NAME = "commands_executed_total";
 
-    private final static String LAVALINK_METRIC_NAME = "lavalink_players";
+    private final static String LAVALINK_METRIC_NAME = "lavalink";
 
     private final SampleBuilder sampleBuilder = new DefaultSampleBuilder();
 
@@ -82,7 +82,7 @@ public class DiscordExports extends io.prometheus.client.Collector implements io
             if (stats == null) {
                 return;
             }
-            samples.add(sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_total",
+            samples.add(sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_total_players",
                     Collections.singletonList("nodeName"),
                     Collections.singletonList(node.getName()), stats.getPlayers()));
             samples.add(sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_playing_players",
