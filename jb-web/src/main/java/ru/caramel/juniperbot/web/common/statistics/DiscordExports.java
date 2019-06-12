@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -46,7 +47,10 @@ public class DiscordExports extends io.prometheus.client.Collector implements io
         Map<String, MetricFamilySamples> mfSamplesMap = new HashMap<String, MetricFamilySamples>();
         addToMap(mfSamplesMap, getPingSamples());
         addToMap(mfSamplesMap, getCommandSamples());
-        addToMap(mfSamplesMap, getLavaLinkSamples());
+        addToMap(mfSamplesMap, getLavaLinkUpSamples());
+        addToMap(mfSamplesMap, getLavaLinkStatsSamples("_total", stats -> (double) stats.getPlayers()));
+        addToMap(mfSamplesMap, getLavaLinkStatsSamples("_playing_players", stats -> (double) stats.getPlayingPlayers()));
+        addToMap(mfSamplesMap, getLavaLinkStatsSamples("_system_load", stats -> stats.getSystemLoad()));
         return new ArrayList<>(mfSamplesMap.values());
     }
 
@@ -73,29 +77,30 @@ public class DiscordExports extends io.prometheus.client.Collector implements io
         return new MetricFamilySamples(COMMANDS_METRIC_NAME, Type.SUMMARY, getHelpMessage(COMMANDS_METRIC_NAME), samples);
     }
 
-    private MetricFamilySamples getLavaLinkSamples() {
+    private MetricFamilySamples getLavaLinkStatsSamples(String suffix, Function<RemoteStats, Double> supplier) {
         List<MetricFamilySamples.Sample> samples = new ArrayList<>(lavaAudioService
                 .getLavaLink().getNodes().size() * 2);
 
+        String metricsName = LAVALINK_METRIC_NAME + suffix;
         lavaAudioService.getLavaLink().getNodes().forEach(node -> {
-            RemoteStats stats = node.getStats();
-            if (stats == null) {
-                return;
+            if (node.getStats() != null) {
+                sampleBuilder.createSample(metricsName, "",
+                        Collections.singletonList("nodeName"),
+                        Collections.singletonList(node.getName()), supplier.apply(node.getStats()));
             }
-            sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_total",
-                    Collections.singletonList("nodeName"),
-                    Collections.singletonList(node.getName()), stats.getPlayers());
-            sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_playing_players",
-                    Collections.singletonList("nodeName"),
-                    Collections.singletonList(node.getName()), stats.getPlayingPlayers());
-            sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_system_load",
-                    Collections.singletonList("nodeName"),
-                    Collections.singletonList(node.getName()), stats.getSystemLoad());
-            sampleBuilder.createSample(LAVALINK_METRIC_NAME, "_up",
+        });
+        return new MetricFamilySamples(metricsName, Type.SUMMARY, getHelpMessage(metricsName), samples);
+    }
+
+    private MetricFamilySamples getLavaLinkUpSamples() {
+        List<MetricFamilySamples.Sample> samples = new ArrayList<>(lavaAudioService.getLavaLink().getNodes().size());
+        String metricsName = LAVALINK_METRIC_NAME + "_up";
+        lavaAudioService.getLavaLink().getNodes().forEach(node -> {
+            sampleBuilder.createSample(metricsName, "",
                     Collections.singletonList("nodeName"),
                     Collections.singletonList(node.getName()), node.isAvailable() ? 1 : 0);
         });
-        return new MetricFamilySamples(LAVALINK_METRIC_NAME, Type.SUMMARY, getHelpMessage(LAVALINK_METRIC_NAME), samples);
+        return new MetricFamilySamples(metricsName, Type.SUMMARY, getHelpMessage(metricsName), samples);
     }
 
     private void addToMap(Map<String, MetricFamilySamples> mfSamplesMap, MetricFamilySamples newMfSamples) {
