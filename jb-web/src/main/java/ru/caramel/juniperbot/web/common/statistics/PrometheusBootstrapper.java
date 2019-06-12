@@ -14,14 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.metrics.service;
+package ru.caramel.juniperbot.web.common.statistics;
 
 import com.codahale.metrics.MetricRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.metrics.model.DiscordExports;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
+import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 
 import javax.annotation.PostConstruct;
 
@@ -34,10 +35,13 @@ public class PrometheusBootstrapper {
     @Autowired
     private DiscordMetricsRegistry discordMetricsRegistry;
 
+    @Autowired
+    private LavaAudioService lavaAudioService;
+
     @PostConstruct
     public void init() {
         CollectorRegistry.defaultRegistry.clear();
         new DropwizardExports(metricRegistry).register();
-        new DiscordExports(discordMetricsRegistry).register();
+        new DiscordExports(discordMetricsRegistry, lavaAudioService).register();
     }
 }
