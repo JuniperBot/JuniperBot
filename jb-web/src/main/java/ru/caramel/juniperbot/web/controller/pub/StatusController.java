@@ -18,19 +18,25 @@ package ru.caramel.juniperbot.web.controller.pub;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import net.dv8tion.jda.core.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsProviderImpl;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.StatusDao;
 import ru.caramel.juniperbot.web.dto.ChartDto;
 import ru.caramel.juniperbot.web.dto.StatusDto;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -43,28 +49,48 @@ public class StatusController extends BasePublicRestController {
     @Autowired
     private DiscordService discordService;
 
+    @Autowired
+    private DiscordMetricsProviderImpl discordMetricsProvider;
+
     private Supplier<List<ChartDto>> pingCache = Suppliers.memoizeWithExpiration(this::getPing, 5, TimeUnit.SECONDS);
 
-    @RequestMapping("/health")
+    private final CollectorRegistry registry;
+
+    public StatusController() {
+        this.registry = CollectorRegistry.defaultRegistry;
+    }
+
+    @GetMapping("/health")
     @ResponseBody
     public String getHealth() {
         return "OK";
     }
 
-    @RequestMapping("/status")
+    @GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
+    public ResponseEntity<String> getMetrics(@Nullable @RequestParam(name = "name[]", required = false) String[] includedParam)
+            throws IOException {
+        Set<String> params = includedParam == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(includedParam));
+        try (Writer writer = new StringWriter()) {
+            TextFormat.write004(writer, this.registry.filteredMetricFamilySamples(params));
+            writer.flush();
+            return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/status")
     @ResponseBody
     public StatusDto get() {
         return statusDao.get();
     }
 
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    @GetMapping("/ping")
     @ResponseBody
     public List<ChartDto> ping() {
         return pingCache.get();
     }
 
     private synchronized List<ChartDto> getPing() {
-        Map<JDA, TimeWindowChart> chartMap = discordService.getPingCharts();
+        Map<JDA, TimeWindowChart> chartMap = discordMetricsProvider.getPingCharts();
         if (chartMap == null) {
             return Collections.emptyList();
         }

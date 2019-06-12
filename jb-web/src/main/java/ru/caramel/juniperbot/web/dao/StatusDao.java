@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsProvider;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.web.dto.LavaLinkNodeDto;
@@ -52,10 +53,10 @@ public class StatusDao extends AbstractDao {
         Map<String, Metric> metricMap = metricRegistry.getMetrics();
 
         StatusDto result = new StatusDto();
-        result.setGuildCount(getMetricGauge(metricMap, DiscordService.GAUGE_GUILDS));
-        result.setUserCount(getMetricGauge(metricMap, DiscordService.GAUGE_USERS));
-        result.setTextChannelCount(getMetricGauge(metricMap, DiscordService.GAUGE_TEXT_CHANNELS));
-        result.setVoiceChannelCount(getMetricGauge(metricMap, DiscordService.GAUGE_VOICE_CHANNELS));
+        result.setGuildCount(getMetricGauge(metricMap, DiscordMetricsProvider.GAUGE_GUILDS));
+        result.setUserCount(getMetricGauge(metricMap, DiscordMetricsProvider.GAUGE_USERS));
+        result.setTextChannelCount(getMetricGauge(metricMap, DiscordMetricsProvider.GAUGE_TEXT_CHANNELS));
+        result.setVoiceChannelCount(getMetricGauge(metricMap, DiscordMetricsProvider.GAUGE_VOICE_CHANNELS));
         result.setActiveConnections(getMetricGauge(metricMap, PlayerService.ACTIVE_CONNECTIONS));
         result.setExecutedCommands(getMetricGauge(metricMap, "commands.executions.persist"));
         result.setUptimeDuration(getMetricGauge(metricMap, "jvm.uptime"));

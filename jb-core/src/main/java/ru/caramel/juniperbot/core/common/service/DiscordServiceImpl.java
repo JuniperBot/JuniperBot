@@ -90,9 +90,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private IEventManager eventManager;
 
-    @Autowired
-    private StatisticsService statisticsService;
-
     @Getter
     private ShardManager shardManager;
 
@@ -104,8 +101,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Autowired
     private MBeanExporter mBeanExporter;
-
-    private Map<JDA, TimeWindowChart> pingCharts = new HashMap<>();
 
     private RestTemplate restTemplate;
 
@@ -150,10 +145,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onReady(ReadyEvent event) {
-        TimeWindowChart chart = statisticsService
-                .getTimeChart(String.format("jda.shard.ping.%s.persist", event.getJDA().getShardInfo().getShardId()),
-                        10, TimeUnit.MINUTES);
-        pingCharts.put(event.getJDA(), chart);
         mBeanExporter.registerManagedResource(new JmxJDAMBean(event.getJDA()));
         setUpStatus();
     }
@@ -277,60 +268,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
             return null;
         }
         return guild.getMemberById(userId);
-    }
-
-    @Scheduled(fixedDelay = 30000)
-    public void tickPing() {
-        if (MapUtils.isEmpty(pingCharts)) {
-            return;
-        }
-        shardManager.getShards().forEach(e -> {
-            TimeWindowChart reservoir = pingCharts.get(e);
-            if (reservoir != null) {
-                reservoir.update(JDA.Status.CONNECTED.equals(e.getStatus()) ? e.getPing() : -1);
-            }
-        });
-    }
-
-    @Override
-    @CachedGauge(name = GAUGE_GUILDS, absolute = true, timeout = 1, timeoutUnit = TimeUnit.MINUTES)
-    public long getGuildCount() {
-        return shardManager != null ? shardManager.getGuildCache().size() : 0;
-    }
-
-    @Override
-    @CachedGauge(name = GAUGE_USERS, absolute = true, timeout = 5, timeoutUnit = TimeUnit.MINUTES)
-    public long getUserCount() {
-        return shardManager != null ? shardManager.getUserCache().size() : 0;
-    }
-
-    @Override
-    @CachedGauge(name = GAUGE_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
-    public long getChannelCount() {
-        return getTextChannelCount() + getVoiceChannelCount();
-    }
-
-    @Override
-    @CachedGauge(name = GAUGE_TEXT_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
-    public long getTextChannelCount() {
-        return shardManager != null ? shardManager.getTextChannelCache().size() : 0;
-    }
-
-    @Override
-    @CachedGauge(name = GAUGE_VOICE_CHANNELS, absolute = true, timeout = 3, timeoutUnit = TimeUnit.MINUTES)
-    public long getVoiceChannelCount() {
-        return shardManager != null ? shardManager.getVoiceChannelCache().size() : 0;
-    }
-
-    @Override
-    @Gauge(name = GAUGE_PING, absolute = true)
-    public double getAveragePing() {
-        return shardManager != null ? shardManager.getAveragePing() : 0;
-    }
-
-    @Override
-    public Map<JDA, TimeWindowChart> getPingCharts() {
-        return Collections.unmodifiableMap(pingCharts);
     }
 
     @Override

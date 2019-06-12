@@ -39,11 +39,9 @@ dependencies {
     compile(group: 'org.json', name: 'json', version: jsonVersion)
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core')
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
-    compile(group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jvm')
     compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
     compile(group: 'org.codehaus.groovy', name: 'groovy')
+    compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
 
     // INTEGRATION DEPENDENCIES
     compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
@@ -52,9 +50,14 @@ dependencies {
     // we need to include it manually because in JDA it scoped as POM and included in fat libraries by bootJar task
     compile(group: 'club.minnced', name: 'opus-java', version: opusJavaVersion)
 
+    // METRICS DEPENDENCIES
     compile(group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)
-    compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
-
+    compile(group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
+    compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')
+    compile(group: 'io.dropwizard.metrics', name: 'metrics-jvm')
+    compile(group: 'io.prometheus', name: 'simpleclient', version: prometheusVersion)
+    compile(group: 'io.prometheus', name: 'simpleclient_common', version: prometheusVersion)
+    compile(group: 'io.prometheus', name: 'simpleclient_dropwizard', version: prometheusVersion)
 
     // DATABASE DEPENDENCIES
     compile(group: 'javax.annotation', name: 'javax.annotation-api')

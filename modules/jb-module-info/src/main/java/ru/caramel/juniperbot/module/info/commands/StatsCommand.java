@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsProvider;
 
 import java.util.Date;
 import java.util.Map;
@@ -57,10 +57,10 @@ public class StatsCommand extends AbstractInfoCommand {
 
     private MessageEmbed.Field getCommonStats(Map<String, Metric> metricMap) {
         String value =
-                getGaugeValue(metricMap, DiscordService.GAUGE_GUILDS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_USERS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_TEXT_CHANNELS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_PING) + "\n" +
+                getGaugeValue(metricMap, DiscordMetricsProvider.GAUGE_GUILDS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsProvider.GAUGE_USERS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsProvider.GAUGE_TEXT_CHANNELS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsProvider.GAUGE_PING) + "\n" +
                         getGaugeValue(metricMap, "player.activeConnections") + "\n";
         return new MessageEmbed.Field(messageService.getMessage("discord.command.stats.common"), value, true);
     }
