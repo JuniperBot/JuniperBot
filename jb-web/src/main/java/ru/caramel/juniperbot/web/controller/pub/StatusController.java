@@ -33,7 +33,6 @@ import ru.caramel.juniperbot.web.dao.StatusDao;
 import ru.caramel.juniperbot.web.dto.ChartDto;
 import ru.caramel.juniperbot.web.dto.StatusDto;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -67,7 +66,7 @@ public class StatusController extends BasePublicRestController {
     }
 
     @GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
-    public ResponseEntity<String> getMetrics(@Nullable @RequestParam(name = "name[]", required = false) String[] includedParam)
+    public ResponseEntity<String> getMetrics(@RequestParam(name = "name[]", required = false) String[] includedParam)
             throws IOException {
         Set<String> params = includedParam == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(includedParam));
         try (Writer writer = new StringWriter()) {
