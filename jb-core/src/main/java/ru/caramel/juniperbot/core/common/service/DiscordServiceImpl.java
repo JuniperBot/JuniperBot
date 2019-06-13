@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import com.codahale.metrics.annotation.CachedGauge;
-import com.codahale.metrics.annotation.Gauge;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
@@ -35,7 +33,6 @@ import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +40,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
-import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
 import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 import ru.caramel.juniperbot.core.support.DiscordHttpRequestFactory;
 import ru.caramel.juniperbot.core.support.ModuleListener;
@@ -57,8 +51,8 @@ import ru.caramel.juniperbot.core.support.jmx.JmxJDAMBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Slf4j

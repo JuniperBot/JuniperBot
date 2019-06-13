@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.core.common.command;
 
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

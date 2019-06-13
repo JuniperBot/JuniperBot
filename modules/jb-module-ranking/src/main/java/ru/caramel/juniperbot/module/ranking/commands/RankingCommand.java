@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.module.ranking.commands;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;

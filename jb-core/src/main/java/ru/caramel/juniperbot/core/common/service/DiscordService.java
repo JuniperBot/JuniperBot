@@ -20,10 +20,8 @@ import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.webhook.WebhookMessage;
-import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public interface DiscordService {

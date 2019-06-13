@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import net.dv8tion.jda.core.entities.ChannelType;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.cat.key",

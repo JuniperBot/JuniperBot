@@ -16,11 +16,9 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.control;
 
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;

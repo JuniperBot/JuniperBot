@@ -16,8 +16,6 @@
  */
 package ru.caramel.juniperbot.module.social.commands;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

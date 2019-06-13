@@ -21,7 +21,10 @@ import io.prometheus.client.exporter.common.TextFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.StatusDao;
 import ru.caramel.juniperbot.web.dto.StatusDto;
@@ -29,7 +32,10 @@ import ru.caramel.juniperbot.web.dto.StatusDto;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 public class StatusController extends BasePublicRestController {

@@ -18,9 +18,7 @@ package ru.caramel.juniperbot.module.info.commands;
 
 import com.codahale.metrics.*;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;

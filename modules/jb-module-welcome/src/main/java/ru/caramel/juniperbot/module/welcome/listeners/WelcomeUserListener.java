@@ -40,7 +40,10 @@ import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j

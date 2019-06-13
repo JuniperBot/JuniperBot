@@ -16,7 +16,10 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.Command;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;

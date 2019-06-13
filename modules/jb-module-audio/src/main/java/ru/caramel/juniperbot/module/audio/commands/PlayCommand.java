@@ -16,9 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;

@@ -16,7 +16,10 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.RemoteStats;
 import net.dv8tion.jda.core.JDA;

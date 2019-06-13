@@ -17,11 +17,9 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;

@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;

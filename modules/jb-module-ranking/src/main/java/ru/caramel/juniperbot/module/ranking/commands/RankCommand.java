@@ -18,10 +18,8 @@ package ru.caramel.juniperbot.module.ranking.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;

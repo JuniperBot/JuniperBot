@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageHistory;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
