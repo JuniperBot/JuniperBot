@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.utils.ArrayUtil;
 
 @DiscordCommand(key = "discord.command.coin.key",
         description = "discord.command.coin.desc",
@@ -29,17 +30,20 @@ public class CoinCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        String headsKey = messageService.getMessage("discord.command.coin.heads");
-        String tailsKey = messageService.getMessage("discord.command.coin.tails");
-        if (!headsKey.equalsIgnoreCase(query) && !tailsKey.equalsIgnoreCase(query)) {
-            messageService.onMessage(message.getChannel(), "discord.command.coin.help", headsKey, tailsKey);
+        String headsKeys[] = messageService.getMessage("discord.command.coin.heads", context.getCommandLocale())
+                .split(",");
+        String tailsKeys[] = messageService.getMessage("discord.command.coin.tails", context.getCommandLocale())
+                .split(",");
+
+        if (!ArrayUtil.containsIgnoreCase(headsKeys, query) && !ArrayUtil.containsIgnoreCase(tailsKeys, query)) {
+            messageService.onMessage(message.getChannel(), "discord.command.coin.help", headsKeys[0], tailsKeys[0]);
             return false;
         }
 
-        boolean headsBet = headsKey.equalsIgnoreCase(query);
+        boolean headsBet = ArrayUtil.containsIgnoreCase(headsKeys, query);
         boolean headsOutcome = Math.random() < 0.5;
 
-        String outCome = headsOutcome ? headsKey : tailsKey;
+        String outCome = headsOutcome ? (headsBet ? query : headsKeys[0]) : tailsKeys[0];
         String resultMessage = headsBet == headsOutcome ? "discord.command.coin.result.win" : "discord.command.coin.result.lose";
         messageService.onMessage(message.getChannel(), resultMessage, query, outCome);
         return true;

@@ -279,4 +279,16 @@ public class ArrayUtil {
         T[] array = (T[]) Array.newInstance(clazz.getComponentType(), result.size());
         return result.toArray(array);
     }
+
+    public static boolean containsIgnoreCase(String[] array, String value) {
+        if (array == null || array.length == 0 || value == null) {
+            return false;
+        }
+        for (String item : array) {
+            if (value.equalsIgnoreCase(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
