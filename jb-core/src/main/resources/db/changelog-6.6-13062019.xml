@@ -27,4 +27,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.6-13062019-2" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="restore_roles" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

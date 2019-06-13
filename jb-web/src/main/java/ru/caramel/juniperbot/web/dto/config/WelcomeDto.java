@@ -34,6 +34,8 @@ public class WelcomeDto implements Serializable {
 
     private Set<String> joinRoles = new HashSet<>();
 
+    private Set<String> restoreRoles = new HashSet<>();
+
     private boolean joinEnabled;
 
     private MessageTemplateDto joinTemplate;

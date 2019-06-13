@@ -38,9 +38,7 @@ import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -96,8 +94,14 @@ public class WelcomeUserListener extends DiscordEventListener {
 
             LocalMember localMember = memberService.get(event.getMember());
             if (message.isRestoreState() && localMember != null) {
-                if (CollectionUtils.isNotEmpty(localMember.getLastKnownRoles())) {
-                    roleIdsToAdd.addAll(localMember.getLastKnownRoles());
+                List<Long> rolesToRestore = localMember.getLastKnownRoles();
+                if (CollectionUtils.isNotEmpty(rolesToRestore)) {
+                    if (CollectionUtils.isNotEmpty(message.getRestoreRoles())) {
+                        rolesToRestore = rolesToRestore.stream()
+                                .filter(e -> message.getRestoreRoles().contains(e))
+                                .collect(Collectors.toList());
+                    }
+                    roleIdsToAdd.addAll(rolesToRestore);
                 }
 
                 if (StringUtils.isNotEmpty(localMember.getEffectiveName())
