@@ -68,7 +68,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Value("${integrations.patreon.updateEnabled:false}")
     private boolean updateEnabled;
 
-    @Value("${integrations.patreon.updateInterval:3600000}")
+    @Value("${integrations.patreon.updateInterval:600000}")
     private Long updateInterval;
 
     @Autowired
