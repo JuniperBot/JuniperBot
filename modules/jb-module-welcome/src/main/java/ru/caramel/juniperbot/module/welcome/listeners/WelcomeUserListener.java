@@ -29,8 +29,10 @@ import ru.caramel.juniperbot.core.common.service.MemberService;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.event.service.ContextService;
+import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
+import ru.caramel.juniperbot.core.support.service.SupportService;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
@@ -63,6 +65,12 @@ public class WelcomeUserListener extends DiscordEventListener {
     @Autowired
     private MessageTemplateService templateService;
 
+    @Autowired
+    private SupportService supportService;
+
+    @Autowired
+    private FeatureSetService featureSetService;
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (event.getUser().isBot()) {
@@ -71,43 +79,15 @@ public class WelcomeUserListener extends DiscordEventListener {
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
             WelcomeMessage message = welcomeService.getByGuildId(guild.getIdLong());
-            if (message == null) {
-                return;
-            }
-
             Set<Long> roleIdsToAdd = new HashSet<>();
-            if (CollectionUtils.isNotEmpty(message.getJoinRoles())) {
-                message.getJoinRoles().stream()
-                        .filter(Objects::nonNull)
-                        .forEach(roleIdsToAdd::add);
+            if (message != null) {
+                roleIdsToAdd.addAll(processWelcome(event, message));
             }
 
-            RankingConfig rankingInfo = rankingService.get(guild);
-            if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
-                rankingInfo.getRewards().stream()
-                        .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
-                        .map(Reward::getRoleId)
-                        .filter(StringUtils::isNumeric)
-                        .map(Long::valueOf)
-                        .forEach(roleIdsToAdd::add);
-            }
-
-            LocalMember localMember = memberService.get(event.getMember());
-            if (message.isRestoreState() && localMember != null) {
-                List<Long> rolesToRestore = localMember.getLastKnownRoles();
-                if (CollectionUtils.isNotEmpty(rolesToRestore)) {
-                    if (CollectionUtils.isNotEmpty(message.getRestoreRoles())) {
-                        rolesToRestore = rolesToRestore.stream()
-                                .filter(e -> message.getRestoreRoles().contains(e))
-                                .collect(Collectors.toList());
-                    }
-                    roleIdsToAdd.addAll(rolesToRestore);
-                }
-
-                if (StringUtils.isNotEmpty(localMember.getEffectiveName())
-                        && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)
-                        && guild.getSelfMember().canInteract(event.getMember())) {
-                    guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
+            if (Objects.equals(supportService.getSupportGuild(), event.getGuild())) {
+                Role donatorRole = supportService.getDonatorRole();
+                if (donatorRole != null && featureSetService.isAvailableForUser(event.getUser())) {
+                    roleIdsToAdd.add(donatorRole.getIdLong());
                 }
             }
 
@@ -121,37 +101,78 @@ public class WelcomeUserListener extends DiscordEventListener {
                     guild.getController().addRolesToMember(event.getMember(), roles).queue();
                 }
             }
+        });
+    }
 
-            if (message.isJoinEnabled() && message.getJoinTemplate() != null) {
-                TextChannel channel = DiscordUtils.getDefaultWriteableChannel(event.getGuild());
-                templateService
-                        .createMessage(message.getJoinTemplate())
-                        .withFallbackContent("welcome.join.message")
-                        .withGuild(guild)
-                        .withMember(event.getMember())
-                        .withFallbackChannel(channel)
-                        .compileAndSend();
+    private Set<Long> processWelcome(GuildMemberJoinEvent event, WelcomeMessage message) {
+        Set<Long> roleIdsToAdd = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(message.getJoinRoles())) {
+            message.getJoinRoles().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(roleIdsToAdd::add);
+        }
+
+        Guild guild = event.getGuild();
+
+        RankingConfig rankingInfo = rankingService.get(guild);
+        if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
+            rankingInfo.getRewards().stream()
+                    .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
+                    .map(Reward::getRoleId)
+                    .filter(StringUtils::isNumeric)
+                    .map(Long::valueOf)
+                    .forEach(roleIdsToAdd::add);
+        }
+
+        LocalMember localMember = memberService.get(event.getMember());
+        if (message.isRestoreState() && localMember != null) {
+            List<Long> rolesToRestore = localMember.getLastKnownRoles();
+            if (CollectionUtils.isNotEmpty(rolesToRestore)) {
+                if (CollectionUtils.isNotEmpty(message.getRestoreRoles())) {
+                    rolesToRestore = rolesToRestore.stream()
+                            .filter(e -> message.getRestoreRoles().contains(e))
+                            .collect(Collectors.toList());
+                }
+                roleIdsToAdd.addAll(rolesToRestore);
             }
 
-            if (message.isJoinDmEnabled() && message.getJoinDmTemplate() != null) {
-                Message compiledMessage = templateService
-                        .createMessage(message.getJoinDmTemplate())
-                        .withFallbackContent("welcome.join.dm.message")
-                        .withGuild(guild)
-                        .withMember(event.getMember())
-                        .compile();
+            if (StringUtils.isNotEmpty(localMember.getEffectiveName())
+                    && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)
+                    && guild.getSelfMember().canInteract(event.getMember())) {
+                guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
+            }
+        }
 
-                if (compiledMessage != null) {
-                    User user = event.getUser();
-                    try {
-                        contextService.queue(guild, user.openPrivateChannel(),
-                                c -> messageService.sendMessageSilent(c::sendMessage, compiledMessage));
-                    } catch (Exception e) {
-                        log.debug("Could not open private channel for user {}", user, e);
-                    }
+        if (message.isJoinEnabled() && message.getJoinTemplate() != null) {
+            TextChannel channel = DiscordUtils.getDefaultWriteableChannel(event.getGuild());
+            templateService
+                    .createMessage(message.getJoinTemplate())
+                    .withFallbackContent("welcome.join.message")
+                    .withGuild(guild)
+                    .withMember(event.getMember())
+                    .withFallbackChannel(channel)
+                    .compileAndSend();
+        }
+
+        if (message.isJoinDmEnabled() && message.getJoinDmTemplate() != null) {
+            Message compiledMessage = templateService
+                    .createMessage(message.getJoinDmTemplate())
+                    .withFallbackContent("welcome.join.dm.message")
+                    .withGuild(guild)
+                    .withMember(event.getMember())
+                    .compile();
+
+            if (compiledMessage != null) {
+                User user = event.getUser();
+                try {
+                    contextService.queue(guild, user.openPrivateChannel(),
+                            c -> messageService.sendMessageSilent(c::sendMessage, compiledMessage));
+                } catch (Exception e) {
+                    log.debug("Could not open private channel for user {}", user, e);
                 }
             }
-        });
+        }
+        return roleIdsToAdd;
     }
 
     @Override

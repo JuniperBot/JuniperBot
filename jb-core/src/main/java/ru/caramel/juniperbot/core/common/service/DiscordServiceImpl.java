@@ -186,6 +186,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public JDA getJda() {
+        if (shardManager == null) {
+            return null;
+        }
         return shardManager.getShards().iterator().next();
     }
 
