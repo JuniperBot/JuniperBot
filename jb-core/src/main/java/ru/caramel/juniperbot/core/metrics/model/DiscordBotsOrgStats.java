@@ -27,7 +27,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class ProviderStats implements Serializable {
+public class DiscordBotsOrgStats implements Serializable {
     private static final long serialVersionUID = 7184615746356909641L;
 
     @JsonProperty("server_count")
@@ -39,7 +39,7 @@ public class ProviderStats implements Serializable {
     @JsonProperty("shard_count")
     private int shardTotal;
 
-    public ProviderStats(JDA shard) {
+    public DiscordBotsOrgStats(JDA shard) {
         JDA.ShardInfo info = shard.getShardInfo();
         shardId = info.getShardId();
         shardTotal = info.getShardTotal();
