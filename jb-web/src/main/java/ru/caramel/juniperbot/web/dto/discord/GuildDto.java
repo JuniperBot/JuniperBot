@@ -45,6 +45,8 @@ public class GuildDto implements Serializable {
 
     private String icon;
 
+    private String timeZone;
+
     private boolean available;
 
     private List<RoleDto> roles;

@@ -102,6 +102,7 @@ public class GuildDao extends AbstractDao {
                 .commandLocale(config.getCommandLocale())
                 .id(String.valueOf(config.getGuildId()))
                 .icon(config.getIconUrl())
+                .timeZone(config.getTimeZone())
                 .featureSets(featureSetService.getByGuild(config.getGuildId()));
 
         if (!discordService.isConnected()) {

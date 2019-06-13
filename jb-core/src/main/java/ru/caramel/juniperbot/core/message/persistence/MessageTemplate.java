@@ -23,6 +23,7 @@ import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,5 +89,9 @@ public class MessageTemplate extends BaseEntity {
 
     @Column(name = "footer_icon_url", length = URL_MAX_LENGTH)
     private String footerIconUrl;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timestamp;
 
 }
