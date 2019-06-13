@@ -64,14 +64,7 @@ public class CustomCommandsDao extends AbstractDao {
         dtos.stream().filter(e -> e.getId() != null).forEach(e -> {
             CustomCommand command = customCommands.stream().filter(e1 -> Objects.equals(e1.getId(), e.getId())).findFirst().orElse(null);
             if (command != null) {
-                CommandConfig commandConfig = command.getCommandConfig();
-                if (commandConfig == null) {
-                    commandConfig = new CommandConfig();
-                    commandConfig.setGuildId(guildId);
-                    command.setCommandConfig(commandConfig);
-                }
-                commandConfig.setKey(e.getKey());
-                apiMapper.updateCommandConfig(e, command.getCommandConfig());
+                updateCommandConfig(command, e);
                 apiMapper.updateCustomCommand(e, command);
                 command.setMessageTemplate(templateDao.updateOrCreate(e.getMessageTemplate(), command.getMessageTemplate()));
                 result.add(command);
@@ -97,6 +90,31 @@ public class CustomCommandsDao extends AbstractDao {
 
         // delete old
         commandRepository.deleteAll(customCommands.stream().filter(e -> !result.contains(e)).collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public boolean saveConfig(CustomCommandDto dto, long guildId) {
+        if (dto.getId() == null) {
+            return false;
+        }
+        CustomCommand command = commandRepository.findById(dto.getId()).orElse(null);
+        if (command == null || command.getGuildId() != guildId) {
+            return false;
+        }
+        updateCommandConfig(command, dto);
+        commandRepository.save(command);
+        return true;
+    }
+
+    private void updateCommandConfig(CustomCommand command, CustomCommandDto dto) {
+        CommandConfig commandConfig = command.getCommandConfig();
+        if (commandConfig == null) {
+            commandConfig = new CommandConfig();
+            commandConfig.setGuildId(command.getGuildId());
+            command.setCommandConfig(commandConfig);
+        }
+        commandConfig.setKey(dto.getKey() != null ? dto.getKey() : "#cmd_" + dto.getId());
+        apiMapper.updateCommandConfig(dto, commandConfig);
     }
 
     private List<CustomCommand> preventDuplicates(List<CustomCommand> commands) {
