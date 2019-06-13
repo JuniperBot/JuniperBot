@@ -16,8 +16,12 @@
  */
 package ru.caramel.juniperbot.core.audit.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.model.AuditActionBuilder;
@@ -34,10 +38,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AuditServiceImpl
         extends AbstractDomainServiceImpl<AuditConfig, AuditConfigRepository>
         implements AuditService {
+
+    @Value("${discord.audit.durationMonths:6}")
+    private int durationMonths;
 
     @Autowired
     private AuditActionRepository actionRepository;
@@ -50,8 +58,7 @@ public class AuditServiceImpl
 
     @Override
     protected AuditConfig createNew(long guildId) {
-        AuditConfig config = new AuditConfig(guildId);
-        return config;
+        return new AuditConfig(guildId);
     }
 
     @Override
@@ -68,6 +75,20 @@ public class AuditServiceImpl
             }
         }
         return action;
+    }
+
+    @Scheduled(cron = "0 0 0 1 * ?")
+    @Transactional
+    public void runCleanUp() {
+        runCleanUp(this.durationMonths);
+    }
+
+    @Override
+    @Transactional
+    public void runCleanUp(int durationMonths) {
+        log.info("Starting audit cleanup for {} months old", durationMonths);
+        actionRepository.deleteByActionDateBefore(DateTime.now().minusMonths(durationMonths).toDate());
+        log.info("Audit cleanup finished");
     }
 
     @Override

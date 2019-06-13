@@ -33,4 +33,42 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.6-13062019-3" author="caramel">
+
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_action_date"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_action_type"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_source_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_target_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_channel_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_action_date"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_action_type"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_source_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_target_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_channel_id"/>
+
+        <sql>
+            CREATE INDEX idx_audit_action_guild ON public.audit_action(guild_id);
+            CREATE INDEX idx_audit_action_guild_action_date ON public.audit_action(guild_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_action_type ON public.audit_action(guild_id, action_type, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_source_user_id ON public.audit_action(guild_id, source_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_target_user_id ON public.audit_action(guild_id, target_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_channel_id ON public.audit_action(guild_id, channel_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild ON public.audit_action(id, guild_id);
+            CREATE INDEX idx_audit_action_id_guild_action_date ON public.audit_action(id, guild_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_action_type ON public.audit_action(id, guild_id, action_type, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_source_user_id ON public.audit_action(id, guild_id, source_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_target_user_id ON public.audit_action(id, guild_id, target_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_channel_id ON public.audit_action(id, guild_id, channel_id, action_date DESC);
+        </sql>
+
+    </changeSet>
+
+    <changeSet id="6.6-13062019-4" author="caramel">
+        <comment>Индекс для очистки</comment>
+        <sql>
+            CREATE INDEX idx_audit_action_action_date ON public.audit_action(action_date);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

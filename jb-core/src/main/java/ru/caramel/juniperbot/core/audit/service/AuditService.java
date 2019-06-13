@@ -25,6 +25,10 @@ import ru.caramel.juniperbot.core.common.service.DomainService;
 
 public interface AuditService extends DomainService<AuditConfig> {
 
+    void runCleanUp();
+
+    void runCleanUp(int durationMonths);
+
     AuditAction save(AuditAction action);
 
     AuditActionBuilder log(long guildId, AuditActionType type);

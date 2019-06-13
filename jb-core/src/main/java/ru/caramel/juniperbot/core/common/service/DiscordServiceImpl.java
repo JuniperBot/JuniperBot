@@ -181,7 +181,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public boolean isConnected(long guildId) {
-        return JDA.Status.CONNECTED.equals(getShard(guildId).getStatus());
+        return shardManager != null && JDA.Status.CONNECTED.equals(getShard(guildId).getStatus());
     }
 
     @Override
