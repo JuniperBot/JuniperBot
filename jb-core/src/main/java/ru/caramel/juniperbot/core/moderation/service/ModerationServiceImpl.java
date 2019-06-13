@@ -493,15 +493,7 @@ public class ModerationServiceImpl
     public boolean ban(Member author, Member member, int delDays, final String reason) {
         Member self = member.getGuild().getSelfMember();
         if (self.hasPermission(Permission.BAN_MEMBERS) && self.canInteract(member)) {
-
-            AuditActionBuilder actionBuilder = getAuditService()
-                    .log(self.getGuild(), AuditActionType.MEMBER_BAN)
-                    .withUser(author)
-                    .withTargetUser(member)
-                    .withAttribute(REASON_ATTR, reason);
-
             notifyUserAction(e -> {
-                actionBuilder.save();
                 e.getGuild().getController().ban(e, delDays, reason).queue();
             }, member, "discord.command.mod.action.message.ban", reason);
             return true;
