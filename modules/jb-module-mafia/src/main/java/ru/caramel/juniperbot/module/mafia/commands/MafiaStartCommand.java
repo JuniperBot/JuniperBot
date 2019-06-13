@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.mafia.commands;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
@@ -31,13 +32,12 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
                 Permission.MESSAGE_ADD_REACTION,
                 Permission.MANAGE_CHANNEL
         },
-        source = ChannelType.TEXT,
         priority = 1)
 public class MafiaStartCommand extends MafiaCommandAsync {
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
-        if (!mafiaService.start(message.getAuthor(), message.getTextChannel())) {
+    protected void doCommandAsync(GuildMessageReceivedEvent message, BotContext context, String query) {
+        if (!mafiaService.start(message.getAuthor(), message.getChannel())) {
             messageService.onError(message.getChannel(), "mafia.alreadyStarted");
             fail(message);
         }

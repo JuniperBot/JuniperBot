@@ -16,11 +16,11 @@
  */
 package ru.caramel.juniperbot.core.command.model;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public interface CommandHandler {
 
-    boolean handleMessage(MessageReceivedEvent event);
+    boolean handleMessage(GuildMessageReceivedEvent event);
 
     default int getPriority() {
         return 0;

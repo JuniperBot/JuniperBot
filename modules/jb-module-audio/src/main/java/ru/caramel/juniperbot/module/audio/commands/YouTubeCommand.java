@@ -20,6 +20,7 @@ import com.google.api.services.youtube.model.Video;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,6 @@ import java.util.List;
         key = "discord.command.youtube.key",
         description = "discord.command.youtube.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 103)
 public class YouTubeCommand extends PlayCommand {
 
@@ -49,9 +49,9 @@ public class YouTubeCommand extends PlayCommand {
     private ReactionsListener reactionsListener;
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         contextService.withContextAsync(message.getGuild(), () -> {
-            message.getTextChannel().sendTyping().queue();
+            message.getChannel().sendTyping().queue();
             List<Video> results = youTubeService.searchDetailed(content, 10L);
             if (results.isEmpty()) {
                 messageManager.onNoMatches(message.getChannel(), content);
@@ -95,7 +95,7 @@ public class YouTubeCommand extends PlayCommand {
                         int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
                         if (index >= 0 && playerService.isInChannel(event.getMember())) {
                             String query = getChoiceUrl(context, index);
-                            playerService.loadAndPlay(message.getTextChannel(), event.getMember(), query);
+                            playerService.loadAndPlay(message.getChannel(), event.getMember(), query);
                             return true;
                         }
                     }

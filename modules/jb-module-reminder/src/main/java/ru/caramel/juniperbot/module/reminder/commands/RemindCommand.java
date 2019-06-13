@@ -17,9 +17,11 @@
 package ru.caramel.juniperbot.module.reminder.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -59,7 +61,7 @@ public class RemindCommand extends AbstractCommand {
     private ConfigService configService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         try {
             DateTime date = null;
             String reminder = null;

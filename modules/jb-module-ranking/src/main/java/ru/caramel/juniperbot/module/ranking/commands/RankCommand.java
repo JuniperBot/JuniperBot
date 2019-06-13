@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -33,24 +34,23 @@ import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
         key = "discord.command.rank.key",
         description = "discord.command.rank.desc",
         group = "discord.command.group.ranking",
-        source = ChannelType.TEXT,
         priority = 202)
 public class RankCommand extends RankingCommand {
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         Member member = message.getMember();
         if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
             member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
         }
         RankingInfo info = rankingService.getRankingInfo(member);
         if (info == null) {
-            messageService.sendMessageSilent(message.getTextChannel()::sendMessage, messageService.getMessage(
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, messageService.getMessage(
                     "discord.command.rank.unavailable"));
             return false;
         }
 
-        if (message.getGuild().getSelfMember().hasPermission(message.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
+        if (message.getGuild().getSelfMember().hasPermission(message.getChannel(), Permission.MESSAGE_EMBED_LINKS)) {
             EmbedBuilder builder = messageService.getBaseEmbed(true);
             addFields(builder, info, member.getGuild());
 
@@ -58,7 +58,7 @@ public class RankCommand extends RankingCommand {
             String url = String.format("https://juniperbot.ru/ranking/%s?page=%s#%s", member.getGuild().getId(),
                     desiredPage, member.getUser().getId());
             builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
-            messageService.sendMessageSilent(message.getTextChannel()::sendMessage, builder.build());
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         } else {
             String response;
             if (message.getMember().equals(member)) {
@@ -79,7 +79,7 @@ public class RankCommand extends RankingCommand {
                         info.getLevelExp(),
                         info.getTotalExp());
             }
-            messageService.sendMessageSilent(message.getTextChannel()::sendMessage, response);
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, response);
         }
         return true;
     }

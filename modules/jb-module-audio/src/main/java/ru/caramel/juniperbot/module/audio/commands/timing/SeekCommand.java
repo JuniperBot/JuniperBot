@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.audio.commands.timing;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -27,12 +28,11 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
         key = "discord.command.seek.key",
         description = "discord.command.seek.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 114)
 public class SeekCommand extends TimingCommand {
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, TrackRequest request, long millis) {
+    protected boolean doInternal(GuildMessageReceivedEvent message, TrackRequest request, long millis) {
         AudioTrack track = request.getTrack();
         long duration = track.getDuration();
         millis = Math.min(duration, millis);

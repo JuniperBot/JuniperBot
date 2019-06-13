@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.audio.commands.timing;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
@@ -28,12 +29,11 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
         key = "discord.command.rewind.key",
         description = "discord.command.rewind.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 113)
 public class RewindCommand extends TimingCommand {
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, TrackRequest request, long millis) {
+    protected boolean doInternal(GuildMessageReceivedEvent message, TrackRequest request, long millis) {
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         AudioTrack track = request.getTrack();
         long position = instance.getPosition();

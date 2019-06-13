@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands.queue;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -28,11 +29,10 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
         key = "discord.command.current.key",
         description = "discord.command.current.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 102)
 public class CurrentCommand extends AudioCommand {
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
 
         TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
         if (current == null) {

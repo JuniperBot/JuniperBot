@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands.control;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -32,14 +33,13 @@ import java.util.stream.Stream;
         key = RepeatCommand.KEY,
         description = "discord.command.repeat.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 108)
 public class RepeatCommand extends AudioCommand {
 
     public static final String KEY = "discord.command.repeat.key";
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content);
         if (mode == null) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help",

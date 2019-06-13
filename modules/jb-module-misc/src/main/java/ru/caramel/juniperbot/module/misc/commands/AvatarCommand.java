@@ -17,9 +17,11 @@
 package ru.caramel.juniperbot.module.misc.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
@@ -33,10 +35,10 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 public class AvatarCommand extends AbstractCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         User user = message.getAuthor();
         String name = user.getName();
-        if (message.getGuild() != null && CollectionUtils.isNotEmpty(message.getMessage().getMentionedMembers())) {
+        if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedMembers())) {
             Member member = getMentioned(message);
             user = member.getUser();
             name = member.getEffectiveName();

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -32,10 +33,10 @@ public abstract class RankingCommand extends AbstractCommand {
     @Autowired
     protected RankingService rankingService;
 
-    protected abstract boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
+    protected abstract boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         RankingConfig rankingConfig = rankingService.get(message.getGuild());
         return rankingConfig != null
                 && rankingConfig.isEnabled()

@@ -32,8 +32,6 @@ public @interface DiscordCommand {
 
     String description();
 
-    ChannelType[] source() default {};
-
     Permission[] permissions() default {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
 
     String[] group() default {"discord.command.group.common"};

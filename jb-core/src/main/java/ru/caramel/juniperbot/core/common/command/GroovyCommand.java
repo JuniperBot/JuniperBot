@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.common.command;
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class GroovyCommand extends AbstractCommand {
     private GroovyService groovyService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         if (!discordService.isSuperUser(message.getAuthor()) || StringUtils.isEmpty(query)) {
             return false;
         }
@@ -65,7 +66,7 @@ public class GroovyCommand extends AbstractCommand {
         return ok(message);
     }
 
-    private GroovyShell getShell(MessageReceivedEvent event) {
+    private GroovyShell getShell(GuildMessageReceivedEvent event) {
         GroovyShell shell = groovyService.createShell();
         shell.setProperty("message", event.getMessage());
         shell.setProperty("channel", event.getChannel());

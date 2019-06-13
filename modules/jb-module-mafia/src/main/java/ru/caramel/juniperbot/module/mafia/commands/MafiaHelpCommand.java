@@ -20,18 +20,18 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.help.key",
         description = "discord.command.mafia.help.desc",
         group = "discord.command.group.mafia",
-        source = ChannelType.TEXT,
         priority = 15)
 public class MafiaHelpCommand extends MafiaCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setDescription(messageService.getMessage("mafia.help.description") +
                 "\n" + EmbedBuilder.ZERO_WIDTH_SPACE);

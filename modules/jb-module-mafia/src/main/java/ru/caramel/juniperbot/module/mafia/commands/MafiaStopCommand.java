@@ -18,18 +18,18 @@ package ru.caramel.juniperbot.module.mafia.commands;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.stop.key",
         description = "discord.command.mafia.stop.desc",
         group = "discord.command.group.mafia",
-        source = ChannelType.TEXT,
         priority = 10)
 public class MafiaStopCommand extends MafiaCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        return mafiaService.stop(message.getMember(), message.getTextChannel()) || fail(message);
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
+        return mafiaService.stop(message.getMember(), message.getChannel()) || fail(message);
     }
 }

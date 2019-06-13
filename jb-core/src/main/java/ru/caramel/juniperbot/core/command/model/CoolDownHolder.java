@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.command.model;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ public class CoolDownHolder {
         this.guildId = guildId;
     }
 
-    public long perform(MessageReceivedEvent event, CommandConfig commandConfig) {
+    public long perform(GuildMessageReceivedEvent event, CommandConfig commandConfig) {
         if (commandConfig.getCoolDown() == 0) {
             return 0;
         }
@@ -54,7 +55,7 @@ public class CoolDownHolder {
         return estimate;
     }
 
-    private String getKey(MessageReceivedEvent event, CommandConfig commandConfig) {
+    private String getKey(GuildMessageReceivedEvent event, CommandConfig commandConfig) {
         StringBuilder builder = new StringBuilder(commandConfig.getKey());
         switch (commandConfig.getCoolDownMode()) {
             case CHANNEL:

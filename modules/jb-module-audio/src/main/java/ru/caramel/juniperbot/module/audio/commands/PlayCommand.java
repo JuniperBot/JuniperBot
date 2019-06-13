@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.audio.commands;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,6 @@ import java.util.List;
         key = PlayCommand.KEY,
         description = "discord.command.play.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 100)
 public class PlayCommand extends AudioCommand {
 
@@ -46,7 +46,7 @@ public class PlayCommand extends AudioCommand {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String query) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String query) throws DiscordException {
         if (!message.getMessage().getAttachments().isEmpty()) {
             query = message.getMessage().getAttachments().get(0).getUrl();
         }
@@ -60,10 +60,10 @@ public class PlayCommand extends AudioCommand {
                 return fail(message);
             }
         }
-        message.getTextChannel().sendTyping().queue();
+        message.getChannel().sendTyping().queue();
         final String finalQuery = query;
         contextService.withContextAsync(message.getGuild(), () -> {
-            playerService.loadAndPlay(message.getTextChannel(), message.getMember(), finalQuery);
+            playerService.loadAndPlay(message.getChannel(), message.getMember(), finalQuery);
         });
         return true;
     }

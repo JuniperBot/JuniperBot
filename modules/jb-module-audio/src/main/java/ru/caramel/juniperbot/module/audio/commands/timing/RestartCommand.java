@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands.timing;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -27,11 +28,10 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
         key = "discord.command.restart.key",
         description = "discord.command.restart.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 112)
 public class RestartCommand extends AudioCommand {
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playerService.isActive(message.getGuild())) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;

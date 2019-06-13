@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -75,14 +77,12 @@ public class TranslitCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {
             messageService.onError(message.getChannel(), "discord.command.translit.title", "discord.command.translit.empty");
             return false;
         }
-        String userName = message.getChannelType().isGuild()
-                ? message.getMember().getEffectiveName()
-                : message.getAuthor().getName();
+        String userName = message.getMember().getEffectiveName();
         messageService.sendMessageSilent(message.getChannel()::sendMessage, messageService.getMessage(
                 "discord.command.translit.format", userName, untranslit(query)));
         return true;

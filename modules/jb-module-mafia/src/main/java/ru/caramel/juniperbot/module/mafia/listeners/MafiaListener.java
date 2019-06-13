@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
@@ -46,37 +47,30 @@ public class MafiaListener extends DiscordEventListener {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
             return;
         }
-        switch (event.getChannelType()) {
-            case PRIVATE:
-            case TEXT:
-                MafiaInstance instance = mafiaService.getRelatedInstance(event.getChannel().getIdLong());
-                if (instance != null && !instance.isInState(MafiaState.FINISH)) {
-                    boolean isPlayer = instance.isPlayer(event.getAuthor());
-                    if (isPlayer) {
-                        instance.tick();
-                    }
+        MafiaInstance instance = mafiaService.getRelatedInstance(event.getChannel().getIdLong());
+        if (instance != null && !instance.isInState(MafiaState.FINISH)) {
+            boolean isPlayer = instance.isPlayer(event.getAuthor());
+            if (isPlayer) {
+                instance.tick();
+            }
 
-                    if (event.getChannelType().isGuild()) {
-                        Member selfMember = event.getGuild().getSelfMember();
-                        if (!event.getMember().equals(selfMember)
-                                && !instance.isInState(MafiaState.CHOOSING)
-                                && !Objects.equals(event.getChannel().getIdLong(), instance.getGoonChannelId())
-                                && selfMember.hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
-                            if (instance.isInState(MafiaState.DAY)) {
-                                if (!isPlayer) {
-                                    messageService.delete(event.getMessage());
-                                }
-                            } else {
-                                messageService.delete(event.getMessage());
-                            }
-                        }
+            Member selfMember = event.getGuild().getSelfMember();
+            if (!event.getMember().equals(selfMember)
+                    && !instance.isInState(MafiaState.CHOOSING)
+                    && !Objects.equals(event.getChannel().getIdLong(), instance.getGoonChannelId())
+                    && selfMember.hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
+                if (instance.isInState(MafiaState.DAY)) {
+                    if (!isPlayer) {
+                        messageService.delete(event.getMessage());
                     }
+                } else {
+                    messageService.delete(event.getMessage());
                 }
-                break;
+            }
         }
     }
 }

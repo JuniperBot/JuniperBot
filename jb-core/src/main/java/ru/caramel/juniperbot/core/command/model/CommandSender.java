@@ -16,9 +16,9 @@
  */
 package ru.caramel.juniperbot.core.command.model;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 
 public interface CommandSender {
-    boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
+    boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
 }

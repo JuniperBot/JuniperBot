@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.moderation.command;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -30,12 +31,11 @@ import java.util.Objects;
 @DiscordCommand(key = "discord.command.mod.removeWarm.key",
         description = "discord.command.mod.removeWarm.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         priority = 10)
 public class RemoveWarnCommand extends ModeratorCommandAsync {
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    public void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         query = removeMention(query);
         if (mentioned == null || !StringUtils.isNumeric(query)) {

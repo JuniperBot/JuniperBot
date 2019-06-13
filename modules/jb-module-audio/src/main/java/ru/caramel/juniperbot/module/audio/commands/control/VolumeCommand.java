@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -33,14 +34,13 @@ import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
         key = VolumeCommand.KEY,
         description = "discord.command.volume.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 111)
 public class VolumeCommand extends AudioCommand {
 
     public static final String KEY = "discord.command.volume.key";
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int volume = parseCount(content);
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
         instance.setVolume(volume);

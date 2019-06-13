@@ -18,19 +18,19 @@ package ru.caramel.juniperbot.module.mafia.commands;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mafia.done.key",
         description = "discord.command.mafia.done.desc",
         group = "discord.command.group.mafia",
-        source = ChannelType.TEXT,
         priority = 5)
 public class MafiaDoneCommand extends MafiaCommandAsync {
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
-        if (mafiaService.done(message.getAuthor(), message.getTextChannel())) {
+    public void doCommandAsync(GuildMessageReceivedEvent message, BotContext context, String query) {
+        if (mafiaService.done(message.getAuthor(), message.getChannel())) {
             ok(message);
         } else {
             fail(message);

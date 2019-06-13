@@ -17,11 +17,9 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -56,7 +54,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
     private MemberBioRepository bioRepository;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
@@ -65,32 +63,29 @@ public class UserInfoCommand extends AbstractInfoCommand {
         if (!message.getMessage().getMentionedUsers().isEmpty()) {
             user = message.getMessage().getMentionedUsers().get(0);
         }
-        Member member = null;
-        if (message.getGuild() != null) {
-            member = message.getGuild().getMember(user);
+        if (!message.getGuild().isMember(user)) {
+            return fail(message);
         }
+        Member member = message.getGuild().getMember(user);
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(messageService.getMessage("discord.command.user.title",
-                member != null ? member.getEffectiveName() : user.getName()));
+        builder.setTitle(messageService.getMessage("discord.command.user.title", member.getEffectiveName()));
         builder.setThumbnail(user.getEffectiveAvatarUrl());
         builder.setFooter(messageService.getMessage("discord.command.info.identifier", user.getId()), null);
 
         StringBuilder commonBuilder = new StringBuilder();
         getName(commonBuilder, user, member);
 
-        if (member != null) {
-            getOnlineStatus(commonBuilder, member);
-            if (member.getGame() != null) {
-                getGame(commonBuilder, member);
-            }
-            getJoinedAt(context, commonBuilder, member, formatter);
+        getOnlineStatus(commonBuilder, member);
+        if (member.getGame() != null) {
+            getGame(commonBuilder, member);
         }
+        getJoinedAt(context, commonBuilder, member, formatter);
         getCreatedAt(context, commonBuilder, user, formatter);
 
         builder.addField(messageService.getMessage("discord.command.user.common"), commonBuilder.toString(), false);
 
-        if (member != null && !user.isBot()) {
+        if (!user.isBot()) {
             if (rankingService.isEnabled(member.getGuild().getIdLong())) {
                 RankingInfo info = rankingService.getRankingInfo(member);
                 if (info != null) {
@@ -101,7 +96,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
             String bio = memberBio != null ? memberBio.getBio() : null;
             if (StringUtils.isEmpty(bio)
                     && Objects.equals(author, user)
-                    && !commandsService.isRestricted(BioCommand.KEY, message.getTextChannel(), message.getMember())) {
+                    && !commandsService.isRestricted(BioCommand.KEY, message.getChannel(), message.getMember())) {
                 String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
                         context.getCommandLocale());
                 bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
@@ -117,7 +112,7 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
     private StringBuilder getName(StringBuilder commonBuilder, User user, Member member) {
         String userName = DiscordUtils.formatUser(user);
-        if (member != null && !Objects.equals(user.getName(), member.getEffectiveName())) {
+        if (!Objects.equals(user.getName(), member.getEffectiveName())) {
             userName += String.format(" (%s)", member.getEffectiveName());
         }
         return appendEntry(commonBuilder, "discord.command.user.username", userName);

@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -29,7 +31,7 @@ import ru.caramel.juniperbot.core.utils.ArrayUtil;
 public class CoinCommand extends AbstractCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         String headsKeys[] = messageService.getMessage("discord.command.coin.heads", context.getCommandLocale())
                 .split(",");
         String tailsKeys[] = messageService.getMessage("discord.command.coin.tails", context.getCommandLocale())

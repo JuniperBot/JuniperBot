@@ -17,8 +17,10 @@
 package ru.caramel.juniperbot.module.steam.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.money.CurrencyUnit;
@@ -47,7 +49,7 @@ public class SteamCommand extends AbstractCommand {
     private SteamService steamService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {
             messageService.onMessage(message.getChannel(), "discord.command.steam.enter");
             return true;

@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.module.info.commands;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -31,12 +32,11 @@ import java.util.List;
         key = "discord.command.server.key",
         description = "discord.command.server.desc",
         group = "discord.command.group.info",
-        source = ChannelType.TEXT,
         priority = 2)
 public class ServerInfoCommand extends AbstractInfoCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         Guild guild = message.getGuild();
 
         EmbedBuilder builder = messageService.getBaseEmbed();

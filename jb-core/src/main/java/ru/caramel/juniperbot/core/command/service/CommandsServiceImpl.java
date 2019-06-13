@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +111,7 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     @Transactional
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
             return;
         }
@@ -124,7 +125,7 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    public boolean sendMessage(MessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck) {
+    public boolean sendMessage(GuildMessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck) {
         JDA jda = event.getJDA();
         String content = event.getMessage().getContentRaw().trim();
         if (StringUtils.isEmpty(content)) {
@@ -152,10 +153,7 @@ public class CommandsServiceImpl implements CommandsService {
             return false;
         }
 
-        GuildConfig guildConfig = null;
-        if (event.getChannelType().isGuild() && event.getGuild() != null) {
-            guildConfig = configService.getOrCreate(event.getGuild());
-        }
+        GuildConfig guildConfig = configService.getOrCreate(event.getGuild());
 
         if (!usingMention) {
             prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
@@ -179,7 +177,8 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
+    public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
+        TextChannel channel = event.getChannel();
         String locale = guildConfig != null ? guildConfig.getCommandLocale() : null;
         Command command = commandsHolderService.getByLocale(key, locale);
         if (command == null) {
@@ -191,27 +190,25 @@ public class CommandsServiceImpl implements CommandsService {
         }
 
         CommandConfig commandConfig = event.getGuild() != null ? commandConfigService.findByKey(event.getGuild().getIdLong(), rawKey) : null;
-        if (!isApplicable(command, commandConfig, event.getAuthor(), event.getMember(), event.getChannel())) {
+        if (!isApplicable(command, commandConfig, event.getAuthor(), event.getMember(), channel)) {
             return false;
         }
 
-        if (event.getChannelType().isGuild()) {
-            if (commandConfig != null && isRestricted(event, commandConfig)) {
-                return true;
-            }
-            Permission[] permissions = command.getPermissions();
-            if (permissions != null && permissions.length > 0) {
-                Member self = event.getGuild().getSelfMember();
-                if (self != null && !self.hasPermission(event.getTextChannel(), permissions)) {
-                    String list = Stream.of(permissions)
-                            .filter(e -> !self.hasPermission(event.getTextChannel(), e))
-                            .map(e -> messageService.getEnumTitle(e))
-                            .collect(Collectors.joining("\n"));
-                    if (self.hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
-                        restrictMessage(event.getTextChannel(), "discord.command.insufficient.permissions", list);
-                    }
-                    return true;
+        if (commandConfig != null && isRestricted(event, commandConfig)) {
+            return true;
+        }
+        Permission[] permissions = command.getPermissions();
+        if (permissions != null && permissions.length > 0) {
+            Member self = event.getGuild().getSelfMember();
+            if (self != null && !self.hasPermission(channel, permissions)) {
+                String list = Stream.of(permissions)
+                        .filter(e -> !self.hasPermission(channel, e))
+                        .map(e -> messageService.getEnumTitle(e))
+                        .collect(Collectors.joining("\n"));
+                if (self.hasPermission(channel, Permission.MESSAGE_WRITE)) {
+                    restrictMessage(channel, "discord.command.insufficient.permissions", list);
                 }
+                return true;
             }
         }
 
@@ -227,7 +224,7 @@ public class CommandsServiceImpl implements CommandsService {
                 command.doCommand(event, context, content);
                 counter.inc();
                 if (commandConfig != null && commandConfig.isDeleteSource()
-                        && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
+                        && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
                     messageService.delete(event.getMessage());
                 }
             } catch (ValidationException e) {
@@ -246,8 +243,8 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     @Transactional
-    public boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig) {
-        if (isRestricted(commandConfig, event.getTextChannel())) {
+    public boolean isRestricted(GuildMessageReceivedEvent event, CommandConfig commandConfig) {
+        if (isRestricted(commandConfig, event.getChannel())) {
             resultEmotion(event, "✋", null);
             messageService.onTempEmbedMessage(event.getChannel(), 10, "discord.command.restricted.channel");
             return true;
@@ -325,26 +322,18 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    public boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, MessageChannel channel) {
-        if (!command.getClass().isAnnotationPresent(DiscordCommand.class)) {
+    public boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, TextChannel channel) {
+        if (command.getAnnotation() == null) {
             return false;
         }
-        DiscordCommand commandAnnotation = command.getClass().getAnnotation(DiscordCommand.class);
-
         if (commandConfig != null && commandConfig.isDisabled()) {
             return false;
         }
         Guild guild = member != null ? member.getGuild() : null;
-        if (guild == null && channel instanceof TextChannel) {
-            guild = ((TextChannel) channel).getGuild();
+        if (channel != null) {
+            guild = channel.getGuild();
         }
-        if (!command.isAvailable(user, member, guild)) {
-            return false;
-        }
-        if (commandAnnotation.source().length == 0 || channel == null) {
-            return true;
-        }
-        return ArrayUtils.contains(commandAnnotation.source(), channel.getType());
+        return command.isAvailable(user, member, guild);
     }
 
     public boolean isRestricted(String rawKey, TextChannel channel, Member member) {
@@ -368,9 +357,10 @@ public class CommandsServiceImpl implements CommandsService {
         return false;
     }
 
-    public void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args) {
+    @Override
+    public void resultEmotion(GuildMessageReceivedEvent message, String emoji, String messageCode, Object... args) {
         try {
-            if (message.getGuild() == null || message.getGuild().getSelfMember().hasPermission(message.getTextChannel(),
+            if (message.getGuild() == null || message.getGuild().getSelfMember().hasPermission(message.getChannel(),
                     Permission.MESSAGE_ADD_REACTION)) {
                 try {
                     message.getMessage().addReaction(emoji).queue();

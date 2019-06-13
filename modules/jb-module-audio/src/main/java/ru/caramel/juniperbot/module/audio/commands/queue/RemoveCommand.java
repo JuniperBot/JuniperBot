@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands.queue;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -31,12 +32,11 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
         key = "discord.command.audio.remove.key",
         description = "discord.command.audio.remove.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 120)
 public class RemoveCommand extends AudioCommand {
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!playerService.isActive(message.getGuild())) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
             return false;

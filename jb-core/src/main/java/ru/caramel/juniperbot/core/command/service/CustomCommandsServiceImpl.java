@@ -18,6 +18,7 @@ package ru.caramel.juniperbot.core.command.service;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -63,11 +64,11 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
     }
 
     @Override
-    public boolean handleMessage(MessageReceivedEvent event) {
+    public boolean handleMessage(GuildMessageReceivedEvent event) {
         return commandsService.sendMessage(event, this, e -> isAnyCustomCommand(event, e));
     }
 
-    public boolean isAnyCustomCommand(MessageReceivedEvent event, String input) {
+    public boolean isAnyCustomCommand(GuildMessageReceivedEvent event, String input) {
         if (event.getGuild() == null) {
             return false;
         }
@@ -82,7 +83,7 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
         return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
     }
 
-    public boolean sendCommand(MessageReceivedEvent event, String content, String key, GuildConfig config) {
+    public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
         if (event.getGuild() == null) {
             return false;
         }
@@ -97,7 +98,7 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
                 return true;
             }
             if (commandConfig.isDeleteSource()
-                    && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_MANAGE)) {
+                    && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
                 messageService.delete(event.getMessage());
             }
         }
@@ -110,7 +111,7 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
                 .createMessage(command.getMessageTemplate())
                 .withGuild(event.getGuild())
                 .withMember(event.getMember())
-                .withFallbackChannel(event.getTextChannel())
+                .withFallbackChannel(event.getChannel())
                 .withVariable("content", content);
 
         switch (command.getType()) {
