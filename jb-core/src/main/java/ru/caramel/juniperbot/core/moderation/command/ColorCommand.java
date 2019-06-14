@@ -17,8 +17,11 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -29,7 +32,6 @@ import java.util.regex.Pattern;
 @DiscordCommand(key = "discord.command.mod.color.key",
         description = "discord.command.mod.color.desc",
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES},
         priority = 5)
 public class ColorCommand extends ModeratorCommandAsync {
@@ -37,7 +39,7 @@ public class ColorCommand extends ModeratorCommandAsync {
     private static final Pattern COLOR_PATTERN = Pattern.compile("([0-9a-fA-F]{6})$");
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member self = event.getGuild().getSelfMember();
         Member member = event.getMember();
 

@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.ranking.commands;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -26,13 +25,12 @@ import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
         key = "discord.command.leaders.key",
         description = "discord.command.leaders.desc",
         group = "discord.command.group.ranking",
-        source = ChannelType.TEXT,
         priority = 201)
 public class LeadersCommand extends RankingCommand {
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        message.getTextChannel().sendMessage(messageService.getMessage("discord.command.leaders.message",
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+        message.getChannel().sendMessage(messageService.getMessage("discord.command.leaders.message",
                 message.getGuild().getId())).queue();
         return true;
     }

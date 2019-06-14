@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.queue;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -29,12 +28,11 @@ import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
         key = "discord.command.queue.key",
         description = "discord.command.queue.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 101)
 public class QueueCommand extends AudioCommand {
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int pageNum = 1;
         if (StringUtils.isNotEmpty(content)) {
             try {
@@ -44,12 +42,12 @@ public class QueueCommand extends AudioCommand {
             }
         }
         if (pageNum < 1) {
-            messageManager.onQueueError(message.getTextChannel(), "discord.command.audio.queue.list.selectPage");
+            messageManager.onQueueError(message.getChannel(), "discord.command.audio.queue.list.selectPage");
             return fail(message);
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());
 
-        messageManager.onQueue(instance, message.getTextChannel(), context, pageNum);
+        messageManager.onQueue(instance, message.getChannel(), context, pageNum);
         return true;
     }
 

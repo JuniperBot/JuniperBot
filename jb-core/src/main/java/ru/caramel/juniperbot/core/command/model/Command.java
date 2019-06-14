@@ -20,26 +20,29 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 
 public interface Command {
 
-    boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
+    boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
     boolean isAvailable(User user, Member member, Guild guild);
 
+    DiscordCommand getAnnotation();
+
     default String getKey() {
-        if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
-            return null;
-        }
-        return getClass().getAnnotation(DiscordCommand.class).key();
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null ? annotation.key() : null;
+    }
+
+    default boolean isHidden() {
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null && annotation.hidden();
     }
 
     default Permission[] getPermissions() {
-        if (!getClass().isAnnotationPresent(DiscordCommand.class)) {
-            return null;
-        }
-        return getClass().getAnnotation(DiscordCommand.class).permissions();
+        DiscordCommand annotation = getAnnotation();
+        return annotation != null ? annotation.permissions() : null;
     }
 }

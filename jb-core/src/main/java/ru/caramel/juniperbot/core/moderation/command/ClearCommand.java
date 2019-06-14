@@ -17,8 +17,11 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageHistory;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +44,6 @@ import java.util.regex.Pattern;
 @DiscordCommand(key = "discord.command.mod.clear.key",
         description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {
                 Permission.MESSAGE_WRITE,
                 Permission.MESSAGE_EMBED_LINKS,
@@ -59,8 +61,8 @@ public class ClearCommand extends ModeratorCommandAsync {
     private ActionsHolderService actionsHolderService;
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) throws DiscordException {
-        TextChannel channel = event.getTextChannel();
+    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
+        TextChannel channel = event.getChannel();
         List<Message> messages;
 
         int number = getCount(query);

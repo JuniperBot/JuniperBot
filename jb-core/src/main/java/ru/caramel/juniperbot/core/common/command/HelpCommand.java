@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.core.common.command;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,16 @@ import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
 import ru.caramel.juniperbot.core.command.service.CommandConfigService;
 import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@DiscordCommand(key = "discord.command.help.key", description = "discord.command.help.desc", priority = 1)
+@DiscordCommand(
+        key = "discord.command.help.key",
+        description = "discord.command.help.desc",
+        priority = 1
+)
 public class HelpCommand extends AbstractCommand {
 
     private static final String COMMON_GROUP = "discord.command.group.common";
@@ -55,25 +58,20 @@ public class HelpCommand extends AbstractCommand {
     private CommandConfigService commandConfigService;
 
     @Autowired
-    private ConfigService configService;
-
-    @Autowired
     private CustomCommandRepository customCommandRepository;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
-        boolean direct = context.getConfig() != null && Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
+        boolean direct = Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
-        Map<String, CommandConfig> configMap = context.getConfig() != null
-                ? commandConfigService.findAllMap(context.getConfig().getGuildId())
-                : Collections.emptyMap();
+        Map<String, CommandConfig> configMap = commandConfigService.findAllMap(context.getConfig().getGuildId());
 
         List<DiscordCommand> discordCommands = holderService.getCommands().entrySet().stream()
                 .filter(e -> {
                     CommandConfig config = configMap.get(e.getValue().getClass()
                             .getAnnotation(DiscordCommand.class).key());
                     return commandsService.isApplicable(e.getValue(), config, message.getAuthor(), message.getMember(), message.getChannel())
-                            && !commandsService.isRestricted(config, message.getTextChannel())
+                            && !commandsService.isRestricted(config, message.getChannel())
                             && !commandsService.isRestricted(config, message.getMember());
 
                 })
@@ -109,7 +107,7 @@ public class HelpCommand extends AbstractCommand {
 
         EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
 
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
+        String prefix = context.getConfig().getPrefix();
 
         groupedCommands.remove(rootGroup).forEach(e -> embedBuilder.addField(
                 prefix + messageService.getMessageByLocale(e.key(), context.getCommandLocale()),
@@ -129,27 +127,25 @@ public class HelpCommand extends AbstractCommand {
             });
 
             // Пользовательские команды
-            if (message.getChannelType().isGuild() && context.getConfig() != null) {
-                List<CustomCommand> commands = customCommandRepository.findAllByGuildId(context.getConfig().getGuildId()).stream()
-                        .filter(e -> {
-                            CommandConfig config = e.getCommandConfig();
-                            return config == null || !config.isDisabled()
-                                    && !commandsService.isRestricted(config, message.getTextChannel())
-                                    && !commandsService.isRestricted(config, message.getMember());
-                        })
-                        .collect(Collectors.toList());
-                if (CollectionUtils.isNotEmpty(commands)) {
-                    StringBuilder list = new StringBuilder();
-                    commands.forEach(e -> {
-                        if (list.length() > 0) {
-                            list.append(", ");
-                        }
-                        list.append('`').append(context.getConfig().getPrefix()).append(e.getKey()).append('`');
-                    });
+            List<CustomCommand> commands = customCommandRepository.findAllByGuildId(context.getConfig().getGuildId()).stream()
+                    .filter(e -> {
+                        CommandConfig config = e.getCommandConfig();
+                        return config == null || !config.isDisabled()
+                                && !commandsService.isRestricted(config, message.getChannel())
+                                && !commandsService.isRestricted(config, message.getMember());
+                    })
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(commands)) {
+                StringBuilder list = new StringBuilder();
+                commands.forEach(e -> {
                     if (list.length() > 0) {
-                        embedBuilder.addField(messageService.getMessage(CUSTOM_GROUP) + ":",
-                                list.toString(), false);
+                        list.append(", ");
                     }
+                    list.append('`').append(context.getConfig().getPrefix()).append(e.getKey()).append('`');
+                });
+                if (list.length() > 0) {
+                    embedBuilder.addField(messageService.getMessage(CUSTOM_GROUP) + ":",
+                            list.toString(), false);
                 }
             }
         }
@@ -169,7 +165,7 @@ public class HelpCommand extends AbstractCommand {
         return true;
     }
 
-    private void send(MessageReceivedEvent message, MessageChannel channel, EmbedBuilder embedBuilder, boolean direct) {
+    private void send(GuildMessageReceivedEvent message, MessageChannel channel, EmbedBuilder embedBuilder, boolean direct) {
         channel.sendMessage(embedBuilder.build()).queue();
         if (direct && message.getAuthor() != null) {
             contextService.withContext(message.getGuild(), () -> {
@@ -178,7 +174,7 @@ public class HelpCommand extends AbstractCommand {
         }
     }
 
-    private EmbedBuilder getBaseEmbed(String group, MessageReceivedEvent message) {
+    private EmbedBuilder getBaseEmbed(String group, GuildMessageReceivedEvent message) {
         EmbedBuilder embedBuilder = messageService.getBaseEmbed(true)
                 .setThumbnail(brandingService.getSmallAvatarUrl());
         if (COMMON_GROUP.equals(group)) {

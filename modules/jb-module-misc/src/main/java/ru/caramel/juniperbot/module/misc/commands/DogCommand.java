@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.misc.commands;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class DogCommand extends AbstractCommandAsync {
     private DogApiService dogApiService;
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
+    public void doCommandAsync(GuildMessageReceivedEvent message, BotContext context, String query) {
         try {
             DogImage image;
             synchronized (images) {
@@ -71,7 +71,7 @@ public class DogCommand extends AbstractCommandAsync {
         messageService.onEmbedMessage(message.getChannel(), "discord.command.dog.error");
     }
 
-    private void sendImage(MessageReceivedEvent event, DogImage image) {
+    private void sendImage(GuildMessageReceivedEvent event, DogImage image) {
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setImage(image.getUrl());
         if (CollectionUtils.isNotEmpty(image.getBreeds())) {

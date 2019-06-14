@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.control;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -27,14 +26,13 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
         key = StopCommand.KEY,
         description = "discord.command.stop.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 107)
 public class StopCommand extends AudioCommand {
 
     public static final String KEY = "discord.command.stop.key";
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (playerService.stop(message.getMember(), message.getGuild())) {
             return ok(message, "discord.command.audio.stop.member", message.getMember().getEffectiveName());
         }

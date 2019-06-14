@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
@@ -30,7 +30,7 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 public class BallCommand extends AbstractCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         if (StringUtils.isEmpty(query)) {
             messageService.onMessage(message.getChannel(), "discord.command.ball.question");
             return false;

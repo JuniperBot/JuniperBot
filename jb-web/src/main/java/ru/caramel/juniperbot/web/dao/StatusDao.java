@@ -16,7 +16,10 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.RemoteStats;
 import net.dv8tion.jda.core.JDA;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.web.dto.LavaLinkNodeDto;
@@ -52,21 +56,13 @@ public class StatusDao extends AbstractDao {
         Map<String, Metric> metricMap = metricRegistry.getMetrics();
 
         StatusDto result = new StatusDto();
-        result.setGuildCount(getMetricGauge(metricMap, DiscordService.GAUGE_GUILDS));
-        result.setUserCount(getMetricGauge(metricMap, DiscordService.GAUGE_USERS));
-        result.setTextChannelCount(getMetricGauge(metricMap, DiscordService.GAUGE_TEXT_CHANNELS));
-        result.setVoiceChannelCount(getMetricGauge(metricMap, DiscordService.GAUGE_VOICE_CHANNELS));
+        result.setGuildCount(getMetricGauge(metricMap, DiscordMetricsRegistry.GAUGE_GUILDS));
+        result.setUserCount(getMetricGauge(metricMap, DiscordMetricsRegistry.GAUGE_USERS));
+        result.setTextChannelCount(getMetricGauge(metricMap, DiscordMetricsRegistry.GAUGE_TEXT_CHANNELS));
+        result.setVoiceChannelCount(getMetricGauge(metricMap, DiscordMetricsRegistry.GAUGE_VOICE_CHANNELS));
         result.setActiveConnections(getMetricGauge(metricMap, PlayerService.ACTIVE_CONNECTIONS));
         result.setExecutedCommands(getMetricGauge(metricMap, "commands.executions.persist"));
         result.setUptimeDuration(getMetricGauge(metricMap, "jvm.uptime"));
-
-        Meter commandRate = (Meter) metricMap.get("commands.executions.rate");
-        if (commandRate != null) {
-            result.setCommandsRateMean(commandRate.getMeanRate());
-            result.setCommandsRate1m(commandRate.getOneMinuteRate());
-            result.setCommandsRate5m(commandRate.getFiveMinuteRate());
-            result.setCommandsRate15m(commandRate.getFifteenMinuteRate());
-        }
 
         result.setShards(discordService.getShardManager().getShards().stream()
                 .sorted(Comparator.comparing(e -> e.getShardInfo().getShardId()))

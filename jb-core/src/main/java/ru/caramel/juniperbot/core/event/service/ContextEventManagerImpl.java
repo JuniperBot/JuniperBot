@@ -16,12 +16,11 @@
  */
 package ru.caramel.juniperbot.core.event.service;
 
-import com.codahale.metrics.Timer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.core.metrics.service.StatisticsService;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
@@ -53,9 +51,6 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     @Autowired
     private CommandsService commandsService;
-
-    @Autowired
-    private StatisticsService statisticsService;
 
     @Autowired
     @Qualifier(RequestScopedCacheManager.NAME)
@@ -82,13 +77,7 @@ public class ContextEventManagerImpl implements JbEventManager {
         try {
             cacheManager.clear();
             contextService.initContext(event);
-            if (statisticsService.isDetailed()) {
-                statisticsService.doWithTimer(getTimer(event), () -> {
-                    loopListeners(event);
-                });
-            } else {
-                loopListeners(event);
-            }
+            loopListeners(event);
         } catch (Exception e) {
             log.error("Event manager caused an uncaught exception", e);
         } finally {
@@ -98,9 +87,9 @@ public class ContextEventManagerImpl implements JbEventManager {
     }
 
     private void loopListeners(Event event) {
-        if (event instanceof MessageReceivedEvent) {
+        if (event instanceof GuildMessageReceivedEvent) {
             try {
-                commandsService.onMessageReceived((MessageReceivedEvent) event);
+                commandsService.onMessageReceived((GuildMessageReceivedEvent) event);
             } catch (Exception e) {
                 log.error("Could not process command", e);
             }
@@ -113,14 +102,6 @@ public class ContextEventManagerImpl implements JbEventManager {
                 log.error("One of the EventListeners had an uncaught exception", throwable);
             }
         }
-    }
-
-    private Timer getTimer(Event event) {
-        int shard = -1;
-        if (event.getJDA() != null && event.getJDA().getShardInfo() != null) {
-            shard = event.getJDA().getShardInfo().getShardId();
-        }
-        return statisticsService.getTimer(String.format("event/shard.%d/%s", shard, event.getClass().getName()));
     }
 
     private int compareListeners(EventListener first, EventListener second) {

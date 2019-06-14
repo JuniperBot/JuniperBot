@@ -103,6 +103,7 @@ subprojects {
         twitch4jVersion                    = 'v0.12.0'
         romeVersion                        = '1.11.1'
         jsonApiConverter                   = '0.9'
+        prometheusVersion                  = '0.6.0'
 
         //@formatter:on
     }

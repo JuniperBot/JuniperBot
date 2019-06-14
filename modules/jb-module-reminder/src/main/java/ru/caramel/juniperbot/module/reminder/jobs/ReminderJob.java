@@ -56,34 +56,39 @@ public class ReminderJob extends AbstractJob {
         String userId = data.getString(ATTR_USER_ID);
         String guildId = data.getString(ATTR_GUILD_ID);
         String channelId = data.getString(ATTR_CHANNEL_ID);
-        String messageRaw = data.getString(ATTR_MESSAGE);
+
+        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(guildId) || StringUtils.isEmpty(channelId)) {
+            return;
+        }
+
+        User user = shardManager.getUserById(userId);
+        if (user == null) {
+            return;
+        }
+
+        Guild guild = shardManager.getGuildById(guildId);
+        if (guild == null || !guild.isAvailable()) {
+            return;
+        }
+
+        TextChannel channel = guild.getTextChannelById(channelId);
+        if (channel == null) {
+            return;
+        }
 
         boolean maskMentions = true;
+        String messageRaw = data.getString(ATTR_MESSAGE);
 
-        MessageChannel channel = null;
-        User user = shardManager.getUserById(userId);
         StringBuilder message = new StringBuilder();
-        if (StringUtils.isNotEmpty(guildId)) {
-            Guild guild = shardManager.getGuildById(guildId);
-            if (guild != null && guild.isAvailable()) {
-                channel = guild.getTextChannelById(channelId);
-                if (user != null && guild.isMember(user)) {
-                    maskMentions = !moderationService.isModerator(guild.getMember(user));
-                    message.append(user.getAsMention()).append(" ");
-                }
-            }
-        } else {
-            channel = shardManager.getPrivateChannelById(channelId);
+        if (guild.isMember(user)) {
+            maskMentions = !moderationService.isModerator(guild.getMember(user));
+            message.append(user.getAsMention()).append(" ");
         }
         if (maskMentions) {
             messageRaw = DiscordUtils.maskPublicMentions(messageRaw);
         }
         message.append(messageRaw);
-        if (channel == null && user != null) {
-            user.openPrivateChannel().queue(c -> c.sendMessage(message.toString()).queue());
-        } else if (channel != null) {
-            channel.sendMessage(message.toString()).queue();
-        }
+        channel.sendMessage(message.toString()).queue();
     }
 
     public static JobDetail createDetails(MessageChannel channel, Member member, String message) {

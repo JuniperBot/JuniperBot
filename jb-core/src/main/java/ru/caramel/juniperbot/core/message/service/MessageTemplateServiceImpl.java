@@ -96,6 +96,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             } else {
                 embedBuilder.setColor(contextService.getDefaultColor());
             }
+            if (template.getTimestamp() != null) {
+                embedBuilder.setTimestamp(template.getTimestamp().toInstant());
+            }
 
             embedBuilder.setAuthor(
                     processContent(template.getAuthor(), resolver, compiler, MessageEmbed.TITLE_MAX_LENGTH, false),

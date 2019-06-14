@@ -17,11 +17,10 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -36,12 +35,11 @@ import java.util.List;
 @DiscordCommand(key = "discord.command.mod.warns.key",
         description = "discord.command.mod.warns.desc",
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
-        source = ChannelType.TEXT,
         priority = 15)
 public class WarnsCommand extends ModeratorCommandAsync {
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    public void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member member = getMentioned(event);
         if (member == null) {
             member = event.getMember();

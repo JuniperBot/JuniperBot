@@ -16,23 +16,26 @@
  */
 package ru.caramel.juniperbot.web.controller.pub;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
-import net.dv8tion.jda.core.JDA;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.StatusDao;
-import ru.caramel.juniperbot.web.dto.ChartDto;
 import ru.caramel.juniperbot.web.dto.StatusDto;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 public class StatusController extends BasePublicRestController {
@@ -40,57 +43,32 @@ public class StatusController extends BasePublicRestController {
     @Autowired
     private StatusDao statusDao;
 
-    @Autowired
-    private DiscordService discordService;
+    private final CollectorRegistry registry;
 
-    private Supplier<List<ChartDto>> pingCache = Suppliers.memoizeWithExpiration(this::getPing, 5, TimeUnit.SECONDS);
+    public StatusController() {
+        this.registry = CollectorRegistry.defaultRegistry;
+    }
 
-    @RequestMapping("/health")
+    @GetMapping("/health")
     @ResponseBody
     public String getHealth() {
         return "OK";
     }
 
-    @RequestMapping("/status")
+    @GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
+    public ResponseEntity<String> getMetrics(@RequestParam(name = "name[]", required = false) String[] includedParam)
+            throws IOException {
+        Set<String> params = includedParam == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(includedParam));
+        try (Writer writer = new StringWriter()) {
+            TextFormat.write004(writer, this.registry.filteredMetricFamilySamples(params));
+            writer.flush();
+            return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/status")
     @ResponseBody
     public StatusDto get() {
         return statusDao.get();
-    }
-
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
-    @ResponseBody
-    public List<ChartDto> ping() {
-        return pingCache.get();
-    }
-
-    private synchronized List<ChartDto> getPing() {
-        Map<JDA, TimeWindowChart> chartMap = discordService.getPingCharts();
-        if (chartMap == null) {
-            return Collections.emptyList();
-        }
-        List<JDA> shards = new ArrayList<>(discordService.getShardManager().getShards());
-        shards.sort(Comparator.comparingInt(e -> e.getShardInfo().getShardId()));
-        List<ChartDto> result = new ArrayList<>(shards.size());
-        shards.forEach(jda -> {
-            TimeWindowChart chart = chartMap.get(jda);
-            if (chart != null) {
-                ChartDto dto = new ChartDto(String.format(" Shard %s — %s ms", jda.getShardInfo().getShardId() + 1, jda.getPing()));
-                dto.setId(jda.getShardInfo().getShardId());
-                Map<Long, Long> measurements = chart.getMeasurements();
-                if (measurements != null) {
-                    measurements = new LinkedHashMap<>(measurements);
-                    Object[][] data = new Object[measurements.size()][2];
-                    int i = 0;
-                    for (Map.Entry<Long, Long> entry : measurements.entrySet()) {
-                        Object[] part = data[i++];
-                        part[0] = entry.getKey();
-                        part[1] = entry.getValue();
-                    }
-                    dto.setData(data);
-                }
-                result.add(dto);
-            }
-        });
-        return result;
     }
 }

@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
@@ -35,7 +35,7 @@ public class RandCommand extends AbstractCommand {
     private static final Pattern RANGE_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)$");
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         try {
             if (StringUtils.isNumeric(query)) {
                 return showResult(message, 0, Long.parseLong(query));
@@ -57,12 +57,12 @@ public class RandCommand extends AbstractCommand {
         }
 
         String commandKey = messageService.getMessageByLocale("discord.command.rand.key", context.getCommandLocale());
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
-        messageService.onEmbedMessage(message.getChannel(), "discord.command.rand.help", prefix, commandKey);
+        messageService.onEmbedMessage(message.getChannel(), "discord.command.rand.help",
+                context.getConfig().getPrefix(), commandKey);
         return true;
     }
 
-    private boolean showResult(MessageReceivedEvent message, long min, long max) {
+    private boolean showResult(GuildMessageReceivedEvent message, long min, long max) {
         message.getChannel().sendMessage(String.valueOf(RandomUtils.nextLong(min, max + 1))).queue();
         return true;
     }

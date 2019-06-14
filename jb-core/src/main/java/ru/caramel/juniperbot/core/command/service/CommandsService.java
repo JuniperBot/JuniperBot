@@ -16,8 +16,11 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.Command;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.model.CommandSender;
@@ -33,17 +36,17 @@ public interface CommandsService extends CommandSender {
 
     void clear(Guild guild);
 
-    void onMessageReceived(MessageReceivedEvent event);
+    void onMessageReceived(GuildMessageReceivedEvent event);
 
-    boolean sendMessage(MessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
+    boolean sendMessage(GuildMessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
 
     void registerHandler(CommandHandler sender);
 
-    boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, MessageChannel channel);
+    boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, TextChannel channel);
 
-    void resultEmotion(MessageReceivedEvent message, String emoji, String messageCode, Object... args);
+    void resultEmotion(GuildMessageReceivedEvent message, String emoji, String messageCode, Object... args);
 
-    boolean isRestricted(MessageReceivedEvent event, CommandConfig commandConfig);
+    boolean isRestricted(GuildMessageReceivedEvent event, CommandConfig commandConfig);
 
     boolean isRestricted(CommandConfig commandConfig, TextChannel channel);
 

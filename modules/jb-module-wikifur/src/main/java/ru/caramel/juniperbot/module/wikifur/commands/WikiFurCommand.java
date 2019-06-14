@@ -2,7 +2,7 @@ package ru.caramel.juniperbot.module.wikifur.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class WikiFurCommand extends AbstractCommand {
     private ReactionsListener reactionsListener;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         message.getChannel().sendTyping().queue();
         MessageEmbed embed = wikiFurService.renderArticle(content);
         if (embed != null) {
@@ -82,7 +82,7 @@ public class WikiFurCommand extends AbstractCommand {
                     if (index >= 0 && index < finalResult.size() && message.getAuthor().equals(event.getUser())) {
                         messageService.delete(e);
                         SearchResult result = finalResult.get(index);
-                        message.getTextChannel().sendTyping().queue();
+                        message.getChannel().sendTyping().queue();
                         MessageEmbed searchEmbed = wikiFurService.renderArticle(result.getTitle());
                         contextService.withContext(event.getGuild(), () -> {
                             if (searchEmbed == null) {

@@ -36,6 +36,7 @@ import ru.caramel.juniperbot.core.patreon.model.Member;
 import ru.caramel.juniperbot.core.patreon.model.User;
 import ru.caramel.juniperbot.core.patreon.persistence.PatreonUser;
 import ru.caramel.juniperbot.core.patreon.persistence.PatreonUserRepository;
+import ru.caramel.juniperbot.core.support.service.SupportService;
 import ru.caramel.juniperbot.core.utils.PatreonUtils;
 
 import javax.annotation.PostConstruct;
@@ -67,7 +68,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Value("${integrations.patreon.updateEnabled:false}")
     private boolean updateEnabled;
 
-    @Value("${integrations.patreon.updateInterval:3600000}")
+    @Value("${integrations.patreon.updateInterval:600000}")
     private Long updateInterval;
 
     @Autowired
@@ -75,6 +76,9 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     @Autowired
     private PatreonUserRepository repository;
+
+    @Autowired
+    private SupportService supportService;
 
     @Autowired
     @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
@@ -120,6 +124,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             patreonUsers.forEach(e -> e.setActive(false));
             Map<Long, Set<FeatureSet>> featureSets = new HashMap<>();
 
+            Set<String> donators = new HashSet<>();
+
             List<Member> members = creatorApi.fetchAllMembers(campaignId);
             for (Member member : members) {
                 User patron = member.getUser();
@@ -153,12 +159,16 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 patreon.setFeatureSets(getFeatureSets(member));
 
                 featureSets.put(Long.valueOf(patreon.getUserId()), patreon.getFeatureSets());
+                if (member.isActiveAndPaid() && discordUserId != null) {
+                    donators.add(discordUserId);
+                }
             }
 
             this.featureSets.clear();
             this.featureSets.putAll(featureSets);
             repository.saveAll(patreonUsers);
             repository.flush();
+            supportService.grantDonators(donators);
         } catch (Exception e) {
             log.error("Could not update Patreon Pledges", e);
             emergencyService.error("Could not update Patreon Pledges", e);

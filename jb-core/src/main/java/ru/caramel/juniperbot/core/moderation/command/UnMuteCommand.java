@@ -17,28 +17,26 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.mod.unmute.key",
         description = "discord.command.mod.unmute.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
         priority = 35)
 public class UnMuteCommand extends ModeratorCommandAsync {
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
             messageService.onError(event.getChannel(), "discord.command.mod.unmute.mention");
             return;
         }
-        boolean unmuted = moderationService.unmute(event.getMember(), event.getTextChannel(), mentioned);
+        boolean unmuted = moderationService.unmute(event.getMember(), event.getChannel(), mentioned);
         messageService.onEmbedMessage(event.getChannel(), unmuted
                 ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
     }

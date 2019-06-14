@@ -15,7 +15,10 @@
 package ru.caramel.juniperbot.core.event.listeners;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.audit.ActionType;
+import net.dv8tion.jda.core.audit.AuditLogEntry;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -37,6 +40,7 @@ import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @DiscordEvent(priority = 0)
@@ -68,11 +72,34 @@ public class MemberListener extends DiscordEventListener {
         if (event.getUser().isBot() || !event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             return;
         }
-        event.getGuild().getBan(event.getUser()).queue(e -> {
-            getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
-                    .withTargetUser(event.getUser())
-                    .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
-                    .save();
+        event.getGuild().getBan(event.getUser()).queueAfter(2, TimeUnit.SECONDS, e -> {
+            if (event.getGuild().getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+                event.getGuild().getAuditLogs()
+                        .type(ActionType.BAN)
+                        .limit(10)
+                        .queue(a -> {
+                            User moderatorUser = a.stream()
+                                    .filter(u -> Objects.equals(u.getTargetId(), event.getUser().getId()))
+                                    .map(AuditLogEntry::getUser)
+                                    .findFirst()
+                                    .orElse(null);
+                            AuditActionBuilder builder = getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                                    .withTargetUser(event.getUser())
+                                    .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason());
+                            LocalMember moderator = moderatorUser != null ? memberService.get(event.getGuild(), moderatorUser) : null;
+                            if (moderator != null) {
+                                builder.withUser(moderator);
+                            } else {
+                                builder.withUser(moderatorUser);
+                            }
+                            builder.save();
+                        });
+            } else {
+                getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                        .withTargetUser(event.getUser())
+                        .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
+                        .save();
+            }
         });
     }
 

@@ -17,9 +17,8 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
@@ -35,13 +34,12 @@ import java.util.Objects;
 @DiscordCommand(key = "discord.command.mod.warn.key",
         description = "discord.command.mod.warn.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.BAN_MEMBERS},
         priority = 5)
 public class WarnCommand extends ModeratorCommandAsync {
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    public void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
             String warnCommand = messageService.getMessageByLocale("discord.command.mod.warn.key",

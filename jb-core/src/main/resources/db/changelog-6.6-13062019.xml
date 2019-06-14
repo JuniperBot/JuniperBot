@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBotJ.
+
+ JuniperBotJ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBotJ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="6.6-13062019-1" author="caramel">
+        <addColumn tableName="message_template">
+            <column name="timestamp" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.6-13062019-2" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="restore_roles" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.6-13062019-3" author="caramel">
+
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_action_date"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_action_type"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_source_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_target_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_channel_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_action_date"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_action_type"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_source_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_target_user_id"/>
+        <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_channel_id"/>
+
+        <sql>
+            CREATE INDEX idx_audit_action_guild ON public.audit_action(guild_id);
+            CREATE INDEX idx_audit_action_guild_action_date ON public.audit_action(guild_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_action_type ON public.audit_action(guild_id, action_type, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_source_user_id ON public.audit_action(guild_id, source_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_target_user_id ON public.audit_action(guild_id, target_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_guild_channel_id ON public.audit_action(guild_id, channel_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild ON public.audit_action(id, guild_id);
+            CREATE INDEX idx_audit_action_id_guild_action_date ON public.audit_action(id, guild_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_action_type ON public.audit_action(id, guild_id, action_type, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_source_user_id ON public.audit_action(id, guild_id, source_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_target_user_id ON public.audit_action(id, guild_id, target_user_id, action_date DESC);
+            CREATE INDEX idx_audit_action_id_guild_channel_id ON public.audit_action(id, guild_id, channel_id, action_date DESC);
+        </sql>
+
+    </changeSet>
+
+    <changeSet id="6.6-13062019-4" author="caramel">
+        <comment>Индекс для очистки</comment>
+        <sql>
+            CREATE INDEX idx_audit_action_action_date ON public.audit_action(action_date);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -17,7 +17,6 @@
 package ru.caramel.juniperbot.core.command.model;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -31,8 +30,6 @@ public @interface DiscordCommand {
     String key();
 
     String description();
-
-    ChannelType[] source() default {};
 
     Permission[] permissions() default {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
 

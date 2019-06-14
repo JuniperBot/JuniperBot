@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.social.commands;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
@@ -44,7 +44,7 @@ public class PostCommand extends AbstractCommand {
     protected PostService postService;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int count = parseCount(content);
         InstagramProfile profile = instagramService.getRecent();
 

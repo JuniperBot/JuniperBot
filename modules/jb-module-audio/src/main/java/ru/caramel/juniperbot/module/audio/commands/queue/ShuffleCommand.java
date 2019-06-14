@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.queue;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -27,12 +26,11 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
         key = "discord.command.shuffle.key",
         description = "discord.command.shuffle.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 109)
 public class ShuffleCommand extends AudioCommand {
 
     @Override
-    public boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (playerService.shuffle(message.getGuild())) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.queue.shuffle");
         } else {

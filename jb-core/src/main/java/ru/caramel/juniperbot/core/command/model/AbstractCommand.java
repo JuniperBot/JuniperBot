@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.core.command.model;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,32 +63,34 @@ public abstract class AbstractCommand implements Command {
 
     private AuditService auditService;
 
+    private DiscordCommand annotation;
+
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
         return true;
     }
 
-    protected boolean ok(MessageReceivedEvent message) {
+    protected boolean ok(GuildMessageReceivedEvent message) {
         commandsService.resultEmotion(message, "✅", null);
         return true;
     }
 
-    protected boolean fail(MessageReceivedEvent message) {
+    protected boolean fail(GuildMessageReceivedEvent message) {
         commandsService.resultEmotion(message, "❌", null);
         return false;
     }
 
-    protected boolean ok(MessageReceivedEvent message, String messageCode, Object... args) {
+    protected boolean ok(GuildMessageReceivedEvent message, String messageCode, Object... args) {
         commandsService.resultEmotion(message, "✅", messageCode, args);
         return true;
     }
 
-    protected boolean fail(MessageReceivedEvent message, String messageCode, Object... args) {
+    protected boolean fail(GuildMessageReceivedEvent message, String messageCode, Object... args) {
         commandsService.resultEmotion(message, "❌", messageCode, args);
         return false;
     }
 
-    protected Member getMentioned(MessageReceivedEvent event) {
+    protected Member getMentioned(GuildMessageReceivedEvent event) {
         if (event.getGuild() == null || CollectionUtils.isEmpty(event.getMessage().getMentionedMembers())) {
             return null;
         }
@@ -112,5 +114,17 @@ public abstract class AbstractCommand implements Command {
             auditService = applicationContext.getBean(AuditService.class);
         }
         return auditService;
+    }
+
+    @Override
+    public DiscordCommand getAnnotation() {
+        if (annotation == null) {
+            synchronized (this) {
+                if (annotation == null) {
+                    annotation = getClass().getDeclaredAnnotation(DiscordCommand.class);
+                }
+            }
+        }
+        return annotation;
     }
 }

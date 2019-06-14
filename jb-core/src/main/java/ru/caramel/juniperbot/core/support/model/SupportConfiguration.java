@@ -14,35 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.metrics.model;
+package ru.caramel.juniperbot.core.support.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import net.dv8tion.jda.core.JDA;
-
-import java.io.Serializable;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
-@ToString
-public class ProviderStats implements Serializable {
-    private static final long serialVersionUID = 7184615746356909641L;
+@Component
+@ConfigurationProperties("discord.support")
+public class SupportConfiguration {
 
-    @JsonProperty("server_count")
-    private long serverCount;
+    private Long guildId;
+    private Long donatorRoleId;
 
-    @JsonProperty("shard_id")
-    private int shardId;
-
-    @JsonProperty("shard_count")
-    private int shardTotal;
-
-    public ProviderStats(JDA shard) {
-        JDA.ShardInfo info = shard.getShardInfo();
-        shardId = info.getShardId();
-        shardTotal = info.getShardTotal();
-        serverCount = shard.getGuildCache().size();
-    }
 }

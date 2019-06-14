@@ -20,7 +20,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +57,7 @@ public abstract class AbstractPhotoCommand extends AbstractCommandAsync {
     }
 
     @Override
-    public void doCommandAsync(MessageReceivedEvent message, BotContext context, String query) {
+    public void doCommandAsync(GuildMessageReceivedEvent message, BotContext context, String query) {
         try {
             message.getChannel().sendTyping().queue();
             RandomPhotoResponse response = photoResult.get();

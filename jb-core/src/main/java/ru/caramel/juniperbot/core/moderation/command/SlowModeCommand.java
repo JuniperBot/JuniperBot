@@ -17,9 +17,8 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -27,14 +26,13 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 @DiscordCommand(key = "discord.command.mod.slow.key",
         description = "discord.command.mod.slow.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_MANAGE},
         priority = 40)
 public class SlowModeCommand extends ModeratorCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
-        TextChannel channel = event.getTextChannel();
+    public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String query) {
+        TextChannel channel = event.getChannel();
         if (!StringUtils.isNumeric(query)) {
             return showHelp(channel, context);
         }

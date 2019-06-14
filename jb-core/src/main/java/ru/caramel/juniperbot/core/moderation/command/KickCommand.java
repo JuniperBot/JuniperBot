@@ -17,9 +17,8 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
@@ -28,13 +27,12 @@ import java.util.Objects;
 @DiscordCommand(key = "discord.command.mod.kick.key",
         description = "discord.command.mod.kick.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.KICK_MEMBERS},
         priority = 20)
 public class KickCommand extends ModeratorCommand {
 
     @Override
-    public boolean doCommand(MessageReceivedEvent event, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (mentioned == null) {
             String kickCommand = messageService.getMessageByLocale("discord.command.mod.kick.key",

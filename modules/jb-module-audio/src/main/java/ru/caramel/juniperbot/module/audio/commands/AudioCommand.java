@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.audio.commands;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -43,10 +43,10 @@ public abstract class AudioCommand extends AbstractCommand {
     @Autowired
     protected AudioMessageManager messageManager;
 
-    protected abstract boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException;
+    protected abstract boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         Member member = message.getMember();
         if (member == null) {
             return false;

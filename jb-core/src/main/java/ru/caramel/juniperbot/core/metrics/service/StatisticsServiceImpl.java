@@ -32,14 +32,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import ru.caramel.juniperbot.core.metrics.model.DiscordBotsGgStats;
 import ru.caramel.juniperbot.core.metrics.model.PersistentMetric;
-import ru.caramel.juniperbot.core.metrics.model.ProviderStats;
+import ru.caramel.juniperbot.core.metrics.model.DiscordBotsOrgStats;
 import ru.caramel.juniperbot.core.metrics.model.TimeWindowChart;
 import ru.caramel.juniperbot.core.metrics.persistence.StoredMetric;
 import ru.caramel.juniperbot.core.metrics.persistence.StoredMetricRepository;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +55,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private static final String ORG_ENDPOINT = "https://discordbots.org/api/bots/{clientId}/stats";
 
-    private static final String PW_ENDPOINT = "https://bots.discord.pw/api/bots/{clientId}/stats";
+    private static final String GG_ENDPOINT = "https://discord.bots.gg/api/v1/bots/{clientId}/stats";
 
     private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
@@ -63,8 +65,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Value("${discord.stats.discordbotsOrgToken:}")
     private String orgToken;
 
-    @Value("${discord.stats.botsDiscordPwToken:}")
-    private String pwToken;
+    @Value("${discord.stats.discordbotsGgToken:}")
+    private String ggToken;
 
     @Getter
     @Setter
@@ -114,19 +116,18 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     @Async
     public void notifyProviders(JDA shard) {
-        ProviderStats stats = new ProviderStats(shard);
-        notifyProvider(stats, ORG_ENDPOINT, orgToken);
-        notifyProvider(stats, PW_ENDPOINT, pwToken);
+        notifyProvider(new DiscordBotsOrgStats(shard), ORG_ENDPOINT, orgToken);
+        notifyProvider(new DiscordBotsGgStats(shard), GG_ENDPOINT, ggToken);
     }
 
-    private void notifyProvider(ProviderStats stats, String endPoint, String token) {
+    private void notifyProvider(Serializable stats, String endPoint, String token) {
         if (StringUtils.isEmpty(token)) {
             return;
         }
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", token);
-            HttpEntity<ProviderStats> request = new HttpEntity<>(stats, headers);
+            HttpEntity<Serializable> request = new HttpEntity<>(stats, headers);
             ResponseEntity<String> response = restTemplate.exchange(endPoint, HttpMethod.POST, request, String.class, clientId);
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
                 log.warn("Could not report stats {} to endpoint {}: response is {}", stats, endPoint,

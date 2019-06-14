@@ -17,9 +17,8 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
@@ -31,7 +30,6 @@ import java.util.regex.Pattern;
 @DiscordCommand(key = "discord.command.mod.mute.key",
         description = "discord.command.mod.mute.desc",
         group = "discord.command.group.moderation",
-        source = ChannelType.TEXT,
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
         priority = 30)
 public class MuteCommand extends ModeratorCommandAsync {
@@ -39,7 +37,7 @@ public class MuteCommand extends ModeratorCommandAsync {
     private static final String COMMAND_PATTERN = "^(\\d+\\s*)?(%s\\s*)?(.*)$";
 
     @Override
-    protected void doCommandAsync(MessageReceivedEvent event, BotContext context, String query) {
+    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
             return; // do not allow to mute moderators
@@ -71,13 +69,13 @@ public class MuteCommand extends ModeratorCommandAsync {
             }
         }
         boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
-        boolean muted = moderationService.mute(event.getMember(), event.getTextChannel(), mentioned, global, duration,
+        boolean muted = moderationService.mute(event.getMember(), event.getChannel(), mentioned, global, duration,
                 m.group(3));
         messageService.onEmbedMessage(event.getChannel(), muted
                 ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
     }
 
-    private void help(MessageReceivedEvent event, BotContext context, String globalKeyWord) {
+    private void help(GuildMessageReceivedEvent event, BotContext context, String globalKeyWord) {
         String muteCommand = messageService.getMessageByLocale("discord.command.mod.mute.key",
                 context.getCommandLocale());
         messageService.onEmbedMessage(event.getChannel(),

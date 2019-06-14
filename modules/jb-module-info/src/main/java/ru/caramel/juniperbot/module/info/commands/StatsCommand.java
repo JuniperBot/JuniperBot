@@ -19,13 +19,13 @@ package ru.caramel.juniperbot.module.info.commands;
 import com.codahale.metrics.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 
 import java.util.Date;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class StatsCommand extends AbstractInfoCommand {
     private MetricRegistry metricRegistry;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setTitle(messageService.getMessage("discord.command.stats.title"));
         builder.setThumbnail(brandingService.getSmallAvatarUrl());
@@ -57,10 +57,10 @@ public class StatsCommand extends AbstractInfoCommand {
 
     private MessageEmbed.Field getCommonStats(Map<String, Metric> metricMap) {
         String value =
-                getGaugeValue(metricMap, DiscordService.GAUGE_GUILDS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_USERS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_TEXT_CHANNELS) + "\n" +
-                        getGaugeValue(metricMap, DiscordService.GAUGE_PING) + "\n" +
+                getGaugeValue(metricMap, DiscordMetricsRegistry.GAUGE_GUILDS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsRegistry.GAUGE_USERS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsRegistry.GAUGE_TEXT_CHANNELS) + "\n" +
+                        getGaugeValue(metricMap, DiscordMetricsRegistry.GAUGE_PING) + "\n" +
                         getGaugeValue(metricMap, "player.activeConnections") + "\n";
         return new MessageEmbed.Field(messageService.getMessage("discord.command.stats.common"), value, true);
     }

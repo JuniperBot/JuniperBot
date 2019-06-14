@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -79,5 +81,8 @@ public class MessageTemplateDto implements Serializable {
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
     public String footerIconUrl;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    public Date timestamp;
 
 }

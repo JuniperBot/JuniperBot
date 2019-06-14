@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -55,7 +55,7 @@ public class InfoCommand extends AbstractInfoCommand {
     private DateTime buildTimestamp;
 
     @Override
-    public boolean doCommand(MessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
         String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
 
         EmbedBuilder builder = messageService.getBaseEmbed(true);

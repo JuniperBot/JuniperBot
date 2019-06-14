@@ -23,8 +23,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.goldrenard.jb.configuration.BotConfiguration;
 import org.goldrenard.jb.core.Bot;
@@ -107,17 +110,16 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
     }
 
     @Override
-    public boolean handleMessage(MessageReceivedEvent event) {
+    public boolean handleMessage(GuildMessageReceivedEvent event) {
         if (!enabled || StringUtils.isEmpty(path) || event.getAuthor() == null || event.getGuild() == null) {
             return false;
         }
 
         GuildConfig config = configService.get(event.getGuild());
-        if (event.getChannelType() != ChannelType.TEXT
-                || config == null
+        if (config == null
                 || !config.isAssistantEnabled()
                 || !event.getMessage().isMentioned(event.getJDA().getSelfUser())
-                || !event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_WRITE)) {
+                || !event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_WRITE)) {
             return false;
         }
         String content = event.getMessage().getContentRaw().trim();
@@ -151,7 +153,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
         return false;
     }
 
-    private Request createRequest(MessageReceivedEvent event, String input) {
+    private Request createRequest(GuildMessageReceivedEvent event, String input) {
         Request.RequestBuilder builder = Request.builder()
                 .input(input)
                 .attribute("dMessageEvent", event)
@@ -173,8 +175,8 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
                     .attribute("dGuildOwnerName", guild.getOwner().getEffectiveName());
         }
 
-        if (event.getTextChannel() != null) {
-            TextChannel channel = event.getTextChannel();
+        if (event.getChannel() != null) {
+            TextChannel channel = event.getChannel();
             builder.attribute("dChannelName", channel.getName());
         }
         return builder.build();

@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
+import ru.caramel.juniperbot.core.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
@@ -60,5 +61,13 @@ public class CustomController extends BaseRestController {
     public void save(@GuildId @PathVariable long guildId,
                      @RequestBody @Validated List<CustomCommandDto> dtos) {
         commandsDao.save(dtos, guildId);
+    }
+
+    @RequestMapping(value = "/custom/{guildId}/config", method = RequestMethod.POST)
+    public void save(@GuildId @PathVariable long guildId,
+                     @RequestBody CustomCommandDto commandDto) {
+        if (!commandsDao.saveConfig(commandDto, guildId)) {
+            throw new NotFoundException();
+        }
     }
 }

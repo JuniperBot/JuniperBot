@@ -146,6 +146,7 @@ public interface ApiMapperService {
 
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getJoinRoles()))", target = "joinRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRestoreRoles()))", target = "restoreRoles"),
     })
     WelcomeDto getWelcomeDto(WelcomeMessage source);
 
@@ -157,6 +158,7 @@ public interface ApiMapperService {
             @Mapping(target = "joinDmTemplate", ignore = true),
             @Mapping(target = "leaveTemplate", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRestoreRoles()))", target = "restoreRoles"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
 

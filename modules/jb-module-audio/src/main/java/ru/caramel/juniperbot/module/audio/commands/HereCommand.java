@@ -16,8 +16,11 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
@@ -28,18 +31,17 @@ import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
         key = "discord.command.here.key",
         description = "discord.command.here.desc",
         group = "discord.command.group.music",
-        source = ChannelType.TEXT,
         priority = 104)
 public class HereCommand extends AudioCommand {
 
     @Override
-    protected boolean doInternal(MessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         if (!message.getMember().getVoiceState().inVoiceChannel()) {
-            messageService.onError(message.getTextChannel(), "discord.command.here.notInChannel");
+            messageService.onError(message.getChannel(), "discord.command.here.notInChannel");
             return fail(message);
         }
         if (!playerService.isActive(message.getGuild())) {
-            messageService.onError(message.getTextChannel(), "discord.command.audio.notStarted");
+            messageService.onError(message.getChannel(), "discord.command.audio.notStarted");
             return fail(message);
         }
         PlaybackInstance instance = playerService.getInstance(message.getGuild());

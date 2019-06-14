@@ -17,9 +17,15 @@
 package ru.caramel.juniperbot.core.audit.persistence;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
 
+import java.util.Date;
+
 @Repository
 public interface AuditActionRepository extends GuildRepository<AuditAction>, JpaSpecificationExecutor<AuditAction> {
+
+    @Modifying
+    void deleteByActionDateBefore(Date expiryDate);
 }
