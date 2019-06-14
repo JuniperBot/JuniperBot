@@ -33,7 +33,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="6.6-13062019-3" author="caramel">
+    <!--<changeSet id="6.6-13062019-3" author="caramel">
 
         <dropIndex tableName="audit_action" indexName="idx_audit_action_guild_id"/>
         <dropIndex tableName="audit_action" indexName="idx_audit_action_action_date"/>
@@ -69,6 +69,6 @@
         <sql>
             CREATE INDEX idx_audit_action_action_date ON public.audit_action(action_date);
         </sql>
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>
