@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.security.auth;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,10 +69,12 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
     }
 
     @Override
+    @Synchronized
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         TokenRequestDto requestDto = gson.fromJson(request.getReader(), TokenRequestDto.class);
 
-        OAuth2RestTemplate restTemplate = createRestTemplate();
+        OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);
+        restTemplate.setAccessTokenProvider(tokenProvider);
 
         if (requestDto.getCode() != null) {
             AccessTokenRequest tokenRequest = restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
@@ -97,12 +100,6 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
         } catch (InvalidTokenException e) {
             throw new BadCredentialsException("Could not obtain user details from token", e);
         }
-    }
-
-    private OAuth2RestTemplate createRestTemplate() {
-        OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);
-        restTemplate.setAccessTokenProvider(tokenProvider);
-        return restTemplate;
     }
 
     private static class NoopAuthenticationManager implements AuthenticationManager {
