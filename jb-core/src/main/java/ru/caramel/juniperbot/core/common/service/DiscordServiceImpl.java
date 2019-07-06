@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
+import com.neovisionaries.ws.client.WebSocketFrame;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
@@ -23,11 +24,13 @@ import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.requests.CloseCode;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
@@ -151,6 +154,20 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Override
     public void onException(ExceptionEvent event) {
         log.error("JDA error", event.getCause());
+    }
+
+    @Override
+    public void onDisconnect(DisconnectEvent event) {
+        WebSocketFrame serverCloseFrame = event.getServiceCloseFrame();
+        if (serverCloseFrame == null) {
+            return;
+        }
+        final int rawCloseCode = serverCloseFrame.getCloseCode();
+        final String rawCloseReason = serverCloseFrame.getCloseReason();
+        final CloseCode closeCode = CloseCode.from(rawCloseCode);
+        if (closeCode == null && rawCloseReason != null) {
+            log.warn("WebSocket connection closed with code {}: {}", rawCloseCode, rawCloseReason);
+        }
     }
 
     @Override
