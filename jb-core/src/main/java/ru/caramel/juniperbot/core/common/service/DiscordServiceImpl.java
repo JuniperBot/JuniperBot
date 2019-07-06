@@ -158,15 +158,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void onDisconnect(DisconnectEvent event) {
-        WebSocketFrame serverCloseFrame = event.getServiceCloseFrame();
-        if (serverCloseFrame == null) {
-            return;
-        }
-        final int rawCloseCode = serverCloseFrame.getCloseCode();
-        final String rawCloseReason = serverCloseFrame.getCloseReason();
-        final CloseCode closeCode = CloseCode.from(rawCloseCode);
-        if (closeCode == null && rawCloseReason != null) {
-            log.warn("WebSocket connection closed with code {}: {}", rawCloseCode, rawCloseReason);
+        WebSocketFrame frame = event.getServiceCloseFrame();
+        if (frame != null) {
+            log.warn("WebSocket connection closed with code {}: {}", frame.getCloseCode(), frame.getCloseReason());
         }
     }
 
