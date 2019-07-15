@@ -55,7 +55,7 @@
         </encoder>
     </appender>
 
-    <appender name="WEBSOCKET" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--<appender name="WEBSOCKET" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/websocket.log</file>
         <filter class="ru.caramel.juniperbot.web.common.DebugFilter"/>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -66,7 +66,7 @@
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
-    </appender>
+    </appender>-->
 
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
@@ -93,9 +93,9 @@
     </logger>
 
     <!-- for debugging purposes -->
-    <logger name="net.dv8tion.jda.core.requests.WebSocketClient" level="TRACE" additivity="false">
+    <!--<logger name="net.dv8tion.jda.core.requests.WebSocketClient" level="TRACE" additivity="false">
         <appender-ref ref="WEBSOCKET" />
-    </logger>
+    </logger>-->
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
