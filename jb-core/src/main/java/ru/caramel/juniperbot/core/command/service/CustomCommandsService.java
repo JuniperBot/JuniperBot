@@ -16,8 +16,7 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.model.CommandSender;
 
-public interface CustomCommandsService extends CommandSender, CommandHandler {
+public interface CustomCommandsService extends CommandSender {
 }

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.Command;
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.model.CommandSender;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 
@@ -36,11 +35,7 @@ public interface CommandsService extends CommandSender {
 
     void clear(Guild guild);
 
-    void onMessageReceived(GuildMessageReceivedEvent event);
-
     boolean sendMessage(GuildMessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
-
-    void registerHandler(CommandHandler sender);
 
     boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, TextChannel channel);
 

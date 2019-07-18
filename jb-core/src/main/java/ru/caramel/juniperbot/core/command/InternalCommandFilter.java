@@ -17,26 +17,35 @@
 package ru.caramel.juniperbot.core.command;
 
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.event.intercept.Filter;
 import ru.caramel.juniperbot.core.event.intercept.FilterChain;
+
+import java.util.List;
 
 @Component
 @Slf4j
 public class InternalCommandFilter implements Filter<GuildMessageReceivedEvent> {
 
     @Autowired
-    private CommandsService commandsService;
+    private List<CommandHandler> handlers;
 
     @Override
     public void doFilter(GuildMessageReceivedEvent event, FilterChain<GuildMessageReceivedEvent> chain) {
-        try {
-            commandsService.onMessageReceived(event);
-        } catch (Throwable e) {
-            log.warn("Could not filter command");
+        if (!event.getAuthor().isBot() && event.getMessage().getType() == MessageType.DEFAULT) {
+            for (CommandHandler handler : handlers) {
+                try {
+                    if (handler.handleMessage(event)) {
+                        break;
+                    }
+                } catch (Throwable e) {
+                    log.warn("Could not handle command", e);
+                }
+            }
         }
         chain.doFilter(event);
     }

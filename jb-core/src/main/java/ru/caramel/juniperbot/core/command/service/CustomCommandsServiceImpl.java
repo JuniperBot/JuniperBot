@@ -19,8 +19,10 @@ package ru.caramel.juniperbot.core.command.service;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
 import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
@@ -36,8 +38,9 @@ import ru.caramel.juniperbot.core.utils.DiscordUtils;
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 
+@Order(10)
 @Service
-public class CustomCommandsServiceImpl implements CustomCommandsService {
+public class CustomCommandsServiceImpl implements CustomCommandsService, CommandHandler {
 
     @Autowired
     private CommandsService commandsService;
@@ -56,11 +59,6 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
 
     @Autowired
     private ModerationService moderationService;
-
-    @PostConstruct
-    public void init() {
-        commandsService.registerHandler(this);
-    }
 
     @Override
     public boolean handleMessage(GuildMessageReceivedEvent event) {
@@ -127,10 +125,5 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public int getPriority() {
-        return 1;
     }
 }

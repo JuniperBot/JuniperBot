@@ -35,6 +35,7 @@ import org.goldrenard.jb.core.Chat;
 import org.goldrenard.jb.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.service.CommandsService;
@@ -49,6 +50,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Order
 @Service
 public class AimlServiceImpl implements AimlService, CommandHandler {
 
@@ -75,11 +77,6 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Autowired
     private ContextService contextService;
-
-    @PostConstruct
-    public void init() {
-        commandsService.registerHandler(this);
-    }
 
     private Bot createBot(String name) {
         return bots.computeIfAbsent(name, e -> {
@@ -180,10 +177,5 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             builder.attribute("dChannelName", channel.getName());
         }
         return builder.build();
-    }
-
-    @Override
-    public int getPriority() {
-        return Integer.MAX_VALUE;
     }
 }

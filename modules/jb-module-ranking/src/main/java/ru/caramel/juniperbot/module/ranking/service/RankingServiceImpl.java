@@ -349,7 +349,11 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         synchronized (calculateQueue) {
             Set<Long> queue = new HashSet<>(calculateQueue);
             calculateQueue.clear();
+            final long start = System.currentTimeMillis();
+            log.info("Ranking positions calculation started for {} guilds", queue.size());
             queue.forEach(rankingRepository::recalculateRank);
+            log.info("Ranking positions calculation finished for {} guilds in {} ms", queue.size(),
+                    System.currentTimeMillis() - start);
         }
     }
 

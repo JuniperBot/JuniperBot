@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
@@ -32,6 +33,8 @@ import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+
+import java.util.Objects;
 
 @DiscordEvent
 public class GuildAudioListener extends DiscordEventListener {
@@ -48,6 +51,14 @@ public class GuildAudioListener extends DiscordEventListener {
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
         playerService.stop(null, event.getGuild());
+    }
+
+    @Override
+    public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {
+        if (playerService.isActive(event.getGuild()) &&
+                Objects.equals(event.getChannel(), playerService.getConnectedChannel(event.getGuild()))) {
+            playerService.stop(null, event.getGuild());
+        }
     }
 
     @Override

@@ -18,11 +18,16 @@ package ru.caramel.juniperbot.core.command.model;
 
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+/**
+ * A command handler interface.
+ * All implementation must have {@link org.springframework.core.annotation.Order} annotation to handle orders
+ */
 public interface CommandHandler {
 
+    /**
+     * Handle message as command
+     * @param event Message event
+     * @return True if this event was handled
+     */
     boolean handleMessage(GuildMessageReceivedEvent event);
-
-    default int getPriority() {
-        return 0;
-    }
 }

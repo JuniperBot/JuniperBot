@@ -21,7 +21,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -32,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.command.model.*;
@@ -57,8 +57,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
+@Order(0)
 @Service
-public class CommandsServiceImpl implements CommandsService {
+public class CommandsServiceImpl implements CommandsService, CommandHandler {
 
     @Autowired
     private ConfigService configService;
@@ -94,8 +95,6 @@ public class CommandsServiceImpl implements CommandsService {
 
     private Counter counter;
 
-    private Set<CommandHandler> handlers = new TreeSet<>(Comparator.comparingInt(CommandHandler::getPriority));
-
     @PostConstruct
     public void init() {
         executions = statisticsService.getMeter(EXECUTIONS_METER);
@@ -109,17 +108,8 @@ public class CommandsServiceImpl implements CommandsService {
 
     @Override
     @Transactional
-    public void onMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
-            return;
-        }
-        if (!sendMessage(event, this, commandsHolderService::isAnyCommand)) {
-            for (CommandHandler handler : handlers) {
-                if (handler.handleMessage(event)) {
-                    break;
-                }
-            }
-        }
+    public boolean handleMessage(GuildMessageReceivedEvent event) {
+        return sendMessage(event, this, commandsHolderService::isAnyCommand);
     }
 
     @Override
@@ -169,12 +159,6 @@ public class CommandsServiceImpl implements CommandsService {
     }
 
     @Override
-    @Synchronized
-    public void registerHandler(CommandHandler handler) {
-        handlers.add(handler);
-    }
-
-    @Override
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig guildConfig) {
         TextChannel channel = event.getChannel();
         String locale = guildConfig != null ? guildConfig.getCommandLocale() : null;
@@ -215,7 +199,7 @@ public class CommandsServiceImpl implements CommandsService {
 
         statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
             try {
-                log.info("Invoke command {} for userId={}, guildId={}",
+                log.debug("Invoke command {} for userId={}, guildId={}",
                         command.getClass().getSimpleName(),
                         event.getAuthor() != null ? event.getAuthor().getId() : null,
                         event.getGuild() != null ? event.getGuild().getId() : null);
