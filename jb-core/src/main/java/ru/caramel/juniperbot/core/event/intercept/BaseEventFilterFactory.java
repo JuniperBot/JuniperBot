@@ -24,7 +24,7 @@ import java.util.List;
 
 public abstract class BaseEventFilterFactory<T extends Event> implements EventFilterFactory<T> {
 
-    private final ThreadLocal<FilterChain<T>> chains = new ThreadLocal<>();
+    private final ThreadLocal<FilterChainImpl<T>> chains = new ThreadLocal<>();
 
     @Autowired
     private List<Filter<T>> filterList;
@@ -37,19 +37,12 @@ public abstract class BaseEventFilterFactory<T extends Event> implements EventFi
         if (CollectionUtils.isEmpty(filterList)) {
             return null;
         }
-        FilterChain<T> chain = chains.get();
+        FilterChainImpl<T> chain = chains.get();
         if (chain == null) {
-            chain = createInternal(event);
+            chain = new FilterChainImpl<T>(filterList);
             chains.set(chain);
         }
         chain.reset();
-        return chain;
-    }
-
-    private FilterChain<T> createInternal(Event event) {
-        FilterChainImpl<T> chain = new FilterChainImpl<>();
-        // TODO sort chains on order
-        filterList.forEach(chain::addFilter);
         return chain;
     }
 }

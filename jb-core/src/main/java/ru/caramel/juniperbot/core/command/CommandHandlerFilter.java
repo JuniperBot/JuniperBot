@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.command.service.CommandHandler;
@@ -29,6 +30,7 @@ import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 import java.util.List;
 
 @Slf4j
+@Order(Filter.HANDLE_FILTER)
 @Component
 public class CommandHandlerFilter implements Filter<GuildMessageReceivedEvent> {
 

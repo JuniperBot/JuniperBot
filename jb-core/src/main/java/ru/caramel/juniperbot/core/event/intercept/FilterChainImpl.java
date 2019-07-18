@@ -16,13 +16,20 @@
  */
 package ru.caramel.juniperbot.core.event.intercept;
 
+import lombok.NonNull;
 import net.dv8tion.jda.core.events.Event;
+
+import java.util.Collection;
 
 public class FilterChainImpl<T extends Event> implements FilterChain<T> {
 
     private static final int INCREMENT = 10;
 
     private Filter[] filters = new Filter[0];
+
+    public FilterChainImpl(@NonNull Collection<Filter<T>> filters) {
+        filters.forEach(this::addFilter);
+    }
 
     /**
      * The int which is used to maintain the current position

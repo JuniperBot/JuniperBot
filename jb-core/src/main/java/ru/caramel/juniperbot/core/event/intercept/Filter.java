@@ -21,10 +21,27 @@ import net.dv8tion.jda.core.events.Event;
 /**
  * A filter is an object that performs filtering tasks Discord events
  * <br>
- * Filters perform filtering in the <code>doFilter</code> method.
+ * All implementation must have {@link org.springframework.core.annotation.Order} annotation to handle chain order
+ * @see Filter.PRE_FILTER
+ * @see Filter.HANDLE_FILTER
+ * @see Filter.POST_FILTER
  */
 public interface Filter<T extends Event> {
 
+    /**
+     * Pre-stage for various permission checks, common filters, etc
+     */
+    int PRE_FILTER = 0;
+
+    /**
+     * Common handling stage
+     */
+    int HANDLE_FILTER = 1001;
+
+    /**
+     * Post-stage
+     */
+    int POST_FILTER = 1001;
 
     /**
      * The <code>doFilter</code> method of the Filter is called by the event
