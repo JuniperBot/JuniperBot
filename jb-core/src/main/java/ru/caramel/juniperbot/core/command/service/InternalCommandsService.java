@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import ru.caramel.juniperbot.core.command.model.Command;
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 
 public interface InternalCommandsService extends CommandsService, CommandHandler {

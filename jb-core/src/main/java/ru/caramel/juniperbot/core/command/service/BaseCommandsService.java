@@ -28,7 +28,6 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.command.model.CoolDownHolder;
 import ru.caramel.juniperbot.core.command.model.CoolDownMode;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;

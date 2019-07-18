@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.command.model;
+package ru.caramel.juniperbot.core.command.service;
 
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 

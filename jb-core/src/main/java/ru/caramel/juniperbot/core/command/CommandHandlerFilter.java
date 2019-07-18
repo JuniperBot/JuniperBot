@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
+import ru.caramel.juniperbot.core.command.service.CommandHandler;
 import ru.caramel.juniperbot.core.event.intercept.Filter;
 import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 

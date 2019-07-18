@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
+import ru.caramel.juniperbot.core.command.service.CommandHandler;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
