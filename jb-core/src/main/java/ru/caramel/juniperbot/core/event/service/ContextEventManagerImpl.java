@@ -22,24 +22,29 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
+import ru.caramel.juniperbot.core.event.intercept.EventFilterFactory;
+import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.core.support.RequestScopedCacheManager;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 public class ContextEventManagerImpl implements JbEventManager {
 
     private final List<EventListener> listeners = new ArrayList<>();
+
+    private final Map<Class<?>, EventFilterFactory<?>> filterFactoryMap = new ConcurrentHashMap<>();
 
     @Getter
     @Setter
@@ -48,9 +53,6 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     @Autowired
     private ContextService contextService;
-
-    @Autowired
-    private CommandsService commandsService;
 
     @Autowired
     @Qualifier(RequestScopedCacheManager.NAME)
@@ -88,19 +90,32 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     private void loopListeners(Event event) {
         if (event instanceof GuildMessageReceivedEvent) {
-            try {
-                commandsService.onMessageReceived((GuildMessageReceivedEvent) event);
-            } catch (Exception e) {
-                log.error("Could not process command", e);
-            }
+            dispatchChain(GuildMessageReceivedEvent.class, (GuildMessageReceivedEvent) event);
         }
-
         for (EventListener listener : listeners) {
             try {
                 listener.onEvent(event);
             } catch (Throwable throwable) {
                 log.error("One of the EventListeners had an uncaught exception", throwable);
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Event> void dispatchChain(Class<T> type, T event) {
+        EventFilterFactory<T> factory = (EventFilterFactory<T>) filterFactoryMap.get(type);
+        if (factory == null) {
+            return;
+        }
+        FilterChain<T> chain = factory.createChain(event);
+        if (chain == null) {
+            return;
+        }
+
+        try {
+            chain.doFilter(event);
+        } catch (Exception e) {
+            log.error("Could not process filter chain", e);
         }
     }
 
@@ -132,6 +147,13 @@ public class ContextEventManagerImpl implements JbEventManager {
     @Autowired
     public void registerContext(List<DiscordEventListener> listeners) {
         registerListeners(listeners);
+    }
+
+    @Autowired
+    public void registerFilterFactories(List<EventFilterFactory> factories) {
+        if (CollectionUtils.isNotEmpty(factories)) {
+            factories.forEach(e -> filterFactoryMap.putIfAbsent(e.getType(), e));
+        }
     }
 
     private void registerListeners(List<? extends EventListener> listeners) {
