@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import org.springframework.context.ApplicationContext;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.command.service.InternalCommandsService;
 import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
@@ -97,7 +97,7 @@ public class MessageController {
 
     private final MusicConfigService musicConfigService;
 
-    private final CommandsService commandsService;
+    private final InternalCommandsService commandsService;
 
     private boolean cancelled = false;
 
@@ -113,7 +113,7 @@ public class MessageController {
         this.messageManager = context.getBean(AudioMessageManager.class);
         this.contextService = context.getBean(ContextService.class);
         this.musicConfigService = context.getBean(MusicConfigService.class);
-        this.commandsService = context.getBean(CommandsService.class);
+        this.commandsService = context.getBean(InternalCommandsService.class);
         this.messageService = context.getBean(MessageService.class);
         init(message);
     }

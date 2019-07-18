@@ -31,7 +31,6 @@ import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
 import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
 import ru.caramel.juniperbot.core.command.service.CommandConfigService;
 import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,9 +49,6 @@ public class HelpCommand extends AbstractCommand {
 
     @Autowired
     private CommandsHolderService holderService;
-
-    @Autowired
-    private CommandsService commandsService;
 
     @Autowired
     private CommandConfigService commandConfigService;

@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
@@ -41,7 +41,7 @@ public class GuildListener extends DiscordEventListener {
     private ContextService contextService;
 
     @Autowired
-    private CommandsService commandsService;
+    private CommandsHolderService holderService;
 
     @Autowired
     private MessageService messageService;
@@ -66,7 +66,7 @@ public class GuildListener extends DiscordEventListener {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        commandsService.clear(event.getGuild());
+        holderService.clear(event.getGuild());
     }
 
     private void sendWelcome(GuildJoinEvent event) {

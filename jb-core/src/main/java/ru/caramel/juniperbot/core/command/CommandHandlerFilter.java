@@ -21,20 +21,22 @@ import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
 import ru.caramel.juniperbot.core.event.intercept.Filter;
 import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 
 import java.util.List;
 
-@Component
 @Slf4j
-public class InternalCommandFilter implements Filter<GuildMessageReceivedEvent> {
+@Component
+public class CommandHandlerFilter implements Filter<GuildMessageReceivedEvent> {
 
     @Autowired
     private List<CommandHandler> handlers;
 
     @Override
+    @Transactional
     public void doFilter(GuildMessageReceivedEvent event, FilterChain<GuildMessageReceivedEvent> chain) {
         if (!event.getAuthor().isBot() && event.getMessage().getType() == MessageType.DEFAULT) {
             for (CommandHandler handler : handlers) {

@@ -16,7 +16,21 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import ru.caramel.juniperbot.core.command.model.CommandSender;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import ru.caramel.juniperbot.core.command.model.Command;
+import ru.caramel.juniperbot.core.command.model.CommandHandler;
+import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 
-public interface CustomCommandsService extends CommandSender {
+public interface InternalCommandsService extends CommandsService, CommandHandler {
+
+    String EXECUTIONS_METER = "commands.executions.rate";
+
+    String EXECUTIONS_COUNTER = "commands.executions.persist";
+
+    boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, TextChannel channel);
+
+    boolean isRestricted(String rawKey, TextChannel channel, Member member);
+
 }

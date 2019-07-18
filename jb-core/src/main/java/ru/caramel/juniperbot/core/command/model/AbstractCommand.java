@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.audit.service.AuditService;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.command.service.InternalCommandsService;
 import ru.caramel.juniperbot.core.common.service.BrandingService;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
@@ -50,7 +50,7 @@ public abstract class AbstractCommand implements Command {
     protected BrandingService brandingService;
 
     @Autowired
-    protected CommandsService commandsService;
+    protected InternalCommandsService commandsService;
 
     @Autowired
     protected ConfigService configService;

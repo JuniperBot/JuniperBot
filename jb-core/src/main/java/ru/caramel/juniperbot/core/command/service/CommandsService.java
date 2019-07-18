@@ -16,37 +16,68 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import ru.caramel.juniperbot.core.command.model.Command;
-import ru.caramel.juniperbot.core.command.model.CommandSender;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
+import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 
-import java.util.function.Function;
+/**
+ * Common commands interface
+ * @see InternalCommandsService
+ * @see CustomCommandsServiceImpl
+ */
+public interface CommandsService {
 
-public interface CommandsService extends CommandSender {
+    /**
+     * Checks if specified command valid
+     * @param event Message event
+     * @param key Command key
+     * @return Is command key valid
+     */
+    boolean isValidKey(GuildMessageReceivedEvent event, String key);
 
-    String EXECUTIONS_METER = "commands.executions.rate";
+    /**
+     * Sends command
+     * @param event Message event
+     * @param content Command content
+     * @param key Command key
+     * @param guildConfig GuildConfig of guild invoked this command
+     * @return Is command was sent
+     */
+    boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
 
-    String EXECUTIONS_COUNTER = "commands.executions.persist";
-
-    void clear(Guild guild);
-
-    boolean sendMessage(GuildMessageReceivedEvent event, CommandSender sender, Function<String, Boolean> commandCheck);
-
-    boolean isApplicable(Command command, CommandConfig commandConfig, User user, Member member, TextChannel channel);
-
+    /**
+     * Adds an emoji to original message
+     * @param message Message
+     * @param emoji Emoji code
+     * @param messageCode Fallback message code
+     * @param args Arguments for fallback message code
+     */
     void resultEmotion(GuildMessageReceivedEvent message, String emoji, String messageCode, Object... args);
 
-    boolean isRestricted(GuildMessageReceivedEvent event, CommandConfig commandConfig);
-
+    /**
+     * Checks is command has restrictions for this TextChannel
+     * @param commandConfig Command configuration
+     * @param channel Channel to check
+     * @return Is restricted
+     */
     boolean isRestricted(CommandConfig commandConfig, TextChannel channel);
 
+    /**
+     * Checks is command has restrictions for this member
+     * @param commandConfig Command configuration
+     * @param member Member to check
+     * @return Is restricted
+     */
     boolean isRestricted(CommandConfig commandConfig, Member member);
 
-    boolean isRestricted(String rawKey, TextChannel channel, Member member);
+    /**
+     * Checks all restrictions for command invocation
+     * @param event Message event
+     * @param commandConfig Command configuration
+     * @return Is restricted
+     */
+    boolean isRestricted(GuildMessageReceivedEvent event, CommandConfig commandConfig);
 
 }

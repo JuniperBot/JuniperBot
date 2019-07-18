@@ -38,12 +38,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.command.model.CommandHandler;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -71,9 +69,6 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Autowired
     private ConfigService configService;
-
-    @Autowired
-    private CommandsService commandsService;
 
     @Autowired
     private ContextService contextService;
