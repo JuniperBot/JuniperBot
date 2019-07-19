@@ -36,12 +36,12 @@ public interface Filter<T extends Event> {
     /**
      * Common handling stage
      */
-    int HANDLE_FILTER = 1001;
+    int HANDLE_FILTER = 1000;
 
     /**
      * Post-stage
      */
-    int POST_FILTER = 1001;
+    int POST_FILTER = 2000;
 
     /**
      * The <code>doFilter</code> method of the Filter is called by the event
