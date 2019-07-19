@@ -32,6 +32,7 @@ public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<
     private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
             "id", (g, l, c) -> g.getId(),
             "name", (g, l, c) -> g.getName(),
+            "iconUrl", (g, l, c) -> g.getIconUrl(),
             "region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()),
             "afkTimeout", (g, l, c) -> g.getAfkTimeout().getSeconds() / 60,
             "afkChannel", (g, l, c) -> g.getAfkChannel() != null ? g.getAfkChannel().getName() : "",
