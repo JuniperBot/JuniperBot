@@ -14,42 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.command;
+package ru.caramel.juniperbot.module.ranking;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.command.service.CommandHandler;
 import ru.caramel.juniperbot.core.event.intercept.Filter;
 import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 import ru.caramel.juniperbot.core.event.intercept.MemberMessageFilter;
-
-import java.util.List;
+import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 @Slf4j
-@Order(Filter.HANDLE_FILTER)
+@Order(Filter.POST_FILTER)
 @Component
-public class CommandHandlerFilter extends MemberMessageFilter {
+public class RankingFilter extends MemberMessageFilter {
 
     @Autowired
-    private List<CommandHandler> handlers;
+    private RankingService rankingService;
 
     @Override
-    @Transactional
     public void doInternal(GuildMessageReceivedEvent event, FilterChain<GuildMessageReceivedEvent> chain) {
-        for (CommandHandler handler : handlers) {
-            try {
-                if (handler.handleMessage(event)) {
-                    break;
-                }
-            } catch (Throwable e) {
-                log.warn("Could not handle command", e);
-            }
-        }
+        rankingService.onMessage(event);
         chain.doFilter(event);
     }
 }

@@ -15,7 +15,6 @@
 package ru.caramel.juniperbot.core.audit.service;
 
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
@@ -29,13 +28,6 @@ public class HistoryListener extends DiscordEventListener {
 
     @Autowired
     private ActionsHolderService actionsHolderService;
-
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (!event.getAuthor().isBot() && !event.isWebhookMessage()) {
-            historyService.onMessageCreate(event.getMessage());
-        }
-    }
 
     @Override
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
