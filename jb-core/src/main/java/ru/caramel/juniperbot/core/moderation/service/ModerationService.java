@@ -42,6 +42,8 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     void refreshMute(Member member);
 
+    boolean isMuted(Member member, TextChannel channel);
+
     boolean kick(Member author, Member member);
 
     boolean kick(Member author, Member member, String reason);

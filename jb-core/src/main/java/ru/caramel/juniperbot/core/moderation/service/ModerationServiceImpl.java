@@ -377,6 +377,27 @@ public class ModerationServiceImpl
         }
     }
 
+    @Override
+    @Transactional
+    public boolean isMuted(@NonNull Member member, @NonNull TextChannel channel) {
+        Role mutedRole = getMutedRole(member.getGuild());
+        if (member.getRoles().contains(mutedRole)) {
+            return true;
+        }
+
+        DateTime now = DateTime.now();
+        for (MuteState state : muteStateRepository.findAllByMember(member)) {
+            DateTime expire = state.getExpire() != null ? new DateTime(state.getExpire()) : null;
+            if (expire != null && now.isAfter(expire)) {
+                continue;
+            }
+            if (!state.isGlobal() && Objects.equals(state.getChannelId(), channel.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void scheduleUnMute(boolean global, TextChannel channel, Member member, int duration) {
         try {
             removeUnMuteSchedule(member, channel);
