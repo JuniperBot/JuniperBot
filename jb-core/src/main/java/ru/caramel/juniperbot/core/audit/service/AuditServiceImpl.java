@@ -44,7 +44,7 @@ public class AuditServiceImpl
         extends AbstractDomainServiceImpl<AuditConfig, AuditConfigRepository>
         implements AuditService {
 
-    @Value("${discord.audit.durationMonths:3}")
+    @Value("${discord.audit.durationMonths:1}")
     private int durationMonths;
 
     @Autowired
