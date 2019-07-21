@@ -46,7 +46,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
-@FeatureProvider(priority = 2)
+@FeatureProvider(priority = 3)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
 
     private final Object $lock = new Object[0];

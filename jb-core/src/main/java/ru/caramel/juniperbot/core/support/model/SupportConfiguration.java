@@ -20,6 +20,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import ru.caramel.juniperbot.core.feature.model.FeatureSet;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,5 +34,6 @@ public class SupportConfiguration {
 
     private Long guildId;
     private Long donatorRoleId;
+    private Map</* roleId*/ String, Set<FeatureSet>> featuredRoles = new HashMap<>();
 
 }
