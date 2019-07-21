@@ -32,4 +32,12 @@
         </dropColumn>
     </changeSet>
 
+    <changeSet id="6.7-21072019-2" author="caramel">
+        <addColumn tableName="reaction_roulette">
+            <column name="threshold" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -33,7 +33,10 @@ import ru.caramel.juniperbot.core.event.intercept.MemberMessageFilter;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,6 +46,8 @@ public class ReactionRouletteFilter extends MemberMessageFilter {
 
     @Autowired
     private ReactionRouletteService reactionRouletteService;
+
+    private Map<String, AtomicInteger> channelThresholds = new HashMap<>();
 
     @Override
     @Transactional
@@ -66,7 +71,12 @@ public class ReactionRouletteFilter extends MemberMessageFilter {
             return;
         }
 
-        if (RandomUtils.nextLong(1, 1000) <= roulette.getPercent() * 10) {
+        final AtomicInteger threshold = channelThresholds.computeIfAbsent(event.getChannel().getId(),
+                e -> new AtomicInteger());
+
+        if (threshold.getAndIncrement() > roulette.getThreshold()
+                && RandomUtils.nextLong(1, 1000) <= roulette.getPercent() * 10) {
+            threshold.set(0);
             List<Emote> emotes = guild.getEmotes().stream()
                     .filter(e -> !e.isManaged() && roulette.getSelectedEmotes().contains(e.getId()))
                     .collect(Collectors.toList());
