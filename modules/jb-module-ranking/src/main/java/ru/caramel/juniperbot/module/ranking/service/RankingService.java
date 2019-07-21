@@ -44,7 +44,5 @@ public interface RankingService extends DomainService<RankingConfig> {
 
     boolean isBanned(RankingConfig config, Member member);
 
-    void calculateQueue();
-
     void giveCookie(Member senderMember, Member recipientMember);
 }

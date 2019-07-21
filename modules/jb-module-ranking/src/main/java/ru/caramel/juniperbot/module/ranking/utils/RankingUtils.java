@@ -49,7 +49,6 @@ public final class RankingUtils {
         info.setLevel(getLevelFromExp(ranking.getExp()));
         info.setRemainingExp(getRemainingExp(ranking.getExp()));
         info.setLevelExp(getLevelExp(info.getLevel()));
-        info.setRank(ranking.getRank());
         info.setCookies(ranking.getCookies());
         return info;
     }
