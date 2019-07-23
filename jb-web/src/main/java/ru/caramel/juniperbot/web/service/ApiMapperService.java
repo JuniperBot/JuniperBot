@@ -90,9 +90,6 @@ public interface ApiMapperService {
 
     List<EmoteDto> getEmotesDto(Collection<Emote> role);
 
-    @Mappings({
-            @Mapping(target = "modConfig", ignore = true)
-    })
     CommonConfigDto getCommonDto(GuildConfig config);
 
     @Mappings({
