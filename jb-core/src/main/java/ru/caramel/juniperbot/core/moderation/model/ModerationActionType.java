@@ -19,5 +19,6 @@ package ru.caramel.juniperbot.core.moderation.model;
 public enum ModerationActionType {
     BAN,
     KICK,
-    MUTE
+    MUTE,
+    CHANGE_ROLES
 }
