@@ -45,12 +45,12 @@
             <column name="id" type="BIGSERIAL">
                 <constraints nullable="false"
                              primaryKey="true"
-                             primaryKeyName="pk_mode_action"/>
+                             primaryKeyName="pk_mod_action"/>
             </column>
             <column name="version" type="BIGINT"/>
             <column name="config_id" type="BIGINT">
                 <constraints nullable="false"
-                             foreignKeyName="fk_mode_action_mod_config"
+                             foreignKeyName="fk_mod_action_mod_config"
                              references="mod_config(id)" />
             </column>
             <column name="type" type="VARCHAR(255)">
@@ -61,7 +61,7 @@
             <column name="assign_roles" type="jsonb"/>
             <column name="revoke_roles" type="jsonb"/>
         </createTable>
-        <createIndex indexName="idx_mode_action_config_id" tableName="mod_action">
+        <createIndex indexName="idx_mod_action_config_id" tableName="mod_action">
             <column name="config_id" type="BIGINT"/>
         </createIndex>
     </changeSet>
