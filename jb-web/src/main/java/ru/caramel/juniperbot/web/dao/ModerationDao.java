@@ -19,15 +19,23 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.core.moderation.persistence.ModerationAction;
+import ru.caramel.juniperbot.core.moderation.persistence.ModerationActionRepository;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ModerationDao extends AbstractDao {
 
     @Autowired
     private ModerationService moderationService;
+
+    @Autowired
+    private ModerationActionRepository actionRepository;
 
     @Transactional
     public ModerationConfigDto getConfig(long guildId) {
@@ -38,7 +46,34 @@ public class ModerationDao extends AbstractDao {
     @Transactional
     public void saveConfig(ModerationConfigDto dto, long guildId) {
         ModerationConfig modConfig = moderationService.getOrCreate(guildId);
+
+        List<ModerationAction> result = new ArrayList<>();
+        dto.getActions().forEach(e -> {
+            ModerationAction action;
+            if (e.getId() != null) {
+                action = modConfig.getActions().stream().filter(e1 -> Objects.equals(e1.getId(), e.getId()))
+                        .findFirst()
+                        .orElse(null);
+            } else {
+                action = new ModerationAction();
+                action.setConfig(modConfig);
+            }
+            if (action != null) {
+                apiMapper.updateModerationAction(e, action);
+                result.add(action);
+            }
+        });
+
+        Set<Integer> seenCount = new HashSet<>();
+        result.removeIf(e -> !seenCount.add(e.getCount()));
+
+        actionRepository.saveAll(result);
+        actionRepository.deleteAll(modConfig.getActions().stream()
+                .filter(e -> !result.contains(e))
+                .collect(Collectors.toList()));
+
         apiMapper.updateModerationConfig(dto, modConfig);
+        modConfig.setActions(result);
         moderationService.save(modConfig);
     }
 }

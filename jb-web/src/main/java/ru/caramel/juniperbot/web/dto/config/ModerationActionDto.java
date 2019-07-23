@@ -18,35 +18,29 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.moderation.model.WarnExceedAction;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
-public class ModerationConfigDto implements Serializable {
+public class ModerationActionDto implements Serializable {
 
-    private static final long serialVersionUID = 2373520739258476656L;
+    private static final long serialVersionUID = -5304216852167893277L;
 
-    private List<ModerationActionDto> actions;
-
-    private Set<String> roles;
-
-    private boolean publicColors;
-
-    @Min(2)
-    private int maxWarnings = ModerationConfig.DEFAULT_MAX_WARNINGS;
+    private Long id;
 
     @NotNull
-    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
+    private ModerationActionType type;
 
-    @Min(1)
-    private int muteCount = ModerationConfig.DEFAULT_MUTE_COUNT;
+    private int count;
 
-    private boolean coolDownIgnored;
+    private int duration;
+
+    private Set<String> assignRoles;
+
+    private Set<String> revokeRoles;
+
 }

@@ -50,19 +50,26 @@ public class ModerationConfig extends GuildEntity {
     @Column(name = "muted_role_id")
     private Long mutedRoleId;
 
+    @Column(name = "cooldown_ignored")
+    private boolean coolDownIgnored;
+
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("count")
+    private List<ModerationAction> actions;
+
     @Column(name = "max_warnings")
+    @Deprecated
     private int maxWarnings = DEFAULT_MAX_WARNINGS;
 
     @Column(name = "warn_exceed_action")
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Deprecated
     private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
 
     @Column(name = "mute_count")
+    @Deprecated
     private int muteCount = DEFAULT_MUTE_COUNT;
-
-    @Column(name = "cooldown_ignored")
-    private boolean coolDownIgnored;
 
     public ModerationConfig(long guildId) {
         this.guildId = guildId;

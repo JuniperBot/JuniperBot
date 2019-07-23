@@ -33,6 +33,7 @@ import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.persistence.base.NamedReference;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplateField;
+import ru.caramel.juniperbot.core.moderation.persistence.ModerationAction;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
@@ -103,6 +104,21 @@ public interface ApiMapperService {
     void updateCommon(CommonConfigDto source, @MappingTarget GuildConfig target);
 
     @Mappings({
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getAssignRoles()))", target = "assignRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRevokeRoles()))", target = "revokeRoles"),
+    })
+    ModerationActionDto getModerationActionDto(ModerationAction source);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "config", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getAssignRoles()))", target = "assignRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRevokeRoles()))", target = "revokeRoles"),
+    })
+    void updateModerationAction(ModerationActionDto source, @MappingTarget ModerationAction target);
+
+    @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRoles()))", target = "roles"),
     })
     ModerationConfigDto getModerationDto(ModerationConfig source);
@@ -112,6 +128,7 @@ public interface ApiMapperService {
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "mutedRoleId", ignore = true),
+            @Mapping(target = "actions", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRoles()))", target = "roles"),
     })
     void updateModerationConfig(ModerationConfigDto source, @MappingTarget ModerationConfig target);

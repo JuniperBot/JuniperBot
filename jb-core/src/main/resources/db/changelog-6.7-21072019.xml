@@ -40,4 +40,30 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6.7-21072019-3" author="caramel">
+        <createTable tableName="mod_action">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_mode_action"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="config_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_mode_action_mod_config"
+                             references="mod_config(id)" />
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="count" type="INTEGER"/>
+            <column name="duration" type="INTEGER"/>
+            <column name="assign_roles" type="jsonb"/>
+            <column name="revoke_roles" type="jsonb"/>
+        </createTable>
+        <createIndex indexName="idx_mode_action_config_id" tableName="mod_action">
+            <column name="config_id" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
