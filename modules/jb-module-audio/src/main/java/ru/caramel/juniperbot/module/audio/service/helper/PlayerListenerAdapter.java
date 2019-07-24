@@ -24,6 +24,7 @@ import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.IPlayerEventListener;
 import lavalink.client.player.event.PlayerEvent;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
+import ru.caramel.juniperbot.module.audio.model.TrackData;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +79,7 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
         if (event instanceof TrackStartEvent) {
             AudioTrack track = ((TrackStartEvent) event).track;
             if (track != null) {
-                PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+                PlaybackInstance instance = TrackData.get(track).getInstance();
                 if (instance != null) {
                     onTrackStart(instance);
                 }
@@ -86,7 +87,7 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
         } else if (event instanceof TrackEndEvent) {
             AudioTrack track = ((TrackEndEvent) event).track;
             if (track != null) {
-                PlaybackInstance instance = track.getUserData(PlaybackInstance.class);
+                PlaybackInstance instance = TrackData.get(track).getInstance();
                 if (instance != null) {
                     onTrackEnd(instance, ((TrackEndEvent) event).endReason);
                 }
@@ -94,7 +95,7 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
         } else if (event instanceof TrackExceptionEvent) {
             AudioTrack track = ((TrackExceptionEvent) event).track;
             if (track != null) {
-                onTrackException(track.getUserData(PlaybackInstance.class), ((TrackExceptionEvent) event).exception);
+                onTrackException(TrackData.get(track).getInstance(), ((TrackExceptionEvent) event).exception);
             }
         }
     }

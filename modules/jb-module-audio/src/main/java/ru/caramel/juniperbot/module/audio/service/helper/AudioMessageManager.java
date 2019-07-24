@@ -48,10 +48,7 @@ import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
-import ru.caramel.juniperbot.module.audio.model.EndReason;
-import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
-import ru.caramel.juniperbot.module.audio.model.RepeatMode;
-import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
@@ -449,7 +446,7 @@ public class AudioMessageManager {
         builder.setDescription(null);
 
         AudioTrackInfo info = request.getTrack().getInfo();
-        PlaybackInstance instance = request.getTrack().getUserData(PlaybackInstance.class);
+        PlaybackInstance instance = TrackData.get(request.getTrack()).getInstance();
         boolean refreshable = isRefreshable(instance.getGuildId());
 
         String durationText;
@@ -546,7 +543,7 @@ public class AudioMessageManager {
         AudioTrackInfo info = request.getTrack().getInfo();
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(getTitle(info), getUrl(info));
-        String artworkUri = DiscordUtils.getUrl(info.artworkUri);
+        String artworkUri = DiscordUtils.getUrl(TrackData.getArtwork(request.getTrack()));
         builder.setAuthor(getArtist(info), getUrl(info), artworkUri);
         builder.setThumbnail(artworkUri);
         builder.setDescription(messageService.getMessage("discord.command.audio.queue.add"));

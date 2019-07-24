@@ -24,6 +24,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.caramel.juniperbot.module.audio.model.TrackData;
 import ru.caramel.juniperbot.module.audio.utils.PlaylistUtils;
 
 import javax.persistence.*;
@@ -86,6 +87,6 @@ public class PlaylistItem extends BaseEntity {
         this.uri = info.uri;
         this.length = info.length;
         this.stream = info.isStream;
-        this.artworkUri = info.artworkUri;
+        this.artworkUri = TrackData.getArtwork(track);
     }
 }

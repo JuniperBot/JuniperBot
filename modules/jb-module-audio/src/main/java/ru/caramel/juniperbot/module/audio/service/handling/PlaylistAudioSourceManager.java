@@ -32,6 +32,7 @@ import ru.caramel.juniperbot.core.common.service.BrandingService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.module.audio.model.StoredPlaylist;
+import ru.caramel.juniperbot.module.audio.model.TrackData;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 import ru.caramel.juniperbot.module.audio.service.PlaylistService;
@@ -165,6 +166,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
                 playlistService.save(item);
             }
         }
+        TrackData.setPlaylistItem(holder.track, item);
         return holder.track;
     }
 

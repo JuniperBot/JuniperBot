@@ -56,6 +56,6 @@ public class PlaylistUtils {
                 CommonUtils.trimTo(info.identifier, 1000),
                 info.isStream,
                 CommonUtils.trimTo(DiscordUtils.getUrl(info.uri), 1000),
-                CommonUtils.trimTo(DiscordUtils.getUrl(info.artworkUri), 1000));
+                info.metadata);
     }
 }
