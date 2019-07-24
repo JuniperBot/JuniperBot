@@ -62,7 +62,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
-    private Cache<User, Chat> sessions = CacheBuilder.newBuilder()
+    private Cache<String, Chat> sessions = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
             .expireAfterAccess(1, TimeUnit.HOURS)
             .build();
@@ -88,7 +88,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
     public Chat getSession(String botName, User user) {
         Bot bot = createBot(botName);
         try {
-            return sessions.get(user, () -> new Chat(bot, false, user.getId()));
+            return sessions.get(user.getId(), () -> new Chat(bot, false, user.getId()));
         } catch (ExecutionException e) {
             log.error("Error creating session", e);
         }
