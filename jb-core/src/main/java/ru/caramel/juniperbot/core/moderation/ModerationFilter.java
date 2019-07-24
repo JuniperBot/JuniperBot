@@ -28,6 +28,7 @@ import ru.caramel.juniperbot.core.event.intercept.FilterChain;
 import ru.caramel.juniperbot.core.event.intercept.MemberMessageFilter;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.moderation.service.MuteService;
 
 @Slf4j
 @Order(Filter.PRE_FILTER)
@@ -40,11 +41,14 @@ public class ModerationFilter extends MemberMessageFilter {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private MuteService muteService;
+
     @Override
     @Transactional
     public void doInternal(GuildMessageReceivedEvent event, FilterChain<GuildMessageReceivedEvent> chain) {
         if (event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
-                && moderationService.isMuted(event.getMember(), event.getChannel())) {
+                && muteService.isMuted(event.getMember(), event.getChannel())) {
             messageService.delete(event.getMessage());
             return;
         }

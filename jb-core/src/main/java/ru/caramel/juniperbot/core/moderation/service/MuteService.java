@@ -18,33 +18,22 @@ package ru.caramel.juniperbot.core.moderation.service;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import ru.caramel.juniperbot.core.common.service.DomainService;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
-import ru.caramel.juniperbot.core.moderation.persistence.MemberWarning;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 
-import java.util.List;
+public interface MuteService {
 
-public interface ModerationService extends DomainService<ModerationConfig> {
+    Role getMutedRole(Guild guild);
 
-    boolean isModerator(Member member);
+    boolean mute(ModerationActionRequest request);
 
-    boolean isPublicColor(long guildId);
+    boolean unmute(Member author, TextChannel channel, Member member);
 
-    boolean setColor(Member member, String color);
+    void refreshMute(Member member);
 
-    boolean performAction(ModerationActionRequest request);
+    boolean isMuted(Member member, TextChannel channel);
 
-    boolean warn(Member author, Member member, String reason);
+    void clearState(long guildId, String userId, String channelId);
 
-    List<MemberWarning> getWarnings(Member member);
-
-    long warnCount(Member member);
-
-    void removeWarn(MemberWarning warning);
-
-    Member getLastActionModerator(Member violator);
-
-    Member getLastActionModerator(Guild guild, User violator);
 }

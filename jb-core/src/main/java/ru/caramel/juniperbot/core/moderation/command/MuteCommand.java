@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -40,6 +42,7 @@ public class MuteCommand extends ModeratorCommandAsync {
     protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
         if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
+            fail(event);
             return; // do not allow to mute moderators
         }
 
@@ -69,8 +72,18 @@ public class MuteCommand extends ModeratorCommandAsync {
             }
         }
         boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
-        boolean muted = moderationService.mute(event.getMember(), event.getChannel(), mentioned, global, duration,
-                m.group(3));
+
+        ModerationActionRequest request = ModerationActionRequest.builder()
+                .type(ModerationActionType.MUTE)
+                .moderator(event.getMember())
+                .channel(event.getChannel())
+                .violator(mentioned)
+                .global(global)
+                .duration(duration)
+                .reason(m.group(3))
+                .build();
+
+        boolean muted = moderationService.performAction(request);
         messageService.onEmbedMessage(event.getChannel(), muted
                 ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
     }
