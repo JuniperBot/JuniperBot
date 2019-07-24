@@ -578,10 +578,17 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     private long countListeners(PlaybackInstance instance) {
-        return isActive(instance) ? getConnectedChannel(instance.getGuildId()).getMembers()
+        if (!isActive(instance)) {
+            return 0;
+        }
+        VoiceChannel channel = getConnectedChannel(instance.getGuildId());
+        if (channel.getGuild().getSelfMember().getVoiceState().isGuildMuted()) {
+            return 0;
+        }
+        return channel.getMembers()
                 .stream()
-                .filter(e -> !e.getUser().isBot() && (e.getVoiceState() == null || !e.getVoiceState().isGuildDeafened()))
-                .count() : 0;
+                .filter(e -> !e.getUser().isBot() && !e.getVoiceState().isGuildDeafened())
+                .count();
     }
 
     @Gauge(name = ACTIVE_CONNECTIONS, absolute = true)
