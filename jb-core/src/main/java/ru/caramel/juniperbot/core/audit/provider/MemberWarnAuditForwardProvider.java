@@ -27,8 +27,6 @@ public class MemberWarnAuditForwardProvider extends ModerationAuditForwardProvid
 
     public static final String COUNT_ATTR = "count";
 
-    public static final String MAX_ATTR = "max";
-
     @Override
     protected void build(AuditAction action, MessageBuilder messageBuilder, EmbedBuilder embedBuilder) {
         if (action.getTargetUser() == null) {
@@ -41,10 +39,9 @@ public class MemberWarnAuditForwardProvider extends ModerationAuditForwardProvid
         addModeratorField(action, embedBuilder);
 
         Number count = action.getAttribute(COUNT_ATTR, Number.class);
-        Number max = action.getAttribute(MAX_ATTR, Number.class);
-        if (count != null && max != null) {
+        if (count != null) {
             embedBuilder.addField(messageService.getMessage("audit.member.warn.count.title"),
-                    messageService.getMessage("audit.member.warn.count.content", count, max), true);
+                    messageService.getMessage("audit.member.warn.count.content", count), true);
         }
 
         addReasonField(action, embedBuilder);

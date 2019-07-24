@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import ru.caramel.juniperbot.core.common.service.DomainService;
 import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.WarningResult;
 import ru.caramel.juniperbot.core.moderation.persistence.MemberWarning;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 
@@ -36,11 +37,9 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     boolean performAction(ModerationActionRequest request);
 
-    boolean warn(Member author, Member member, String reason);
+    WarningResult warn(Member author, Member member, String reason);
 
     List<MemberWarning> getWarnings(Member member);
-
-    long warnCount(Member member);
 
     void removeWarn(MemberWarning warning);
 

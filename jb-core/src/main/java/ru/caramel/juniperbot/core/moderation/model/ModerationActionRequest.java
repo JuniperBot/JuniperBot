@@ -25,9 +25,9 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class ModerationActionRequest implements Serializable {
     private static final long serialVersionUID = 6374637369757626407L;
@@ -37,6 +37,9 @@ public class ModerationActionRequest implements Serializable {
 
     @NonNull
     private Member violator;
+
+    @Builder.Default
+    private boolean auditLogging = true;
 
     private Member moderator;
 
@@ -48,10 +51,11 @@ public class ModerationActionRequest implements Serializable {
 
     private Integer duration;
 
-    @Builder.Default
-    private boolean auditLogging = true;
-
     private boolean stateless;
+
+    private List<Long> assignRoles;
+
+    private List<Long> revokeRoles;
 
     public Guild getGuild() {
         if (moderator != null) {

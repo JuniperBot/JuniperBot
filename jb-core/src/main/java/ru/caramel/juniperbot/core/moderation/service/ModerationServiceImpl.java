@@ -38,7 +38,7 @@ import ru.caramel.juniperbot.core.common.service.MemberService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
-import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
+import ru.caramel.juniperbot.core.moderation.model.WarningResult;
 import ru.caramel.juniperbot.core.moderation.persistence.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
@@ -178,7 +178,8 @@ public class ModerationServiceImpl
     @Override
     @Transactional
     public boolean performAction(ModerationActionRequest request) {
-        Member self = request.getGuild().getSelfMember();
+        Guild guild = request.getGuild();
+        Member self = guild.getSelfMember();
         if (request.getModerator() != null) {
             lastActionCache.put(DiscordUtils.getMemberKey(request.getViolator()),
                     request.getModerator().getUser().getId());
@@ -211,82 +212,105 @@ public class ModerationServiceImpl
                     e.getGuild().getController().kick(e, request.getReason()).queue();
                 }, request.getViolator(), "discord.command.mod.action.message.kick", request.getReason());
                 return true;
+
+            case CHANGE_ROLES:
+                if (!self.hasPermission(Permission.MANAGE_ROLES) || !self.canInteract(request.getViolator())) {
+                    return false;
+                }
+                List<Role> currentRoles = new ArrayList<>(request.getViolator().getRoles());
+                List<Role> rolesToAssign = Collections.emptyList();
+                if (CollectionUtils.isNotEmpty(request.getAssignRoles())) {
+                    rolesToAssign = request.getAssignRoles().stream()
+                            .map(guild::getRoleById)
+                            .filter(e -> e != null && self.canInteract(e) && !currentRoles.contains(e))
+                            .collect(Collectors.toList());
+                }
+
+                List<Role> rolesToRevoke = Collections.emptyList();
+                if (CollectionUtils.isNotEmpty(request.getRevokeRoles())) {
+                    rolesToRevoke = request.getRevokeRoles().stream()
+                            .map(guild::getRoleById)
+                            .filter(e -> e != null && self.canInteract(e) && currentRoles.contains(e))
+                            .collect(Collectors.toList());
+                }
+
+                if (CollectionUtils.isEmpty(rolesToAssign) && CollectionUtils.isEmpty(rolesToRevoke)) {
+                    return false;
+                }
+
+                guild.getController().modifyMemberRoles(request.getViolator(), rolesToAssign, rolesToRevoke).queue();
+                return true;
         }
         return false;
     }
 
     @Override
     @Transactional
-    public boolean warn(Member author, Member member, String reason) {
+    public WarningResult warn(Member author, Member member, String reason) {
+        var result = WarningResult.builder();
+
         long guildId = member.getGuild().getIdLong();
         ModerationConfig moderationConfig = getOrCreate(member.getGuild());
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 
-        long count = warningRepository.countActiveByViolator(guildId, memberLocal);
-        boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
-        MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
+        long number = warningRepository.countByViolator(guildId, memberLocal) + 1;
+
+        ModerationAction action = moderationConfig.getActions().stream()
+                .filter(e -> e.getCount() == number)
+                .findFirst()
+                .orElse(null);
+
+        if (action != null) {
+            reason = messageService.getMessage("discord.command.mod.warn.exceeded", number);
+
+            var builder = ModerationActionRequest.builder()
+                    .type(action.getType())
+                    .moderator(author)
+                    .violator(member)
+                    .reason(reason);
+
+            switch (action.getType()) {
+                case MUTE:
+                    builder.duration(action.getDuration())
+                            .global(true);
+                    break;
+                case CHANGE_ROLES:
+                    builder.assignRoles(action.getAssignRoles())
+                            .revokeRoles(action.getRevokeRoles());
+                    break;
+
+            }
+
+            ModerationActionRequest request = builder.build();
+            result.request(request)
+                    .punished(performAction(request));
+        } else {
+            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, number);
+        }
 
         getAuditService().log(guildId, AuditActionType.MEMBER_WARN)
                 .withUser(author)
                 .withTargetUser(memberLocal)
                 .withAttribute(REASON_ATTR, reason)
-                .withAttribute(COUNT_ATTR, count + 1)
-                .withAttribute(MAX_ATTR, moderationConfig.getMaxWarnings())
+                .withAttribute(COUNT_ATTR, number)
                 .save();
 
-        if (exceed) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count + 1);
-
-            var builder = ModerationActionRequest.builder()
-                    .moderator(author)
-                    .violator(member)
-                    .reason(reason);
-
-            switch (moderationConfig.getWarnExceedAction()) {
-                case BAN:
-                    builder.type(ModerationActionType.BAN);
-                    break;
-                case KICK:
-                    builder.type(ModerationActionType.KICK);
-                    break;
-                case MUTE:
-                    builder.type(ModerationActionType.MUTE)
-                            .global(true)
-                            .duration(moderationConfig.getMuteCount());
-                    break;
-            }
-            if (performAction(builder.build())) {
-                warningRepository.flushWarnings(guildId, memberLocal);
-                warning.setActive(false);
-            }
-        } else {
-            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,
-                    moderationConfig.getMaxWarnings());
-        }
-        warningRepository.save(warning);
-        return exceed;
+        warningRepository.save(new MemberWarning(guildId, authorLocal, memberLocal, reason));
+        return result.number(number).build();
     }
 
     @Override
     @Transactional
     public List<MemberWarning> getWarnings(Member member) {
         LocalMember localMember = memberService.getOrCreate(member);
-        return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
-    }
-
-    @Override
-    @Transactional
-    public long warnCount(Member member) {
-        LocalMember memberLocal = memberService.getOrCreate(member);
-        return warningRepository.countActiveByViolator(member.getGuild().getIdLong(), memberLocal);
+        return warningRepository.findByViolator(member.getGuild().getIdLong(), localMember);
     }
 
     @Override
     @Transactional
     public void removeWarn(@NonNull MemberWarning warning) {
-        warning.setActive(false);
-        warningRepository.save(warning);
+        warningRepository.delete(warning);
     }
 
     @Override

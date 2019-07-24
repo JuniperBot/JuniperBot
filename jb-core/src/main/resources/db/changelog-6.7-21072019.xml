@@ -66,4 +66,27 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="6.7-21072019-4" author="caramel">
+        <sql>DELETE FROM member_warning WHERE active = false</sql>
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_active_guild_violator"/>
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_guild_id"/>
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_moderator_id"/>
+        <dropIndex tableName="member_warning" indexName="idx_member_warning_violator_id"/>
+        <createIndex tableName="member_warning" indexName="idx_member_warning_guild_id_violator_id">
+            <column name="guild_id"/>
+            <column name="violator_id"/>
+        </createIndex>
+        <dropColumn tableName="member_warning">
+            <column name="active" type="BOOLEAN"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="6.7-21072019-5" author="caramel">
+        <createIndex tableName="member_warning" indexName="idx_member_warning_id_guild_id_violator_id">
+            <column name="id"/>
+            <column name="guild_id"/>
+            <column name="violator_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
