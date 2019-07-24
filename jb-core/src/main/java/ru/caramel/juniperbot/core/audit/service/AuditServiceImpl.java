@@ -33,6 +33,7 @@ import ru.caramel.juniperbot.core.audit.persistence.AuditConfig;
 import ru.caramel.juniperbot.core.audit.persistence.AuditConfigRepository;
 import ru.caramel.juniperbot.core.audit.provider.AuditForwardProvider;
 import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
+import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
 
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,9 @@ public class AuditServiceImpl
     @Autowired
     private AuditActionRepository actionRepository;
 
+    @Autowired
+    private FeatureSetService featureSetService;
+
     private Map<AuditActionType, AuditForwardProvider> forwardProviders;
 
     public AuditServiceImpl(@Autowired AuditConfigRepository repository) {
@@ -66,7 +70,9 @@ public class AuditServiceImpl
     public AuditAction save(AuditAction action) {
         AuditConfig config = getByGuildId(action.getGuildId());
         if (config != null && config.isEnabled()) {
-            action = actionRepository.save(action);
+            if (featureSetService.isAvailable(action.getGuildId())) {
+                action = actionRepository.save(action);
+            }
             if (MapUtils.isNotEmpty(forwardProviders)) {
                 AuditForwardProvider forwardProvider = forwardProviders.get(action.getActionType());
                 if (forwardProvider != null) {
