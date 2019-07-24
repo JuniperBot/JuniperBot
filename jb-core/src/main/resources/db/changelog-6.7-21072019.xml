@@ -89,4 +89,17 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="6.7-21072019-6" author="caramel">
+        <sql>INSERT INTO mod_action(version, config_id, type, count, duration) SELECT 0, id, warn_exceed_action, max_warnings, mute_count FROM mod_config;</sql>
+        <dropColumn tableName="mod_config">
+            <column name="max_warnings"/>
+        </dropColumn>
+        <dropColumn tableName="mod_config">
+            <column name="warn_exceed_action"/>
+        </dropColumn>
+        <dropColumn tableName="mod_config">
+            <column name="mute_count"/>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>
