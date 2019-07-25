@@ -74,10 +74,16 @@ public class MuteServiceImpl implements MuteService {
     @Override
     @Transactional
     public Role getMutedRole(Guild guild) {
-        ModerationConfig moderationConfig = moderationService.getOrCreate(guild);
+        return getMutedRole(guild, true);
+    }
+
+    private Role getMutedRole(Guild guild, boolean create) {
+        ModerationConfig moderationConfig = create
+                ? moderationService.getOrCreate(guild)
+                : moderationService.getByGuildId(guild.getIdLong());
 
         Role role = null;
-        if (moderationConfig.getMutedRoleId() != null) {
+        if (moderationConfig != null && moderationConfig.getMutedRoleId() != null) {
             role = guild.getRoleById(moderationConfig.getMutedRoleId());
         }
 
@@ -86,7 +92,7 @@ public class MuteServiceImpl implements MuteService {
             role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
         }
 
-        if (role == null || !guild.getSelfMember().canInteract(role)) {
+        if (create && (role == null || !guild.getSelfMember().canInteract(role))) {
             role = guild.getController()
                     .createRole()
                     .setColor(Color.GRAY)
@@ -95,16 +101,18 @@ public class MuteServiceImpl implements MuteService {
                     .complete();
         }
 
-        if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
-            moderationConfig.setMutedRoleId(role.getIdLong());
-            moderationService.save(moderationConfig);
-        }
+        if (role != null) {
+            if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
+                moderationConfig.setMutedRoleId(role.getIdLong());
+                moderationService.save(moderationConfig);
+            }
 
-        for (TextChannel channel : guild.getTextChannels()) {
-            checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
-        }
-        for (VoiceChannel channel : guild.getVoiceChannels()) {
-            checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
+            for (TextChannel channel : guild.getTextChannels()) {
+                checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
+            }
+            for (VoiceChannel channel : guild.getVoiceChannels()) {
+                checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
+            }
         }
         return role;
     }
@@ -240,8 +248,8 @@ public class MuteServiceImpl implements MuteService {
     @Override
     @Transactional
     public boolean isMuted(@NonNull Member member, @NonNull TextChannel channel) {
-        Role mutedRole = getMutedRole(member.getGuild());
-        if (member.getRoles().contains(mutedRole)) {
+        Role mutedRole = getMutedRole(member.getGuild(), false);
+        if (mutedRole != null && member.getRoles().contains(mutedRole)) {
             return true;
         }
 

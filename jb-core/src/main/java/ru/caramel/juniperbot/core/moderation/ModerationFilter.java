@@ -16,10 +16,13 @@
  */
 package ru.caramel.juniperbot.core.moderation;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +47,15 @@ public class ModerationFilter extends MemberMessageFilter {
     @Autowired
     private MuteService muteService;
 
+    @Getter
+    @Setter
+    @Value("${feature.deleteMuted:true}")
+    private boolean deleteMuted = true;
+
     @Override
     @Transactional
     public void doInternal(GuildMessageReceivedEvent event, FilterChain<GuildMessageReceivedEvent> chain) {
-        if (event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
+        if (deleteMuted && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)
                 && muteService.isMuted(event.getMember(), event.getChannel())) {
             messageService.delete(event.getMessage());
             return;
