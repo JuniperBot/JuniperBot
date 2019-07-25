@@ -14,11 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.command.model;
+package ru.caramel.juniperbot.core.moderation.service;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
 
-public interface CommandSender {
-    boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig guildConfig);
+public interface MuteService {
+
+    Role getMutedRole(Guild guild);
+
+    boolean mute(ModerationActionRequest request);
+
+    boolean unmute(Member author, TextChannel channel, Member member);
+
+    void refreshMute(Member member);
+
+    boolean isMuted(Member member, TextChannel channel);
+
+    void clearState(long guildId, String userId, String channelId);
+
 }

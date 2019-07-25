@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.core.moderation.command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +57,7 @@ public class WarnsCommand extends ModeratorCommandAsync {
 
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.mod.warns.message.title", member.getEffectiveName()));
+        final String noReasonMessage = messageService.getMessage("discord.command.mod.warns.noReason");
 
         DateTimeFormatter formatter = DateTimeFormat
                 .shortDateTime()
@@ -63,22 +65,20 @@ public class WarnsCommand extends ModeratorCommandAsync {
                 .withLocale(contextService.getLocale());
 
         int i = 1;
+        int length = builder.length();
         for (MemberWarning warning : warningList) {
-            StringBuilder entryBuilder = new StringBuilder();
-            if (i > 1) {
-                entryBuilder.append("\n");
+            String title = String.format("%2s. %s %s (%s)", i++,
+                    formatter.print(new DateTime(warning.getDate())),
+                    CommonUtils.getUTCOffset(context.getTimeZone()),
+                    warning.getModerator().getEffectiveName());
+            String reason = warning.getReason();
+            if (StringUtils.isEmpty(reason)) {
+                reason = noReasonMessage;
             }
-            entryBuilder
-                    .append(String.format("`%2s. ", i++))
-                    .append(formatter.print(new DateTime(warning.getDate())))
-                    .append(" ")
-                    .append(CommonUtils.getUTCOffset(context.getTimeZone()))
-                    .append("` ")
-                    .append(warning.getModerator().getEffectiveName());
-            if (StringUtils.isNotEmpty(warning.getReason())) {
-                entryBuilder.append(": ").append(warning.getReason());
+            if ((length += title.length() + reason.length()) > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
+                break;
             }
-            builder.appendDescription(entryBuilder);
+            builder.addField(title, reason, true);
         }
         messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
     }

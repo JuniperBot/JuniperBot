@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -53,21 +55,30 @@ public class BanCommand extends ModeratorCommand {
                 return false;
             }
 
+            var builder = ModerationActionRequest.builder()
+                    .type(ModerationActionType.BAN)
+                    .moderator(event.getMember())
+                    .violator(mentioned);
+
             query = removeMention(query);
-            if (StringUtils.isNotEmpty(query)) {
+            boolean perform = StringUtils.isEmpty(query);
+            if (!perform) {
                 Matcher matcher = BAN_PATTERN.matcher(query);
                 if (matcher.find()) {
                     int delDays = 0;
                     if (StringUtils.isNotEmpty(matcher.group(1))) {
                         delDays = Integer.parseInt(matcher.group(1));
                     }
+
+                    builder.reason(matcher.group(2));
                     if (delDays <= 7) {
-                        moderationService.ban(event.getMember(), mentioned, delDays, matcher.group(2));
-                        return ok(event);
+                        builder.duration(delDays);
+                        perform = true;
                     }
                 }
-            } else {
-                moderationService.ban(event.getMember(), mentioned);
+            }
+            if (perform) {
+                moderationService.performAction(builder.build());
                 return ok(event);
             }
         }

@@ -18,9 +18,10 @@ package ru.caramel.juniperbot.core.moderation.service;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import ru.caramel.juniperbot.core.common.service.DomainService;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.WarningResult;
 import ru.caramel.juniperbot.core.moderation.persistence.MemberWarning;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 
@@ -34,34 +35,15 @@ public interface ModerationService extends DomainService<ModerationConfig> {
 
     boolean setColor(Member member, String color);
 
-    Role getMutedRole(Guild guild);
+    boolean performAction(ModerationActionRequest request);
 
-    boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason);
-
-    boolean unmute(Member author, TextChannel channel, Member member);
-
-    void refreshMute(Member member);
-
-    boolean kick(Member author, Member member);
-
-    boolean kick(Member author, Member member, String reason);
-
-    boolean ban(Member author, Member member);
-
-    boolean ban(Member author, Member member, String reason);
-
-    boolean ban(Member author, Member member, int dayDel, String reason);
+    WarningResult warn(Member author, Member member, String reason);
 
     List<MemberWarning> getWarnings(Member member);
 
-    long warnCount(Member member);
-
-    boolean warn(Member author, Member member);
-
-    boolean warn(Member author, Member member, String reason);
-
     void removeWarn(MemberWarning warning);
 
-    void clearState(long guildId, String userId, String channelId);
+    Member getLastActionModerator(Member violator);
 
+    Member getLastActionModerator(Guild guild, User violator);
 }

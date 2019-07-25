@@ -17,19 +17,22 @@
 package ru.caramel.juniperbot.core.moderation.command;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.commons.collections4.CollectionUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
 import org.ocpsoft.prettytime.units.Second;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.moderation.model.WarnExceedAction;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.WarningResult;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @DiscordCommand(key = "discord.command.mod.warn.key",
         description = "discord.command.mod.warn.desc",
@@ -52,36 +55,69 @@ public class WarnCommand extends ModeratorCommandAsync {
             fail(event); // do not allow ban members or yourself
             return;
         }
-        if (moderationService.warn(event.getMember(), mentioned, removeMention(query))) {
-            ModerationConfig config = moderationService.getOrCreate(event.getGuild());
-            if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
-                switch (config.getWarnExceedAction()) {
-                    case BAN:
-                        messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
-                        return;
-                    case KICK:
-                        messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
-                        return;
-                }
+
+        List<Role> currentRoles = new ArrayList<>(mentioned.getRoles());
+        WarningResult result = moderationService.warn(event.getMember(), mentioned, removeMention(query));
+
+        if (result.isPunished()) {
+            ModerationActionRequest request = result.getRequest();
+
+            StringBuilder argumentBuilder = new StringBuilder();
+
+            switch (request.getType()) {
+                case MUTE:
+                    Date date = new Date();
+                    date.setTime(date.getTime() + (long) (60000 * request.getDuration()));
+                    PrettyTime formatter = new PrettyTime(contextService.getLocale());
+                    formatter.removeUnit(JustNow.class);
+                    formatter.removeUnit(Millisecond.class);
+                    formatter.removeUnit(Second.class);
+                    argumentBuilder.append(formatter.format(date));
+                    break;
+                case CHANGE_ROLES:
+                    List<Role> assignedRoles = getRoles(event.getGuild(), request.getAssignRoles());
+                    assignedRoles.removeAll(currentRoles);
+                    if (CollectionUtils.isNotEmpty(assignedRoles)) {
+                        String assignedMentions = assignedRoles.stream()
+                                .map(Role::getAsMention)
+                                .collect(Collectors.joining(", "));
+                        argumentBuilder
+                                .append("\n")
+                                .append(messageService.getMessage("discord.command.mod.warn.exceeded.message.CHANGE_ROLES.assignedRoles",
+                                        assignedMentions));
+                    }
+
+                    List<Role> revokedRoles = getRoles(event.getGuild(), request.getRevokeRoles());
+                    revokedRoles.removeIf(e -> !currentRoles.contains(e));
+                    if (CollectionUtils.isNotEmpty(revokedRoles)) {
+                        String revokedMentions = revokedRoles.stream()
+                                .map(Role::getAsMention)
+                                .collect(Collectors.joining(", "));
+                        argumentBuilder
+                                .append("\n")
+                                .append(messageService.getMessage("discord.command.mod.warn.exceeded.message.CHANGE_ROLES.revokedRoles",
+                                        revokedMentions));
+                    }
+
+                    break;
             }
 
-            String messageCode = "discord.command.mod.warn.exceeded.message." + config.getWarnExceedAction().name();
-
-            String argument = "";
-            if (WarnExceedAction.MUTE.equals(config.getWarnExceedAction())) {
-                Date date = new Date();
-                date.setTime(date.getTime() + (long) (60000 * config.getMuteCount()));
-                PrettyTime formatter = new PrettyTime(contextService.getLocale());
-                formatter.removeUnit(JustNow.class);
-                formatter.removeUnit(Millisecond.class);
-                formatter.removeUnit(Second.class);
-                argument = formatter.format(date);
-            }
-            messageService.onEmbedMessage(event.getChannel(), messageCode, mentioned.getEffectiveName(), argument);
+            String messageCode = "discord.command.mod.warn.exceeded.message." + request.getType().name();
+            messageService.onEmbedMessage(event.getChannel(), messageCode, mentioned.getEffectiveName(),
+                    result.getNumber(), argumentBuilder.toString());
             return;
         }
-        ModerationConfig config = moderationService.getOrCreate(event.getGuild());
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.message",
-                mentioned.getEffectiveName(), moderationService.warnCount(mentioned), config.getMaxWarnings());
+                mentioned.getEffectiveName(), result.getNumber());
+    }
+
+    private List<Role> getRoles(Guild guild, List<Long> roleIds) {
+        if (CollectionUtils.isEmpty(roleIds)) {
+            return Collections.emptyList();
+        }
+        return roleIds.stream()
+                .map(guild::getRoleById)
+                .filter(e -> guild.getSelfMember().canInteract(e))
+                .collect(Collectors.toList());
     }
 }

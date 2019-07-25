@@ -30,7 +30,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
@@ -52,8 +51,8 @@ import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingReposi
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,8 +87,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
-    private final Set<Long> calculateQueue = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
     public RankingServiceImpl(@Autowired RankingConfigRepository repository) {
         super(repository, true);
     }
@@ -108,7 +105,9 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Transactional
     @Override
     public RankingInfo getRankingInfo(Member member) {
-        return RankingUtils.calculateInfo(getRanking(member));
+        RankingInfo rankingInfo = RankingUtils.calculateInfo(getRanking(member));
+        rankingInfo.setRank(rankingRepository.getRank(member.getGuild().getIdLong(), rankingInfo.getTotalExp()));
+        return rankingInfo;
     }
 
     @Override
@@ -121,7 +120,12 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Override
     public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
         Page<Ranking> rankings = rankingRepository.findByGuildId(guildId, search != null ? search.toLowerCase() : "", pageable);
-        return rankings.map(RankingUtils::calculateInfo);
+        AtomicLong rankCounter = new AtomicLong(pageable.getOffset());
+        return rankings.map(e -> {
+            RankingInfo info = RankingUtils.calculateInfo(e);
+            info.setRank(rankCounter.incrementAndGet());
+            return info;
+        });
     }
 
     @Transactional
@@ -140,7 +144,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 int level = RankingUtils.getLevelFromExp(ranking.getExp());
                 ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
                 rankingRepository.save(ranking);
-                calculateQueue.add(guild.getIdLong());
                 coolDowns.put(memberKey, DUMMY);
 
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
@@ -229,7 +232,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
             rankingRepository.save(ranking);
-            rankingRepository.recalculateRank(guildId);
             if (discordService.isConnected(guildId)) {
                 Guild guild = discordService.getShardManager().getGuildById(guildId);
                 if (guild != null) {
@@ -254,7 +256,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     public void resetAll(long guildId, boolean levels, boolean cookies) {
         if (levels) {
             rankingRepository.resetAll(guildId);
-            rankingRepository.recalculateRank(guildId);
         }
         if (cookies) {
             cookieRepository.deleteByGuild(guildId);
@@ -324,7 +325,6 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         if (ranking == null && member != null) {
             ranking = new Ranking();
             ranking.setMember(member);
-            ranking.setRank(rankingRepository.countByGuildId(member.getGuildId()) + 1);
             rankingRepository.save(ranking);
         }
         return ranking;
@@ -337,20 +337,9 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             LocalMember localMember = memberService.getOrCreate(member);
             ranking = new Ranking();
             ranking.setMember(localMember);
-            ranking.setRank(rankingRepository.countByGuildId(member.getGuild().getIdLong()) + 1);
             rankingRepository.save(ranking);
         }
         return ranking;
-    }
-
-    @Scheduled(fixedDelay = 300000)
-    @Override
-    public void calculateQueue() {
-        synchronized (calculateQueue) {
-            Set<Long> queue = new HashSet<>(calculateQueue);
-            calculateQueue.clear();
-            queue.forEach(rankingRepository::recalculateRank);
-        }
     }
 
     private static Date getCookieCoolDown() {

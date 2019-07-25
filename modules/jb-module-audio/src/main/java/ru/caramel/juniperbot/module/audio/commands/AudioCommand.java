@@ -51,6 +51,10 @@ public abstract class AudioCommand extends AbstractCommand {
         if (member == null) {
             return false;
         }
+        if (!featureSetService.isAvailable(message.getGuild())) {
+            featureSetService.sendBonusMessage(message.getChannel().getIdLong());
+            return false;
+        }
         if (!musicConfigService.hasAccess(member)) {
             throw new ValidationException("discord.command.audio.missingAccess");
         }

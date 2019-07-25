@@ -14,10 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.command.service;
+package ru.caramel.juniperbot.web.dto.config;
 
-import ru.caramel.juniperbot.core.command.model.CommandHandler;
-import ru.caramel.juniperbot.core.command.model.CommandSender;
+import lombok.Getter;
+import lombok.Setter;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 
-public interface CustomCommandsService extends CommandSender, CommandHandler {
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Set;
+
+@Getter
+@Setter
+public class ModerationActionDto implements Serializable {
+
+    private static final long serialVersionUID = -5304216852167893277L;
+
+    private Long id;
+
+    @NotNull
+    private ModerationActionType type;
+
+    private int count;
+
+    private int duration;
+
+    private Set<String> assignRoles;
+
+    private Set<String> revokeRoles;
+
 }

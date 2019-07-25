@@ -14,15 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.command.model;
+package ru.caramel.juniperbot.core.moderation.model;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import lombok.Builder;
+import lombok.Getter;
 
-public interface CommandHandler {
+import java.io.Serializable;
 
-    boolean handleMessage(GuildMessageReceivedEvent event);
+@Getter
+@Builder
+public class WarningResult implements Serializable {
+    private static final long serialVersionUID = -8830799961676960164L;
 
-    default int getPriority() {
-        return 0;
-    }
+    private long number;
+
+    private ModerationActionRequest request;
+
+    private boolean punished;
 }

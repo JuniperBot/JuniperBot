@@ -215,7 +215,7 @@ public class PlaybackInstance {
     }
 
     public synchronized void offer(TrackRequest request) {
-        request.getTrack().setUserData(this);
+        TrackData.setInstance(request.getTrack(), this);
         playlist.add(request);
     }
 }

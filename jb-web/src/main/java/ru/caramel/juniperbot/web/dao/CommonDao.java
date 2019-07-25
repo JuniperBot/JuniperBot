@@ -21,10 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
-import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
 
 @Service
 public class CommonDao extends AbstractDao {
@@ -32,18 +30,10 @@ public class CommonDao extends AbstractDao {
     @Autowired
     private ConfigService configService;
 
-    @Autowired
-    private ModerationService moderationService;
-
     @Transactional
     public CommonConfigDto getConfig(long guildId) {
         GuildConfig config = configService.getOrCreate(guildId);
-        CommonConfigDto dto = apiMapper.getCommonDto(config);
-
-        ModerationConfig modConfig = moderationService.getOrCreate(guildId);
-        ModerationConfigDto modConfigDto = apiMapper.getModerationDto(modConfig);
-        dto.setModConfig(modConfigDto);
-        return dto;
+        return apiMapper.getCommonDto(config);
     }
 
     @Transactional
@@ -51,9 +41,5 @@ public class CommonDao extends AbstractDao {
         GuildConfig config = configService.getOrCreate(guildId);
         apiMapper.updateCommon(dto, config);
         configService.save(config);
-
-        ModerationConfig modConfig = moderationService.getOrCreate(guildId);
-        apiMapper.updateModerationConfig(dto.getModConfig(), modConfig);
-        moderationService.save(modConfig);
     }
 }

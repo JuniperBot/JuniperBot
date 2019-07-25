@@ -24,8 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import ru.caramel.juniperbot.core.audit.service.AuditService;
-import ru.caramel.juniperbot.core.command.service.CommandsService;
+import ru.caramel.juniperbot.core.command.service.InternalCommandsService;
 import ru.caramel.juniperbot.core.common.service.BrandingService;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
@@ -50,7 +49,7 @@ public abstract class AbstractCommand implements Command {
     protected BrandingService brandingService;
 
     @Autowired
-    protected CommandsService commandsService;
+    protected InternalCommandsService commandsService;
 
     @Autowired
     protected ConfigService configService;
@@ -60,8 +59,6 @@ public abstract class AbstractCommand implements Command {
 
     @Autowired
     protected ApplicationContext applicationContext;
-
-    private AuditService auditService;
 
     private DiscordCommand annotation;
 
@@ -102,18 +99,16 @@ public abstract class AbstractCommand implements Command {
         if (StringUtils.isEmpty(input)) {
             return input;
         }
-        Matcher matcher = MENTION_PATTERN.matcher(input);
-        if (matcher.find()) {
-            return matcher.group(1).trim();
+        String[] lines = input.split("\\r?\\n");
+        boolean foundFirst = false;
+        for (int i = 0; i < lines.length; i++) {
+            Matcher matcher = MENTION_PATTERN.matcher(lines[i]);
+            if (!foundFirst && matcher.find()) {
+                foundFirst = true;
+                lines[i] = matcher.group(1).trim();
+            }
         }
-        return input;
-    }
-
-    protected AuditService getAuditService() {
-        if (auditService == null) {
-            auditService = applicationContext.getBean(AuditService.class);
-        }
-        return auditService;
+        return StringUtils.join(lines, "\n").trim();
     }
 
     @Override

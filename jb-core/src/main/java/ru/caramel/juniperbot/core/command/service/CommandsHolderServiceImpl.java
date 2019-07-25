@@ -17,17 +17,20 @@
 package ru.caramel.juniperbot.core.command.service;
 
 import lombok.Getter;
+import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.command.model.Command;
+import ru.caramel.juniperbot.core.command.model.CoolDownHolder;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.message.service.MessageService;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +56,9 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
     private Map<String, Command> publicCommands;
 
     private Map<String, List<DiscordCommand>> descriptors;
+
+    @Getter
+    private Map<Long, CoolDownHolder> coolDownHolderMap = new ConcurrentHashMap<>();
 
     @Override
     public Command getByLocale(String localizedKey) {
@@ -153,5 +159,10 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
                     .stream().collect(Collectors.groupingBy(e -> e.group()[0], LinkedHashMap::new, Collectors.toList()));
         }
         return descriptors;
+    }
+
+    @Override
+    public void clear(Guild guild) {
+        coolDownHolderMap.remove(guild.getIdLong());
     }
 }

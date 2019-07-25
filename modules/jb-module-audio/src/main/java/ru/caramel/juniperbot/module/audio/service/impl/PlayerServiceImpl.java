@@ -23,6 +23,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.IPlayer;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.core.JDA;
@@ -160,21 +161,21 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     private boolean stopInstance(PlaybackInstance instance, boolean notify) {
-        if (instance != null) {
-            if (notify) {
-                notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
-            }
-            instance.stop();
-            if (featureSetService.isAvailable(instance.getGuildId())) {
-                musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
-            }
-            Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
-            if (guild != null) {
-                lavaAudioService.closeConnection(guild);
-            }
-            return true;
+        if (instance == null) {
+            return false;
         }
-        return false;
+        if (notify) {
+            notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
+        }
+        instance.stop();
+        if (featureSetService.isAvailable(instance.getGuildId())) {
+            musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
+        }
+        Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
+        if (guild != null) {
+            lavaAudioService.closeConnection(guild);
+        }
+        return true;
     }
 
     private void notifyCurrentEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
@@ -564,15 +565,30 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             clearInstance(instance, true);
         }
         messageManager.monitor(instances.keySet());
+
+        if (lavaAudioService.getLavaLink() != null) {
+            List<JdaLink> links = new ArrayList<>(lavaAudioService.getLavaLink().getLinks());
+            links.forEach(link -> {
+                PlaybackInstance instance = getInstance(link.getGuildIdLong(), false);
+                if (!isActive(instance)) {
+                    link.destroy();
+                }
+            });
+        }
     }
 
     private long countListeners(PlaybackInstance instance) {
-        if (isActive(instance)) {
-            return getConnectedChannel(instance.getGuildId()).getMembers()
-                    .stream()
-                    .filter(e -> !e.getUser().equals(e.getJDA().getSelfUser())).count();
+        if (!isActive(instance)) {
+            return 0;
         }
-        return 0;
+        VoiceChannel channel = getConnectedChannel(instance.getGuildId());
+        if (channel.getGuild().getSelfMember().getVoiceState().isGuildMuted()) {
+            return 0;
+        }
+        return channel.getMembers()
+                .stream()
+                .filter(e -> !e.getUser().isBot() && !e.getVoiceState().isGuildDeafened())
+                .count();
     }
 
     @Gauge(name = ACTIVE_CONNECTIONS, absolute = true)

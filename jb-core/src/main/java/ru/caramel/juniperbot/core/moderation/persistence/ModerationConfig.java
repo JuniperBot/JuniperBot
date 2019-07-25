@@ -21,10 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
-import ru.caramel.juniperbot.core.moderation.model.WarnExceedAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -36,10 +34,6 @@ public class ModerationConfig extends GuildEntity {
 
     private static final long serialVersionUID = 7052650749958531237L;
 
-    public static final int DEFAULT_MAX_WARNINGS = 3;
-
-    public static final int DEFAULT_MUTE_COUNT = 1440;
-
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
     private List<Long> roles;
@@ -50,19 +44,12 @@ public class ModerationConfig extends GuildEntity {
     @Column(name = "muted_role_id")
     private Long mutedRoleId;
 
-    @Column(name = "max_warnings")
-    private int maxWarnings = DEFAULT_MAX_WARNINGS;
-
-    @Column(name = "warn_exceed_action")
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private WarnExceedAction warnExceedAction = WarnExceedAction.BAN;
-
-    @Column(name = "mute_count")
-    private int muteCount = DEFAULT_MUTE_COUNT;
-
     @Column(name = "cooldown_ignored")
     private boolean coolDownIgnored;
+
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("count")
+    private List<ModerationAction> actions;
 
     public ModerationConfig(long guildId) {
         this.guildId = guildId;

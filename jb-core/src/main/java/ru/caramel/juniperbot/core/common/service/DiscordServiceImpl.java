@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.requests.CloseCode;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
@@ -166,17 +165,16 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public void executeWebHook(WebHook webHook, WebhookMessage message, Consumer<WebHook> onAbsent) {
-        if (message != null) {
-            try (WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build()) {
-                client.send(message).exceptionally(e -> {
-                    log.error("Can't execute webhook: ", e);
-                    if (e.getMessage().contains("Request returned failure 404")) {
-                        onAbsent.accept(webHook);
-                    }
-                    return null;
-                });
-            }
+        if (message == null) {
+            return;
         }
+        WebhookClient client = new WebhookClientBuilder(webHook.getHookId(), webHook.getToken()).build();
+        client.send(message).whenComplete((v, e) -> {
+            if (e != null && e.getMessage().contains("Request returned failure 404")) {
+                onAbsent.accept(webHook);
+            }
+            client.close();
+        });
     }
 
     @Override

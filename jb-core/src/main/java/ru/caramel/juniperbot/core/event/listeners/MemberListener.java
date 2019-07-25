@@ -17,6 +17,8 @@ package ru.caramel.juniperbot.core.event.listeners;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
@@ -38,6 +40,7 @@ import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.service.MemberService;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.moderation.service.MuteService;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +51,9 @@ public class MemberListener extends DiscordEventListener {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private MuteService muteService;
 
     @Autowired
     private ModerationService moderationService;
@@ -61,7 +67,7 @@ public class MemberListener extends DiscordEventListener {
             return;
         }
         LocalMember member = memberService.getOrCreate(event.getMember());
-        moderationService.refreshMute(event.getMember());
+        muteService.refreshMute(event.getMember());
         getAuditService().log(event.getGuild(), AuditActionType.MEMBER_JOIN)
                 .withUser(member)
                 .save();
@@ -69,12 +75,13 @@ public class MemberListener extends DiscordEventListener {
 
     @Override
     public void onGuildBan(GuildBanEvent event) {
-        if (event.getUser().isBot() || !event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
+        Guild guild = event.getGuild();
+        if (event.getUser().isBot() || !guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             return;
         }
-        event.getGuild().getBan(event.getUser()).queueAfter(2, TimeUnit.SECONDS, e -> {
-            if (event.getGuild().getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-                event.getGuild().getAuditLogs()
+        guild.getBan(event.getUser()).queueAfter(2, TimeUnit.SECONDS, e -> {
+            if (guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+                guild.getAuditLogs()
                         .type(ActionType.BAN)
                         .limit(10)
                         .queue(a -> {
@@ -83,19 +90,28 @@ public class MemberListener extends DiscordEventListener {
                                     .map(AuditLogEntry::getUser)
                                     .findFirst()
                                     .orElse(null);
-                            AuditActionBuilder builder = getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                            if (moderatorUser != null && moderatorUser.equals(guild.getSelfMember().getUser())) {
+                                moderatorUser = null;
+                            }
+
+                            AuditActionBuilder builder = getAuditService().log(guild, AuditActionType.MEMBER_BAN)
                                     .withTargetUser(event.getUser())
                                     .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason());
-                            LocalMember moderator = moderatorUser != null ? memberService.get(event.getGuild(), moderatorUser) : null;
+                            LocalMember moderator = moderatorUser != null ? memberService.get(guild, moderatorUser) : null;
                             if (moderator != null) {
                                 builder.withUser(moderator);
-                            } else {
+                            } else if (moderatorUser != null) {
                                 builder.withUser(moderatorUser);
+                            } else {
+                                Member lastModerator = moderationService.getLastActionModerator(guild, event.getUser());
+                                builder.withUser(lastModerator);
                             }
                             builder.save();
                         });
             } else {
-                getAuditService().log(event.getGuild(), AuditActionType.MEMBER_BAN)
+                Member lastModerator = moderationService.getLastActionModerator(guild, event.getUser());
+                getAuditService().log(guild, AuditActionType.MEMBER_BAN)
+                        .withUser(lastModerator)
                         .withTargetUser(event.getUser())
                         .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
                         .save();

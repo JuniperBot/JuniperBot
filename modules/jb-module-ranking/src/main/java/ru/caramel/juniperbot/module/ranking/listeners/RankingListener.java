@@ -18,11 +18,9 @@ package ru.caramel.juniperbot.module.ranking.listeners;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
@@ -35,13 +33,6 @@ public class RankingListener extends DiscordEventListener {
 
     @Autowired
     private RankingService rankingService;
-
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (!event.getAuthor().isBot() && event.getMessage().getType() == MessageType.DEFAULT) {
-            rankingService.onMessage(event);
-        }
-    }
 
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {

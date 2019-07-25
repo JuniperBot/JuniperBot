@@ -41,4 +41,8 @@ public class ReactionRouletteDto implements Serializable {
     @Min(1)
     @Max(5)
     private int percent = 1;
+
+    @Min(0)
+    @Max(999999999)
+    private int threshold = 0;
 }

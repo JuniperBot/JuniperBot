@@ -16,7 +16,9 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
+import net.dv8tion.jda.core.entities.Guild;
 import ru.caramel.juniperbot.core.command.model.Command;
+import ru.caramel.juniperbot.core.command.model.CoolDownHolder;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 
 import java.util.List;
@@ -43,4 +45,8 @@ public interface CommandsHolderService {
     boolean isAnyCommand(String key);
 
     Set<String> getPublicCommandKeys();
+
+    Map<Long, CoolDownHolder> getCoolDownHolderMap();
+
+    void clear(Guild guild);
 }

@@ -19,31 +19,26 @@ package ru.caramel.juniperbot.core.command.service;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 import ru.caramel.juniperbot.core.command.persistence.CustomCommand;
 import ru.caramel.juniperbot.core.command.persistence.CustomCommandRepository;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.message.model.MessageTemplateCompiler;
-import ru.caramel.juniperbot.core.message.service.MessageService;
 import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
-import ru.caramel.juniperbot.core.moderation.service.ModerationService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 
+@Order(10)
 @Service
-public class CustomCommandsServiceImpl implements CustomCommandsService {
+public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
-    private CommandsService commandsService;
-
-    @Autowired
-    private MessageService messageService;
+    private InternalCommandsService internalCommandsService;
 
     @Autowired
     private MessageTemplateService templateService;
@@ -51,37 +46,7 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
     @Autowired
     private CustomCommandRepository commandRepository;
 
-    @Autowired
-    private ConfigService configService;
-
-    @Autowired
-    private ModerationService moderationService;
-
-    @PostConstruct
-    public void init() {
-        commandsService.registerHandler(this);
-    }
-
     @Override
-    public boolean handleMessage(GuildMessageReceivedEvent event) {
-        return commandsService.sendMessage(event, this, e -> isAnyCustomCommand(event, e));
-    }
-
-    public boolean isAnyCustomCommand(GuildMessageReceivedEvent event, String input) {
-        if (event.getGuild() == null) {
-            return false;
-        }
-        String prefix = configService.getPrefix(event.getGuild().getIdLong());
-        if (StringUtils.isEmpty(prefix)) {
-            return false;
-        }
-        if (!input.startsWith(prefix)) {
-            return false;
-        }
-        String key = input.replaceFirst("^" + Pattern.quote(prefix), "");
-        return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
-    }
-
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
         if (event.getGuild() == null) {
             return false;
@@ -93,7 +58,7 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
 
         if (command.getCommandConfig() != null) {
             CommandConfig commandConfig = command.getCommandConfig();
-            if (commandConfig.isDisabled() || commandsService.isRestricted(event, commandConfig)) {
+            if (commandConfig.isDisabled() || isRestricted(event, commandConfig)) {
                 return true;
             }
             if (commandConfig.isDeleteSource()
@@ -119,18 +84,29 @@ public class CustomCommandsServiceImpl implements CustomCommandsService {
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
                     commandContent = commandContent.substring(args[0].length()).trim();
-                    return commandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
+                    return internalCommandsService.sendCommand(event, CommonUtils.trimTo(commandContent, 2000), args[0], config);
                 }
                 break;
             case MESSAGE:
                 templateCompiler.compileAndSend();
-                return true;
+                break;
         }
-        return false;
+        return true;
     }
 
     @Override
-    public int getPriority() {
-        return 1;
+    public boolean isValidKey(GuildMessageReceivedEvent event, String key) {
+        if (event.getGuild() == null) {
+            return false;
+        }
+        String prefix = configService.getPrefix(event.getGuild().getIdLong());
+        if (StringUtils.isEmpty(prefix)) {
+            return false;
+        }
+        if (!key.startsWith(prefix)) {
+            return false;
+        }
+        key = key.replaceFirst("^" + Pattern.quote(prefix), "");
+        return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
     }
 }

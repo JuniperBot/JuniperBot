@@ -44,9 +44,6 @@ public class Ranking extends BaseEntity {
     private long exp;
 
     @Column
-    private long rank;
-
-    @Column
     private long cookies;
 
     @Transient

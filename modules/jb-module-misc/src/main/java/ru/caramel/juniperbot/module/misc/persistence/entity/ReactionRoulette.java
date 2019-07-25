@@ -26,6 +26,7 @@ import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 
@@ -47,6 +48,10 @@ public class ReactionRoulette extends GuildEntity {
 
     @Column
     private int percent = 1;
+
+    @Column
+    @Min(0)
+    private int threshold = 0;
 
     @Type(type = "jsonb")
     @Column(name = "ignored_channels", columnDefinition = "json")

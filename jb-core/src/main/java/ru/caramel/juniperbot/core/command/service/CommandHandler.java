@@ -14,10 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.moderation.model;
+package ru.caramel.juniperbot.core.command.service;
 
-public enum WarnExceedAction {
-    BAN,
-    KICK,
-    MUTE
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+
+/**
+ * A command handler interface.
+ * All implementation must have {@link org.springframework.core.annotation.Order} annotation to handle orders
+ */
+public interface CommandHandler {
+
+    /**
+     * Handle message as command
+     * @param event Message event
+     * @return True if this event was handled
+     */
+    boolean handleMessage(GuildMessageReceivedEvent event);
 }

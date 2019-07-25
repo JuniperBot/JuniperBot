@@ -19,8 +19,10 @@ package ru.caramel.juniperbot.core.moderation.command;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.moderation.service.MuteService;
 
 @DiscordCommand(key = "discord.command.mod.unmute.key",
         description = "discord.command.mod.unmute.desc",
@@ -29,6 +31,9 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
         priority = 35)
 public class UnMuteCommand extends ModeratorCommandAsync {
 
+    @Autowired
+    private MuteService muteService;
+
     @Override
     protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
         Member mentioned = getMentioned(event);
@@ -36,7 +41,7 @@ public class UnMuteCommand extends ModeratorCommandAsync {
             messageService.onError(event.getChannel(), "discord.command.mod.unmute.mention");
             return;
         }
-        boolean unmuted = moderationService.unmute(event.getMember(), event.getChannel(), mentioned);
+        boolean unmuted = muteService.unmute(event.getMember(), event.getChannel(), mentioned);
         messageService.onEmbedMessage(event.getChannel(), unmuted
                 ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
     }

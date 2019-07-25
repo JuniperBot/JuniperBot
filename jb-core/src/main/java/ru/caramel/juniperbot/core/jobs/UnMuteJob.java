@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.moderation.service.ModerationService;
+import ru.caramel.juniperbot.core.moderation.service.MuteService;
 import ru.caramel.juniperbot.core.support.AbstractJob;
 
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ public class UnMuteJob extends AbstractJob {
     private DiscordService discordService;
 
     @Autowired
-    private ModerationService moderationService;
+    private MuteService muteService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -58,7 +58,7 @@ public class UnMuteJob extends AbstractJob {
         String channelId = data.getString(ATTR_CHANNEL_ID);
 
         if (guildId != null && userId != null && channelId != null) {
-            moderationService.clearState(Long.parseLong(guildId), userId, channelId);
+            muteService.clearState(Long.parseLong(guildId), userId, channelId);
         }
 
         if (StringUtils.isEmpty(guildId)) {
@@ -74,7 +74,7 @@ public class UnMuteJob extends AbstractJob {
             Member member = guild.getMemberById(userId);
             if (member != null) {
                 TextChannel channel = StringUtils.isNotBlank(channelId) ? guild.getTextChannelById(channelId) : null;
-                moderationService.unmute(null, channel, member);
+                muteService.unmute(null, channel, member);
             }
         }
     }

@@ -16,20 +16,11 @@
  */
 package ru.caramel.juniperbot.module.mafia.listeners;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
-import ru.caramel.juniperbot.module.mafia.model.MafiaState;
 import ru.caramel.juniperbot.module.mafia.service.MafiaService;
-
-import java.util.Objects;
 
 @DiscordEvent
 public class MafiaListener extends DiscordEventListener {
@@ -37,39 +28,8 @@ public class MafiaListener extends DiscordEventListener {
     @Autowired
     private MafiaService mafiaService;
 
-    @Autowired
-    private MessageService messageService;
-
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
         mafiaService.stop(event.getGuild());
-    }
-
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getAuthor().isBot() || event.getMessage().getType() != MessageType.DEFAULT) {
-            return;
-        }
-        MafiaInstance instance = mafiaService.getRelatedInstance(event.getChannel().getIdLong());
-        if (instance != null && !instance.isInState(MafiaState.FINISH)) {
-            boolean isPlayer = instance.isPlayer(event.getAuthor());
-            if (isPlayer) {
-                instance.tick();
-            }
-
-            Member selfMember = event.getGuild().getSelfMember();
-            if (!event.getMember().equals(selfMember)
-                    && !instance.isInState(MafiaState.CHOOSING)
-                    && !Objects.equals(event.getChannel().getIdLong(), instance.getGoonChannelId())
-                    && selfMember.hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
-                if (instance.isInState(MafiaState.DAY)) {
-                    if (!isPlayer) {
-                        messageService.delete(event.getMessage());
-                    }
-                } else {
-                    messageService.delete(event.getMessage());
-                }
-            }
-        }
     }
 }

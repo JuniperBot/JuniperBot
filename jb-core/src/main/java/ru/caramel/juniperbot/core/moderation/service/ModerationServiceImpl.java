@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.moderation.service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -24,12 +26,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
-import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.model.AuditActionBuilder;
@@ -39,15 +36,16 @@ import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.core.common.service.MemberService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.jobs.UnMuteJob;
 import ru.caramel.juniperbot.core.message.service.MessageService;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.WarningResult;
 import ru.caramel.juniperbot.core.moderation.persistence.*;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -58,15 +56,10 @@ public class ModerationServiceImpl
         extends AbstractDomainServiceImpl<ModerationConfig, ModerationConfigRepository>
         implements ModerationService {
 
-    private final static String MUTED_ROLE_NAME = "JB-MUTED";
-
     private final static String COLOR_ROLE_NAME = "JB-CLR-";
 
     @Autowired
     private MemberWarningRepository warningRepository;
-
-    @Autowired
-    private MuteStateRepository muteStateRepository;
 
     @Autowired
     private MemberService memberService;
@@ -81,7 +74,12 @@ public class ModerationServiceImpl
     private ActionsHolderService actionsHolderService;
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private MuteService muteService;
+
+    private Cache<String, String> lastActionCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build();
 
     public ModerationServiceImpl(@Autowired ModerationConfigRepository repository) {
         super(repository, true);
@@ -91,6 +89,7 @@ public class ModerationServiceImpl
     protected ModerationConfig createNew(long guildId) {
         ModerationConfig config = new ModerationConfig(guildId);
         config.setCoolDownIgnored(true);
+        config.setActions(new ArrayList<>());
         return config;
     }
 
@@ -178,406 +177,152 @@ public class ModerationServiceImpl
 
     @Override
     @Transactional
-    public Role getMutedRole(Guild guild) {
-        ModerationConfig moderationConfig = getOrCreate(guild);
-
-        Role role = null;
-        if (moderationConfig.getMutedRoleId() != null) {
-            role = guild.getRoleById(moderationConfig.getMutedRoleId());
+    public boolean performAction(ModerationActionRequest request) {
+        Guild guild = request.getGuild();
+        Member self = guild.getSelfMember();
+        if (request.getModerator() != null) {
+            lastActionCache.put(DiscordUtils.getMemberKey(request.getViolator()),
+                    request.getModerator().getUser().getId());
         }
-
-        if (role == null) {
-            List<Role> mutedRoles = guild.getRolesByName(MUTED_ROLE_NAME, true);
-            role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
-        }
-
-        if (role == null || !guild.getSelfMember().canInteract(role)) {
-            role = guild.getController()
-                    .createRole()
-                    .setColor(Color.GRAY)
-                    .setMentionable(false)
-                    .setName(MUTED_ROLE_NAME)
-                    .complete();
-        }
-
-        if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
-            moderationConfig.setMutedRoleId(role.getIdLong());
-            save(moderationConfig);
-        }
-
-        for (TextChannel channel : guild.getTextChannels()) {
-            checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
-        }
-        for (VoiceChannel channel : guild.getVoiceChannels()) {
-            checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
-        }
-        return role;
-    }
-
-    private enum PermissionMode {
-        DENY, ALLOW, UNCHECKED
-    }
-
-    private static void checkPermission(Channel channel, Role role, PermissionMode mode, Permission permission) {
-        PermissionOverride override = channel.getPermissionOverride(role);
-        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
-            return;
-        }
-        if (override == null) {
-            switch (mode) {
-                case DENY:
-                    channel.createPermissionOverride(role).setDeny(permission).queue();
-                    break;
-                case ALLOW:
-                    channel.createPermissionOverride(role).setAllow(permission).queue();
-                    break;
-                case UNCHECKED:
-                    // do nothing
-                    break;
-            }
-        } else {
-            switch (mode) {
-                case DENY:
-                    if (!override.getDenied().contains(permission)) {
-                        override.getManager().deny(permission).queue();
-                    }
-                    break;
-                case UNCHECKED:
-                case ALLOW:
-                    if (!override.getAllowed().contains(permission)) {
-                        override.getManager().clear(permission).queue();
-                    }
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason) {
-        return mute(author, channel, member, global, duration, reason, true, false);
-    }
-
-    private boolean mute(Member author, TextChannel channel, Member member, boolean global, Integer duration, String reason, boolean log, boolean stateless) {
-
-        AuditActionBuilder actionBuilder = log ? getAuditService()
-                .log(author.getGuild(), AuditActionType.MEMBER_MUTE)
-                .withUser(author)
-                .withTargetUser(member)
-                .withChannel(global ? null : channel)
-                .withAttribute(REASON_ATTR, reason)
-                .withAttribute(DURATION_ATTR, duration)
-                .withAttribute(GLOBAL_ATTR, global) : null;
-
-        Consumer<Boolean> schedule = g -> {
-            contextService.inTransaction(() -> {
-                if (!stateless) {
-                    if (duration != null) {
-                        scheduleUnMute(g, channel, member, duration);
-                    }
-                    storeState(g, channel, member, duration, reason);
+        switch (request.getType()) {
+            case MUTE:
+                return muteService.mute(request);
+            case BAN:
+                if (!self.hasPermission(Permission.BAN_MEMBERS) || !self.canInteract(request.getViolator())) {
+                    return false;
                 }
-                if (actionBuilder != null) {
-                    actionBuilder.save();
-                }
-            });
-        };
-
-        if (global) {
-            Guild guild = member.getGuild();
-            Role mutedRole = getMutedRole(guild);
-            if (!member.getRoles().contains(mutedRole)) {
-                guild.getController()
-                        .addRolesToMember(member, mutedRole)
-                        .queue(e -> schedule.accept(true));
-                guild.getController()
-                        .setMute(member, true)
-                        .queue();
+                notifyUserAction(e -> {
+                    int delDays = request.getDuration() != null ? request.getDuration() : 0;
+                    e.getGuild().getController().ban(e, delDays, request.getReason()).queue();
+                }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
                 return true;
-            }
-        } else {
-            PermissionOverride override = channel.getPermissionOverride(member);
-            if (override != null && override.getDenied().contains(Permission.MESSAGE_WRITE)) {
-                return false;
-            }
-            if (override == null) {
-                channel.createPermissionOverride(member)
-                        .setDeny(Permission.MESSAGE_WRITE)
-                        .queue(e -> schedule.accept(false));
-            } else {
-                override.getManager().deny(Permission.MESSAGE_WRITE).queue(e -> schedule.accept(false));
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @Transactional
-    public boolean unmute(Member author, TextChannel channel, Member member) {
-        Guild guild = member.getGuild();
-        boolean result = false;
-        Role mutedRole = getMutedRole(guild);
-        if (member.getRoles().contains(mutedRole)) {
-            guild.getController()
-                    .removeRolesFromMember(member, mutedRole)
-                    .queue();
-            guild.getController()
-                    .setMute(member, false)
-                    .queue();
-            result = true;
-        }
-        if (channel != null) {
-            PermissionOverride override = channel.getPermissionOverride(member);
-            if (override != null) {
-                override.delete().queue();
-                result = true;
-            }
-        }
-        removeUnMuteSchedule(member, channel);
-        if (result) {
-            getAuditService()
-                    .log(guild, AuditActionType.MEMBER_UNMUTE)
-                    .withUser(author)
-                    .withTargetUser(member)
-                    .withChannel(channel)
-                    .save();
-        }
-        return result;
-    }
-
-    @Override
-    @Transactional
-    @Async
-    public void refreshMute(Member member) {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
-        try {
-            List<MuteState> muteStates = muteStateRepository.findAllByMember(member);
-            if (CollectionUtils.isNotEmpty(muteStates)) {
-                muteStates.stream().filter(e -> !processState(member, e)).forEach(muteStateRepository::delete);
-                return;
-            }
-
-            JobKey key = UnMuteJob.getKey(member);
-            if (!scheduler.checkExists(key)) {
-                return;
-            }
-            JobDetail detail = scheduler.getJobDetail(key);
-            if (detail == null) {
-                return;
-            }
-            JobDataMap data = detail.getJobDataMap();
-            boolean global = data.getBoolean(UnMuteJob.ATTR_GLOBAL_ID);
-            String channelId = data.getString(UnMuteJob.ATTR_CHANNEL_ID);
-            TextChannel textChannel = channelId != null ? member.getGuild().getTextChannelById(channelId) : null;
-            if (global || textChannel != null) {
-                mute(null, textChannel, member, global, null, null, false, false);
-            }
-        } catch (SchedulerException e) {
-            // fall down, we don't care
-        }
-    }
-
-    private void scheduleUnMute(boolean global, TextChannel channel, Member member, int duration) {
-        try {
-            removeUnMuteSchedule(member, channel);
-            JobDetail job = UnMuteJob.createDetails(global, channel, member);
-            Trigger trigger = TriggerBuilder
-                    .newTrigger()
-                    .startAt(DateTime.now().plusMinutes(duration).toDate())
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule())
-                    .build();
-            schedulerFactoryBean.getScheduler().scheduleJob(job, trigger);
-        } catch (SchedulerException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void storeState(boolean global, TextChannel channel, Member member, Integer duration, String reason) {
-        MuteState state = new MuteState();
-        state.setGlobal(global);
-        state.setUserId(member.getUser().getId());
-        state.setGuildId(member.getGuild().getIdLong());
-        DateTime dateTime = DateTime.now();
-        if (duration != null) {
-            dateTime = dateTime.plusMinutes(duration);
-        } else {
-            dateTime = dateTime.plusYears(100);
-        }
-        state.setExpire(dateTime.toDate());
-        state.setReason(reason);
-        if (channel != null) {
-            state.setChannelId(channel.getId());
-        }
-        muteStateRepository.save(state);
-    }
-
-    private boolean processState(Member member, MuteState muteState) {
-        DateTime now = DateTime.now();
-        DateTime expire = muteState.getExpire() != null ? new DateTime(muteState.getExpire()) : null;
-        if (expire != null && now.isAfter(expire)) {
-            return false;
-        }
-
-        TextChannel textChannel = muteState.getChannelId() != null ? member.getGuild().getTextChannelById(muteState.getChannelId()) : null;
-        if (!muteState.isGlobal() && textChannel == null) {
-            return false;
-        }
-
-        Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
-        mute(null, textChannel, member, muteState.isGlobal(), duration, muteState.getReason(), false, true);
-        return true;
-    }
-
-    private void removeUnMuteSchedule(Member member, TextChannel channel) {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
-        try {
-            JobKey key = UnMuteJob.getKey(member);
-            if (scheduler.checkExists(key)) {
-                scheduler.deleteJob(key);
-                muteStateRepository.deleteByMember(member);
-            }
-            if (channel != null) {
-                key = UnMuteJob.getKey(member, channel);
-                if (scheduler.checkExists(key)) {
-                    scheduler.deleteJob(key);
+            case KICK:
+                if (!self.hasPermission(Permission.KICK_MEMBERS) || !self.canInteract(request.getViolator())) {
+                    return false;
                 }
-                muteStateRepository.deleteByMember(member, channel.getId()); // remove it even if job non exists
+                AuditActionBuilder actionBuilder = getAuditService()
+                        .log(self.getGuild(), AuditActionType.MEMBER_KICK)
+                        .withUser(request.getModerator())
+                        .withTargetUser(request.getViolator())
+                        .withAttribute(REASON_ATTR, request.getReason());
+
+                notifyUserAction(e -> {
+                    actionBuilder.save();
+                    actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
+                    e.getGuild().getController().kick(e, request.getReason()).queue();
+                }, request.getViolator(), "discord.command.mod.action.message.kick", request.getReason());
+                return true;
+
+            case CHANGE_ROLES:
+                if (!self.hasPermission(Permission.MANAGE_ROLES) || !self.canInteract(request.getViolator())) {
+                    return false;
+                }
+                List<Role> currentRoles = new ArrayList<>(request.getViolator().getRoles());
+                List<Role> rolesToAssign = Collections.emptyList();
+                if (CollectionUtils.isNotEmpty(request.getAssignRoles())) {
+                    rolesToAssign = request.getAssignRoles().stream()
+                            .map(guild::getRoleById)
+                            .filter(e -> e != null && self.canInteract(e) && !currentRoles.contains(e))
+                            .collect(Collectors.toList());
+                }
+
+                List<Role> rolesToRevoke = Collections.emptyList();
+                if (CollectionUtils.isNotEmpty(request.getRevokeRoles())) {
+                    rolesToRevoke = request.getRevokeRoles().stream()
+                            .map(guild::getRoleById)
+                            .filter(e -> e != null && self.canInteract(e) && currentRoles.contains(e))
+                            .collect(Collectors.toList());
+                }
+
+                if (CollectionUtils.isEmpty(rolesToAssign) && CollectionUtils.isEmpty(rolesToRevoke)) {
+                    return false;
+                }
+
+                guild.getController().modifyMemberRoles(request.getViolator(), rolesToAssign, rolesToRevoke).queue();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public WarningResult warn(Member author, Member member, String reason) {
+        var result = WarningResult.builder();
+
+        long guildId = member.getGuild().getIdLong();
+        ModerationConfig moderationConfig = getOrCreate(member.getGuild());
+        LocalMember authorLocal = memberService.getOrCreate(author);
+        LocalMember memberLocal = memberService.getOrCreate(member);
+
+        long number = warningRepository.countByViolator(guildId, memberLocal) + 1;
+
+        ModerationAction action = moderationConfig.getActions().stream()
+                .filter(e -> e.getCount() == number)
+                .findFirst()
+                .orElse(null);
+
+        if (action != null) {
+            reason = messageService.getMessage("discord.command.mod.warn.exceeded", number);
+
+            var builder = ModerationActionRequest.builder()
+                    .type(action.getType())
+                    .moderator(author)
+                    .violator(member)
+                    .reason(reason);
+
+            switch (action.getType()) {
+                case MUTE:
+                    builder.duration(action.getDuration())
+                            .global(true);
+                    break;
+                case CHANGE_ROLES:
+                    builder.assignRoles(action.getAssignRoles())
+                            .revokeRoles(action.getRevokeRoles());
+                    break;
+
             }
-        } catch (SchedulerException e) {
-            // fall down, we don't care
+
+            ModerationActionRequest request = builder.build();
+            result.request(request)
+                    .punished(performAction(request));
+        } else {
+            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, number);
         }
-    }
 
-    @Override
-    @Transactional
-    public boolean kick(Member author, Member member) {
-        return kick(author, member, null);
-    }
+        getAuditService().log(guildId, AuditActionType.MEMBER_WARN)
+                .withUser(author)
+                .withTargetUser(memberLocal)
+                .withAttribute(REASON_ATTR, reason)
+                .withAttribute(COUNT_ATTR, number)
+                .save();
 
-    @Override
-    @Transactional
-    public boolean kick(Member author, Member member, final String reason) {
-        Member self = member.getGuild().getSelfMember();
-        if (self.hasPermission(Permission.KICK_MEMBERS) && self.canInteract(member)) {
-
-            AuditActionBuilder actionBuilder = getAuditService()
-                    .log(self.getGuild(), AuditActionType.MEMBER_KICK)
-                    .withUser(author)
-                    .withTargetUser(member)
-                    .withAttribute(REASON_ATTR, reason);
-
-            notifyUserAction(e -> {
-                actionBuilder.save();
-                actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
-                e.getGuild().getController().kick(e, reason).queue();
-            }, member, "discord.command.mod.action.message.kick", reason);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @Transactional
-    public boolean ban(Member author, Member member) {
-        return ban(author, member, null);
-    }
-
-    @Override
-    @Transactional
-    public boolean ban(Member author, Member member, String reason) {
-        return ban(author, member, 0, reason);
-    }
-
-    @Override
-    @Transactional
-    public boolean ban(Member author, Member member, int delDays, final String reason) {
-        Member self = member.getGuild().getSelfMember();
-        if (self.hasPermission(Permission.BAN_MEMBERS) && self.canInteract(member)) {
-            notifyUserAction(e -> {
-                e.getGuild().getController().ban(e, delDays, reason).queue();
-            }, member, "discord.command.mod.action.message.ban", reason);
-            return true;
-        }
-        return false;
+        warningRepository.save(new MemberWarning(guildId, authorLocal, memberLocal, reason));
+        return result.number(number).build();
     }
 
     @Override
     @Transactional
     public List<MemberWarning> getWarnings(Member member) {
         LocalMember localMember = memberService.getOrCreate(member);
-        return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
-    }
-
-    @Override
-    @Transactional
-    public boolean warn(Member author, Member member) {
-        return warn(author, member, null);
-    }
-
-    @Override
-    @Transactional
-    public long warnCount(Member member) {
-        LocalMember memberLocal = memberService.getOrCreate(member);
-        return warningRepository.countActiveByViolator(member.getGuild().getIdLong(), memberLocal);
-    }
-
-    @Override
-    @Transactional
-    public boolean warn(Member author, Member member, String reason) {
-        long guildId = member.getGuild().getIdLong();
-        ModerationConfig moderationConfig = getOrCreate(member.getGuild());
-        LocalMember authorLocal = memberService.getOrCreate(author);
-        LocalMember memberLocal = memberService.getOrCreate(member);
-
-        long count = warningRepository.countActiveByViolator(guildId, memberLocal);
-        boolean exceed = count >= moderationConfig.getMaxWarnings() - 1;
-        MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
-
-        getAuditService().log(guildId, AuditActionType.MEMBER_WARN)
-                .withUser(author)
-                .withTargetUser(memberLocal)
-                .withAttribute(REASON_ATTR, reason)
-                .withAttribute(COUNT_ATTR, count + 1)
-                .withAttribute(MAX_ATTR, moderationConfig.getMaxWarnings())
-                .save();
-
-        if (exceed) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", count + 1);
-            boolean success = true;
-            switch (moderationConfig.getWarnExceedAction()) {
-                case BAN:
-                    success = ban(author, member, reason);
-                    break;
-                case KICK:
-                    success = kick(author, member, reason);
-                    break;
-                case MUTE:
-                    mute(author, null, member, true, moderationConfig.getMuteCount(), reason, true, false);
-                    break;
-            }
-            if (success) {
-                warningRepository.flushWarnings(guildId, memberLocal);
-                warning.setActive(false);
-            }
-        } else {
-            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, count + 1,
-                    moderationConfig.getMaxWarnings());
-        }
-        warningRepository.save(warning);
-        return exceed;
+        return warningRepository.findByViolator(member.getGuild().getIdLong(), localMember);
     }
 
     @Override
     @Transactional
     public void removeWarn(@NonNull MemberWarning warning) {
-        warning.setActive(false);
-        warningRepository.save(warning);
+        warningRepository.delete(warning);
     }
 
     @Override
-    @Transactional
-    public void clearState(long guildId, String userId, String channelId) {
-        muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
+    public Member getLastActionModerator(@NonNull Member violator) {
+        String moderatorUserId = lastActionCache.getIfPresent(DiscordUtils.getMemberKey(violator));
+        return moderatorUserId != null ? violator.getGuild().getMemberById(moderatorUserId) : null;
+    }
+
+    @Override
+    public Member getLastActionModerator(@NonNull Guild guild, @NonNull User violator) {
+        String moderatorUserId = lastActionCache.getIfPresent(DiscordUtils.getMemberKey(guild, violator));
+        return moderatorUserId != null ? guild.getMemberById(moderatorUserId) : null;
     }
 
     private void notifyUserAction(Consumer<Member> consumer, Member member, String code, String reason, Object... objects) {

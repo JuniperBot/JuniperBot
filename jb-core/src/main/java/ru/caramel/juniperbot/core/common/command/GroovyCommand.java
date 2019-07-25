@@ -67,6 +67,7 @@ public class GroovyCommand extends AbstractCommand {
 
     private GroovyShell getShell(GuildMessageReceivedEvent event) {
         GroovyShell shell = groovyService.createShell();
+        shell.setProperty("sm", discordService.getShardManager());
         shell.setProperty("message", event.getMessage());
         shell.setProperty("channel", event.getChannel());
         shell.setProperty("guild", event.getGuild());

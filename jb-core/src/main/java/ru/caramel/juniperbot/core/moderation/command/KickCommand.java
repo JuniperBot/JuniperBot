@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 
 import java.util.Objects;
 
@@ -48,7 +50,17 @@ public class KickCommand extends ModeratorCommand {
             messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
             return false;
         }
-        moderationService.kick(event.getMember(), mentioned, removeMention(query));
-        return ok(event);
+
+        ModerationActionRequest request = ModerationActionRequest.builder()
+                .type(ModerationActionType.KICK)
+                .moderator(event.getMember())
+                .violator(mentioned)
+                .reason(removeMention(query))
+                .build();
+
+        if (moderationService.performAction(request)) {
+            return ok(event);
+        }
+        return fail(event);
     }
 }

@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +47,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
-@FeatureProvider(priority = 2)
+@FeatureProvider(priority = 3)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
+
+    private static final DateTime CHARGE_RAISE_DATE = new DateTime(2019, 8, 2, 0, 0, 0, 0);
 
     private final Object $lock = new Object[0];
 
@@ -274,7 +277,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         if (member.isActiveAndPaid()) {
             Integer cents = member.getCurrentlyEntitledAmountCents();
             if (member.getCurrentlyEntitledAmountCents() != null) {
-                if (cents >= 100) {
+                DateTime chargeDate = member.getLastChargeDate() != null ? new DateTime(member.getLastChargeDate()) : null;
+                if (cents >= 200 || cents >= 100 && chargeDate != null && chargeDate.isBefore(CHARGE_RAISE_DATE)) {
                     pledgeSets.add(FeatureSet.BONUS);
                 }
             }
