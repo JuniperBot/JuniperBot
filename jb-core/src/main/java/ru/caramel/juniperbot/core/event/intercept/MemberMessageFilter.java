@@ -28,6 +28,8 @@ public abstract class MemberMessageFilter implements Filter<GuildMessageReceived
         try {
             if (!event.isWebhookMessage()
                     && !event.getAuthor().isBot()
+                    && event.getMember() != null
+                    && event.getChannel() != null
                     && event.getMessage().getType() == MessageType.DEFAULT) {
                 doInternal(event, chain);
                 return;
