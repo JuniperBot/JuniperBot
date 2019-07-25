@@ -102,7 +102,7 @@ public class MuteServiceImpl implements MuteService {
         }
 
         if (role != null) {
-            if (!Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
+            if (moderationConfig != null && !Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
                 moderationConfig.setMutedRoleId(role.getIdLong());
                 moderationService.save(moderationConfig);
             }
