@@ -102,8 +102,8 @@
         </dropColumn>
     </changeSet>
 
-    <changeSet id="6.7-21072019-7" author="caramel">
+    <!--<changeSet id="6.7-21072019-7" author="caramel">
         <sql>UPDATE playlist_item SET data = null</sql>
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>
