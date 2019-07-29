@@ -156,7 +156,10 @@ public class MessageController {
                 || !isAvailable(action, member)) {
             return;
         }
-        PlaybackInstance instance = playerService.getInstance(guild);
+        PlaybackInstance instance = playerService.get(guild);
+        if (instance == null) {
+            return;
+        }
 
         boolean updateMessage = false;
         switch (action) {

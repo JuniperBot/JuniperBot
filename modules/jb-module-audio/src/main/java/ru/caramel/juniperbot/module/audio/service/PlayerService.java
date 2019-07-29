@@ -34,9 +34,11 @@ public interface PlayerService {
 
     Map<Long, PlaybackInstance> getInstances();
 
-    PlaybackInstance getInstance(Guild guild);
+    PlaybackInstance getOrCreate(Guild guild);
 
-    PlaybackInstance getInstance(long guildId, boolean create);
+    PlaybackInstance get(Guild guild);
+
+    PlaybackInstance get(long guildId, boolean create);
 
     void loadAndPlay(final TextChannel channel, final Member requestedBy, final String trackUrl);
 

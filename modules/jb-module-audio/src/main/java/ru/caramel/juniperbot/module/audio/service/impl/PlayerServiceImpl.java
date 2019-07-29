@@ -114,21 +114,30 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     @Transactional
-    public PlaybackInstance getInstance(Guild guild) {
-        return getInstance(guild.getIdLong(), true);
+    public PlaybackInstance getOrCreate(Guild guild) {
+        return get(guild.getIdLong(), true);
     }
 
     @Override
     @Transactional
-    public PlaybackInstance getInstance(long guildId, boolean create) {
-        return create ? instances.computeIfAbsent(guildId, e -> {
+    public PlaybackInstance get(Guild guild) {
+        return get(guild.getIdLong(), false);
+    }
+
+    @Override
+    @Transactional
+    public PlaybackInstance get(long guildId, boolean create) {
+        if (!create) {
+            return instances.get(guildId);
+        }
+        return instances.computeIfAbsent(guildId, e -> {
             MusicConfig config = musicConfigService.getOrCreate(guildId);
             IPlayer player = lavaAudioService.createPlayer(String.valueOf(guildId));
             if (featureSetService.isAvailable(guildId)) {
                 player.setVolume(config.getVoiceVolume());
             }
             return registerInstance(new PlaybackInstance(e, player));
-        }) : instances.get(guildId);
+        });
     }
 
     @Override
@@ -136,7 +145,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (!lavaAudioService.isConnected(guild) || getConnectedChannel(guild) == null) {
             return false;
         }
-        PlaybackInstance instance = getInstance(guild.getIdLong(), false);
+        PlaybackInstance instance = get(guild);
         return instance != null && instance.getPlayer().getPlayingTrack() != null;
     }
 
@@ -270,7 +279,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         long channelId = channel.getIdLong();
         long requestedById = requestedBy.getUser().getIdLong();
 
-        PlaybackInstance instance = getInstance(channel.getGuild());
+        PlaybackInstance instance = getOrCreate(channel.getGuild());
         audioPlayerManager.loadItemOrdered(instance, query, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
@@ -340,7 +349,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (guild == null) {
             return;
         }
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = getOrCreate(guild);
 
         boolean store = true;
         if (playlist instanceof StoredPlaylist) {
@@ -349,7 +358,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 if (Objects.equals(storedPlaylist.getPlaylistId(), instance.getPlaylistId())) {
                     throw new DiscordException("discord.command.audio.playlistInQueue");
                 }
-            } else if (storedPlaylist.getGuildId() == guild.getIdLong() && !isActive(guild)) {
+            } else if (storedPlaylist.getGuildId() == guild.getIdLong()) {
                 instance.setPlaylistId(storedPlaylist.getPlaylistId());
                 instance.setPlaylistUuid(storedPlaylist.getPlaylistUuid());
                 store = false;
@@ -373,7 +382,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (guild == null) {
             return;
         }
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = getOrCreate(guild);
         playlistService.storeToPlaylist(instance, Collections.singletonList(request));
         play(request, instance);
     }
@@ -391,7 +400,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public void skipTrack(Member member, Guild guild) {
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = get(guild);
+        if (instance == null) {
+            return;
+        }
         // сбросим режим если принудительно вызвали следующий
         if (RepeatMode.CURRENT.equals(instance.getMode())) {
             instance.setMode(RepeatMode.NONE);
@@ -405,7 +417,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean stop(Member member, Guild guild) {
-        PlaybackInstance instance = getInstance(guild.getIdLong(), false);
+        PlaybackInstance instance = get(guild);
         if (instance == null) {
             return false;
         }
@@ -424,7 +436,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (!isActive(guild)) {
             return false;
         }
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = get(guild);
         if (instance.pauseTrack()) {
             contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackPause(instance.getCurrent()));
             return true;
@@ -437,7 +449,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (!isActive(guild)) {
             return false;
         }
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = get(guild);
         if (instance.resumeTrack(resetMessage)) {
             contextService.withContext(instance.getGuildId(), () -> messageManager.onTrackResume(instance.getCurrent()));
             return true;
@@ -448,8 +460,8 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     @Transactional
     public boolean shuffle(Guild guild) {
-        PlaybackInstance instance = getInstance(guild);
-        boolean result = instance.shuffle();
+        PlaybackInstance instance = get(guild);
+        boolean result = instance != null && instance.shuffle();
         if (result) {
             playlistService.refreshStoredPlaylist(instance);
         }
@@ -459,7 +471,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     @Transactional
     public TrackRequest removeByIndex(Guild guild, int index) {
-        PlaybackInstance instance = getInstance(guild);
+        PlaybackInstance instance = get(guild);
+        if (instance == null) {
+            return null;
+        }
         TrackRequest result = instance.removeByIndex(index);
         if (result != null && instance.getPlaylistId() != null) {
             playlistService.refreshStoredPlaylist(instance);
@@ -505,14 +520,13 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean isInChannel(Member member) {
-        PlaybackInstance instance = getInstance(member.getGuild().getIdLong(), false);
-        VoiceChannel channel = getChannel(member, instance);
+        VoiceChannel channel = getChannel(member, get(member.getGuild()));
         return channel != null && channel.getMembers().contains(member);
     }
 
     @Override
     public VoiceChannel getChannel(Member member) {
-        PlaybackInstance instance = getInstance(member.getGuild());
+        PlaybackInstance instance = get(member.getGuild());
         return getChannel(member, instance);
     }
 
@@ -569,7 +583,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (lavaAudioService.getLavaLink() != null) {
             List<JdaLink> links = new ArrayList<>(lavaAudioService.getLavaLink().getLinks());
             links.forEach(link -> {
-                PlaybackInstance instance = getInstance(link.getGuildIdLong(), false);
+                PlaybackInstance instance = get(link.getGuildIdLong(), false);
                 if (!isActive(instance)) {
                     link.destroy();
                 }

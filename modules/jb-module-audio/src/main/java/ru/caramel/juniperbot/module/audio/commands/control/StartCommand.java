@@ -31,10 +31,6 @@ public class StartCommand extends AudioCommand {
 
     @Override
     public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (!playerService.isActive(message.getGuild())) {
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
-            return false;
-        }
         if (playerService.resume(message.getGuild(), true)) {
             return ok(message);
         }

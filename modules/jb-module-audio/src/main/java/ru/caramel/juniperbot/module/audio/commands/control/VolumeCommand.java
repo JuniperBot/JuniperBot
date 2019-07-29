@@ -37,7 +37,7 @@ public class VolumeCommand extends AudioCommand {
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int volume = parseCount(content);
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+        PlaybackInstance instance = playerService.get(message.getGuild());
         instance.setVolume(volume);
         if (instance.getCurrent() != null) {
             messageManager.updateMessage(instance.getCurrent());

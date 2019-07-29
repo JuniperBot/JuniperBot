@@ -108,4 +108,9 @@ public class YouTubeCommand extends PlayCommand {
     protected boolean isChannelRestricted() {
         return false;
     }
+
+    @Override
+    protected boolean isActiveOnly() {
+        return false;
+    }
 }

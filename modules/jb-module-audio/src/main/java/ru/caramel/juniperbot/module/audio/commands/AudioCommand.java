@@ -58,6 +58,10 @@ public abstract class AudioCommand extends AbstractCommand {
         if (!musicConfigService.hasAccess(member)) {
             throw new ValidationException("discord.command.audio.missingAccess");
         }
+        if (isActiveOnly() && !playerService.isActive(message.getGuild())) {
+            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
+            return false;
+        }
         if (isChannelRestricted() && !playerService.isInChannel(member)) {
             VoiceChannel channel = playerService.getChannel(member);
             throw new ValidationException("discord.command.audio.joinChannel", channel != null ? channel.getName() : "unknown");
@@ -67,6 +71,10 @@ public abstract class AudioCommand extends AbstractCommand {
     }
 
     protected boolean isChannelRestricted() {
+        return true;
+    }
+
+    protected boolean isActiveOnly() {
         return true;
     }
 }

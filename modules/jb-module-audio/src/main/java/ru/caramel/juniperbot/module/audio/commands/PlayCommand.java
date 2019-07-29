@@ -80,4 +80,9 @@ public class PlayCommand extends AudioCommand {
         messageService.delete(context.removeAttribute(Message.class, ATTR_SEARCH_MESSAGE));
         return (String) context.removeAttribute(List.class, ATTR_SEARCH_RESULTS).get(index);
     }
+
+    @Override
+    protected boolean isActiveOnly() {
+        return false;
+    }
 }

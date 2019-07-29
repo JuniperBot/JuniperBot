@@ -32,7 +32,7 @@ public class ForwardCommand extends TimingCommand {
 
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, TrackRequest request, long millis) {
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+        PlaybackInstance instance = playerService.get(message.getGuild());
 
         AudioTrack track = request.getTrack();
         long duration = track.getDuration();
