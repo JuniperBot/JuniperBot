@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.web.service.subscriptions;
 
-import me.philippheuer.twitch4j.model.User;
+import com.github.twitch4j.helix.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

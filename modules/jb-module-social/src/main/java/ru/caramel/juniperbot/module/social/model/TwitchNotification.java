@@ -14,13 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.module.social.service;
+package ru.caramel.juniperbot.module.social.model;
 
+import com.github.twitch4j.helix.domain.Game;
+import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.User;
-import ru.caramel.juniperbot.core.subscription.service.SubscriptionService;
-import ru.caramel.juniperbot.module.social.model.TwitchNotification;
-import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface TwitchService extends SubscriptionService<TwitchConnection, TwitchNotification, User> {
+@Getter
+@AllArgsConstructor
+public class TwitchNotification {
 
+    private final User user;
+
+    private final Stream stream;
+
+    private final Game game;
 }

@@ -16,17 +16,17 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import com.github.twitch4j.helix.TwitchHelix;
+import com.github.twitch4j.helix.domain.*;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import me.philippheuer.twitch4j.TwitchClient;
-import me.philippheuer.twitch4j.TwitchClientBuilder;
-import me.philippheuer.twitch4j.model.Channel;
-import me.philippheuer.twitch4j.model.Stream;
-import me.philippheuer.twitch4j.model.User;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
 import net.dv8tion.jda.webhook.WebhookMessageBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.message.resolver.MapPlaceholderResolver;
 import ru.caramel.juniperbot.core.subscription.service.BaseSubscriptionService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.caramel.juniperbot.module.social.model.TwitchNotification;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.TwitchConnectionRepository;
 import ru.caramel.juniperbot.module.social.service.TwitchService;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection, Stream, User> implements TwitchService {
+public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection, TwitchNotification, User> implements TwitchService {
 
     private static final Color TWITCH_COLOR = CommonUtils.hex2Rgb("64439A");
 
@@ -66,6 +67,8 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
 
     private TwitchClient client;
 
+    private TwitchHelix helix;
+
     private Set<Long> liveStreamsCache = Collections.synchronizedSet(new HashSet<>());
 
     private TwitchConnectionRepository repository;
@@ -81,11 +84,12 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
             log.warn("No valid Twitch credentials provided");
             return;
         }
-        client = TwitchClientBuilder.init()
+        client = TwitchClientBuilder.builder()
+                .withEnableHelix(true)
                 .withClientId(clientId)
                 .withClientSecret(secret)
-                .withCredential(oauthKey)
-                .connect();
+                .build();
+        helix = client.getHelix();
         schedule(updateInterval);
     }
 
@@ -96,24 +100,27 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
         }
         log.info("Twitch channels notification started...");
 
-        List<Channel> channels = repository.findChannelIds().stream().map(e -> {
-            Channel channel = new Channel();
-            channel.setId(e);
-            return channel;
-        }).collect(Collectors.toList());
+        List<Long> userIds = repository.findActiveUserIds();
 
-        if (channels.isEmpty()) {
+        if (userIds.isEmpty()) {
             log.info("No Twitch connections found to retrieve, exiting...");
             return;
         }
 
-        Set<Stream> liveStreams = new HashSet<>(channels.size());
+        Set<User> users = getUsersByIds(userIds);
 
-        Lists.partition(channels, 100).forEach(e -> liveStreams.addAll(client.getStreamEndpoint()
-                .getLiveStreams(e, null, null, null, 100, 0)));
+        if (users.isEmpty()) {
+            log.info("No users found for {} connections, exiting...", userIds.size());
+            liveStreamsCache.clear();
+            return;
+        }
+
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+
+        Set<Stream> liveStreams = getLiveStreams(userIds);
 
         if (liveStreams.isEmpty()) {
-            log.info("No live streams found for {} connections, exiting...", channels.size());
+            log.info("No live streams found for {} connections, exiting...", userIds.size());
             liveStreamsCache.clear();
             return;
         }
@@ -122,22 +129,30 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                 .filter(e -> !liveStreamsCache.contains(e.getId()))
                 .collect(Collectors.toList());
 
+        Set<Game> games = getGamesByIds(streamsToNotify.stream()
+                .map(e -> String.valueOf(e.getGameId()))
+                .collect(Collectors.toList()));
+        Map<String, Game> gamesMap = games.stream().collect(Collectors.toMap(Game::getId, Function.identity()));
+
         AtomicInteger notifyCounter = new AtomicInteger();
 
         Lists.partition(streamsToNotify, 1000).forEach(e -> {
             List<TwitchConnection> toSave = new ArrayList<>(e.size());
-            Map<Long, Stream> streamMap = e.stream().collect(Collectors.toMap(s -> s.getChannel().getId(),
+            Map<Long, Stream> streamMap = e.stream().collect(Collectors.toMap(Stream::getUserId,
                     Function.identity()));
             repository.findActiveConnections(e.stream()
-                    .map(s -> s.getChannel().getId())
+                    .map(Stream::getUserId)
                     .collect(Collectors.toSet()))
                     .forEach(c -> {
                         Stream stream = streamMap.get(c.getUserId());
-                        if (stream != null) {
-                            if (updateIfRequired(stream.getChannel(), c)) {
+                        User user = userMap.get(c.getUserId());
+                        if (user != null && stream != null) {
+                            if (updateIfRequired(user, c)) {
                                 toSave.add(c);
                             }
-                            if (notifyConnection(stream, c)) {
+                            Game game = stream.getGameId() != null
+                                    ? gamesMap.get(String.valueOf(stream.getGameId())) : null;
+                            if (notifyConnection(new TwitchNotification(user, stream, game), c)) {
                                 notifyCounter.incrementAndGet();
                             }
                         }
@@ -147,33 +162,116 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
 
         liveStreamsCache.clear();
         liveStreamsCache.addAll(liveStreams.stream().map(Stream::getId).collect(Collectors.toSet()));
-        log.info("Twitch channels notification finished: [Channels={}, Online={}, Notified={}]", channels.size(),
+        log.info("Twitch channels notification finished: [Channels={}, Online={}, Notified={}]", userIds.size(),
                 liveStreams.size(), notifyCounter.intValue());
     }
 
-    private boolean updateIfRequired(Channel channel, TwitchConnection connection) {
+    private Set<User> getUsersByIds(List<Long> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptySet();
+        }
+        Set<User> result = new HashSet<>(userIds.size());
+        Lists.partition(userIds, 100).forEach(e -> {
+            UserList resultList = helix
+                    .getUsers("", e, null)
+                    .execute();
+            if (resultList != null && resultList.getUsers() != null) {
+                result.addAll(resultList.getUsers());
+            }
+        });
+        return result;
+    }
+
+    private Set<User> getUsersByNames(List<String> userNames) {
+        if (CollectionUtils.isEmpty(userNames)) {
+            return Collections.emptySet();
+        }
+        Set<User> result = new HashSet<>(userNames.size());
+        Lists.partition(userNames, 100).forEach(e -> {
+            UserList resultList = helix
+                    .getUsers("", null, e)
+                    .execute();
+            if (resultList != null && resultList.getUsers() != null) {
+                result.addAll(resultList.getUsers());
+            }
+        });
+        return result;
+    }
+
+    private Set<Stream> getLiveStreams(List<Long> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptySet();
+        }
+        Set<Stream> result = new HashSet<>(userIds.size());
+        Lists.partition(userIds, 100).forEach(e -> {
+            Set<Stream> batch = new HashSet<>(e.size());
+            fetchStreams("", batch, e);
+            result.addAll(batch);
+        });
+        return result;
+    }
+
+    private void fetchStreams(String afterCursor, Set<Stream> streams, List<Long> userIds) {
+        StreamList result = helix
+                .getStreams("", afterCursor, "", 100, null, null, null, userIds, null)
+                .execute();
+        if (result == null) {
+            return;
+        }
+        if (CollectionUtils.isNotEmpty(result.getStreams())) {
+            streams.addAll(result.getStreams()
+                    .stream()
+                    .filter(e -> "live".equals(e.getType()))
+                    .collect(Collectors.toList()));
+        }
+        if (result.getPagination() != null && StringUtils.isNotEmpty(result.getPagination().getCursor())) {
+            fetchStreams(result.getPagination().getCursor(), streams, userIds);
+        }
+    }
+
+    private Set<Game> getGamesByIds(List<String> gameIds) {
+        if (CollectionUtils.isEmpty(gameIds)) {
+            return Collections.emptySet();
+        }
+        Set<Game> result = new HashSet<>(gameIds.size());
+        Lists.partition(gameIds, 100).forEach(e -> {
+            GameList resultList = helix
+                    .getGames("", e, null)
+                    .execute();
+            if (resultList != null && resultList.getGames() != null) {
+                result.addAll(resultList.getGames());
+            }
+        });
+        return result;
+    }
+
+    private boolean updateIfRequired(User user, TwitchConnection connection) {
         boolean updateRequired = false;
-        if (!Objects.equals(channel.getLogo(), connection.getIconUrl())) {
-            connection.setIconUrl(channel.getLogo());
+        if (!Objects.equals(user.getProfileImageUrl(), connection.getIconUrl())) {
+            connection.setIconUrl(user.getProfileImageUrl());
             updateRequired = true;
         }
-        if (!Objects.equals(channel.getName(), connection.getLogin())) {
-            connection.setLogin(channel.getName());
+        if (!Objects.equals(user.getLogin(), connection.getLogin())) {
+            connection.setLogin(user.getLogin());
             updateRequired = true;
         }
-        if (!Objects.equals(channel.getDisplayName(), connection.getName())) {
-            connection.setName(channel.getDisplayName());
+        if (!Objects.equals(user.getDisplayName(), connection.getName())) {
+            connection.setName(user.getDisplayName());
             updateRequired = true;
         }
         return updateRequired;
     }
 
     @Override
-    protected WebhookMessage createMessage(Stream stream, TwitchConnection connection) {
+    protected WebhookMessage createMessage(TwitchNotification notification, TwitchConnection connection) {
+        User user = notification.getUser();
+        Stream stream = notification.getStream();
+        Game game = notification.getGame();
+        String streamUrl = getLink(user);
         MapPlaceholderResolver resolver = new MapPlaceholderResolver();
-        resolver.put("streamer", stream.getChannel().getDisplayName());
-        resolver.put("link", stream.getChannel().getUrl());
-        resolver.put("game", stream.getGame());
+        resolver.put("streamer", user.getDisplayName());
+        resolver.put("link", getLink(user));
+        resolver.put("game", game != null ? game.getName() : "-");
         String announce = connection.getAnnounceMessage();
         if (StringUtils.isBlank(announce)) {
             announce = messageService.getMessage("discord.twitch.announce");
@@ -184,23 +282,21 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                 .setContent(content);
 
         if (connection.isSendEmbed()) {
-            Channel channel = stream.getChannel();
 
-            EmbedBuilder embedBuilder = messageService.getBaseEmbed();
-            embedBuilder.setAuthor(CommonUtils.trimTo(channel.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
-                    channel.getUrl(), channel.getLogo());
-            embedBuilder.setThumbnail(channel.getLogo());
-            embedBuilder.setDescription(CommonUtils.trimTo(channel.getStatus(), MessageEmbed.TITLE_MAX_LENGTH));
-            embedBuilder.setColor(TWITCH_COLOR);
+            EmbedBuilder embedBuilder = messageService.getBaseEmbed()
+                    .setAuthor(CommonUtils.trimTo(user.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
+                    streamUrl, user.getProfileImageUrl())
+                    .setThumbnail(user.getProfileImageUrl())
+                    .setDescription(CommonUtils.trimTo(stream.getTitle(), MessageEmbed.TITLE_MAX_LENGTH))
+                    .setColor(TWITCH_COLOR)
+                    .setImage(stream.getThumbnailUrl(720, 480));
 
-            if (stream.getPreview() != null && stream.getPreview().getMedium() != null) {
-                embedBuilder.setImage(stream.getPreview().getMedium());
-            }
             embedBuilder.addField(messageService.getMessage("discord.viewers.title"),
-                    CommonUtils.formatNumber(stream.getViewers()), false);
-            if (StringUtils.isNotBlank(stream.getGame())) {
+                    CommonUtils.formatNumber(stream.getViewerCount()), false);
+
+            if (game != null) {
                 embedBuilder.addField(messageService.getMessage("discord.game.title"),
-                        CommonUtils.trimTo(stream.getGame(), MessageEmbed.VALUE_MAX_LENGTH), false);
+                        CommonUtils.trimTo(game.getName(), MessageEmbed.VALUE_MAX_LENGTH), false);
             }
             builder.addEmbeds(embedBuilder.build());
         }
@@ -211,16 +307,21 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
     protected TwitchConnection createConnection(User user) {
         TwitchConnection connection = new TwitchConnection();
         connection.setUserId(user.getId());
-        connection.setLogin(user.getName());
+        connection.setLogin(user.getLogin());
         connection.setName(user.getDisplayName());
-        connection.setDescription(user.getBio());
-        connection.setIconUrl(user.getLogo());
+        connection.setDescription(user.getDescription());
+        connection.setIconUrl(user.getProfileImageUrl());
         connection.setSendEmbed(true);
         return connection;
     }
 
     @Override
     public User getUser(String userName) {
-        return client != null ? client.getUserEndpoint().getUserByUserName(userName) : null;
+        Set<User> users = getUsersByNames(Collections.singletonList(userName));
+        return users.isEmpty() ? null : users.iterator().next();
+    }
+
+    private String getLink(User user) {
+        return user != null ? "https://www.twitch.tv/" + user.getLogin() : null;
     }
 }

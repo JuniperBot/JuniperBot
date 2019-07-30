@@ -18,7 +18,13 @@ description = 'JuniperBot Module: Social Integrations'
 
 dependencies {
     compile project(':jb-core')
-    compile(group: 'com.github.twitch4j', name: 'twitch4j', version: twitch4jVersion)
+    compile(group: 'com.github.twitch4j', name: 'twitch4j', version: twitch4jVersion) {
+        exclude group: 'com.github.twitch4j', module: 'twitch4j-kraken'
+        exclude group: 'com.github.twitch4j', module: 'twitch4j-chat'
+        exclude group: 'com.github.twitch4j', module: 'twitch4j-messaginginterface'
+        exclude group: 'com.github.twitch4j', module: 'twitch4j-pubsub'
+        exclude group: 'com.github.twitch4j', module: 'twitch4j-graphql'
+    }
     compile(group: 'com.vk.api', name: 'sdk', version: vkSdkVersion)
     compile(group: 'com.google.apis', name: 'google-api-services-youtube', version: googleApiServicesYoutubeVersion)
     compile(group: 'com.rometools', name: 'rome', version: romeVersion)
