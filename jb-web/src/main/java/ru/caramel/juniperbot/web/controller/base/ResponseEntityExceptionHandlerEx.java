@@ -16,6 +16,7 @@
  */
 package ru.caramel.juniperbot.web.controller.base;
 
+import com.weddini.throttling.ThrottlingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,11 @@ public class ResponseEntityExceptionHandlerEx extends ResponseEntityExceptionHan
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDto> handleAllExceptions(Exception e) {
         return errorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ThrottlingException.class)
+    public final ResponseEntity throttlingException(ThrottlingException e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
     @Override

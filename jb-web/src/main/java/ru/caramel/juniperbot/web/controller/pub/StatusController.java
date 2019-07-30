@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.web.controller.pub;
 
+import com.weddini.throttling.Throttling;
+import com.weddini.throttling.ThrottlingType;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class StatusController extends BasePublicRestController {
@@ -51,6 +54,7 @@ public class StatusController extends BasePublicRestController {
 
     @GetMapping("/health")
     @ResponseBody
+    @Throttling(type = ThrottlingType.HeaderValue, headerName = "X-Real-IP", limit = 10, timeUnit = TimeUnit.MINUTES)
     public String getHealth() {
         return "OK";
     }

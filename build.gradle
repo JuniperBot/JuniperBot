@@ -42,6 +42,7 @@ allprojects {
         maven { url "https://dl.bintray.com/goldrenard/maven" }
         maven { url "https://oss.jfrog.org/artifactory/libs-release"}
         maven { url "http://nexus.bippo.co.id/nexus/content/repositories/soluvas-public-thirdparty/" } // net.reduls.sanmoku artifact
+        maven { url "https://raw.github.com/weddini/spring-boot-throttling/mvn-repo/" }
         maven { url "$rootProject.projectDir/local" }
     }
 
@@ -68,6 +69,7 @@ subprojects {
         springBootVersion                  = "${springBootVersion}"
         springCloudVersion                 = 'Greenwich.RELEASE'
         springOauthVersion                 = '2.1.0.RELEASE'
+        throttlingVersion                  = '0.0.9'
         hibernateVersion                   = '5.3.7.Final'
         lombokVersion                      = '1.18.4'
         jsonVersion                        = '20160810'

@@ -40,6 +40,7 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')
     compile(group: 'org.springframework.security', name: 'spring-security-acl')
     compile(group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: springOauthVersion)
+    compile(group: 'com.weddini.throttling', name: 'spring-boot-throttling-starter', version: throttlingVersion)
 
     compile(group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: jmxRemote)
     compile(group: 'org.glassfish.external', name: 'opendmk_jmxremote_optional_jar', version: jmxRemoteLegacy)
