@@ -289,7 +289,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                     .setThumbnail(user.getProfileImageUrl())
                     .setDescription(CommonUtils.trimTo(stream.getTitle(), MessageEmbed.TITLE_MAX_LENGTH))
                     .setColor(TWITCH_COLOR)
-                    .setImage(stream.getThumbnailUrl(720, 480));
+                    .setImage(stream.getThumbnailUrl(848, 480));
 
             embedBuilder.addField(messageService.getMessage("discord.viewers.title"),
                     CommonUtils.formatNumber(stream.getViewerCount()), false);
