@@ -40,11 +40,7 @@ public class HereCommand extends AudioCommand {
             messageService.onError(message.getChannel(), "discord.command.here.notInChannel");
             return fail(message);
         }
-        if (!playerService.isActive(message.getGuild())) {
-            messageService.onError(message.getChannel(), "discord.command.audio.notStarted");
-            return fail(message);
-        }
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
+        PlaybackInstance instance = playerService.get(message.getGuild());
         VoiceChannel channel = playerService.connectToChannel(instance, message.getMember());
         if (channel != null) {
             return ok(message, "discord.command.here.connected", channel.getName());

@@ -34,7 +34,7 @@ public class SeekCommand extends TimingCommand {
         AudioTrack track = request.getTrack();
         long duration = track.getDuration();
         millis = Math.min(duration, millis);
-        if (playerService.getInstance(message.getGuild()).seek(millis)) {
+        if (playerService.get(message.getGuild()).seek(millis)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.seek",
                     messageManager.getTitle(track.getInfo()), CommonUtils.formatDuration(millis));
             request.setResetMessage(true);

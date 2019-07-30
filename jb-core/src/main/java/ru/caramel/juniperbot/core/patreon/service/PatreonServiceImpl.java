@@ -20,6 +20,7 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,6 +199,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             Member member = PatreonUtils.parseMember(content);
             PatreonUser patron = getOrCreatePatron(member);
             if (patron == null) {
+                log.warn("No such Discord user found for incoming WebHook");
                 return true; // treat it is as success, we could not find such user yet
             }
 
@@ -208,6 +210,10 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     Set<FeatureSet> entitledFeatureSets = getFeatureSets(member);
                     patron.setFeatureSets(entitledFeatureSets);
                     featureSets.put(Long.valueOf(patron.getUserId()), entitledFeatureSets);
+                    if (CollectionUtils.isNotEmpty(entitledFeatureSets)) {
+                        supportService.grantDonators(Collections.singleton(patron.getUserId()));
+                    }
+                    log.info("Updated user {} features: {}", patron.getUserId(), entitledFeatureSets);
                     break;
                 case "members:pledge:delete":
                     patron.setActive(false);

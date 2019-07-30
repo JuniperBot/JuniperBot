@@ -30,11 +30,7 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 public class RestartCommand extends AudioCommand {
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (!playerService.isActive(message.getGuild())) {
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
-            return false;
-        }
-        if (!playerService.getInstance(message.getGuild()).seek(0)) {
+        if (!playerService.get(message.getGuild()).seek(0)) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.restart.denied");
             return fail(message);
         }

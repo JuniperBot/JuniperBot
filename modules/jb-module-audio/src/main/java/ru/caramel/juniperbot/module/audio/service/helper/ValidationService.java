@@ -65,22 +65,24 @@ public class ValidationService {
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
-        PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
+        PlaybackInstance instance = playerService.get(requestedBy.getGuild());
 
         if (track.getInfo().isStream && (config == null || !config.isStreamsEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.streams");
         }
 
-        if (queueLimit != null) {
-            List<TrackRequest> userQueue = instance.getQueue(requestedBy);
-            if (userQueue.size() >= queueLimit) {
-                throw new ValidationException("discord.command.audio.queue.limits.items", queueLimit);
+        if (instance != null) {
+            if (queueLimit != null) {
+                List<TrackRequest> userQueue = instance.getQueue(requestedBy);
+                if (userQueue.size() >= queueLimit) {
+                    throw new ValidationException("discord.command.audio.queue.limits.items", queueLimit);
+                }
             }
-        }
-        if (duplicateLimit != null) {
-            List<TrackRequest> userQueue = instance.getQueue().stream().filter(e -> compareTracks(e.getTrack(), track)).collect(Collectors.toList());
-            if (userQueue.size() >= duplicateLimit) {
-                throw new ValidationException("discord.command.audio.queue.limits.duplicates", duplicateLimit);
+            if (duplicateLimit != null) {
+                List<TrackRequest> userQueue = instance.getQueue().stream().filter(e -> compareTracks(e.getTrack(), track)).collect(Collectors.toList());
+                if (userQueue.size() >= duplicateLimit) {
+                    throw new ValidationException("discord.command.audio.queue.limits.duplicates", duplicateLimit);
+                }
             }
         }
         if (!track.getInfo().isStream && durationLimit != null && track.getDuration() >= (durationLimit * 60000)) {
@@ -93,7 +95,7 @@ public class ValidationService {
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
-        PlaybackInstance instance = playerService.getInstance(requestedBy.getGuild());
+        PlaybackInstance instance = playerService.get(requestedBy.getGuild());
 
         if (config == null || !Boolean.TRUE.equals(config.getPlaylistEnabled())) {
             throw new ValidationException("discord.command.audio.queue.limits.playlists");
@@ -114,7 +116,7 @@ public class ValidationService {
             }
         }
 
-        if (!tracks.isEmpty() && duplicateLimit != null) {
+        if (instance != null && !tracks.isEmpty() && duplicateLimit != null) {
             List<TrackRequest> queue = instance.getQueue();
             tracks = tracks.stream().filter(e -> queue.stream().filter(e2 -> compareTracks(e2.getTrack(), e)).count() < duplicateLimit).collect(Collectors.toList());
             if (tracks.isEmpty()) {
@@ -126,7 +128,7 @@ public class ValidationService {
             throw new ValidationException("discord.command.audio.queue.limits.playlistEmpty");
         }
 
-        if (queueLimit != null) {
+        if (instance != null && queueLimit != null) {
             List<TrackRequest> userQueue = instance.getQueue(requestedBy);
             int availableSlots = queueLimit.intValue() - userQueue.size();
             if (availableSlots <= 0) {

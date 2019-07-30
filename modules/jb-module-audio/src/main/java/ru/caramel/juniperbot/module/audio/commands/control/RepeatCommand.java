@@ -44,16 +44,12 @@ public class RepeatCommand extends AudioCommand {
                     Stream.of(RepeatMode.values()).map(messageService::getEnumTitle).collect(Collectors.joining("|")));
             return false;
         }
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
-        if (playerService.isActive(message.getGuild())) {
-            instance.setMode(mode);
-            messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
-            if (instance.getCurrent() != null) {
-                messageManager.updateMessage(instance.getCurrent());
-            }
-            return ok(message, "discord.command.audio.repeat", messageService.getEnumTitle(mode));
+        PlaybackInstance instance = playerService.get(message.getGuild());
+        instance.setMode(mode);
+        messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat", mode.getEmoji());
+        if (instance.getCurrent() != null) {
+            messageManager.updateMessage(instance.getCurrent());
         }
-        messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
-        return fail(message);
+        return ok(message, "discord.command.audio.repeat", messageService.getEnumTitle(mode));
     }
 }

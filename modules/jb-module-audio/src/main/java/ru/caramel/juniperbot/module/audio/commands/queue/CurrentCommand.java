@@ -31,12 +31,10 @@ import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 public class CurrentCommand extends AudioCommand {
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-
-        TrackRequest current = playerService.getInstance(message.getGuild()).getCurrent();
+        TrackRequest current = playerService.get(message.getGuild()).getCurrent();
         if (current == null) {
-            fail(message);
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");
-            return false;
+            return fail(message);
         }
         messageManager.onResetMessage(current);
         return true;

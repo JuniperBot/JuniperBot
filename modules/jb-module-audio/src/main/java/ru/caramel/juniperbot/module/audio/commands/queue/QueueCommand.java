@@ -45,8 +45,7 @@ public class QueueCommand extends AudioCommand {
             messageManager.onQueueError(message.getChannel(), "discord.command.audio.queue.list.selectPage");
             return fail(message);
         }
-        PlaybackInstance instance = playerService.getInstance(message.getGuild());
-
+        PlaybackInstance instance = playerService.get(message.getGuild());
         messageManager.onQueue(instance, message.getChannel(), context, pageNum);
         return true;
     }
