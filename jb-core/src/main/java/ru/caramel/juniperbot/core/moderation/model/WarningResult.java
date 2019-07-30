@@ -31,4 +31,6 @@ public class WarningResult implements Serializable {
     private ModerationActionRequest request;
 
     private boolean punished;
+
+    private boolean reset;
 }

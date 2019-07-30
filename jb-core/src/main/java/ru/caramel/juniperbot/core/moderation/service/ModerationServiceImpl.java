@@ -254,10 +254,21 @@ public class ModerationServiceImpl
         LocalMember authorLocal = memberService.getOrCreate(author);
         LocalMember memberLocal = memberService.getOrCreate(member);
 
-        long number = warningRepository.countByViolator(guildId, memberLocal) + 1;
+        long number = warningRepository.countActiveByViolator(guildId, memberLocal) + 1;
 
+        ModerationAction latestAction = moderationConfig.getActions().stream()
+                .max(Comparator.comparing(ModerationAction::getCount))
+                .orElse(null);
+
+        if (latestAction != null && number > latestAction.getCount()) {
+            warningRepository.flushWarnings(guildId, memberLocal);
+            result.reset(true);
+            number = 1;
+        }
+
+        final long finalNumber = number;
         ModerationAction action = moderationConfig.getActions().stream()
-                .filter(e -> e.getCount() == number)
+                .filter(e -> e.getCount() == finalNumber)
                 .findFirst()
                 .orElse(null);
 
@@ -304,7 +315,7 @@ public class ModerationServiceImpl
     @Transactional
     public List<MemberWarning> getWarnings(Member member) {
         LocalMember localMember = memberService.getOrCreate(member);
-        return warningRepository.findByViolator(member.getGuild().getIdLong(), localMember);
+        return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
     }
 
     @Override

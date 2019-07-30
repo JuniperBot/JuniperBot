@@ -59,10 +59,16 @@ public class WarnCommand extends ModeratorCommandAsync {
         List<Role> currentRoles = new ArrayList<>(mentioned.getRoles());
         WarningResult result = moderationService.warn(event.getMember(), mentioned, removeMention(query));
 
+        StringBuilder argumentBuilder = new StringBuilder();
+
+        if (result.isReset()) {
+            argumentBuilder
+                    .append("\n")
+                    .append(messageService.getMessage("discord.command.mod.warn.reset"));
+        }
+
         if (result.isPunished()) {
             ModerationActionRequest request = result.getRequest();
-
-            StringBuilder argumentBuilder = new StringBuilder();
 
             switch (request.getType()) {
                 case MUTE:
@@ -72,7 +78,10 @@ public class WarnCommand extends ModeratorCommandAsync {
                     formatter.removeUnit(JustNow.class);
                     formatter.removeUnit(Millisecond.class);
                     formatter.removeUnit(Second.class);
-                    argumentBuilder.append(formatter.format(date));
+                    argumentBuilder
+                            .append("\n")
+                            .append(messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until",
+                                    formatter.format(date)));
                     break;
                 case CHANGE_ROLES:
                     List<Role> assignedRoles = getRoles(event.getGuild(), request.getAssignRoles());
@@ -108,7 +117,7 @@ public class WarnCommand extends ModeratorCommandAsync {
             return;
         }
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warn.message",
-                mentioned.getEffectiveName(), result.getNumber());
+                mentioned.getEffectiveName(), result.getNumber(), argumentBuilder.toString());
     }
 
     private List<Role> getRoles(Guild guild, List<Long> roleIds) {
