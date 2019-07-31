@@ -48,6 +48,9 @@ public class MemberWarning extends GuildEntity {
     private String reason;
 
     @Column
+    private boolean active;
+
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
@@ -56,6 +59,7 @@ public class MemberWarning extends GuildEntity {
         this.moderator = moderator;
         this.violator = violator;
         this.reason = reason;
+        this.active = true;
         this.date = new Date();
     }
 }

@@ -34,6 +34,7 @@ import ru.caramel.juniperbot.core.audit.service.AuditService;
 import ru.caramel.juniperbot.core.event.service.ContextService;
 import ru.caramel.juniperbot.core.jobs.UnMuteJob;
 import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
+import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
 import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
 import ru.caramel.juniperbot.core.moderation.persistence.MuteState;
 import ru.caramel.juniperbot.core.moderation.persistence.MuteStateRepository;
@@ -233,6 +234,7 @@ public class MuteServiceImpl implements MuteService {
             TextChannel textChannel = channelId != null ? member.getGuild().getTextChannelById(channelId) : null;
             if (global || textChannel != null) {
                 ModerationActionRequest request = ModerationActionRequest.builder()
+                        .type(ModerationActionType.MUTE)
                         .channel(textChannel)
                         .violator(member)
                         .global(global)
@@ -376,6 +378,7 @@ public class MuteServiceImpl implements MuteService {
 
         Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
         ModerationActionRequest request = ModerationActionRequest.builder()
+                .type(ModerationActionType.MUTE)
                 .channel(textChannel)
                 .violator(member)
                 .global(muteState.isGlobal())

@@ -14,23 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.caramel.juniperbot.core.moderation.model;
+package ru.caramel.juniperbot.module.social.model;
 
-import lombok.Builder;
+import com.github.twitch4j.helix.domain.Game;
+import com.github.twitch4j.helix.domain.Stream;
+import com.github.twitch4j.helix.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 @Getter
-@Builder
-public class WarningResult implements Serializable {
-    private static final long serialVersionUID = -8830799961676960164L;
+@AllArgsConstructor
+public class TwitchNotification {
 
-    private long number;
+    private final User user;
 
-    private ModerationActionRequest request;
+    private final Stream stream;
 
-    private boolean punished;
-
-    private boolean reset;
+    private final Game game;
 }

@@ -123,7 +123,9 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         AtomicLong rankCounter = new AtomicLong(pageable.getOffset());
         return rankings.map(e -> {
             RankingInfo info = RankingUtils.calculateInfo(e);
-            info.setRank(rankCounter.incrementAndGet());
+            info.setRank(StringUtils.isEmpty(search)
+                    ? rankCounter.incrementAndGet()
+                    : rankingRepository.getRank(guildId, info.getTotalExp()));
             return info;
         });
     }

@@ -28,8 +28,8 @@ import java.util.Set;
 @Repository
 public interface TwitchConnectionRepository extends BaseSubscriptionRepository<TwitchConnection> {
 
-    @Query("SELECT DISTINCT e.userId FROM TwitchConnection e")
-    Set<Long> findChannelIds();
+    @Query("SELECT DISTINCT t.userId FROM TwitchConnection t WHERE t.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
+    List<Long> findActiveUserIds();
 
     @Query("SELECT t FROM TwitchConnection t WHERE t.userId IN :userIds AND t.webHook IN (SELECT w FROM WebHook w WHERE w.enabled = true AND w.hookId IS NOT NULL AND w.token IS NOT NULL)")
     List<TwitchConnection> findActiveConnections(@Param("userIds") Set<Long> userIds);

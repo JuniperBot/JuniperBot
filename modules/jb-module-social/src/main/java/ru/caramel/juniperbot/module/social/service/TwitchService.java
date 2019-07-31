@@ -16,11 +16,11 @@
  */
 package ru.caramel.juniperbot.module.social.service;
 
-import me.philippheuer.twitch4j.model.Stream;
-import me.philippheuer.twitch4j.model.User;
+import com.github.twitch4j.helix.domain.User;
 import ru.caramel.juniperbot.core.subscription.service.SubscriptionService;
+import ru.caramel.juniperbot.module.social.model.TwitchNotification;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
 
-public interface TwitchService extends SubscriptionService<TwitchConnection, Stream, User> {
+public interface TwitchService extends SubscriptionService<TwitchConnection, TwitchNotification, User> {
 
 }
