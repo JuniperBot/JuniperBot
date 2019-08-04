@@ -118,8 +118,4 @@ public class StatsCommand extends AbstractInfoCommand {
         }
         return null;
     }
-
-    private String getTitle(String statName) {
-        return messageService.getMessage("");
-    }
 }

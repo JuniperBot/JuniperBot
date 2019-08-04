@@ -259,7 +259,7 @@ public class TextConverter
 
     private String getNamespaceValue(int id, String value) {
 
-        Namespace ns = config.getNamespace(6);
+        Namespace ns = config.getNamespace(id);
 
         Set<String> names = new HashSet<>(ns.getAliases());
         names.add(ns.getName());

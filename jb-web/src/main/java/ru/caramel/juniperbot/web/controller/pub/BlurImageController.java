@@ -93,16 +93,12 @@ public class BlurImageController extends BasePublicRestController {
             ImageInfo info = readCached(hash);
             if (info == null) {
                 info = renderImage(sourceUrl);
-                if (info != null) {
-                    saveCached(hash, info);
-                }
+                saveCached(hash, info);
             }
-            if (info != null) {
-                return ResponseEntity.ok()
-                        .contentLength(info.contentLength)
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(new InputStreamResource(info.inputStream));
-            }
+            return ResponseEntity.ok()
+                    .contentLength(info.contentLength)
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(new InputStreamResource(info.inputStream));
         } catch (IOException e) {
             // fall down
         }

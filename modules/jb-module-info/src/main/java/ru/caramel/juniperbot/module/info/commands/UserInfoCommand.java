@@ -82,8 +82,8 @@ public class UserInfoCommand extends AbstractInfoCommand {
         if (member.getGame() != null) {
             getGame(commonBuilder, member);
         }
-        getJoinedAt(context, commonBuilder, member, formatter);
-        getCreatedAt(context, commonBuilder, user, formatter);
+        getJoinedAt(commonBuilder, member, formatter);
+        getCreatedAt(commonBuilder, user, formatter);
 
         builder.addField(messageService.getMessage("discord.command.user.common"), commonBuilder.toString(), false);
 
@@ -120,11 +120,11 @@ public class UserInfoCommand extends AbstractInfoCommand {
         return appendEntry(commonBuilder, "discord.command.user.username", userName);
     }
 
-    private StringBuilder getCreatedAt(BotContext context, StringBuilder commonBuilder, User user, DateTimeFormatter formatter) {
+    private StringBuilder getCreatedAt(StringBuilder commonBuilder, User user, DateTimeFormatter formatter) {
         return appendEntry(commonBuilder, "discord.command.user.createdAt", user.getCreationTime().toEpochSecond(), formatter);
     }
 
-    private StringBuilder getJoinedAt(BotContext context, StringBuilder commonBuilder, Member member, DateTimeFormatter formatter) {
+    private StringBuilder getJoinedAt(StringBuilder commonBuilder, Member member, DateTimeFormatter formatter) {
         return appendEntry(commonBuilder, "discord.command.user.joinedAt", member.getJoinDate().toEpochSecond(), formatter);
     }
 

@@ -50,14 +50,13 @@ public class ValidationService {
         AudioTrackInfo info2 = track2.getInfo();
         if (info1 != null && info2 != null) {
             return Objects.equals(info1.uri, info2.uri)
-                    && Objects.equals(info1.uri, info2.uri)
                     && Objects.equals(info1.title, info2.title)
                     && Objects.equals(info1.author, info2.author)
                     && Objects.equals(info1.identifier, info2.identifier)
                     && Objects.equals(info1.length, info2.length)
                     && Objects.equals(info1.isStream, info2.isStream);
         }
-        return Objects.equals(info1, info1);
+        return Objects.equals(info1, info2);
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {

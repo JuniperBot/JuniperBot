@@ -1,4 +1,5 @@
 .gradle
+.PVS-Studio
 target/
 build/
 out/

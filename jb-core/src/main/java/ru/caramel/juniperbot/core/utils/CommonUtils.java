@@ -175,8 +175,8 @@ public final class CommonUtils {
             m = VK_HASH_TAG.matcher(string);
             sb = new StringBuffer(string.length());
             while (m.find()) {
-                m.appendReplacement(sb, noLink ? m.group(2)
-                        : String.format("[%s](https://vk.com/feed?section=search&q=%s)", m.group(1), UriUtils.encode(m.group(1), "UTF-8")));
+                m.appendReplacement(sb, String.format("[%s](https://vk.com/feed?section=search&q=%s)", m.group(1),
+                        UriUtils.encode(m.group(1), "UTF-8")));
             }
             m.appendTail(sb);
             string = sb.toString();

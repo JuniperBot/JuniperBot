@@ -113,7 +113,7 @@ public class TranslitCommand extends AbstractCommand {
                 sb.append(StringUtils.isEmpty(translated) ? toTranslate.charAt(0) : translated);
                 i++;
             } else {
-                sb.append(StringUtils.isEmpty(translated) ? toTranslate : translated);
+                sb.append(translated);
                 i += 2;
             }
         }

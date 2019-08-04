@@ -97,7 +97,7 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
             }
             input = content.substring(prefix.length()).trim();
         }
-        if (content.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (StringUtils.isNotEmpty(prefix) && content.toLowerCase().startsWith(prefix.toLowerCase())) {
             String[] args = input.split("\\s+", 2);
             input = args.length > 1 ? args[1] : "";
             return sendCommand(event, input, args[0], guildConfig);

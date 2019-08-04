@@ -66,8 +66,7 @@ public abstract class AudioCommand extends AbstractCommand {
             VoiceChannel channel = playerService.getChannel(member);
             throw new ValidationException("discord.command.audio.joinChannel", channel != null ? channel.getName() : "unknown");
         }
-        doInternal(message, context, content);
-        return false;
+        return doInternal(message, context, content);
     }
 
     protected boolean isChannelRestricted() {

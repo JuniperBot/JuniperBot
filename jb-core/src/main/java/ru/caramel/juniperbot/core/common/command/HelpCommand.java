@@ -101,7 +101,7 @@ public class HelpCommand extends AbstractCommand {
             return false;
         }
 
-        EmbedBuilder embedBuilder = getBaseEmbed(rootGroup, message);
+        EmbedBuilder embedBuilder = getBaseEmbed(rootGroup);
 
         String prefix = context.getConfig().getPrefix();
 
@@ -170,7 +170,7 @@ public class HelpCommand extends AbstractCommand {
         }
     }
 
-    private EmbedBuilder getBaseEmbed(String group, GuildMessageReceivedEvent message) {
+    private EmbedBuilder getBaseEmbed(String group) {
         EmbedBuilder embedBuilder = messageService.getBaseEmbed(true)
                 .setThumbnail(brandingService.getSmallAvatarUrl());
         if (COMMON_GROUP.equals(group)) {
