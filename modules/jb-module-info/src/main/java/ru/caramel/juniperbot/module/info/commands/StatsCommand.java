@@ -24,7 +24,6 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 
 import java.util.Date;
@@ -41,7 +40,7 @@ public class StatsCommand extends AbstractInfoCommand {
     private MetricRegistry metricRegistry;
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setTitle(messageService.getMessage("discord.command.stats.title"));
         builder.setThumbnail(brandingService.getSmallAvatarUrl());

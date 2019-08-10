@@ -29,14 +29,14 @@ public interface EventFilterFactory<T extends Event> {
      * the specified servlet instance.
      *
      * @param event The event we are processing
-     *
      * @return The configured FilterChain instance or null if none is to be
-     *         executed.
+     * executed.
      */
     FilterChain<T> createChain(T event);
 
     /**
      * Returns a type of event to process in this chain
+     *
      * @return Type of event to process in this chain
      */
     Class<T> getType();

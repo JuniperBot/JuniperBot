@@ -44,9 +44,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static ru.caramel.juniperbot.core.audit.provider.ModerationAuditForwardProvider.DURATION_ATTR;
-import static ru.caramel.juniperbot.core.audit.provider.ModerationAuditForwardProvider.GLOBAL_ATTR;
-import static ru.caramel.juniperbot.core.audit.provider.ModerationAuditForwardProvider.REASON_ATTR;
+import static ru.caramel.juniperbot.core.audit.provider.ModerationAuditForwardProvider.*;
 
 @Service
 public class MuteServiceImpl implements MuteService {

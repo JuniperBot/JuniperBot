@@ -36,7 +36,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -140,7 +139,7 @@ public class BlurImageController extends BasePublicRestController {
         return cacheDirectory;
     }
 
-    private ImageInfo renderImage(String sourceUrl) throws MalformedURLException, IOException {
+    private ImageInfo renderImage(String sourceUrl) throws IOException {
         URL url = new URL(sourceUrl);
         URLConnection con = url.openConnection();
         con.setRequestProperty("User-Agent", USER_AGENT);

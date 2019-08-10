@@ -24,6 +24,7 @@ import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 
 /**
  * Common commands interface
+ *
  * @see InternalCommandsService
  * @see CustomCommandsServiceImpl
  */
@@ -31,17 +32,19 @@ public interface CommandsService {
 
     /**
      * Checks if specified command valid
+     *
      * @param event Message event
-     * @param key Command key
+     * @param key   Command key
      * @return Is command key valid
      */
     boolean isValidKey(GuildMessageReceivedEvent event, String key);
 
     /**
      * Sends command
-     * @param event Message event
-     * @param content Command content
-     * @param key Command key
+     *
+     * @param event       Message event
+     * @param content     Command content
+     * @param key         Command key
      * @param guildConfig GuildConfig of guild invoked this command
      * @return Is command was sent
      */
@@ -49,32 +52,36 @@ public interface CommandsService {
 
     /**
      * Adds an emoji to original message
-     * @param message Message
-     * @param emoji Emoji code
+     *
+     * @param message     Message
+     * @param emoji       Emoji code
      * @param messageCode Fallback message code
-     * @param args Arguments for fallback message code
+     * @param args        Arguments for fallback message code
      */
     void resultEmotion(GuildMessageReceivedEvent message, String emoji, String messageCode, Object... args);
 
     /**
      * Checks is command has restrictions for this TextChannel
+     *
      * @param commandConfig Command configuration
-     * @param channel Channel to check
+     * @param channel       Channel to check
      * @return Is restricted
      */
     boolean isRestricted(CommandConfig commandConfig, TextChannel channel);
 
     /**
      * Checks is command has restrictions for this member
+     *
      * @param commandConfig Command configuration
-     * @param member Member to check
+     * @param member        Member to check
      * @return Is restricted
      */
     boolean isRestricted(CommandConfig commandConfig, Member member);
 
     /**
      * Checks all restrictions for command invocation
-     * @param event Message event
+     *
+     * @param event         Message event
      * @param commandConfig Command configuration
      * @return Is restricted
      */

@@ -80,7 +80,7 @@ public class ArraySqlTypeDescriptor
                     X value,
                     String name,
                     WrapperOptions options
-            ) throws SQLException {
+            ) {
                 throw new UnsupportedOperationException(
                         "Binding by name is not supported!"
                 );

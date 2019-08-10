@@ -24,7 +24,10 @@ import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
 import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.support.model.SupportConfiguration;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @FeatureProvider(priority = 2)

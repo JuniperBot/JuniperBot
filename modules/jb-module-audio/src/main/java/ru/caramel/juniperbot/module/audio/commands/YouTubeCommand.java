@@ -24,7 +24,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
@@ -47,7 +46,7 @@ public class YouTubeCommand extends PlayCommand {
     private ReactionsListener reactionsListener;
 
     @Override
-    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
         contextService.withContextAsync(message.getGuild(), () -> {
             message.getChannel().sendTyping().queue();
             List<Video> results = youTubeService.searchDetailed(content, 10L);

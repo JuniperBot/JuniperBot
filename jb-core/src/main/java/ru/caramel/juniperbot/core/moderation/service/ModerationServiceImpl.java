@@ -21,7 +21,10 @@ import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.managers.GuildController;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -44,12 +47,12 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.*;
+import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.COUNT_ATTR;
+import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.REASON_ATTR;
 
 @Service
 public class ModerationServiceImpl

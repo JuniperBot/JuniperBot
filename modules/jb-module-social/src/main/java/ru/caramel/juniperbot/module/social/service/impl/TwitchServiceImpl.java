@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.*;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import com.github.twitch4j.TwitchClient;
-import com.github.twitch4j.TwitchClientBuilder;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.webhook.WebhookMessage;
@@ -285,7 +285,7 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
 
             EmbedBuilder embedBuilder = messageService.getBaseEmbed()
                     .setAuthor(CommonUtils.trimTo(user.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
-                    streamUrl, user.getProfileImageUrl())
+                            streamUrl, user.getProfileImageUrl())
                     .setThumbnail(user.getProfileImageUrl())
                     .setDescription(CommonUtils.trimTo(stream.getTitle(), MessageEmbed.TITLE_MAX_LENGTH))
                     .setColor(TWITCH_COLOR)

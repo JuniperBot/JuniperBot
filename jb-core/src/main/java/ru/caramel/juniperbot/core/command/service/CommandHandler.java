@@ -26,6 +26,7 @@ public interface CommandHandler {
 
     /**
      * Handle message as command
+     *
      * @param event Message event
      * @return True if this event was handled
      */

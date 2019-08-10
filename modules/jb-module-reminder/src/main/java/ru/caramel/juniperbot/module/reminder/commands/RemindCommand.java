@@ -30,7 +30,6 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.common.service.ConfigService;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.reminder.jobs.ReminderJob;
@@ -59,7 +58,7 @@ public class RemindCommand extends AbstractCommand {
     private ConfigService configService;
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         try {
             DateTime date = null;
             String reminder = null;

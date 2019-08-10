@@ -25,7 +25,7 @@ import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
 public abstract class AbstractCommandAsync extends AbstractCommand {
 
     @Override
-    public final boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public final boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         contextService.withContextAsync(message.getGuild(), () -> {
             try {
                 doCommandAsync(message, context, content);

@@ -44,7 +44,7 @@ public class UnMuteJob extends AbstractJob {
     private MuteService muteService;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         ShardManager shardManager = discordService.getShardManager();
         if (shardManager == null || !discordService.isConnected()) {
             reschedule(jobExecutionContext, TimeUnit.MINUTES, 1);

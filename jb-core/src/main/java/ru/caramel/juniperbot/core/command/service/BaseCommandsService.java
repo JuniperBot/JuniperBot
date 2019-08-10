@@ -136,11 +136,8 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
                 && !commandConfig.getAllowedChannels().contains(channel.getIdLong())) {
             return true;
         }
-        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
-                && commandConfig.getIgnoredChannels().contains(channel.getIdLong())) {
-            return true;
-        }
-        return false;
+        return CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
+                && commandConfig.getIgnoredChannels().contains(channel.getIdLong());
     }
 
     @Override
@@ -152,11 +149,8 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
                 && member.getRoles().stream().noneMatch(e -> commandConfig.getAllowedRoles().contains(e.getIdLong()))) {
             return true;
         }
-        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
-                && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()))) {
-            return true;
-        }
-        return false;
+        return CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
+                && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()));
     }
 
     @Override

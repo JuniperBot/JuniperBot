@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
@@ -36,7 +35,7 @@ import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 public class RankCommand extends RankingCommand {
 
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
         Member member = message.getMember();
         if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
             member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));

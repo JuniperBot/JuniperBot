@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.wikifur.service.WikiFurService;
 
@@ -29,7 +28,7 @@ public class WikiFurCommand extends AbstractCommand {
     private ReactionsListener reactionsListener;
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         message.getChannel().sendTyping().queue();
         MessageEmbed embed = wikiFurService.renderArticle(content);
         if (embed != null) {
