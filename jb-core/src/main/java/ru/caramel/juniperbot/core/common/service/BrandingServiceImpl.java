@@ -32,7 +32,7 @@ public class BrandingServiceImpl implements BrandingService {
     @Value("${branding.copy.imageUrl:}")
     private String copyImageUrl;
 
-    @Value("${branding.web.host:juniperbot.ru}")
+    @Value("${branding.web.host:juniper.bot}")
     private String wehHost;
 
     @Override

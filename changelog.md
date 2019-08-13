@@ -1,5 +1,8 @@
 # JuniperBot Changelog:
 
+## Version 6.9
+ - Теперь сайт находится по новому домену https://juniper.bot (старый https://juniperbot.ru также остается рабочим)
+
 ## Version 6.8
  - Обновлена интеграция с Twitch (Helix API)
  - **[web]** Исправлено отображение рангов при использовании фильтра по имени

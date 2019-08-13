@@ -52,7 +52,7 @@ public class RankCommand extends RankingCommand {
             addFields(builder, info, member.getGuild());
 
             long desiredPage = (info.getRank() / 50) + 1;
-            String url = String.format("https://juniperbot.ru/ranking/%s?page=%s#%s", member.getGuild().getId(),
+            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
                     desiredPage, member.getUser().getId());
             builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
             messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());

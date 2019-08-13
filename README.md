@@ -7,14 +7,14 @@
 
 <div align="center">
 
-![JuniperBot](https://juniperbot.ru/static/img/icon_512.png)
+![JuniperBot](https://juniper.bot/static/img/icon_512.png)
 
 [![Discord Bots](https://discordbots.org/api/widget/310848622642069504.png)](https://discordbots.org/bot/310848622642069504?utm_source=widget)
 
 </div>
 
 #### *Invite Juniper and turn your server fluffy-fluffy!*
-**JuniperBot** is a multipurpose customizable Discord Bot with bunch of fun and useful features for most of your server needs! You can configure it using fancy dashboard at [https://juniperbot.ru](https://juniperbot.ru/).
+**JuniperBot** is a multipurpose customizable Discord Bot with bunch of fun and useful features for most of your server needs! You can configure it using fancy dashboard at [https://juniper.bot](https://juniper.bot/).
 
 Here is short review that this fluffy foxy can do:
 
@@ -29,7 +29,7 @@ Here is short review that this fluffy foxy can do:
 * 🎭 **Fun:** There are also some small fun features like reaction roulette, cookie karma, dogs/cats pictures, 8ball and more
 
 ### :question: Have a question?
-* **Our website:** https://juniperbot.ru/
+* **Our website:** https://juniper.bot/
 * **Our Discord official server:** https://discord.gg/EdWspu3
 
 ### License

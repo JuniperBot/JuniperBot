@@ -47,7 +47,8 @@ public class BlurImageController extends BasePublicRestController {
 
     private static final String[] ALLOWED_PREFIX = new String[]{
             "https://cdn.discordapp.com/icons/",
-            "https://juniperbot.ru/resources/img/"
+            "https://juniperbot.ru/resources/img/",
+            "https://juniper.bot/resources/img/"
     };
 
     private BoxBlurFilter blurFilter;
