@@ -51,10 +51,6 @@ public class DiscordUserDetails extends AbstractDetails {
     @Setter(AccessLevel.PRIVATE)
     private String email;
 
-    public String getAvatarUrl() {
-        return AvatarType.USER.getUrl(id, avatar);
-    }
-
     public static DiscordUserDetails create(Map<Object, Object> map) {
         DiscordUserDetails details = new DiscordUserDetails();
         setValue(String.class, map, "username", details::setUserName);

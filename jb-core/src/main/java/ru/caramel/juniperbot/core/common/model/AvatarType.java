@@ -16,25 +16,21 @@
  */
 package ru.caramel.juniperbot.core.common.model;
 
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
+import java.util.function.BiFunction;
 
 public enum AvatarType {
-    USER("https://cdn.discordapp.com/avatars/%s/%s.jpg"),
-    ICON("https://cdn.discordapp.com/icons/%s/%s.jpg"),
-    NO_AVATAR("/resources/img/noavatar.png");
+    AVATAR((id, iconId) -> iconId == null ? null : String.format("https://cdn.discordapp.com/avatars/%s/%s.%s", id, iconId, iconId.startsWith("a_") ? "gif" : "png")),
+    ICON((id, iconId) -> iconId == null ? null : String.format("https://cdn.discordapp.com/icons/%s/%s.%s", id, iconId, iconId.startsWith("a_") ? "gif" : "png")),
+    SPLASH((id, iconId) -> iconId == null ? null : String.format("https://cdn.discordapp.com/splashes/%s/%s.png", id, iconId)),
+    BANNER((id, iconId) -> iconId == null ? null : String.format("https://cdn.discordapp.com/banners/%s/%s.png", id, iconId));
 
-    @Getter
-    private String format;
+    private final BiFunction<String, String, String> formatter;
 
-    AvatarType(String format) {
-        this.format = format;
+    AvatarType(BiFunction<String, String, String> formatter) {
+        this.formatter = formatter;
     }
 
-    public String getUrl(String id, String avatar) {
-        if (StringUtils.isNotEmpty(id) && StringUtils.isNotEmpty(avatar)) {
-            return String.format(format, id, avatar);
-        }
-        return NO_AVATAR.format;
+    public String getUrl(String id, String iconId) {
+        return formatter.apply(id, iconId);
     }
 }

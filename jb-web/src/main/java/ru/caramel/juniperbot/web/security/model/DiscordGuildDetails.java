@@ -45,10 +45,6 @@ public class DiscordGuildDetails extends AbstractDetails {
     @Setter(AccessLevel.PRIVATE)
     private List<Permission> permissions;
 
-    public String getAvatarUrl() {
-        return AvatarType.ICON.getUrl(id, icon);
-    }
-
     public static DiscordGuildDetails create(Map<Object, Object> map) {
         DiscordGuildDetails details = new DiscordGuildDetails();
         setValue(String.class, map, "id", details::setId);
