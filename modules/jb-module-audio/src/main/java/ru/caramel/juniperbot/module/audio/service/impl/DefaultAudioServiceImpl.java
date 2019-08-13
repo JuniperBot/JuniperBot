@@ -79,6 +79,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                     discordService.getShardsNum(),
                     discordService::getShardById
             );
+            builder.setVoiceDispatchInterceptor(lavaLink.getVoiceInterceptor());
             builder.addEventListeners(lavaLink);
             if (CollectionUtils.isNotEmpty(configuration.getNodes())) {
                 configuration.getNodes().forEach(e -> {
