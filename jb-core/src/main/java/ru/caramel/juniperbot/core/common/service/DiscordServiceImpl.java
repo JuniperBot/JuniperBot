@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.events.ExceptionEvent;
@@ -314,6 +315,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     private void setUpStatus() {
+        shardManager.setStatus(OnlineStatus.IDLE);
         if (StringUtils.isNotEmpty(playingStatus)) {
             shardManager.setActivity(Activity.playing(playingStatus));
         }
