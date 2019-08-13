@@ -225,7 +225,7 @@ public class ModerationServiceImpl
                 if (CollectionUtils.isNotEmpty(request.getAssignRoles())) {
                     rolesToAssign = request.getAssignRoles().stream()
                             .map(guild::getRoleById)
-                            .filter(e -> e != null && self.canInteract(e) && !currentRoles.contains(e))
+                            .filter(e -> e != null && !e.isManaged() && self.canInteract(e) && !currentRoles.contains(e))
                             .collect(Collectors.toList());
                 }
 
@@ -233,7 +233,7 @@ public class ModerationServiceImpl
                 if (CollectionUtils.isNotEmpty(request.getRevokeRoles())) {
                     rolesToRevoke = request.getRevokeRoles().stream()
                             .map(guild::getRoleById)
-                            .filter(e -> e != null && self.canInteract(e) && currentRoles.contains(e))
+                            .filter(e -> e != null && !e.isManaged() && self.canInteract(e) && currentRoles.contains(e))
                             .collect(Collectors.toList());
                 }
 

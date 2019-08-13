@@ -129,7 +129,7 @@ public class GuildDao extends AbstractDao {
             switch (part) {
                 case ROLES:
                     builder.roles(guild.getRoles().stream()
-                            .filter(e -> !e.isPublicRole() && !e.isManaged())
+                            .filter(e -> !e.isPublicRole())
                             .map(e -> {
                                 RoleDto dto = apiMapper.getRoleDto(e);
                                 dto.setInteractable(guild.getSelfMember().canInteract(e));
