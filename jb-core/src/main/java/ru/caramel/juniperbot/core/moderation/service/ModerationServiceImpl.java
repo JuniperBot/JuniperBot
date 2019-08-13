@@ -276,13 +276,11 @@ public class ModerationServiceImpl
                 .orElse(null);
 
         if (action != null) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", number);
-
             var builder = ModerationActionRequest.builder()
                     .type(action.getType())
                     .moderator(author)
                     .violator(member)
-                    .reason(reason);
+                    .reason(messageService.getMessage("discord.command.mod.warn.exceeded", number));
 
             switch (action.getType()) {
                 case MUTE:
