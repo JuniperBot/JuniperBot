@@ -18,11 +18,13 @@ package ru.caramel.juniperbot.core.event.service;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,13 +172,26 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void initContext(Event event) {
-        Member member = resolverService.getMember(event);
+    public void initContext(GenericEvent event) {
         Guild guild = null;
         User user = null;
-        if (member != null) {
-            guild = member.getGuild();
-            user = member.getUser();
+
+        if (event instanceof GenericGuildMemberEvent) {
+            GenericGuildMemberEvent memberEvent = (GenericGuildMemberEvent) event;
+            guild = memberEvent.getMember().getGuild();
+            user = memberEvent.getMember().getUser();
+        }
+
+        if (guild == null && event instanceof GenericGuildEvent) {
+            guild = ((GenericGuildEvent) event).getGuild();
+        }
+
+        if (guild == null || user == null) {
+            Member member = resolverService.getMember(event);
+            if (member != null) {
+                guild = member.getGuild();
+                user = member.getUser();
+            }
         }
         if (guild == null) {
             guild = resolverService.getGuild(event);

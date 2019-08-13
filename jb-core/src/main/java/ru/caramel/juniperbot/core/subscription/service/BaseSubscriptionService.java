@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.core.subscription.service;
 
+import club.minnced.discord.webhook.send.WebhookMessage;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.webhook.WebhookMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;

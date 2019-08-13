@@ -17,13 +17,10 @@
 package ru.caramel.juniperbot.core.support.jmx;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @Slf4j
@@ -36,16 +33,7 @@ public class JmxJDAMBean implements JmxNamedResource {
 
     public JmxJDAMBean(JDA jda) {
         this.jda = jda;
-        Field rateLimitPoolField = ReflectionUtils.findField(JDAImpl.class, "rateLimitPool");
-        if (rateLimitPoolField != null) {
-            rateLimitPoolField.setAccessible(true);
-            this.rateLimitPool = getField(ScheduledThreadPoolExecutor.class, rateLimitPoolField);
-        } else {
-            this.rateLimitPool = null;
-        }
-        if (this.rateLimitPool == null) {
-            log.warn("No rateLimitPool found in JDA instance!");
-        }
+        this.rateLimitPool = (ScheduledThreadPoolExecutor) jda.getRateLimitPool();
     }
 
     /* =====================================================
@@ -53,8 +41,8 @@ public class JmxJDAMBean implements JmxNamedResource {
        ===================================================== */
 
     @ManagedAttribute(description = "Returns the ping of shard")
-    public long getPing() {
-        return jda.getPing();
+    public long getGatewayPing() {
+        return jda.getGatewayPing();
     }
 
     @ManagedAttribute(description = "Returns the status of shard")
@@ -145,17 +133,6 @@ public class JmxJDAMBean implements JmxNamedResource {
     @ManagedAttribute(description = "[Rate-Limit Pool] Returns the total number of tasks that have ever been scheduled for execution ")
     public long getRatePoolTaskCount() {
         return rateLimitPool != null ? rateLimitPool.getTaskCount() : 0;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getField(Class<T> type, Field field) {
-        Object value;
-        try {
-            value = field != null ? field.get(jda) : null;
-        } catch (IllegalAccessException e) {
-            return null;
-        }
-        return value != null && type.isAssignableFrom(value.getClass()) ? (T) value : null;
     }
 
     @Override

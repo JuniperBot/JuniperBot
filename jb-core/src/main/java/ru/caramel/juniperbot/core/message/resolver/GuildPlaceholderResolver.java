@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.message.resolver;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.message.resolver.node.FunctionalNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.message.resolver.node.SingletonNodePlaceholderResolver;
@@ -37,7 +37,7 @@ public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<
             "afkTimeout", (g, l, c) -> g.getAfkTimeout().getSeconds() / 60,
             "afkChannel", (g, l, c) -> g.getAfkChannel() != null ? g.getAfkChannel().getName() : "",
             "memberCount", (g, l, c) -> g.getMembers().size(),
-            "createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getCreationTime(), l, g, c)
+            "createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getTimeCreated(), l, g, c)
     );
 
     private final Guild guild;

@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.web.security.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.model.AvatarType;
 
 import java.util.Map;
 

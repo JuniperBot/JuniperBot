@@ -16,9 +16,9 @@
  */
 package ru.caramel.juniperbot.core.support.service;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,7 @@ public class SupportServiceImpl implements SupportService {
                 .map(guild::getMemberById)
                 .filter(Objects::nonNull)
                 .filter(e -> !e.getRoles().contains(donatorRole))
-                .forEach(e -> guild.getController().addRolesToMember(e, donatorRole).queue());
+                .forEach(e -> guild.addRoleToMember(e, donatorRole).queue());
     }
 
     @Override

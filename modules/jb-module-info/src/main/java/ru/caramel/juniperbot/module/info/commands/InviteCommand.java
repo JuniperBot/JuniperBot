@@ -16,11 +16,11 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,6 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.info.model.InviteInfo;
 
 import javax.annotation.PostConstruct;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +63,7 @@ public class InviteCommand extends ServerInfoCommand {
         String code = extractCode(query);
         if (StringUtils.isBlank(code)) {
             messageService.onTempEmbedMessage(message.getChannel(), 10, "discord.command.invite.empty");
-            return true;
+            return false;
         }
 
         contextService.queue(message.getGuild(), message.getChannel().sendTyping(), v -> {

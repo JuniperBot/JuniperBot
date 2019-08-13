@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.core.metrics.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
 
 import java.io.Serializable;
 

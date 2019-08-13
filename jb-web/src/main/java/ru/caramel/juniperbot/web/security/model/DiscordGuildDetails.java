@@ -19,10 +19,9 @@ package ru.caramel.juniperbot.web.security.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.Permission;
-import ru.caramel.juniperbot.core.common.model.AvatarType;
+import net.dv8tion.jda.api.Permission;
 
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class DiscordGuildDetails extends AbstractDetails {
@@ -43,7 +42,7 @@ public class DiscordGuildDetails extends AbstractDetails {
 
     @Getter
     @Setter(AccessLevel.PRIVATE)
-    private List<Permission> permissions;
+    private EnumSet<Permission> permissions;
 
     public static DiscordGuildDetails create(Map<Object, Object> map) {
         DiscordGuildDetails details = new DiscordGuildDetails();

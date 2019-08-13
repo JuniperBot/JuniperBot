@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 
 public interface AudioService {
 

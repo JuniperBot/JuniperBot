@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.event.service;
 
-import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.IEventManager;
 
 public interface JbEventManager extends IEventManager {
 

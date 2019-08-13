@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.common.persistence.base;
 
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;

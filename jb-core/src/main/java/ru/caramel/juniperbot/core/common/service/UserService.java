@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 import ru.caramel.juniperbot.core.common.persistence.LocalUser;
 
 public interface UserService {

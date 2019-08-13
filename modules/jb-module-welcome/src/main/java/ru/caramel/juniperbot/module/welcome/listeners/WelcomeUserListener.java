@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.welcome.listeners;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class WelcomeUserListener extends DiscordEventListener {
                         .filter(e -> e != null && guild.getSelfMember().canInteract(e) && !e.isManaged())
                         .collect(Collectors.toSet());
                 if (!roles.isEmpty()) {
-                    guild.getController().addRolesToMember(event.getMember(), roles).queue();
+                    guild.modifyMemberRoles(event.getMember(), roles, null).queue();
                 }
             }
         });
@@ -142,7 +142,7 @@ public class WelcomeUserListener extends DiscordEventListener {
             if (StringUtils.isNotEmpty(localMember.getEffectiveName())
                     && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)
                     && guild.getSelfMember().canInteract(event.getMember())) {
-                guild.getController().setNickname(event.getMember(), localMember.getEffectiveName()).queue();
+                guild.modifyNickname(event.getMember(), localMember.getEffectiveName()).queue();
             }
         }
 

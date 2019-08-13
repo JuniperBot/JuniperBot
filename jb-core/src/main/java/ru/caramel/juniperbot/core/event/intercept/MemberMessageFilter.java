@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.core.event.intercept;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 @Slf4j
 public abstract class MemberMessageFilter implements Filter<GuildMessageReceivedEvent> {

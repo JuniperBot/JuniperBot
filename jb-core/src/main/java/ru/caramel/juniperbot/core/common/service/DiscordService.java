@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.webhook.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 
 import java.util.function.Consumer;

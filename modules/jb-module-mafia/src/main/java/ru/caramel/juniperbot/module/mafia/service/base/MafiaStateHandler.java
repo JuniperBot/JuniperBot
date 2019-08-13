@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.mafia.service.base;
 
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 
 public interface MafiaStateHandler {

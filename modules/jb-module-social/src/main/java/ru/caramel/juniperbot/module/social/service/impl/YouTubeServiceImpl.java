@@ -16,6 +16,10 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -26,9 +30,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.webhook.WebhookMessage;
-import net.dv8tion.jda.webhook.WebhookMessageBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -367,16 +368,17 @@ public class YouTubeServiceImpl extends BaseSubscriptionService<YouTubeConnectio
                 .setContent(content);
 
         if (connection.isSendEmbed()) {
-            EmbedBuilder embedBuilder = messageService.getBaseEmbed();
+            WebhookEmbedBuilder embedBuilder = new WebhookEmbedBuilder();
             VideoSnippet snippet = video.getSnippet();
-            embedBuilder.setAuthor(snippet.getChannelTitle(),
-                    getChannelUrl(snippet.getChannelId()), connection.getIconUrl());
+            embedBuilder.setAuthor(new WebhookEmbed.EmbedAuthor(snippet.getChannelTitle(),
+                    connection.getIconUrl(),
+                    getChannelUrl(snippet.getChannelId())));
 
             if (snippet.getThumbnails() != null && snippet.getThumbnails().getMedium() != null) {
-                embedBuilder.setImage(snippet.getThumbnails().getMedium().getUrl());
+                embedBuilder.setImageUrl(snippet.getThumbnails().getMedium().getUrl());
             }
             embedBuilder.setDescription(CommonUtils.mdLink(snippet.getTitle(), getVideoUrl(video.getId())));
-            embedBuilder.setColor(Color.RED);
+            embedBuilder.setColor(Color.RED.getRGB());
             if (snippet.getPublishedAt() != null) {
                 embedBuilder.setTimestamp(Instant.ofEpochMilli(snippet.getPublishedAt().getValue()));
             }

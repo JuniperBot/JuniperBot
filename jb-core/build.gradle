@@ -47,8 +47,7 @@ dependencies {
     compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
         exclude group: 'club.minnced', module: 'opus-java'
     }
-    // we need to include it manually because in JDA it scoped as POM and included in fat libraries by bootJar task
-    compile(group: 'club.minnced', name: 'opus-java', version: opusJavaVersion)
+    compile(group: 'club.minnced', name: 'discord-webhooks', version: discordWebhookVersion)
 
     // METRICS DEPENDENCIES
     compile(group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)

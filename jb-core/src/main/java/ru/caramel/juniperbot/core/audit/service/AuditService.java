@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.audit.service;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import ru.caramel.juniperbot.core.audit.model.AuditActionBuilder;
 import ru.caramel.juniperbot.core.audit.model.AuditActionType;
 import ru.caramel.juniperbot.core.audit.persistence.AuditAction;

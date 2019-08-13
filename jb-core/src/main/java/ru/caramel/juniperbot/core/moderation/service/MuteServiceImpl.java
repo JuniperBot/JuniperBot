@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.core.moderation.service;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -92,8 +92,7 @@ public class MuteServiceImpl implements MuteService {
         }
 
         if (create && (role == null || !guild.getSelfMember().canInteract(role))) {
-            role = guild.getController()
-                    .createRole()
+            role = guild.createRole()
                     .setColor(Color.GRAY)
                     .setMentionable(false)
                     .setName(MUTED_ROLE_NAME)
@@ -147,12 +146,8 @@ public class MuteServiceImpl implements MuteService {
             Guild guild = request.getGuild();
             Role mutedRole = getMutedRole(guild);
             if (!request.getViolator().getRoles().contains(mutedRole)) {
-                guild.getController()
-                        .addRolesToMember(request.getViolator(), mutedRole)
-                        .queue(e -> schedule.accept(null));
-                guild.getController()
-                        .setMute(request.getViolator(), true)
-                        .queue();
+                guild.addRoleToMember(request.getViolator(), mutedRole).queue();
+                guild.mute(request.getViolator(), true).queue();
                 return true;
             }
         } else {
@@ -179,12 +174,8 @@ public class MuteServiceImpl implements MuteService {
         boolean result = false;
         Role mutedRole = getMutedRole(guild);
         if (member.getRoles().contains(mutedRole)) {
-            guild.getController()
-                    .removeRolesFromMember(member, mutedRole)
-                    .queue();
-            guild.getController()
-                    .setMute(member, false)
-                    .queue();
+            guild.removeRoleFromMember(member, mutedRole).queue();
+            guild.mute(member, false).queue();
             result = true;
         }
         if (channel != null) {
@@ -272,7 +263,7 @@ public class MuteServiceImpl implements MuteService {
         muteStateRepository.deleteByGuildIdAndUserIdAndChannelId(guildId, userId, channelId);
     }
 
-    private static void checkPermission(Channel channel, Role role, PermissionMode mode, Permission permission) {
+    private static void checkPermission(GuildChannel channel, Role role, PermissionMode mode, Permission permission) {
         PermissionOverride override = channel.getPermissionOverride(role);
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
             return;

@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.module.audio.service;
 
 import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.common.service.AudioService;
 import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 

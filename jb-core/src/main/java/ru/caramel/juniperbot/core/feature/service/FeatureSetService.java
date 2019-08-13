@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.core.feature.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 
 import java.util.Collections;

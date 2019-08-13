@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -82,7 +82,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
         DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
-        return getDateField(guild.getCreationTime().toEpochSecond(), "discord.command.server.createdAt",
+        return getDateField(guild.getTimeCreated().toEpochSecond(), "discord.command.server.createdAt",
                 formatter);
     }
 

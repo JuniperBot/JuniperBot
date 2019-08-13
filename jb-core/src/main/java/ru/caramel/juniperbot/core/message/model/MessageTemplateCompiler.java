@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.core.message.model;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
 import ru.caramel.juniperbot.core.message.resolver.MapPlaceholderResolver;
 

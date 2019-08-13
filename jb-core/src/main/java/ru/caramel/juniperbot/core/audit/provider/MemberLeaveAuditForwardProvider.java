@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.core.audit.provider;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import ru.caramel.juniperbot.core.audit.model.AuditActionType;
 import ru.caramel.juniperbot.core.audit.model.ForwardProvider;
 import ru.caramel.juniperbot.core.audit.persistence.AuditAction;

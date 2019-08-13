@@ -16,16 +16,16 @@
  */
 package ru.caramel.juniperbot.core.event.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 public interface SourceResolverService {
 
-    Guild getGuild(Event event);
+    Guild getGuild(GenericEvent event);
 
-    User getUser(Event event);
+    User getUser(GenericEvent event);
 
-    Member getMember(Event event);
+    Member getMember(GenericEvent event);
 }

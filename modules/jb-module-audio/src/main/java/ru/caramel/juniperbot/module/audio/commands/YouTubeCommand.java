@@ -17,9 +17,8 @@
 package ru.caramel.juniperbot.module.audio.commands;
 
 import com.google.api.services.youtube.model.Video;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -31,6 +30,7 @@ import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @DiscordCommand(
         key = "discord.command.youtube.key",
@@ -75,7 +75,7 @@ public class YouTubeCommand extends PlayCommand {
                     context.getConfig().getPrefix(), playCommand), false);
 
             message.getChannel().sendMessage(builder.build()).queue(e -> {
-                List<RequestFuture<Void>> actions = new ArrayList<>(10);
+                List<CompletableFuture<Void>> actions = new ArrayList<>(10);
                 try {
                     for (int i = 0; i < results.size(); i++) {
                         actions.add(e.addReaction(ReactionsListener.CHOICES[i]).submit());

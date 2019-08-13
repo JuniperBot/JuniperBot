@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.AbstractCommand;

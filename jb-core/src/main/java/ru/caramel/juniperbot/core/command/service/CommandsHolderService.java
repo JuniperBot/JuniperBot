@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import ru.caramel.juniperbot.core.command.model.Command;
 import ru.caramel.juniperbot.core.command.model.CoolDownHolder;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;

@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.module.ranking.listeners;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
@@ -57,7 +57,7 @@ public class RankingListener extends DiscordEventListener {
         if (channel == null || !self.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
             return;
         }
-        channel.getMessageById(event.getMessageId()).queue(m -> {
+        channel.retrieveMessageById(event.getMessageId()).queue(m -> {
             User author = m.getAuthor();
             if (author == null || author.isBot() || author.equals(sender.getUser())) {
                 return;

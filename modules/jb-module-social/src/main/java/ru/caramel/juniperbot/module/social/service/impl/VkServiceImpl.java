@@ -16,6 +16,10 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.objects.audio.AudioFull;
 import com.vk.api.sdk.objects.base.Link;
@@ -29,10 +33,8 @@ import com.vk.api.sdk.objects.polls.Poll;
 import com.vk.api.sdk.objects.video.Video;
 import com.vk.api.sdk.objects.wall.*;
 import lombok.Getter;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.webhook.WebhookMessage;
-import net.dv8tion.jda.webhook.WebhookMessageBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -77,6 +79,8 @@ public class VkServiceImpl implements VkService {
     private final static String AUDIO_URL = "https://vk.com/search?c[section]=audio&c[q]=%s&c[performer]=1";
 
     private final static Map<Integer, String> DOC_TYPE_NAMES;
+
+    private final static int COLOR = CommonUtils.hex2Rgb("4A76A8").getRGB();
 
     private final static Map<WallpostAttachmentType, Integer> ATTACHMENT_PRIORITY;
 
@@ -212,19 +216,19 @@ public class VkServiceImpl implements VkService {
             return bP.compareTo(aP);
         });
 
-        List<EmbedBuilder> processEmbeds = new ArrayList<>();
+        List<WebhookEmbedBuilder> processEmbeds = new ArrayList<>();
 
         Set<String> images = new HashSet<>();
         attachments.forEach(e -> processAttachment(images, connection, processEmbeds, message, e));
 
-        List<EmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
+        List<WebhookEmbedBuilder> embeds = processEmbeds.size() > 10 ? processEmbeds.subList(0, 10) : processEmbeds;
 
         String content = trimTo(CommonUtils.parseVkLinks(HtmlUtils.htmlUnescape(post.getText())), 2000);
-        EmbedBuilder contentEmbed = null;
+        WebhookEmbedBuilder contentEmbed = null;
         if (embeds.size() == 1) {
             contentEmbed = embeds.get(0);
         } else if (embeds.isEmpty() && StringUtils.isNotEmpty(content)) {
-            contentEmbed = messageService.getBaseEmbed();
+            contentEmbed = createBuilder();
             embeds.add(contentEmbed);
         }
         if (contentEmbed != null) {
@@ -242,46 +246,47 @@ public class VkServiceImpl implements VkService {
         }
         WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(content);
         if (!embeds.isEmpty()) {
-            builder.addEmbeds(embeds.stream().map(EmbedBuilder::build).collect(Collectors.toList()));
+            builder.addEmbeds(embeds.stream().map(WebhookEmbedBuilder::build).collect(Collectors.toList()));
         }
         return !builder.isEmpty() ? builder.build() : null;
     }
 
-    private EmbedBuilder initBuilder(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders) {
-        EmbedBuilder builder = messageService.getBaseEmbed().setFooter(String.format(CLUB_URL, message.getGroupId()), null);
+    private WebhookEmbedBuilder initBuilder(CallbackMessage<Wallpost> message, List<WebhookEmbedBuilder> builders) {
+        WebhookEmbedBuilder builder = createBuilder()
+                .setFooter(new WebhookEmbed.EmbedFooter(String.format(CLUB_URL, message.getGroupId()), null));
         builders.add(builder);
         return builder;
     }
 
-    private EmbedBuilder initBuilderIfRequired(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, int desiredLength) {
-        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
-        if (prevBuilder == null || prevBuilder.getFields().size() == 25) {
+    private WebhookEmbedBuilder initBuilderIfRequired(CallbackMessage<Wallpost> message, List<WebhookEmbedBuilder> builders, int desiredLength) {
+        WebhookEmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        if (prevBuilder == null || getFields(prevBuilder).size() == 25) {
             return initBuilder(message, builders);
         }
-        MessageEmbed embed = prevBuilder.build();
-        return embed.getLength() + desiredLength <= MessageEmbed.EMBED_MAX_LENGTH_BOT
+        WebhookEmbed embed = prevBuilder.build();
+        return getWebhookLength(embed) + desiredLength <= MessageEmbed.EMBED_MAX_LENGTH_BOT
                 ? prevBuilder : initBuilder(message, builders);
     }
 
-    private void addField(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, String name, String value, boolean inline) {
-        EmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
-        prevBuilder.addField(name, value, inline);
+    private void addField(CallbackMessage<Wallpost> message, List<WebhookEmbedBuilder> builders, String name, String value, boolean inline) {
+        WebhookEmbedBuilder prevBuilder = initBuilderIfRequired(message, builders, (name != null ? name.length() : 0) + (value != null ? value.length() : 0));
+        prevBuilder.addField(new WebhookEmbed.EmbedField(inline, name, value));
     }
 
-    private void addBlankField(CallbackMessage<Wallpost> message, List<EmbedBuilder> builders, boolean inline) {
-        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
-        if (prevBuilder == null || prevBuilder.getFields().size() == 24) { // do not add last empty fields
+    private void addBlankField(CallbackMessage<Wallpost> message, List<WebhookEmbedBuilder> builders, boolean inline) {
+        WebhookEmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        if (prevBuilder == null || getFields(prevBuilder).size() == 24) { // do not add last empty fields
             prevBuilder = initBuilder(message, builders);
         }
-        if (prevBuilder.getFields().size() > 0) {
+        if (getFields(prevBuilder).size() > 0) {
             addField(message, builders, EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline);
         }
     }
 
-    private boolean hasImage(List<EmbedBuilder> builders) {
-        EmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+    private boolean hasImage(List<WebhookEmbedBuilder> builders) {
+        WebhookEmbedBuilder prevBuilder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
         try {
-            if (prevBuilder != null && FieldUtils.readField(prevBuilder, "image", true) != null) {
+            if (prevBuilder != null && FieldUtils.readField(prevBuilder, "imageUrl", true) != null) {
                 return true;
             }
         } catch (IllegalAccessException e) {
@@ -290,11 +295,11 @@ public class VkServiceImpl implements VkService {
         return false;
     }
 
-    private void processAttachment(Set<String> images, VkConnection connection, List<EmbedBuilder> builders, CallbackMessage<Wallpost> message, WallpostAttachment attachment) {
+    private void processAttachment(Set<String> images, VkConnection connection, List<WebhookEmbedBuilder> builders, CallbackMessage<Wallpost> message, WallpostAttachment attachment) {
         if (connection.getAttachments() != null && connection.getAttachments().contains(attachment.getType())) {
             return; // ignore attachments
         }
-        EmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
+        WebhookEmbedBuilder builder = CollectionUtils.isNotEmpty(builders) ? builders.get(builders.size() - 1) : null;
 
         boolean hasImage = hasImage(builders);
         switch (attachment.getType()) {
@@ -474,14 +479,14 @@ public class VkServiceImpl implements VkService {
         }
     }
 
-    private void setPhoto(Set<String> images, EmbedBuilder builder, String... urls) {
+    private void setPhoto(Set<String> images, WebhookEmbedBuilder builder, String... urls) {
         String imageUrl = coalesce(urls);
         if (imageUrl != null && images.add(imageUrl)) {
-            builder.setImage(imageUrl);
+            builder.setImageUrl(imageUrl);
         }
     }
 
-    private void setPhoto(VkConnection connection, Set<String> images, EmbedBuilder builder, CallbackMessage<Wallpost> message, Photo photo, boolean showText) {
+    private void setPhoto(VkConnection connection, Set<String> images, WebhookEmbedBuilder builder, CallbackMessage<Wallpost> message, Photo photo, boolean showText) {
         String imageUrl = coalesce(photo.getPhoto2560(),
                 photo.getPhoto1280(),
                 photo.getPhoto807(),
@@ -502,19 +507,52 @@ public class VkServiceImpl implements VkService {
                 setText(connection, builder, photo.getText(), url);
             }
 
-            builder.setImage(imageUrl);
+            builder.setImageUrl(imageUrl);
             if (connection.isShowDate() && photo.getDate() != null) {
                 builder.setTimestamp(new Date(((long) photo.getDate()) * 1000).toInstant());
             }
         }
     }
 
-    private void setText(VkConnection connection, EmbedBuilder builder, String text, String url) {
+    private void setText(VkConnection connection, WebhookEmbedBuilder builder, String text, String url) {
         if (StringUtils.isNotEmpty(text)) {
             if (connection.isShowPostLink()) {
-                builder.setTitle(messageService.getMessage("vk.message.open"), url);
+                builder.setTitle(new WebhookEmbed.EmbedTitle(messageService.getMessage("vk.message.open"), url));
             }
             builder.setDescription(trimTo(CommonUtils.parseVkLinks(HtmlUtils.htmlUnescape(text)), MessageEmbed.TEXT_MAX_LENGTH));
         }
+    }
+
+    private static int getWebhookLength(WebhookEmbed embed) {
+        int length = 0;
+        if (embed.getTitle() != null)
+            length += embed.getTitle().getText().length();
+        if (embed.getDescription() != null)
+            length += embed.getDescription().length();
+        if (embed.getAuthor() != null)
+            length += embed.getAuthor().getName().length();
+        if (embed.getFooter() != null)
+            length += embed.getFooter().getText().length();
+        for (WebhookEmbed.EmbedField field : embed.getFields()) {
+            length += field.getName().length() + field.getValue().length();
+        }
+        return length;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<WebhookEmbed.EmbedField> getFields(WebhookEmbedBuilder builder) {
+        if (builder == null) {
+            return Collections.emptyList();
+        }
+        try {
+            List<WebhookEmbed.EmbedField> fields = (List<WebhookEmbed.EmbedField>) FieldUtils.readField(builder, "fields", true);
+            return fields != null ? fields : Collections.emptyList();
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private WebhookEmbedBuilder createBuilder() {
+        return new WebhookEmbedBuilder().setColor(COLOR);
     }
 }

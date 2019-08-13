@@ -18,10 +18,10 @@ package ru.caramel.juniperbot.core.message.service;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import static net.dv8tion.jda.core.EmbedBuilder.URL_PATTERN;
+import static net.dv8tion.jda.api.EmbedBuilder.URL_PATTERN;
 
 @Slf4j
 @Service

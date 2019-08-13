@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
 
 public interface ConfigService extends DomainService<GuildConfig> {

@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.message.resolver;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.message.resolver.node.FunctionalNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.message.resolver.node.SingletonNodePlaceholderResolver;
@@ -35,8 +35,8 @@ public class MemberPlaceholderResolver extends FunctionalNodePlaceholderResolver
             "nickname", (m, l, c) -> m.getEffectiveName(),
             "name", (m, l, c) -> m.getUser().getName(),
             "discriminator", (m, l, c) -> m.getUser().getDiscriminator(),
-            "joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getJoinDate(), l, m.getGuild(), c),
-            "createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getCreationTime(), l, m.getGuild(), c),
+            "joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getTimeJoined(), l, m.getGuild(), c),
+            "createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getTimeCreated(), l, m.getGuild(), c),
             "status", (m, l, c) -> c.getBean(MessageService.class).getEnumTitle(m.getOnlineStatus()),
             "avatarUrl", (m, l, c) -> m.getUser().getEffectiveAvatarUrl()
     );

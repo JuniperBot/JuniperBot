@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.core.subscription.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Webhook;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Webhook;
 import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
 
 public interface WebHookService {

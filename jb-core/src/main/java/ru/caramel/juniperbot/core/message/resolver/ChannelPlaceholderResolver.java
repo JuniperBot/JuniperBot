@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.message.resolver;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.message.resolver.node.FunctionalNodePlaceholderResolver;
 import ru.caramel.juniperbot.core.message.resolver.node.SingletonNodePlaceholderResolver;
@@ -34,7 +34,7 @@ public class ChannelPlaceholderResolver extends FunctionalNodePlaceholderResolve
             "mention", (t, l, c) -> t.getAsMention(),
             "topic", (t, l, c) -> t.getTopic() != null ? t.getTopic() : "",
             "position", (t, l, c) -> t.getPosition() + 1,
-            "createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getCreationTime(), l, t.getGuild(), c)
+            "createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getTimeCreated(), l, t.getGuild(), c)
     );
 
     private final TextChannel channel;

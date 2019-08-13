@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.event.intercept;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.Event;
 
 /**
  * Factory for the creation and caching of Filters and creation
