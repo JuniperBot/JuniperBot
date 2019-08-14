@@ -20,6 +20,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class BrandingServiceImpl implements BrandingService {
 
@@ -34,6 +39,8 @@ public class BrandingServiceImpl implements BrandingService {
 
     @Value("${branding.web.host:juniper.bot}")
     private String wehHost;
+
+    private Set<String> webAliases;
 
     @Override
     public String getAvatarUrl() {
@@ -64,5 +71,18 @@ public class BrandingServiceImpl implements BrandingService {
 
     private String getOrDefault(String url) {
         return StringUtils.isNotEmpty(url) ? url : null;
+    }
+
+    @Value("${branding.web.aliases:}")
+    public void setAliases(String aliases) {
+        if (StringUtils.isEmpty(aliases)) {
+            webAliases = Collections.emptySet();
+        }
+        webAliases = new HashSet<>(Arrays.asList(aliases.split(",")));
+    }
+
+    @Override
+    public Set<String> getWebAliases() {
+        return Collections.unmodifiableSet(webAliases);
     }
 }
