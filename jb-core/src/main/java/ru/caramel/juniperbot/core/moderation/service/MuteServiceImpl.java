@@ -147,7 +147,7 @@ public class MuteServiceImpl implements MuteService {
             Role mutedRole = getMutedRole(guild);
             if (!request.getViolator().getRoles().contains(mutedRole)) {
                 guild.addRoleToMember(request.getViolator(), mutedRole).queue();
-                guild.mute(request.getViolator(), true).queue();
+                mute(request.getViolator(), true);
                 return true;
             }
         } else {
@@ -175,7 +175,7 @@ public class MuteServiceImpl implements MuteService {
         Role mutedRole = getMutedRole(guild);
         if (member.getRoles().contains(mutedRole)) {
             guild.removeRoleFromMember(member, mutedRole).queue();
-            guild.mute(member, false).queue();
+            mute(member, false);
             result = true;
         }
         if (channel != null) {
@@ -378,5 +378,15 @@ public class MuteServiceImpl implements MuteService {
                 .build();
         mute(request);
         return true;
+    }
+
+    private static void mute(Member member, boolean mute) {
+        if (member == null) {
+            return;
+        }
+        // TODO JDA4 where are voice channel check. It SHOULDN'T be there so remove this if it was removed there
+        if (member.getVoiceState() == null || member.getVoiceState().getChannel() != null) {
+            member.getGuild().mute(member, mute).queue();
+        }
     }
 }
