@@ -16,9 +16,9 @@
  */
 package ru.caramel.juniperbot.web.service.subscriptions;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Webhook;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.core.common.service.ConfigService;

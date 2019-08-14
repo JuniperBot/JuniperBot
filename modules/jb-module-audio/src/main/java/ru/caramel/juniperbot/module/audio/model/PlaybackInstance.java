@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.module.audio.model;
 import lavalink.client.player.IPlayer;
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.ArrayList;
 import java.util.Collections;

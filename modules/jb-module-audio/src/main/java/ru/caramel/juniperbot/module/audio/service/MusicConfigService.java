@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.module.audio.service;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.common.service.DomainService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 

@@ -16,15 +16,14 @@
  */
 package ru.caramel.juniperbot.module.ranking.commands;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
@@ -36,7 +35,7 @@ import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 public class RankCommand extends RankingCommand {
 
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
         Member member = message.getMember();
         if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
             member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
@@ -53,7 +52,7 @@ public class RankCommand extends RankingCommand {
             addFields(builder, info, member.getGuild());
 
             long desiredPage = (info.getRank() / 50) + 1;
-            String url = String.format("https://juniperbot.ru/ranking/%s?page=%s#%s", member.getGuild().getId(),
+            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
                     desiredPage, member.getUser().getId());
             builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
             messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());

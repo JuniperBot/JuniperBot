@@ -16,10 +16,13 @@
  */
 package ru.caramel.juniperbot.module.reminder.jobs;
 
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.core.moderation.service.ModerationService;
@@ -44,7 +47,7 @@ public class ReminderJob extends AbstractJob {
     private ModerationService moderationService;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         ShardManager shardManager = discordService.getShardManager();
         if (shardManager == null || !discordService.isConnected()) {
             reschedule(jobExecutionContext, TimeUnit.MINUTES, 1);

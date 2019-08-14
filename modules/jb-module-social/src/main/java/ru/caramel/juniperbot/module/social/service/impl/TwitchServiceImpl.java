@@ -16,16 +16,17 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.*;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import com.github.twitch4j.TwitchClient;
-import com.github.twitch4j.TwitchClientBuilder;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.webhook.WebhookMessage;
-import net.dv8tion.jda.webhook.WebhookMessageBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,21 +283,24 @@ public class TwitchServiceImpl extends BaseSubscriptionService<TwitchConnection,
                 .setContent(content);
 
         if (connection.isSendEmbed()) {
-
-            EmbedBuilder embedBuilder = messageService.getBaseEmbed()
-                    .setAuthor(CommonUtils.trimTo(user.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
-                    streamUrl, user.getProfileImageUrl())
-                    .setThumbnail(user.getProfileImageUrl())
+            WebhookEmbedBuilder embedBuilder = new WebhookEmbedBuilder()
+                    .setAuthor(new WebhookEmbed.EmbedAuthor(
+                            CommonUtils.trimTo(user.getDisplayName(), MessageEmbed.TITLE_MAX_LENGTH),
+                            user.getProfileImageUrl(),
+                            streamUrl))
+                    .setThumbnailUrl(user.getProfileImageUrl())
                     .setDescription(CommonUtils.trimTo(stream.getTitle(), MessageEmbed.TITLE_MAX_LENGTH))
-                    .setColor(TWITCH_COLOR)
-                    .setImage(stream.getThumbnailUrl(848, 480));
+                    .setColor(TWITCH_COLOR.getRGB())
+                    .setImageUrl(stream.getThumbnailUrl(848, 480));
 
-            embedBuilder.addField(messageService.getMessage("discord.viewers.title"),
-                    CommonUtils.formatNumber(stream.getViewerCount()), false);
+            embedBuilder.addField(new WebhookEmbed.EmbedField(false,
+                    messageService.getMessage("discord.viewers.title"),
+                    CommonUtils.formatNumber(stream.getViewerCount())));
 
             if (game != null) {
-                embedBuilder.addField(messageService.getMessage("discord.game.title"),
-                        CommonUtils.trimTo(game.getName(), MessageEmbed.VALUE_MAX_LENGTH), false);
+                embedBuilder.addField(new WebhookEmbed.EmbedField(false,
+                        messageService.getMessage("discord.game.title"),
+                        CommonUtils.trimTo(game.getName(), MessageEmbed.VALUE_MAX_LENGTH)));
             }
             builder.addEmbeds(embedBuilder.build());
         }

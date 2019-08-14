@@ -14,21 +14,21 @@
  */
 package ru.caramel.juniperbot.core.event.listeners;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.audit.ActionType;
-import net.dv8tion.jda.core.audit.AuditLogEntry;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.guild.GuildBanEvent;
-import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.audit.ActionType;
+import net.dv8tion.jda.api.audit.AuditLogEntry;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.audit.model.AuditActionBuilder;
@@ -79,9 +79,9 @@ public class MemberListener extends DiscordEventListener {
         if (event.getUser().isBot() || !guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             return;
         }
-        guild.getBan(event.getUser()).queueAfter(2, TimeUnit.SECONDS, e -> {
+        guild.retrieveBan(event.getUser()).queueAfter(2, TimeUnit.SECONDS, e -> {
             if (guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-                guild.getAuditLogs()
+                guild.retrieveAuditLogs()
                         .type(ActionType.BAN)
                         .limit(10)
                         .queue(a -> {
@@ -154,7 +154,7 @@ public class MemberListener extends DiscordEventListener {
 
     @Override
     @Transactional
-    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {
+    public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
         LocalMember member = memberService.getOrCreate(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
             getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)

@@ -25,10 +25,10 @@ import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +79,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                     discordService.getShardsNum(),
                     discordService::getShardById
             );
+            builder.setVoiceDispatchInterceptor(lavaLink.getVoiceInterceptor());
             builder.addEventListeners(lavaLink);
             if (CollectionUtils.isNotEmpty(configuration.getNodes())) {
                 configuration.getNodes().forEach(e -> {

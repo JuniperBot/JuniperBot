@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.module.mafia.service;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
@@ -94,7 +94,7 @@ public class MeetingHandler extends AbstractStateHandler {
         List<Permission> permissionList = Arrays.asList(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE,
                 Permission.MESSAGE_ADD_REACTION);
 
-        ChannelAction action = guild.getController()
+        ChannelAction action = guild
                 .createTextChannel("wolves")
                 .setTopic(messageService.getMessage("mafia.goons"))
                 .addPermissionOverride(everyOne, null, permissionList)

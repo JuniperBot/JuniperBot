@@ -17,13 +17,13 @@
 package ru.caramel.juniperbot.core.message.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,7 +178,7 @@ public class MessageServiceImpl implements MessageService {
             scheduler.schedule(() -> {
                 MessageChannel channel = DiscordUtils.getChannel(jda, type, channelId);
                 if (channel != null) {
-                    channel.getMessageById(messageId).queue(this::delete);
+                    channel.retrieveMessageById(messageId).queue(this::delete);
                 }
             }, new DateTime().plusSeconds(sec).toDate());
         });

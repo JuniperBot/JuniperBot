@@ -16,15 +16,18 @@
  */
 package ru.caramel.juniperbot.core.feature.provider;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
 import ru.caramel.juniperbot.core.feature.model.FeatureProvider;
 import ru.caramel.juniperbot.core.feature.model.FeatureSet;
 import ru.caramel.juniperbot.core.support.model.SupportConfiguration;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @FeatureProvider(priority = 2)

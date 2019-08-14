@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.web.controller.priv;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,8 +29,8 @@ import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
 import java.util.List;
 
-import static net.dv8tion.jda.core.OnlineStatus.OFFLINE;
-import static net.dv8tion.jda.core.OnlineStatus.UNKNOWN;
+import static net.dv8tion.jda.api.OnlineStatus.OFFLINE;
+import static net.dv8tion.jda.api.OnlineStatus.UNKNOWN;
 
 @RestController
 public class ServersController extends BaseRestController {

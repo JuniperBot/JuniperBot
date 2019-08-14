@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.core.metrics.service;
 
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Gauge;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.command.model.Command;
@@ -73,14 +73,14 @@ public class DiscordMetricsRegistryImpl implements DiscordMetricsRegistry {
     @Override
     @Gauge(name = GAUGE_PING, absolute = true)
     public double getAveragePing() {
-        return getShardManager() != null ? getShardManager().getAveragePing() : 0;
+        return getShardManager() != null ? getShardManager().getAverageGatewayPing() : 0;
     }
 
     @Override
     public Map<Integer, Long> getShardPings() {
         return getShardManager().getShards().stream()
                 .collect(Collectors.toMap(e -> e.getShardInfo().getShardId(),
-                        e -> JDA.Status.CONNECTED.equals(e.getStatus()) ? e.getPing() : -1));
+                        e -> JDA.Status.CONNECTED.equals(e.getStatus()) ? e.getGatewayPing() : -1));
     }
 
     @Override

@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;

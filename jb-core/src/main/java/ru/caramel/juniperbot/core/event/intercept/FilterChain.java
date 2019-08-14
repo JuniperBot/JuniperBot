@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.event.intercept;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.Event;
 
 /**
  * A FilterChain is an object giving a view into the invocation chain of a filtered event for a resource.

@@ -16,12 +16,12 @@
  */
 package ru.caramel.juniperbot.module.info.commands;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -49,7 +49,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
         builder.addField(getMemberListField(guild));
         builder.addField(getChannelListField(guild));
         builder.addField(getShard(guild));
-        builder.addField(getVerificationLevel(guild));
+        builder.addField(getVerificationLevel(guild.getVerificationLevel()));
         builder.addField(getRegion(guild));
         builder.addField(getOwner(guild));
         builder.addField(getCreatedAt(guild, context));
@@ -58,35 +58,35 @@ public class ServerInfoCommand extends AbstractInfoCommand {
         return true;
     }
 
-    private MessageEmbed.Field getVerificationLevel(Guild guild) {
+    protected MessageEmbed.Field getVerificationLevel(Guild.VerificationLevel level) {
         return new MessageEmbed.Field(messageService.getMessage("discord.command.server.verificationLevel"),
-                messageService.getEnumTitle(guild.getVerificationLevel()), true);
+                messageService.getEnumTitle(level), true);
     }
 
-    private MessageEmbed.Field getOwner(Guild guild) {
+    protected MessageEmbed.Field getOwner(Guild guild) {
         return new MessageEmbed.Field(messageService.getMessage("discord.command.server.owner"),
                 DiscordUtils.formatUser(guild.getOwner().getUser()), true);
     }
 
-    private MessageEmbed.Field getRegion(Guild guild) {
+    protected MessageEmbed.Field getRegion(Guild guild) {
         return new MessageEmbed.Field(messageService.getMessage("discord.command.server.region"),
                 messageService.getEnumTitle(guild.getRegion()), true);
     }
 
-    private MessageEmbed.Field getShard(Guild guild) {
+    protected MessageEmbed.Field getShard(Guild guild) {
         return new MessageEmbed.Field(messageService.getMessage("discord.command.server.shard.title"),
                 String.format("#**%s**", guild.getJDA().getShardInfo().getShardId() + 1), true);
     }
 
-    private MessageEmbed.Field getCreatedAt(Guild guild, BotContext context) {
+    protected MessageEmbed.Field getCreatedAt(Guild guild, BotContext context) {
         DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
-        return getDateField(guild.getCreationTime().toEpochSecond(), "discord.command.server.createdAt",
+        return getDateField(guild.getTimeCreated().toEpochSecond(), "discord.command.server.createdAt",
                 formatter);
     }
 
-    private MessageEmbed.Field getChannelListField(Guild guild) {
+    protected MessageEmbed.Field getChannelListField(Guild guild) {
         long total = guild.getTextChannels().size() + guild.getVoiceChannels().size();
         StringBuilder memberBuilder = new StringBuilder();
         if (!guild.getTextChannels().isEmpty()) {
@@ -101,7 +101,7 @@ public class ServerInfoCommand extends AbstractInfoCommand {
                 memberBuilder.toString(), true);
     }
 
-    private MessageEmbed.Field getMemberListField(Guild guild) {
+    protected MessageEmbed.Field getMemberListField(Guild guild) {
         List<Member> memberList = guild.getMembers();
         class Info {
             private long userCount = 0;

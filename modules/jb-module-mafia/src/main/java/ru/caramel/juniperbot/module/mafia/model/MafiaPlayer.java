@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.module.mafia.model;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
 @Getter
 @Setter

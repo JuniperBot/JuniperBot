@@ -19,10 +19,9 @@ package ru.caramel.juniperbot.core.moderation.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.io.Serializable;
 import java.util.List;

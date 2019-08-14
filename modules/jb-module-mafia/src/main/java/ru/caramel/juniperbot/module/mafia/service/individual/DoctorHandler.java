@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.mafia.service.individual;
 
-import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.mafia.model.*;
 

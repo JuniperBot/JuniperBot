@@ -53,7 +53,7 @@ public class TrackData {
             return info.getArtworkUrl();
         }
         TrackData trackData = get(track);
-        if (trackData.getPlaylistItem() != null && StringUtils.isNotBlank(trackData.getPlaylistItem().getArtworkUri())){
+        if (trackData.getPlaylistItem() != null && StringUtils.isNotBlank(trackData.getPlaylistItem().getArtworkUri())) {
             return trackData.getPlaylistItem().getArtworkUri();
         }
         return null;

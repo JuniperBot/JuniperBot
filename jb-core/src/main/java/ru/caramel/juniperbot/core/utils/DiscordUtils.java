@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.core.utils;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -145,7 +145,7 @@ public final class DiscordUtils {
                     continue;
                 }
                 List<Emote> emotes = guild.getEmotesByName(replacement, false);
-                emotes.sort(Comparator.comparing(Emote::getCreationTime));
+                emotes.sort(Comparator.comparing(Emote::getTimeCreated));
                 if (emotes.isEmpty()) {
                     continue;
                 }

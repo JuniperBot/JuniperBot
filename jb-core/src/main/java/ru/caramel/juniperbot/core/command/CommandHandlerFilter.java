@@ -17,8 +17,7 @@
 package ru.caramel.juniperbot.core.command;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

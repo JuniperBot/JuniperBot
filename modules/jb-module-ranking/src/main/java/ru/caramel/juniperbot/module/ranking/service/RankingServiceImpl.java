@@ -20,9 +20,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -292,7 +292,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
         Set<Role> rolesToAdd = getRoles(member, rewardsToAdd);
         Set<Role> rolesToRemove = getRoles(member, rewardsToRemove);
-        member.getGuild().getController().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
+        member.getGuild().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
     }
 
     private Set<Role> getRoles(Member member, List<Reward> rewards) {

@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.discord;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.api.Permission;
 
 import java.io.Serializable;
 import java.util.List;

@@ -16,9 +16,9 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import ru.caramel.juniperbot.core.command.model.Command;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 

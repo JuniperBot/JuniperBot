@@ -19,10 +19,12 @@ package ru.caramel.juniperbot.core.moderation.service;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +46,12 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.core.utils.DiscordUtils;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.*;
+import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.COUNT_ATTR;
+import static ru.caramel.juniperbot.core.audit.provider.MemberWarnAuditForwardProvider.REASON_ATTR;
 
 @Service
 public class ModerationServiceImpl
@@ -120,14 +122,12 @@ public class ModerationServiceImpl
         Guild guild = member.getGuild();
         Member self = guild.getSelfMember();
 
-        GuildController controller = member.getGuild().getController();
-
         if (StringUtils.isNotEmpty(color)) {
             String roleName = COLOR_ROLE_NAME + color;
             List<Role> roles = member.getGuild().getRolesByName(roleName, false);
             role = roles.stream().filter(self::canInteract).findFirst().orElse(null);
             if (role == null) {
-                role = controller
+                role = guild
                         .createRole()
                         .setColor(CommonUtils.hex2Rgb(color))
                         .setMentionable(false)
@@ -136,7 +136,7 @@ public class ModerationServiceImpl
 
                 Role highestRole = DiscordUtils.getHighestRole(self, Permission.MANAGE_ROLES);
                 if (highestRole != null) {
-                    controller.modifyRolePositions()
+                    guild.modifyRolePositions()
                             .selectPosition(role)
                             .moveTo(highestRole.getPosition() - 1)
                             .complete();
@@ -153,15 +153,7 @@ public class ModerationServiceImpl
                     .filter(e -> e.getName().startsWith(COLOR_ROLE_NAME))
                     .filter(self::canInteract)
                     .collect(Collectors.toList());
-            if (role != null) {
-                if (CollectionUtils.isEmpty(roleList)) {
-                    controller.addRolesToMember(member, role).complete();
-                } else {
-                    controller.modifyMemberRoles(member, Collections.singleton(role), roleList).complete();
-                }
-            } else {
-                controller.removeRolesFromMember(member, roleList).complete();
-            }
+            guild.modifyMemberRoles(member, role != null ? Collections.singleton(role) : null, roleList).complete();
         }
         // remove unused color roles
         Set<Role> userRoles = new LinkedHashSet<>();
@@ -193,7 +185,7 @@ public class ModerationServiceImpl
                 }
                 notifyUserAction(e -> {
                     int delDays = request.getDuration() != null ? request.getDuration() : 0;
-                    e.getGuild().getController().ban(e, delDays, request.getReason()).queue();
+                    e.getGuild().ban(e, delDays, request.getReason()).queue();
                 }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
                 return true;
             case KICK:
@@ -209,7 +201,7 @@ public class ModerationServiceImpl
                 notifyUserAction(e -> {
                     actionBuilder.save();
                     actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
-                    e.getGuild().getController().kick(e, request.getReason()).queue();
+                    e.getGuild().kick(e, request.getReason()).queue();
                 }, request.getViolator(), "discord.command.mod.action.message.kick", request.getReason());
                 return true;
 
@@ -222,7 +214,7 @@ public class ModerationServiceImpl
                 if (CollectionUtils.isNotEmpty(request.getAssignRoles())) {
                     rolesToAssign = request.getAssignRoles().stream()
                             .map(guild::getRoleById)
-                            .filter(e -> e != null && self.canInteract(e) && !currentRoles.contains(e))
+                            .filter(e -> e != null && !e.isManaged() && self.canInteract(e) && !currentRoles.contains(e))
                             .collect(Collectors.toList());
                 }
 
@@ -230,7 +222,7 @@ public class ModerationServiceImpl
                 if (CollectionUtils.isNotEmpty(request.getRevokeRoles())) {
                     rolesToRevoke = request.getRevokeRoles().stream()
                             .map(guild::getRoleById)
-                            .filter(e -> e != null && self.canInteract(e) && currentRoles.contains(e))
+                            .filter(e -> e != null && !e.isManaged() && self.canInteract(e) && currentRoles.contains(e))
                             .collect(Collectors.toList());
                 }
 
@@ -238,7 +230,7 @@ public class ModerationServiceImpl
                     return false;
                 }
 
-                guild.getController().modifyMemberRoles(request.getViolator(), rolesToAssign, rolesToRevoke).queue();
+                guild.modifyMemberRoles(request.getViolator(), rolesToAssign, rolesToRevoke).queue();
                 return true;
         }
         return false;
@@ -273,13 +265,11 @@ public class ModerationServiceImpl
                 .orElse(null);
 
         if (action != null) {
-            reason = messageService.getMessage("discord.command.mod.warn.exceeded", number);
-
             var builder = ModerationActionRequest.builder()
                     .type(action.getType())
                     .moderator(author)
                     .violator(member)
-                    .reason(reason);
+                    .reason(messageService.getMessage("discord.command.mod.warn.exceeded", number));
 
             switch (action.getType()) {
                 case MUTE:

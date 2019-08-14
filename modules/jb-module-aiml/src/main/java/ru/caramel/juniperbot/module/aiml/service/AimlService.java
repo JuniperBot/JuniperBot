@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.aiml.service;
 
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 import org.goldrenard.jb.core.Chat;
 
 public interface AimlService {

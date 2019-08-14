@@ -16,9 +16,8 @@
  */
 package ru.caramel.juniperbot.module.audio.commands;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.caramel.juniperbot.core.command.model.BotContext;
@@ -26,6 +25,7 @@ import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @DiscordCommand(
         key = PlayCommand.KEY,
@@ -72,7 +72,7 @@ public class PlayCommand extends AudioCommand {
         if (index < 0 || CollectionUtils.isEmpty(results) || index > results.size() - 1) {
             return null;
         }
-        List<RequestFuture<Void>> actions = (List<RequestFuture<Void>>) context.getAttribute(ATTR_SEARCH_ACTIONS);
+        List<CompletableFuture<Void>> actions = (List<CompletableFuture<Void>>) context.getAttribute(ATTR_SEARCH_ACTIONS);
         if (actions != null) {
             actions.forEach(e1 -> e1.cancel(true));
             context.removeAttribute(ATTR_SEARCH_ACTIONS);

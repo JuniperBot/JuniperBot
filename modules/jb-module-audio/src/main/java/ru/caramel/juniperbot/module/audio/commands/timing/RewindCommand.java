@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.audio.commands.timing;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;

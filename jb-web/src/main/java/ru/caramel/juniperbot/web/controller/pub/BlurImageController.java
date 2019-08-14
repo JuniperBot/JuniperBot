@@ -36,7 +36,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -48,7 +47,8 @@ public class BlurImageController extends BasePublicRestController {
 
     private static final String[] ALLOWED_PREFIX = new String[]{
             "https://cdn.discordapp.com/icons/",
-            "https://juniperbot.ru/resources/img/"
+            "https://juniperbot.ru/resources/img/",
+            "https://juniper.bot/resources/img/"
     };
 
     private BoxBlurFilter blurFilter;
@@ -93,16 +93,12 @@ public class BlurImageController extends BasePublicRestController {
             ImageInfo info = readCached(hash);
             if (info == null) {
                 info = renderImage(sourceUrl);
-                if (info != null) {
-                    saveCached(hash, info);
-                }
+                saveCached(hash, info);
             }
-            if (info != null) {
-                return ResponseEntity.ok()
-                        .contentLength(info.contentLength)
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(new InputStreamResource(info.inputStream));
-            }
+            return ResponseEntity.ok()
+                    .contentLength(info.contentLength)
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(new InputStreamResource(info.inputStream));
         } catch (IOException e) {
             // fall down
         }
@@ -144,7 +140,7 @@ public class BlurImageController extends BasePublicRestController {
         return cacheDirectory;
     }
 
-    private ImageInfo renderImage(String sourceUrl) throws MalformedURLException, IOException {
+    private ImageInfo renderImage(String sourceUrl) throws IOException {
         URL url = new URL(sourceUrl);
         URLConnection con = url.openConnection();
         con.setRequestProperty("User-Agent", USER_AGENT);

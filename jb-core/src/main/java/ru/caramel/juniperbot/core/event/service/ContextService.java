@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.core.event.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import java.awt.*;
 import java.util.Locale;
@@ -55,7 +55,7 @@ public interface ContextService {
 
     boolean isSupported(String tag);
 
-    void initContext(Event event);
+    void initContext(GenericEvent event);
 
     void initContext(Guild guild);
 

@@ -19,7 +19,6 @@ package ru.caramel.juniperbot.web.security.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.model.AvatarType;
 
 import java.util.Map;
 
@@ -50,10 +49,6 @@ public class DiscordUserDetails extends AbstractDetails {
     @Getter
     @Setter(AccessLevel.PRIVATE)
     private String email;
-
-    public String getAvatarUrl() {
-        return AvatarType.USER.getUrl(id, avatar);
-    }
 
     public static DiscordUserDetails create(Map<Object, Object> map) {
         DiscordUserDetails details = new DiscordUserDetails();

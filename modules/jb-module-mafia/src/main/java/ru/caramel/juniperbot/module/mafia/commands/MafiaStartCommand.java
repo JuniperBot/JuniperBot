@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.module.mafia.commands;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
 

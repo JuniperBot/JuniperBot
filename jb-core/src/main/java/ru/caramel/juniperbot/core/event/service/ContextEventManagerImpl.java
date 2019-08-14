@@ -19,9 +19,10 @@ package ru.caramel.juniperbot.core.event.service;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,7 +64,7 @@ public class ContextEventManagerImpl implements JbEventManager {
     private TaskExecutor taskExecutor;
 
     @Override
-    public void handle(Event event) {
+    public void handle(GenericEvent event) {
         if (async) {
             try {
                 taskExecutor.execute(() -> handleEvent(event));
@@ -75,7 +76,7 @@ public class ContextEventManagerImpl implements JbEventManager {
         }
     }
 
-    private void handleEvent(Event event) {
+    private void handleEvent(GenericEvent event) {
         try {
             cacheManager.clear();
             contextService.initContext(event);
@@ -88,7 +89,7 @@ public class ContextEventManagerImpl implements JbEventManager {
         }
     }
 
-    private void loopListeners(Event event) {
+    private void loopListeners(GenericEvent event) {
         if (event instanceof GuildMessageReceivedEvent) {
             dispatchChain(GuildMessageReceivedEvent.class, (GuildMessageReceivedEvent) event);
         }

@@ -22,14 +22,15 @@ import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.command.model.*;
+import ru.caramel.juniperbot.core.command.model.BotContext;
+import ru.caramel.juniperbot.core.command.model.Command;
 import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
@@ -178,10 +179,7 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
             return true;
         }
 
-        if (member != null && isRestricted(config, member)) {
-            return true;
-        }
-        return false;
+        return member != null && isRestricted(config, member);
     }
 
     private Timer getTimer(JDA jda, Command command) {

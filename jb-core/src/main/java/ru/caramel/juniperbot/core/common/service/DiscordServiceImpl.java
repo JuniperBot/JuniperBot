@@ -16,24 +16,26 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.DisconnectEvent;
-import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ResumedEvent;
-import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.webhook.WebhookClient;
-import net.dv8tion.jda.webhook.WebhookClientBuilder;
-import net.dv8tion.jda.webhook.WebhookMessage;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ResumedEvent;
+import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.internal.requests.Requester;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -107,11 +109,11 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         Objects.requireNonNull(token, "No Discord Token specified");
         restTemplate = new RestTemplate(new DiscordHttpRequestFactory(token));
         try {
+            RestAction.setPassContext(false);
             DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
                     .setEventManagerProvider(id -> eventManager)
                     .addEventListeners(this)
-                    .setCorePoolSize(corePoolSize)
                     .setShardsTotal(shardsNum)
                     .setShards(0, shardsNum - 1)
                     .setEnableShutdownHook(false);
@@ -313,8 +315,9 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     }
 
     private void setUpStatus() {
+        shardManager.setStatus(OnlineStatus.IDLE);
         if (StringUtils.isNotEmpty(playingStatus)) {
-            shardManager.setGame(Game.playing(playingStatus));
+            shardManager.setActivity(Activity.playing(playingStatus));
         }
     }
 }

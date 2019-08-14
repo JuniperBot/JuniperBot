@@ -19,7 +19,9 @@ package ru.caramel.juniperbot.module.audio.utils;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
-import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
+
+import java.nio.ByteBuffer;
 
 public class GuildAudioSendHandler implements AudioSendHandler {
 
@@ -38,8 +40,9 @@ public class GuildAudioSendHandler implements AudioSendHandler {
     }
 
     @Override
-    public byte[] provide20MsAudio() {
-        return lastFrame.getData();
+    public ByteBuffer provide20MsAudio() {
+        byte[] data = lastFrame.getData();
+        return ByteBuffer.wrap(data);
     }
 
     @Override

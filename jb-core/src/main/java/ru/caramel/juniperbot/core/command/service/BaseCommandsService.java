@@ -17,11 +17,11 @@
 package ru.caramel.juniperbot.core.command.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -97,7 +97,7 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
             }
             input = content.substring(prefix.length()).trim();
         }
-        if (content.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (StringUtils.isNotEmpty(prefix) && content.toLowerCase().startsWith(prefix.toLowerCase())) {
             String[] args = input.split("\\s+", 2);
             input = args.length > 1 ? args[1] : "";
             return sendCommand(event, input, args[0], guildConfig);
@@ -136,11 +136,8 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
                 && !commandConfig.getAllowedChannels().contains(channel.getIdLong())) {
             return true;
         }
-        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
-                && commandConfig.getIgnoredChannels().contains(channel.getIdLong())) {
-            return true;
-        }
-        return false;
+        return CollectionUtils.isNotEmpty(commandConfig.getIgnoredChannels())
+                && commandConfig.getIgnoredChannels().contains(channel.getIdLong());
     }
 
     @Override
@@ -152,11 +149,8 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
                 && member.getRoles().stream().noneMatch(e -> commandConfig.getAllowedRoles().contains(e.getIdLong()))) {
             return true;
         }
-        if (CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
-                && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()))) {
-            return true;
-        }
-        return false;
+        return CollectionUtils.isNotEmpty(commandConfig.getIgnoredRoles())
+                && member.getRoles().stream().anyMatch(e -> commandConfig.getIgnoredRoles().contains(e.getIdLong()));
     }
 
     @Override

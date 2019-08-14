@@ -16,13 +16,12 @@
  */
 package ru.caramel.juniperbot.core.moderation.command;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -37,6 +36,7 @@ import ru.caramel.juniperbot.core.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +86,11 @@ public class ClearCommand extends ModeratorCommandAsync {
         }
 
         messages.forEach(actionsHolderService::markAsDeleted);
-        RequestFuture.allOf(channel.purgeMessages(messages)).whenComplete((v, t) ->
+
+        CompletableFuture[] all = channel.purgeMessages(messages).stream()
+                .map(CompletableFuture.class::cast)
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(all).whenComplete((v, t) ->
                 contextService.withContext(channel.getGuild(), () -> {
                     int count = messages.size();
                     if (!mention) {
@@ -126,7 +130,7 @@ public class ClearCommand extends ModeratorCommandAsync {
                 break;
             }
             for (Message message : retrieved) {
-                DateTime creationDate = CommonUtils.getDate(message.getCreationTime());
+                DateTime creationDate = CommonUtils.getDate(message.getTimeCreated());
                 if (creationDate.isBefore(limit)) {
                     return messages;
                 }

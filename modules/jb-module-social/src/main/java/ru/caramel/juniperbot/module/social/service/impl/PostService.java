@@ -16,12 +16,14 @@
  */
 package ru.caramel.juniperbot.module.social.service.impl;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import lombok.Getter;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.webhook.WebhookMessage;
-import net.dv8tion.jda.webhook.WebhookMessageBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +100,8 @@ public class PostService {
 
             int size = Math.min(MAX_DETAILED, newMedias.size());
             if (size > 0) {
-                List<MessageEmbed> embeds = newMedias.stream()
-                        .map(e -> convertToEmbed(profile, e).build())
+                List<WebhookEmbed> embeds = newMedias.stream()
+                        .map(e -> convertToWebhookEmbed(profile, e).build())
                         .collect(Collectors.toList());
 
                 WebhookMessage message = new WebhookMessageBuilder()
@@ -137,6 +139,31 @@ public class PostService {
                     builder.setDescription(text);
                 } else {
                     builder.setTitle(text, link);
+                }
+            }
+        }
+        return builder;
+    }
+
+    public WebhookEmbedBuilder convertToWebhookEmbed(InstagramProfile profile, InstagramMedia media) {
+        WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
+                .setImageUrl(media.getImageUrl())
+                .setTimestamp(media.getDate().toInstant())
+                .setColor(contextService.getColor().getRGB())
+                .setAuthor(new WebhookEmbed.EmbedAuthor(profile.getFullName(), profile.getImageUrl(), null));
+
+        if (media.getText() != null) {
+            String text = media.getText();
+            if (StringUtils.isNotEmpty(text)) {
+                if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
+                    text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
+                }
+                String link = media.getLink();
+                if (media.getText().length() > 200) {
+                    builder.setTitle(new WebhookEmbed.EmbedTitle(link, link));
+                    builder.setDescription(text);
+                } else {
+                    builder.setTitle(new WebhookEmbed.EmbedTitle(text, link));
                 }
             }
         }

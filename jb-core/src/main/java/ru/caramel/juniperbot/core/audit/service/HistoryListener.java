@@ -14,8 +14,8 @@
  */
 package ru.caramel.juniperbot.core.audit.service;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.event.DiscordEvent;
 import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;

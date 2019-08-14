@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
 import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;

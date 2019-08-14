@@ -16,9 +16,8 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.timing;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
@@ -28,7 +27,7 @@ public abstract class TimingCommand extends AudioCommand {
     protected abstract boolean doInternal(GuildMessageReceivedEvent message, TrackRequest request, long millis);
 
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
         TrackRequest current = playerService.get(message.getGuild()).getCurrent();
         if (current == null) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.notStarted");

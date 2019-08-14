@@ -38,4 +38,5 @@ public class RoleDto implements Serializable {
 
     private boolean interactable;
 
+    private boolean managed;
 }

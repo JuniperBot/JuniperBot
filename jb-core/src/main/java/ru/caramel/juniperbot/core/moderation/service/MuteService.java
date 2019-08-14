@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.core.moderation.service;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import ru.caramel.juniperbot.core.moderation.model.ModerationActionRequest;
 
 public interface MuteService {

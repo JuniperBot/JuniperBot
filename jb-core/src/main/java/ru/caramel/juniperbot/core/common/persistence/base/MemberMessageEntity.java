@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.core.common.persistence.base;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

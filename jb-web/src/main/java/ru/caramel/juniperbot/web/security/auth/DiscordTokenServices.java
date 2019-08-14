@@ -23,7 +23,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.api.Permission;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

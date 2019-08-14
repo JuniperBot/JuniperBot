@@ -40,7 +40,6 @@ import ru.caramel.juniperbot.module.audio.service.PlaylistService;
 import javax.annotation.PostConstruct;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -197,7 +196,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     }
 
     @Override
-    public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException {
+    public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) {
         return null;
     }
 
@@ -212,7 +211,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     }
 
     @Override
-    public void encodeTrack(AudioTrack track, DataOutput output) throws IOException {
+    public void encodeTrack(AudioTrack track, DataOutput output) {
         // No custom values that need saving
     }
 

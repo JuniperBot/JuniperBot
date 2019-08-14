@@ -16,10 +16,9 @@
  */
 package ru.caramel.juniperbot.module.audio.commands.control;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 
 @DiscordCommand(
@@ -30,7 +29,7 @@ import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 public class StartCommand extends AudioCommand {
 
     @Override
-    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
         if (playerService.resume(message.getGuild(), true)) {
             return ok(message);
         }

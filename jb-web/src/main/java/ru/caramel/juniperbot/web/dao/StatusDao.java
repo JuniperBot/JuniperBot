@@ -22,7 +22,7 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.RemoteStats;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +72,7 @@ public class StatusDao extends AbstractDao {
                     dto.setGuilds(e.getGuildCache().size());
                     dto.setUsers(e.getUserCache().size());
                     dto.setChannels(e.getTextChannelCache().size() + e.getVoiceChannelCache().size());
-                    dto.setPing(e.getPing());
+                    dto.setPing(e.getGatewayPing());
                     dto.setConnected(JDA.Status.CONNECTED.equals(e.getStatus()));
                     return dto;
                 })

@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.message.intercept;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.core.event.intercept.BaseEventFilterFactory;
 

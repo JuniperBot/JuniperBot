@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.command.model;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
 
@@ -25,7 +25,7 @@ import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
 public abstract class AbstractCommandAsync extends AbstractCommand {
 
     @Override
-    public final boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public final boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         contextService.withContextAsync(message.getGuild(), () -> {
             try {
                 doCommandAsync(message, context, content);

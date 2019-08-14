@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.feature.provider;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.core.common.service.DiscordService;

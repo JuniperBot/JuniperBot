@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.audio.service;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;

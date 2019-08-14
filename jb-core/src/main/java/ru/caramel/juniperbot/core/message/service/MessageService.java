@@ -16,10 +16,10 @@
  */
 package ru.caramel.juniperbot.core.message.service;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import java.util.Locale;
 import java.util.function.Consumer;

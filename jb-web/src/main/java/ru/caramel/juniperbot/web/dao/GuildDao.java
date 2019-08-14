@@ -16,8 +16,8 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,7 +129,7 @@ public class GuildDao extends AbstractDao {
             switch (part) {
                 case ROLES:
                     builder.roles(guild.getRoles().stream()
-                            .filter(e -> !e.isPublicRole() && !e.isManaged())
+                            .filter(e -> !e.isPublicRole())
                             .map(e -> {
                                 RoleDto dto = apiMapper.getRoleDto(e);
                                 dto.setInteractable(guild.getSelfMember().canInteract(e));

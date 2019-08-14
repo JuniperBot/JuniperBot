@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.core.command.service;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 /**
  * A command handler interface.
@@ -26,6 +26,7 @@ public interface CommandHandler {
 
     /**
      * Handle message as command
+     *
      * @param event Message event
      * @return True if this event was handled
      */

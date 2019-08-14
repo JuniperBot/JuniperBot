@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.event.intercept;
 
 import lombok.NonNull;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.Collection;
 

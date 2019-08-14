@@ -2,7 +2,7 @@ package ru.caramel.juniperbot.core.audit.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;

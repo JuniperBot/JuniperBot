@@ -77,7 +77,7 @@ public class JsonApiHttpMessageConverter implements GenericHttpMessageConverter<
     }
 
     @Override
-    public void write(JSONAPIDocument jsonapiDocument, Type type, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    public void write(JSONAPIDocument jsonapiDocument, Type type, MediaType contentType, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
 
     }
 
@@ -97,12 +97,12 @@ public class JsonApiHttpMessageConverter implements GenericHttpMessageConverter<
     }
 
     @Override
-    public JSONAPIDocument read(Class<? extends JSONAPIDocument> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    public JSONAPIDocument read(Class<? extends JSONAPIDocument> clazz, HttpInputMessage inputMessage) throws HttpMessageNotReadableException {
         return null;
     }
 
     @Override
-    public void write(JSONAPIDocument jsonapiDocument, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    public void write(JSONAPIDocument jsonapiDocument, MediaType contentType, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
 
     }
 

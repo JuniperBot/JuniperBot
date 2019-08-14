@@ -2,8 +2,8 @@ package ru.caramel.juniperbot.module.wikifur.utils;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.utils.StringTools;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.UriUtils;
 import org.sweble.wikitext.engine.PageTitle;
@@ -13,7 +13,6 @@ import org.sweble.wikitext.engine.nodes.EngPage;
 import org.sweble.wikitext.parser.nodes.*;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -154,7 +153,7 @@ public class TextConverter
         }
     }
 
-    public void visit(WtInternalLink link) throws UnsupportedEncodingException {
+    public void visit(WtInternalLink link) {
         try {
             if (link.getTarget().isResolved()) {
                 PageTitle page = PageTitle.make(config, link.getTarget().getAsString());
@@ -237,7 +236,7 @@ public class TextConverter
     // =========================================================================
     // Stuff we want to hide
 
-    public void visit(WtImageLink n) throws UnsupportedEncodingException {
+    public void visit(WtImageLink n) {
         if (sectionStarted || hasImage) {
             return;
         }
@@ -259,7 +258,7 @@ public class TextConverter
 
     private String getNamespaceValue(int id, String value) {
 
-        Namespace ns = config.getNamespace(6);
+        Namespace ns = config.getNamespace(id);
 
         Set<String> names = new HashSet<>(ns.getAliases());
         names.add(ns.getName());

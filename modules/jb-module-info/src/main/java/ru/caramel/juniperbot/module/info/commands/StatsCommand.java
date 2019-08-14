@@ -17,14 +17,13 @@
 package ru.caramel.juniperbot.module.info.commands;
 
 import com.codahale.metrics.*;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.core.command.model.BotContext;
 import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
 
 import java.util.Date;
@@ -41,7 +40,7 @@ public class StatsCommand extends AbstractInfoCommand {
     private MetricRegistry metricRegistry;
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setTitle(messageService.getMessage("discord.command.stats.title"));
         builder.setThumbnail(brandingService.getSmallAvatarUrl());
@@ -117,9 +116,5 @@ public class StatsCommand extends AbstractInfoCommand {
                     messageService.getMessage("discord.command.stats.values." + name + ".15m", meter.getFifteenMinuteRate()));
         }
         return null;
-    }
-
-    private String getTitle(String statName) {
-        return messageService.getMessage("");
     }
 }

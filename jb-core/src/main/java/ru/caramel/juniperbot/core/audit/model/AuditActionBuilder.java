@@ -18,9 +18,9 @@ package ru.caramel.juniperbot.core.audit.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import ru.caramel.juniperbot.core.audit.persistence.AuditAction;
 import ru.caramel.juniperbot.core.common.persistence.LocalMember;
 import ru.caramel.juniperbot.core.common.persistence.LocalUser;
@@ -81,7 +81,7 @@ public abstract class AuditActionBuilder {
         return this;
     }
 
-    public AuditActionBuilder withChannel(Channel channel) {
+    public AuditActionBuilder withChannel(GuildChannel channel) {
         this.action.setChannel(getReference(channel));
         return this;
     }
@@ -107,7 +107,7 @@ public abstract class AuditActionBuilder {
         return member != null ? new NamedReference(member.getUser().getUserId(), member.getEffectiveName()) : null;
     }
 
-    private NamedReference getReference(Channel channel) {
+    private NamedReference getReference(GuildChannel channel) {
         return channel != null ? new NamedReference(channel.getId(), channel.getName()) : null;
     }
 

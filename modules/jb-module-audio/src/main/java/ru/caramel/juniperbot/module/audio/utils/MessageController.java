@@ -17,14 +17,13 @@
 package ru.caramel.juniperbot.module.audio.utils;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.springframework.context.ApplicationContext;
 import ru.caramel.juniperbot.core.command.service.InternalCommandsService;
 import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
@@ -45,6 +44,7 @@ import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -101,7 +101,7 @@ public class MessageController {
 
     private boolean cancelled = false;
 
-    private List<RequestFuture<Void>> reactionFutures = new ArrayList<>();
+    private List<CompletableFuture<Void>> reactionFutures = new ArrayList<>();
 
     public MessageController(ApplicationContext context, Message message) {
         this.jda = message.getJDA();
@@ -260,7 +260,7 @@ public class MessageController {
     public void doForMessage(Consumer<? super Message> success, Consumer<? super Throwable> error) {
         TextChannel channel = jda.getTextChannelById(channelId);
         if (channel != null) {
-            channel.getMessageById(messageId).queue(
+            channel.retrieveMessageById(messageId).queue(
                     m -> contextService.withContext(guildId, () -> {
                         if (success != null) {
                             success.accept(m);

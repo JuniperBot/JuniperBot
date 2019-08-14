@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.core.subscription.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.Webhook;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.common.service.DiscordService;
@@ -48,7 +48,7 @@ public class WebHookServiceImpl implements WebHookService {
             .build(
                     new CacheLoader<Guild, List<Webhook>>() {
                         public List<Webhook> load(Guild guild) {
-                            return guild.getWebhooks().complete();
+                            return guild.retrieveWebhooks().complete();
                         }
                     });
 

@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.core.command.service;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;

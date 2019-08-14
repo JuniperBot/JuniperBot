@@ -41,7 +41,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import ru.caramel.juniperbot.core.utils.GsonUtils;
 import ru.caramel.juniperbot.web.security.model.TokenRequestDto;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
 
     @Override
     @Synchronized
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         TokenRequestDto requestDto = gson.fromJson(request.getReader(), TokenRequestDto.class);
 
         OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);

@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.audio.service.helper;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
@@ -50,14 +50,13 @@ public class ValidationService {
         AudioTrackInfo info2 = track2.getInfo();
         if (info1 != null && info2 != null) {
             return Objects.equals(info1.uri, info2.uri)
-                    && Objects.equals(info1.uri, info2.uri)
                     && Objects.equals(info1.title, info2.title)
                     && Objects.equals(info1.author, info2.author)
                     && Objects.equals(info1.identifier, info2.identifier)
                     && Objects.equals(info1.length, info2.length)
                     && Objects.equals(info1.isStream, info2.isStream);
         }
-        return Objects.equals(info1, info1);
+        return Objects.equals(info1, info2);
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {

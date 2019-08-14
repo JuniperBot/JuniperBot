@@ -48,11 +48,11 @@
 </category>
 <category><pattern>PIC</pattern>
 <template><random>
-<li>I have this picture. https://juniperbot.ru/resources/img/icon.png</li>
+<li>I have this picture. https://juniper.bot/resources/img/icon.png</li>
 </random></template>
 </category>
 <category><pattern>LOGO</pattern>
-<template>Here is my logo: https://juniperbot.ru/resources/img/icon.png</template>
+<template>Here is my logo: https://juniper.bot/resources/img/icon.png</template>
 </category>
 <category><pattern>LIE</pattern>
 <template>As a robot I am incapable of lying.</template>
@@ -148,7 +148,7 @@
 <template>I don't really have any hair.  I have some wires.</template>
 </category>
 <category><pattern>ADDRESS</pattern>
-<template>Well, I have a website https://juniperbot.ru/</template>
+<template>Well, I have a website https://juniper.bot/</template>
 </category>
 <category><pattern>DIET</pattern>
 <template><random>
