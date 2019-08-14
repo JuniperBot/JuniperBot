@@ -16,6 +16,8 @@
  */
 package ru.caramel.juniperbot.core.common.service;
 
+import java.util.Set;
+
 public interface BrandingService {
 
     String getAvatarUrl();
@@ -27,4 +29,6 @@ public interface BrandingService {
     String getWebHost();
 
     String getWebHostName();
+
+    Set<String> getWebAliases();
 }

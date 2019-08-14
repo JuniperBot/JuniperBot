@@ -44,6 +44,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,6 +76,8 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
 
     private Method sourceMethod;
 
+    private Map<String, Pattern> patternMap = new ConcurrentHashMap<>();
+
     @PostConstruct
     public void init() {
         try {
@@ -88,31 +92,46 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     @Override
     @Transactional
     public AudioItem loadItem(DefaultAudioPlayerManager manager, AudioReference reference) {
-        Pattern pattern = Pattern.compile(String.format(PLAYLIST_PATTERN, Pattern.quote(brandingService.getWebHostName())));
-        Matcher matcher = pattern.matcher(reference.identifier);
-        if (matcher.find()) {
-            String uuid = matcher.group(1);
-            Playlist playlist = playlistService.getPlaylist(uuid);
-            if (playlist != null) {
-                List<PlaylistItem> items = new ArrayList<>(playlist.getItems());
-                if (CollectionUtils.isNotEmpty(items)) {
-                    List<AudioTrack> tracks = new ArrayList<>(items.size());
-                    items.forEach(e -> {
-                        try {
-                            AudioTrack track = getTracksFor(manager, e);
-                            if (track != null) {
-                                tracks.add(track);
-                            }
-                        } catch (Exception ex) {
-                            // fall down and ignore it
-                        }
-                    });
-                    if (!tracks.isEmpty()) {
-                        playlistService.refreshStoredPlaylist(playlist, tracks);
-                        return new StoredPlaylist(playlist, tracks);
+        String uuid = extractUUID(reference.identifier);
+        if (uuid == null) {
+            return null;
+        }
+        Playlist playlist = playlistService.getPlaylist(uuid);
+        if (playlist == null) {
+            return null;
+        }
+        List<PlaylistItem> items = new ArrayList<>(playlist.getItems());
+        if (CollectionUtils.isNotEmpty(items)) {
+            List<AudioTrack> tracks = new ArrayList<>(items.size());
+            items.forEach(e -> {
+                try {
+                    AudioTrack track = getTracksFor(manager, e);
+                    if (track != null) {
+                        tracks.add(track);
                     }
+                } catch (Exception ex) {
+                    // fall down and ignore it
                 }
-                onError(playlist, "discord.command.audio.playlist.notFound");
+            });
+            if (!tracks.isEmpty()) {
+                playlistService.refreshStoredPlaylist(playlist, tracks);
+                return new StoredPlaylist(playlist, tracks);
+            }
+        }
+        onError(playlist, "discord.command.audio.playlist.notFound");
+        return null;
+    }
+
+    private String extractUUID(String identifier) {
+        for (String host : brandingService.getWebAliases()) {
+            Pattern pattern = patternMap.computeIfAbsent(host, e -> {
+                e = e.replace("https://", "")
+                        .replace("http://", "");
+                return Pattern.compile(String.format(PLAYLIST_PATTERN, e));
+            });
+            Matcher matcher = pattern.matcher(identifier);
+            if (matcher.find()) {
+                return matcher.group(1);
             }
         }
         return null;
