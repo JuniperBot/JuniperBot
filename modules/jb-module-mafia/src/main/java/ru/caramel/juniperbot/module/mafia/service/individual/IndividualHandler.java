@@ -109,44 +109,40 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
                     getPlayerList(players), false);
         }
 
-        PrivateChannel channel = openPrivateChannel(individual);
-        if (channel == null) {
-            return false;
-        }
-
-        Message message = channel.sendMessage(builder.build()).complete();
-        try {
-            for (int i = 0; i < players.size(); i++) {
-                message.addReaction(ReactionsListener.CHOICES[i]).queue();
-            }
-        } catch (Exception ex) {
-            // ignore
-        }
-        instance.getListenedMessages().add(message.getId());
-        reactionsListener.onReactionAdd(message.getId(), event -> {
-            if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && choiceStates.contains(instance.getState())) {
-                String emote = event.getReaction().getReactionEmote().getName();
-                int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
-                if (index >= 0 && index < players.size()) {
-                    MafiaPlayer player = players.get(index);
-                    contextService.withContext(instance.getGuild(), () -> {
-                        if (player != null) {
-                            instance.tick();
-                            choiceAction(instance, player, channel);
-                        }
-                        contextService.withContextAsync(instance.getGuild(), () -> {
-                            if (pass && instance.done(event.getUser())) {
-                                mafiaService.stop(instance);
-                            }
-                        });
-                    });
-                    return true;
+        return openPrivateChannel(individual, channel -> {
+            channel.sendMessage(builder.build()).queue(message -> {
+                try {
+                    for (int i = 0; i < players.size(); i++) {
+                        message.addReaction(ReactionsListener.CHOICES[i]).queue();
+                    }
+                } catch (Exception ex) {
+                    // ignore
                 }
-            }
-            return false;
+                instance.getListenedMessages().add(message.getId());
+                reactionsListener.onReactionAdd(message.getId(), event -> {
+                    if (!event.getUser().equals(event.getJDA().getSelfUser()) && !event.getUser().isBot() && choiceStates.contains(instance.getState())) {
+                        String emote = event.getReaction().getReactionEmote().getName();
+                        int index = ArrayUtils.indexOf(ReactionsListener.CHOICES, emote);
+                        if (index >= 0 && index < players.size()) {
+                            MafiaPlayer player = players.get(index);
+                            contextService.withContext(instance.getGuild(), () -> {
+                                if (player != null) {
+                                    instance.tick();
+                                    choiceAction(instance, player, channel);
+                                }
+                                contextService.withContextAsync(instance.getGuild(), () -> {
+                                    if (pass && instance.done(event.getUser())) {
+                                        mafiaService.stop(instance);
+                                    }
+                                });
+                            });
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            });
         });
-        return true;
-
     }
 
     private synchronized T getNextHandler() {

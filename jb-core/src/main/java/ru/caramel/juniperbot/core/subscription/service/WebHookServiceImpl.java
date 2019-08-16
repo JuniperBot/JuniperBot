@@ -74,7 +74,7 @@ public class WebHookServiceImpl implements WebHookService {
                             throw new IllegalStateException("Tried to set non-existent channel");
                         }
                         if (guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-                            webhook.getManager().setChannel(channel).complete();
+                            webhook.getManager().setChannel(channel).queue();
                         }
                     }
                     webHook.setHookId(webhook.getIdLong());

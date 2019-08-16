@@ -30,6 +30,7 @@ import ru.caramel.juniperbot.module.mafia.service.individual.CopHandler;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Component
 public class MeetingHandler extends AbstractStateHandler {
@@ -59,7 +60,7 @@ public class MeetingHandler extends AbstractStateHandler {
         }
 
         channel.sendMessage(builder.build()).queue();
-        instance.setGoonChannel(createGoonChannel(instance));
+        createGoonChannel(instance, instance::setGoonChannel);
 
         if (!sendMessage(instance.getDoctor(), "mafia.meeting.doctor.welcome")) {
             instance.setEndReason(messageService.getMessage("mafia.end.reason.couldNotDM",
@@ -87,14 +88,14 @@ public class MeetingHandler extends AbstractStateHandler {
         return user == null && dayHandler.onStart(null, instance);
     }
 
-    private TextChannel createGoonChannel(MafiaInstance instance) {
+    private void createGoonChannel(MafiaInstance instance, Consumer<TextChannel> queue) {
         Guild guild = instance.getGuild();
         Role everyOne = guild.getPublicRole();
 
         List<Permission> permissionList = Arrays.asList(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE,
                 Permission.MESSAGE_ADD_REACTION);
 
-        ChannelAction action = guild
+        ChannelAction<TextChannel> action = guild
                 .createTextChannel("wolves")
                 .setTopic(messageService.getMessage("mafia.goons"))
                 .addPermissionOverride(everyOne, null, permissionList)
@@ -106,9 +107,10 @@ public class MeetingHandler extends AbstractStateHandler {
             }
         }
 
-        TextChannel channel = (TextChannel) action.complete();
-        String message = messageService.getMessage("mafia.meeting.goons.welcome", instance.getGoonsMentions());
-        channel.sendMessage(message).complete();
-        return channel;
+        contextService.queue(instance.getGuildId(), action, channel -> {
+            String message = messageService.getMessage("mafia.meeting.goons.welcome", instance.getGoonsMentions());
+            channel.sendMessage(message).queue();
+            queue.accept(channel);
+        });
     }
 }
