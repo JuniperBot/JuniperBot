@@ -16,13 +16,12 @@
  */
 package ru.caramel.juniperbot.core.moderation.command;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +32,14 @@ import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.core.utils.CommonUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 @DiscordCommand(key = "discord.command.mod.clear.key",
         description = "discord.command.mod.clear.desc",
         group = "discord.command.group.moderation",
@@ -63,42 +62,48 @@ public class ClearCommand extends ModeratorCommandAsync {
     @Override
     protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
         TextChannel channel = event.getChannel();
-        List<Message> messages;
 
         int number = getCount(query);
-        boolean mention = CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers());
-        if (mention) {
-            Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
-            if (mentioned == null) {
-                return;
-            }
-            channel.sendTyping().queue();
-            messages = getMessages(channel, number, m -> Objects.equals(m.getMember(), mentioned));
-        } else {
-            channel.sendTyping().queue();
-            messages = getMessages(channel, number + 1, null);
+        Member mentioned = getMentioned(event);
+
+        boolean includeInvocation = mentioned == null || mentioned.equals(event.getMember());
+        if (includeInvocation) {
+            number = number + 1; // delete command invocation too
         }
+        final int finalNumber = number;
 
-        if (CollectionUtils.isEmpty(messages) || messages.size() == 1) {
-            messageService.onError(event.getChannel(), "discord.mod.clear.absent");
-            fail(event);
-            return;
-        }
+        DateTime limit = new DateTime()
+                .minusWeeks(2)
+                .minusHours(1);
 
-        messages.forEach(actionsHolderService::markAsDeleted);
-
-        CompletableFuture[] all = channel.purgeMessages(messages).stream()
-                .map(CompletableFuture.class::cast)
-                .toArray(CompletableFuture[]::new);
-        CompletableFuture.allOf(all).whenComplete((v, t) ->
-                contextService.withContext(channel.getGuild(), () -> {
-                    int count = messages.size();
-                    if (!mention) {
-                        count--;
+        channel.sendTyping().queue(r -> channel.getIterableHistory()
+                .takeAsync(finalNumber)
+                .thenApplyAsync(e -> {
+                    Stream<Message> stream = e.stream()
+                            .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
+                    if (mentioned != null) {
+                        stream = stream.filter(m -> Objects.equals(m.getMember(), mentioned));
                     }
-                    String pluralMessages = messageService.getCountPlural(count, "discord.plurals.message");
-                    messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", count, pluralMessages);
-                }));
+                    List<Message> messageList = stream.collect(Collectors.toList());
+                    messageList.forEach(actionsHolderService::markAsDeleted);
+                    channel.purgeMessages(messageList);
+                    return messageList.size();
+                }).exceptionally(e -> {
+                    log.error("Clear failed", e);
+                    fail(event);
+                    return null;
+                }).whenCompleteAsync((count, e) -> contextService.withContext(context.getConfig().getGuildId(), () -> {
+                    int finalCount = count;
+                    if (includeInvocation) {
+                        finalCount--;
+                    }
+                    if (finalCount <= 0) {
+                        messageService.onEmbedMessage(event.getChannel(), "discord.mod.clear.absent");
+                        return;
+                    }
+                    String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
+                    messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", finalCount, pluralMessages);
+                })));
     }
 
     private int getCount(String queue) throws DiscordException {
@@ -115,33 +120,5 @@ public class ClearCommand extends ModeratorCommandAsync {
             }
         }
         return Math.min(result, MAX_MESSAGES);
-    }
-
-    private List<Message> getMessages(TextChannel channel, Integer limitCount, Predicate<Message> predicate) {
-        List<Message> messages = limitCount != null ? new ArrayList<>(limitCount) : new ArrayList<>();
-        MessageHistory history = channel.getHistory();
-        DateTime limit = new DateTime()
-                .minusWeeks(2)
-                .minusHours(1);
-        while (limitCount == null || limitCount > 0) {
-            int count = limitCount == null || limitCount > 100 ? 100 : limitCount;
-            List<Message> retrieved = history.retrievePast(count).complete();
-            if (CollectionUtils.isEmpty(retrieved)) {
-                break;
-            }
-            for (Message message : retrieved) {
-                DateTime creationDate = CommonUtils.getDate(message.getTimeCreated());
-                if (creationDate.isBefore(limit)) {
-                    return messages;
-                }
-                if (predicate == null || predicate.test(message)) {
-                    messages.add(message);
-                    if (limitCount != null) {
-                        limitCount--;
-                    }
-                }
-            }
-        }
-        return messages;
     }
 }
