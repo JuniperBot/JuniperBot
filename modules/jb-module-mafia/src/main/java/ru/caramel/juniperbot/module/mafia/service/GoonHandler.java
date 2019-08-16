@@ -105,10 +105,8 @@ public class GoonHandler extends ChoiceStateHandler {
         if (goonChannel == null) {
             return true; // goon channel non exists anymore
         }
-        Message message = goonChannel.sendMessage(builder.build()).complete();
-
-        sendChoice(instance, message, instance.getGoons());
-
+        goonChannel.sendMessage(builder.build())
+                .queue(message -> sendChoice(instance, message, instance.getGoons()));
         return scheduleEnd(instance, dayDelay);
     }
 

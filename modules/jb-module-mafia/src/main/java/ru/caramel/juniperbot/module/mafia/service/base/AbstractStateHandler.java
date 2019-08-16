@@ -38,6 +38,7 @@ import ru.caramel.juniperbot.module.mafia.service.MafiaService;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Consumer;
 
 public abstract class AbstractStateHandler implements MafiaStateHandler {
 
@@ -99,11 +100,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     protected boolean sendMessage(MafiaPlayer player, String code) {
         if (player != null) {
-            PrivateChannel channel = openPrivateChannel(player);
-            if (channel == null) {
-                return false;
-            }
-            channel.sendMessage(messageService.getMessage(code)).complete();
+            return openPrivateChannel(player, channel -> channel.sendMessage(messageService.getMessage(code)).queue());
         }
         return true;
     }
@@ -147,11 +144,12 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
         return builder.toString();
     }
 
-    protected PrivateChannel openPrivateChannel(MafiaPlayer player) {
+    protected boolean openPrivateChannel(MafiaPlayer player, Consumer<PrivateChannel> queue) {
         try {
-            return player.getUser().openPrivateChannel().complete();
+            contextService.queue(player.getGuildId(), player.getUser().openPrivateChannel(), queue);
+            return true;
         } catch (Exception e) {
-            return null;
+            return false;
         }
     }
 

@@ -30,7 +30,7 @@ public class DoctorHandler extends IndividualHandler<CopHandler> {
     @Override
     protected void choiceAction(MafiaInstance instance, MafiaPlayer target, PrivateChannel channel) {
         instance.getDailyActions().put(MafiaActionType.DOCTOR_HEAL, target);
-        channel.sendMessage(messageService.getMessage("mafia.doctor.choice.selected", target.getName())).complete();
+        channel.sendMessage(messageService.getMessage("mafia.doctor.choice.selected", target.getName())).queue();
     }
 
     @Override

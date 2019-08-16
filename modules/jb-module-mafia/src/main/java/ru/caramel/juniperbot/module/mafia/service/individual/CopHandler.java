@@ -34,7 +34,7 @@ public class CopHandler extends IndividualHandler<DayHandler> {
     @Override
     protected void choiceAction(MafiaInstance instance, MafiaPlayer target, PrivateChannel channel) {
         channel.sendMessage(messageService.getMessage(target.getRole().isMafia()
-                ? "mafia.cop.choice.positive" : "mafia.cop.choice.negative")).complete();
+                ? "mafia.cop.choice.positive" : "mafia.cop.choice.negative")).queue();
     }
 
     @Override

@@ -139,7 +139,7 @@ public class ModerationServiceImpl
                     guild.modifyRolePositions()
                             .selectPosition(role)
                             .moveTo(highestRole.getPosition() - 1)
-                            .complete();
+                            .queue();
                 }
             }
 
@@ -153,7 +153,7 @@ public class ModerationServiceImpl
                     .filter(e -> e.getName().startsWith(COLOR_ROLE_NAME))
                     .filter(self::canInteract)
                     .collect(Collectors.toList());
-            guild.modifyMemberRoles(member, role != null ? Collections.singleton(role) : null, roleList).complete();
+            guild.modifyMemberRoles(member, role != null ? Collections.singleton(role) : null, roleList).queue();
         }
         // remove unused color roles
         Set<Role> userRoles = new LinkedHashSet<>();

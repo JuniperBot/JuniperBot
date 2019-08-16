@@ -30,7 +30,7 @@ public class BrokerHandler extends IndividualHandler<DoctorHandler> {
     @Override
     protected void choiceAction(MafiaInstance instance, MafiaPlayer target, PrivateChannel channel) {
         instance.getDailyActions().put(MafiaActionType.BROKER_DAMAGE, target);
-        channel.sendMessage(messageService.getMessage("mafia.broker.choice.selected", target.getName())).complete();
+        channel.sendMessage(messageService.getMessage("mafia.broker.choice.selected", target.getName())).queue();
     }
 
     @Override
