@@ -39,6 +39,8 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
 
     protected abstract void onTrackException(PlaybackInstance instance, FriendlyException exception);
 
+    protected abstract void onTrackStuck(PlaybackInstance instance);
+
     protected PlaybackInstance registerInstance(PlaybackInstance instance) {
         IPlayer player = instance.getPlayer();
         player.addListener(this);
@@ -71,6 +73,8 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
                     ? (FriendlyException) e
                     : new FriendlyException("Unexpected exception", FriendlyException.Severity.SUSPICIOUS, e);
             onTrackException(instance, fe);
+        } else if (event instanceof lavalink.client.player.event.TrackStuckEvent) {
+            onTrackStuck(instance);
         }
     }
 
@@ -96,6 +100,11 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
             AudioTrack track = ((TrackExceptionEvent) event).track;
             if (track != null) {
                 onTrackException(TrackData.get(track).getInstance(), ((TrackExceptionEvent) event).exception);
+            }
+        } else if (event instanceof TrackStuckEvent) {
+            AudioTrack track = ((TrackStuckEvent) event).track;
+            if (track != null) {
+                onTrackStart(TrackData.get(track).getInstance());
             }
         }
     }

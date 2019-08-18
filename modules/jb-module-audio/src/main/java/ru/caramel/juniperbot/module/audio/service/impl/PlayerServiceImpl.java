@@ -219,26 +219,22 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     protected void onTrackEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
         notifyCurrentEnd(instance, endReason);
-        switch (endReason) {
-            case STOPPED:
-            case REPLACED:
+        if (endReason.mayStartNext) {
+            if (instance.playNext()) {
                 return;
-            case FINISHED:
-            case LOAD_FAILED:
-                if (instance.playNext()) {
-                    return;
-                }
-                TrackRequest current = instance.getCurrent();
-                if (current != null) {
-                    contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
-                }
-                break;
-            case CLEANUP:
-                break;
+            }
+            TrackRequest current = instance.getCurrent();
+            if (current != null) {
+                contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
+            }
         }
-
         // execute instance reset out of current thread
         taskExecutor.execute(() -> clearInstance(instance, false));
+    }
+
+    @Override
+    protected void onTrackStuck(PlaybackInstance instance) {
+        onTrackEnd(instance, AudioTrackEndReason.LOAD_FAILED);
     }
 
     @Override
