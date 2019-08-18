@@ -142,23 +142,12 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public boolean isActive(Guild guild) {
-        if (!lavaAudioService.isConnected(guild) || getConnectedChannel(guild) == null) {
-            return false;
-        }
-        PlaybackInstance instance = get(guild);
-        return instance != null && instance.getPlayer().getPlayingTrack() != null;
+        return isActive(get(guild));
     }
 
     @Override
     public boolean isActive(PlaybackInstance instance) {
-        if (instance == null) {
-            return false;
-        }
-        Guild guild = discordService.getShardManager().getGuildById(instance.getGuildId());
-        return guild != null
-                && lavaAudioService.isConnected(guild)
-                && getConnectedChannel(guild) != null
-                && instance.getPlayer().getPlayingTrack() != null;
+        return instance != null && instance.getPlayer().getPlayingTrack() != null;
     }
 
     private void clearInstance(PlaybackInstance instance, boolean notify) {
@@ -592,7 +581,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             return 0;
         }
         VoiceChannel channel = getConnectedChannel(instance.getGuildId());
-        if (channel.getGuild().getSelfMember().getVoiceState().isGuildMuted()) {
+        if (channel == null || channel.getGuild().getSelfMember().getVoiceState().isGuildMuted()) {
             return 0;
         }
         return channel.getMembers()
