@@ -64,9 +64,7 @@ public abstract class ChoiceStateHandler extends AbstractStateHandler {
             for (int i = 0; i < players.size(); i++) {
                 message.addReaction(ReactionsListener.CHOICES[i]).queue();
             }
-            if (players.size() < 10) {
-                message.addReaction(CHOOSE).queue();
-            }
+            message.addReaction(CHOOSE).queue();
         } catch (Exception ex) {
             // ignore
         }
