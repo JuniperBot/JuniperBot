@@ -115,7 +115,6 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
                     .setEventManagerProvider(id -> eventManager)
                     .addEventListeners(this)
                     .setShardsTotal(shardsNum)
-                    .setShards(0, shardsNum - 1)
                     .setEnableShutdownHook(false);
             if (audioService != null) {
                 audioService.configure(this, builder);
