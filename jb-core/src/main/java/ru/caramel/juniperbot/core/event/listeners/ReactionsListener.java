@@ -55,7 +55,7 @@ public class ReactionsListener extends DiscordEventListener {
         BiFunction<GenericMessageReactionEvent, Boolean, Boolean> handler = listeners.get(event.getMessageId());
         boolean add = event instanceof MessageReactionAddEvent;
         if (handler != null) {
-            contextService.withContextAsync(event.getGuild(), () -> {
+            contextService.withContextAsync(event.isFromGuild() ? event.getGuild() : null, () -> {
                 if (Boolean.TRUE.equals(handler.apply(event, add))) {
                     listeners.remove(event.getMessageId());
                 }
@@ -65,7 +65,7 @@ public class ReactionsListener extends DiscordEventListener {
         if (add) {
             Function<MessageReactionAddEvent, Boolean> addHandler = addListeners.get(event.getMessageId());
             if (addHandler != null) {
-                contextService.withContextAsync(event.getGuild(), () -> {
+                contextService.withContextAsync(event.isFromGuild() ? event.getGuild() : null, () -> {
                     if (Boolean.TRUE.equals(addHandler.apply((MessageReactionAddEvent) event))) {
                         addListeners.remove(event.getMessageId());
                     }
