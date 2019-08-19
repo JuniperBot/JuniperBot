@@ -27,9 +27,9 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
+import ru.juniperbot.worker.common.event.DiscordEvent;
+import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
+import ru.juniperbot.worker.common.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
@@ -78,7 +78,7 @@ public class GuildAudioListener extends DiscordEventListener {
             return;
         }
         contextService.withContextAsync(guild, () -> {
-            MusicConfig config = musicConfigService.get(guild);
+            MusicConfig config = musicConfigService.getByGuildId(guild.getIdLong());
             if (config == null) {
                 return;
             }

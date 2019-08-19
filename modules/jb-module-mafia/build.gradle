@@ -17,6 +17,6 @@
 description = 'JuniperBot Module: Mafia'
 
 dependencies {
-    compile project(':jb-core')
+    compile project(':jb-worker-common')
     compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
 }

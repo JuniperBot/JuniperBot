@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.audit.model.AuditActionType;
+import ru.juniperbot.common.model.AuditActionType;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 

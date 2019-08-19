@@ -28,7 +28,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.steam.model.GetAppListResponse;
 import ru.caramel.juniperbot.module.steam.model.SteamAppEntry;
 import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;

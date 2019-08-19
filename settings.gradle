@@ -17,6 +17,8 @@
 rootProject.name = 'JuniperBot'
 
 include ':jb-core'
+include ':jb-worker-common'
+include ':jb-worker'
 include ':jb-web'
 include ':modules'
 include ':modules:jb-module-aiml'

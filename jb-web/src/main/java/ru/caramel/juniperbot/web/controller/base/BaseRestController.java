@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.web.controller.base;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 
 @RequestMapping("api/priv")

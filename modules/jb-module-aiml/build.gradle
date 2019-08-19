@@ -17,6 +17,6 @@
 description = 'JuniperBot Module: AIML'
 
 dependencies {
-    compile project(':jb-core')
+    compile project(':jb-worker-common')
     implementation(group: 'org.goldrenard', name: 'jb', version: programJbVersion)
 }

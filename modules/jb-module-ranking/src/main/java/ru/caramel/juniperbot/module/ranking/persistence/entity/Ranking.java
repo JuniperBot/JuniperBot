@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.annotations.OptimisticLocking;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
-import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 

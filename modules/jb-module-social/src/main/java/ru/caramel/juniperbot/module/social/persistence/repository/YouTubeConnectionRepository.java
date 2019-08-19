@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.social.persistence.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionRepository;
+import ru.juniperbot.common.persistence.repository.base.BaseSubscriptionRepository;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 

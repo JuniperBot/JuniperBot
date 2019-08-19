@@ -44,14 +44,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHook;
-import ru.caramel.juniperbot.core.subscription.persistence.WebHookRepository;
-import ru.caramel.juniperbot.core.subscription.service.WebHookService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.message.service.MessageService;
+import ru.juniperbot.common.persistence.entity.WebHook;
+import ru.juniperbot.common.persistence.repository.WebHookRepository;
+import ru.juniperbot.worker.common.notification.service.WebHookService;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.social.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.persistence.repository.VkConnectionRepository;
@@ -61,7 +61,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.caramel.juniperbot.core.utils.CommonUtils.*;
+import static ru.juniperbot.common.utils.CommonUtils.*;
 
 @Service
 public class VkServiceImpl implements VkService {

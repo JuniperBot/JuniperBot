@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.support.JbCacheManager;
+import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.common.support.JbCacheManager;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 
 public abstract class AbstractDao {
@@ -35,9 +35,6 @@ public abstract class AbstractDao {
 
     @Autowired
     protected DiscordService discordService;
-
-    @Autowired
-    protected JbCacheManager cacheManager;
 
     protected String filterTextChannel(long guildId, String channelId) {
         if (StringUtils.isEmpty(channelId)) {

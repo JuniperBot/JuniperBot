@@ -21,7 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.caramel.juniperbot.core.utils.GsonUtils;
+import ru.juniperbot.common.utils.GsonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

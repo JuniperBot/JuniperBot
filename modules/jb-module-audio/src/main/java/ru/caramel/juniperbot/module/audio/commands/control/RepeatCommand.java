@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.module.audio.commands.control;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;

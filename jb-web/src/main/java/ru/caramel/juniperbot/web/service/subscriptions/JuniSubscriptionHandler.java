@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.web.service.subscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.model.exception.AccessDeniedException;
+import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
 import ru.caramel.juniperbot.module.social.service.JuniPostService;
 import ru.caramel.juniperbot.module.social.service.impl.PostService;

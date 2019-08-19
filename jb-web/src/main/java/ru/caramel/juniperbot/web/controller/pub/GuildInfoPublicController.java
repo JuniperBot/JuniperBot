@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.common.model.exception.NotFoundException;
+import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;

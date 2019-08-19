@@ -20,7 +20,7 @@ import io.prometheus.client.dropwizard.samplebuilder.DefaultSampleBuilder;
 import io.prometheus.client.dropwizard.samplebuilder.SampleBuilder;
 import lavalink.client.io.RemoteStats;
 import lombok.RequiredArgsConstructor;
-import ru.caramel.juniperbot.core.metrics.service.DiscordMetricsRegistry;
+import ru.juniperbot.worker.common.metrics.service.DiscordMetricsRegistry;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 
 import java.util.*;

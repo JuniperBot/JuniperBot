@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
@@ -36,7 +36,7 @@ public abstract class RankingCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RankingConfig rankingConfig = rankingService.get(message.getGuild());
+        RankingConfig rankingConfig = rankingService.getByGuildId(message.getGuild().getIdLong());
         return rankingConfig != null
                 && rankingConfig.isEnabled()
                 && doInternal(message, context, content);

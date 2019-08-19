@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.social.service;
 
-import ru.caramel.juniperbot.core.common.service.DomainService;
+import ru.juniperbot.common.service.DomainService;
 import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
 
 public interface JuniPostService extends DomainService<JuniPost> {

@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.ranking.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 
 @Getter
 @Setter

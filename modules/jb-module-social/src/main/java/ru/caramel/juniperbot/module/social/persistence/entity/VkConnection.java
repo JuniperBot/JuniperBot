@@ -20,7 +20,7 @@ import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionEntity;
+import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
 import ru.caramel.juniperbot.module.social.model.VkConnectionStatus;
 
 import javax.persistence.*;

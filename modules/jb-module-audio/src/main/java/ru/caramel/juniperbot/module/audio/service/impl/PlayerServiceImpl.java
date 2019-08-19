@@ -41,11 +41,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
-import ru.caramel.juniperbot.core.support.ModuleListener;
+import ru.juniperbot.common.model.exception.DiscordException;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.feature.service.FeatureSetService;
+import ru.juniperbot.common.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
@@ -289,7 +289,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             public void playlistLoaded(AudioPlaylist playlist) {
                 contextService.withContext(guildId, () -> {
                     if (playlist instanceof StoredPlaylist && !featureSetService.isAvailable(guildId)) {
-                        featureSetService.sendBonusMessage(channelId, "discord.bonus.audio");
+                        discordService.sendBonusMessage(channelId, "discord.bonus.audio");
                         return;
                     }
 

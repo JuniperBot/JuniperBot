@@ -85,7 +85,6 @@ subprojects {
         jsoupVersion                       = '1.11.2'
         mapstructVersion                   = '1.2.0.Final'
         opencvVersion                      = '3.2.0'
-        sentryVersion                      = '1.7.9'
         jacksonVersion                     = '2.9.7'
         
         jmxRemote                          = '4.1.1'

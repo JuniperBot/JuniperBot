@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.module.mafia.listeners;
 
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
+import ru.juniperbot.worker.common.event.DiscordEvent;
+import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.mafia.service.MafiaService;
 
 @DiscordEvent

@@ -32,14 +32,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
-import ru.caramel.juniperbot.core.common.persistence.LocalMemberRepository;
-import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.common.service.MemberService;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
-import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.repository.LocalMemberRepository;
+import ru.juniperbot.common.service.AbstractDomainServiceImpl;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.common.persistence.entity.MessageTemplate;
+import ru.juniperbot.worker.common.message.service.MessageTemplateService;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
@@ -134,7 +134,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Override
     public void onMessage(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        RankingConfig config = get(guild);
+        RankingConfig config = getByGuildId(guild.getIdLong());
         if (config == null || !memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
             return;
         }
@@ -195,7 +195,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         if (!memberService.isApplicable(senderMember) || !memberService.isApplicable(recipientMember)) {
             return;
         }
-        RankingConfig config = get(senderMember.getGuild());
+        RankingConfig config = getByGuildId(senderMember.getGuild().getIdLong());
         if (config != null && config.isCookieEnabled()) {
             LocalMember recipient = memberService.getOrCreate(recipientMember);
             LocalMember sender = memberService.getOrCreate(senderMember);

@@ -24,16 +24,16 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
-import ru.caramel.juniperbot.core.common.service.MemberService;
-import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
-import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
-import ru.caramel.juniperbot.core.support.service.SupportService;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.worker.common.event.DiscordEvent;
+import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.feature.service.FeatureSetService;
+import ru.juniperbot.worker.common.message.service.MessageService;
+import ru.juniperbot.worker.common.message.service.MessageTemplateService;
+import ru.juniperbot.worker.common.shared.service.SupportService;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
@@ -117,7 +117,7 @@ public class WelcomeUserListener extends DiscordEventListener {
 
         Guild guild = event.getGuild();
 
-        RankingConfig rankingInfo = rankingService.get(guild);
+        RankingConfig rankingInfo = rankingService.getByGuildId(guild.getIdLong());
         if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
             rankingInfo.getRewards().stream()
                     .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))

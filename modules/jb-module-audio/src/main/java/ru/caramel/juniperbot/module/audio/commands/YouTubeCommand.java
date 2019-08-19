@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import java.time.Duration;

@@ -17,7 +17,7 @@
 description = 'JuniperBot Module: Reminder'
 
 dependencies {
-    compile project(':jb-core')
+    compile project(':jb-worker-common')
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
     testCompile(group: 'org.springframework.security', name: 'spring-security-test')

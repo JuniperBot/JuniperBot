@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.model.VkConnectionStatus;
 import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
 import ru.caramel.juniperbot.module.social.service.VkService;

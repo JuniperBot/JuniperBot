@@ -24,9 +24,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 
 import java.util.List;
 

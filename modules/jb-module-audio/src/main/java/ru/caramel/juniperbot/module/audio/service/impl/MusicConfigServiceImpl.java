@@ -23,8 +23,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
+import ru.juniperbot.common.service.AbstractDomainServiceImpl;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.persistence.repository.MusicConfigRepository;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
@@ -49,7 +49,7 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     @Override
     @Transactional
     public boolean hasAccess(Member member) {
-        MusicConfig config = get(member.getGuild());
+        MusicConfig config = getByGuildId(member.getGuild().getIdLong());
         return config == null
                 || CollectionUtils.isEmpty(config.getRoles())
                 || member.isOwner()
@@ -60,7 +60,7 @@ public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfi
     @Override
     @Transactional
     public VoiceChannel getDesiredChannel(Member member) {
-        MusicConfig musicConfig = get(member.getGuild());
+        MusicConfig musicConfig = getByGuildId(member.getGuild().getIdLong());
         VoiceChannel channel = null;
         if (musicConfig != null) {
             if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {

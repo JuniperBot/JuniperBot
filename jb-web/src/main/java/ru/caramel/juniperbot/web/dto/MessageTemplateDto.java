@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.caramel.juniperbot.core.message.model.MessageTemplateType;
-import ru.caramel.juniperbot.core.message.persistence.MessageTemplate;
+import ru.juniperbot.common.model.MessageTemplateType;
+import ru.juniperbot.common.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
 

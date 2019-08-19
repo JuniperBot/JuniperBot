@@ -22,7 +22,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
+import ru.juniperbot.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
@@ -60,7 +60,7 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getByGuildId(requestedBy.getGuild().getIdLong());
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
@@ -90,7 +90,7 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
+        MusicConfig config = musicConfigService.getByGuildId(requestedBy.getGuild().getIdLong());
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;

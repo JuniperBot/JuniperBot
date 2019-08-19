@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.event.DiscordEvent;
-import ru.caramel.juniperbot.core.event.listeners.DiscordEventListener;
+import ru.juniperbot.worker.common.event.DiscordEvent;
+import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
@@ -37,7 +37,7 @@ public class RankingListener extends DiscordEventListener {
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
         taskExecutor.execute(() -> {
-            RankingConfig config = rankingService.get(event.getGuild());
+            RankingConfig config = rankingService.getByGuildId(event.getGuild().getIdLong());
             if (config != null && config.isResetOnLeave()) {
                 rankingService.update(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0, true);
             }

@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.caramel.juniperbot.core.configuration.CoreConfiguration;
-import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
+import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.support.ModuleMessageSourceImpl;
 import ru.caramel.juniperbot.module.full.ModulesConfiguration;
 import ru.caramel.juniperbot.web.common.AtomFeedArgumentResolver;
 

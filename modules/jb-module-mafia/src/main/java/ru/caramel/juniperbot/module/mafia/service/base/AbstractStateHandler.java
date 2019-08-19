@@ -25,12 +25,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
-import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.message.service.MessageService;
+import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
@@ -60,7 +61,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     protected Long individualDelay;
 
     @Autowired
-    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
+    @Qualifier(CoreConfiguration.COMMON_SCHEDULER_NAME)
     protected TaskScheduler scheduler;
 
     @Autowired
@@ -83,6 +84,9 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     @Autowired
     protected ConfigService configService;
+
+    @Autowired
+    protected DiscordEntityAccessor entityAccessor;
 
     protected EmbedBuilder getBaseEmbed() {
         EmbedBuilder embed = messageService.getBaseEmbed();

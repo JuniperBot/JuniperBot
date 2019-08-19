@@ -21,11 +21,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
-import ru.caramel.juniperbot.core.common.service.MemberService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.info.persistence.entity.MemberBio;
 import ru.caramel.juniperbot.module.info.persistence.repository.MemberBioRepository;
 

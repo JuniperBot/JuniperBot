@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.misc.service;
 
-import ru.caramel.juniperbot.core.common.service.DomainService;
+import ru.juniperbot.common.service.DomainService;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 
 public interface ReactionRouletteService extends DomainService<ReactionRoulette> {

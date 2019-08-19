@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.avatar.key",
         description = "discord.command.avatar.desc",

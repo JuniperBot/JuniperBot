@@ -24,7 +24,7 @@ import org.sweble.wikitext.parser.nodes.WtPageName;
 import org.sweble.wikitext.parser.nodes.WtRedirect;
 import org.sweble.wikitext.parser.nodes.WtText;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
-import ru.caramel.juniperbot.core.message.service.MessageService;
+import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.caramel.juniperbot.module.wikifur.model.WikiFurConfig;
 import ru.caramel.juniperbot.module.wikifur.utils.SearchQuery;
 import ru.caramel.juniperbot.module.wikifur.utils.TextConverter;

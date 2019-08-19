@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.module.audio.utils;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
 import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
 

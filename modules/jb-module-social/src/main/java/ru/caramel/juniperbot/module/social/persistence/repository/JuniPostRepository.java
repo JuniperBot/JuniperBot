@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.social.persistence.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
+import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.social.persistence.entity.JuniPost;
 
 import java.util.List;

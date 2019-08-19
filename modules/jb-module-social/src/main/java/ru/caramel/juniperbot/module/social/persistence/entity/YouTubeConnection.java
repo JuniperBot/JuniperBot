@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.social.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.subscription.persistence.BaseSubscriptionEntity;
+import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
 
 import javax.persistence.*;
 

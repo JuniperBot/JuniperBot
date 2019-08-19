@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.welcome.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
+import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 
 @Repository

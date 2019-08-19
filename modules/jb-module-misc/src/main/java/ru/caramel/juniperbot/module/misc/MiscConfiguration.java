@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.misc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.caramel.juniperbot.core.support.ModuleMessageSourceImpl;
+import ru.juniperbot.common.support.ModuleMessageSourceImpl;
 
 @Configuration
 public class MiscConfiguration {

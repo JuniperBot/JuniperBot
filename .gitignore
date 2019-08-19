@@ -10,6 +10,14 @@ out/
 /application.yml
 *.log
 
+### Worker ###
+/jb-worker/application.yml
+/jb-worker/logs/*
+
+### Web ###
+/jb-web/application.yml
+/jb-web/logs/*
+
 ### STS ###
 .apt_generated
 .classpath

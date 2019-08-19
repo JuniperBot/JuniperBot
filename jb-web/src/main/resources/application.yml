@@ -33,7 +33,7 @@ spring:
       ddl-auto: "none"
     properties:
       hibernate:
-        dialect: "ru.caramel.juniperbot.core.common.persistence.support.ExPostgreSQLDialect"
+        dialect: "ru.juniperbot.common.persistence.support.ExPostgreSQLDialect"
         jdbc:
           lob:
             non_contextual_creation: "true"

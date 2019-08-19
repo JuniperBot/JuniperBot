@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.event.intercept.Filter;
-import ru.caramel.juniperbot.core.event.intercept.FilterChain;
-import ru.caramel.juniperbot.core.event.intercept.MemberMessageFilter;
+import ru.juniperbot.worker.common.event.intercept.Filter;
+import ru.juniperbot.worker.common.event.intercept.FilterChain;
+import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 @Slf4j

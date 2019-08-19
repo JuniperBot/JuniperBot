@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.web.dto.discord;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.feature.model.FeatureSet;
+import ru.juniperbot.common.model.FeatureSet;
 
 import java.io.Serializable;
 import java.util.List;

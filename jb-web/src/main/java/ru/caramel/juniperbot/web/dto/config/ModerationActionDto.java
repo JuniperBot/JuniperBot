@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.moderation.model.ModerationActionType;
+import ru.juniperbot.common.model.ModerationActionType;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

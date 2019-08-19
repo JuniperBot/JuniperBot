@@ -22,8 +22,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
 import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 
@@ -82,7 +82,10 @@ public class RankCommand extends RankingCommand {
     }
 
     public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
-        RankingConfig config = rankingService.get(guild);
+        RankingConfig config = rankingService.getByGuildId(guild.getIdLong());
+        if (config == null) {
+            return;
+        }
         long totalMembers = rankingService.countRankings(guild.getIdLong());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
                 String.format("# %d/%d", info.getRank(), totalMembers), true);

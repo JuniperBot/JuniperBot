@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationAction;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationActionRepository;
-import ru.caramel.juniperbot.core.moderation.persistence.ModerationConfig;
-import ru.caramel.juniperbot.core.moderation.service.ModerationService;
+import ru.juniperbot.common.persistence.entity.ModerationAction;
+import ru.juniperbot.common.persistence.repository.ModerationActionRepository;
+import ru.juniperbot.common.persistence.entity.ModerationConfig;
+import ru.juniperbot.common.service.ModerationConfigService;
 import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
 
 import java.util.*;
@@ -32,20 +32,20 @@ import java.util.stream.Collectors;
 public class ModerationDao extends AbstractDao {
 
     @Autowired
-    private ModerationService moderationService;
+    private ModerationConfigService configService;
 
     @Autowired
     private ModerationActionRepository actionRepository;
 
     @Transactional
     public ModerationConfigDto getConfig(long guildId) {
-        ModerationConfig config = moderationService.getOrCreate(guildId);
+        ModerationConfig config = configService.getOrCreate(guildId);
         return apiMapper.getModerationDto(config);
     }
 
     @Transactional
     public void saveConfig(ModerationConfigDto dto, long guildId) {
-        ModerationConfig modConfig = moderationService.getOrCreate(guildId);
+        ModerationConfig modConfig = configService.getOrCreate(guildId);
 
         List<ModerationAction> result = new ArrayList<>();
         dto.getActions().forEach(e -> {
@@ -74,6 +74,6 @@ public class ModerationDao extends AbstractDao {
 
         apiMapper.updateModerationConfig(dto, modConfig);
         modConfig.setActions(result);
-        moderationService.save(modConfig);
+        configService.save(modConfig);
     }
 }

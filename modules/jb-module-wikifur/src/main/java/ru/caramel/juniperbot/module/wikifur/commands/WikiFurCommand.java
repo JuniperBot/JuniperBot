@@ -6,10 +6,10 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.sourceforge.jwbf.core.contentRep.SearchResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.wikifur.service.WikiFurService;
 
 import java.util.List;

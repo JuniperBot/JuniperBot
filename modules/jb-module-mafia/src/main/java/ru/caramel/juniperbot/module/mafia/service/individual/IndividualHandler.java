@@ -17,12 +17,11 @@
 package ru.caramel.juniperbot.module.mafia.service.individual;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.caramel.juniperbot.core.event.listeners.ReactionsListener;
+import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaRole;

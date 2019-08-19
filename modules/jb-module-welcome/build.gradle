@@ -17,6 +17,6 @@
 description = 'JuniperBot Module: Welcome'
 
 dependencies {
-    compile project(':jb-core')
+    compile project(':jb-worker-common')
     compile project(':modules:jb-module-ranking')
 }

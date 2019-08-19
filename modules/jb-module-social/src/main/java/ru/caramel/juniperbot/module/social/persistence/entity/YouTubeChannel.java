@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.social.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

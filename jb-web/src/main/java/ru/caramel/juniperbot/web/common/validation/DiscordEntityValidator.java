@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.message.service.MessageTemplateService;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.message.service.MessageTemplateService;
 import ru.caramel.juniperbot.web.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 

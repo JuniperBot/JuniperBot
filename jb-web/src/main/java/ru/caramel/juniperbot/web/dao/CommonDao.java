@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
+import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.service.ConfigService;
 import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
 
 @Service

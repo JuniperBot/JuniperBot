@@ -27,9 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.event.intercept.Filter;
-import ru.caramel.juniperbot.core.event.intercept.FilterChain;
-import ru.caramel.juniperbot.core.event.intercept.MemberMessageFilter;
+import ru.juniperbot.worker.common.event.intercept.Filter;
+import ru.juniperbot.worker.common.event.intercept.FilterChain;
+import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
 import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
 import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 

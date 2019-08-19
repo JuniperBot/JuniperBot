@@ -24,10 +24,10 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.moderation.service.ModerationService;
-import ru.caramel.juniperbot.core.support.AbstractJob;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.moderation.service.ModerationService;
+import ru.juniperbot.worker.common.shared.support.AbstractJob;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

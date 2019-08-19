@@ -21,13 +21,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.audit.model.AuditActionType;
-import ru.caramel.juniperbot.core.audit.persistence.AuditAction;
-import ru.caramel.juniperbot.core.audit.persistence.AuditActionRepository;
-import ru.caramel.juniperbot.core.audit.persistence.AuditAction_;
-import ru.caramel.juniperbot.core.audit.persistence.AuditConfig;
-import ru.caramel.juniperbot.core.audit.service.AuditService;
-import ru.caramel.juniperbot.core.common.persistence.base.NamedReference_;
+import ru.juniperbot.common.model.AuditActionType;
+import ru.juniperbot.common.persistence.entity.AuditAction;
+import ru.juniperbot.common.persistence.entity.AuditAction_;
+import ru.juniperbot.common.persistence.entity.base.NamedReference_;
+import ru.juniperbot.common.persistence.repository.AuditActionRepository;
+import ru.juniperbot.common.persistence.entity.AuditConfig;
+import ru.juniperbot.common.service.AuditConfigService;
 import ru.caramel.juniperbot.web.dto.AuditActionDto;
 import ru.caramel.juniperbot.web.dto.config.AuditConfigDto;
 import ru.caramel.juniperbot.web.dto.request.AuditActionRequest;
@@ -39,14 +39,14 @@ import java.util.List;
 public class AuditDao extends AbstractDao {
 
     @Autowired
-    private AuditService auditService;
+    private AuditConfigService auditConfigService;
 
     @Autowired
     private AuditActionRepository actionRepository;
 
     @Transactional
     public AuditConfigDto get(long guildId) {
-        AuditConfig auditConfig = auditService.getByGuildId(guildId);
+        AuditConfig auditConfig = auditConfigService.getByGuildId(guildId);
         return auditConfig != null ? apiMapper.getAuditConfigDto(auditConfig) : new AuditConfigDto();
     }
 
@@ -79,10 +79,10 @@ public class AuditDao extends AbstractDao {
 
     @Transactional
     public void save(AuditConfigDto dto, long guildId) {
-        AuditConfig auditConfig = auditService.getOrCreate(guildId);
+        AuditConfig auditConfig = auditConfigService.getOrCreate(guildId);
         dto.setForwardChannelId(filterTextChannel(guildId, dto.getForwardChannelId()));
         apiMapper.updateAudit(dto, auditConfig);
-        auditService.save(auditConfig);
+        auditConfigService.save(auditConfig);
     }
 
     private static Specification<AuditAction> rootAuditSpec(long withGuildId) {

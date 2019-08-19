@@ -22,8 +22,6 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion)
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion)
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion)
-    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: springBootVersion)
     compile(group: 'org.springframework', name: 'spring-web')
     compile(group: 'org.springframework', name: 'spring-context-support')
 
@@ -39,24 +37,7 @@ dependencies {
     compile(group: 'org.json', name: 'json', version: jsonVersion)
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core')
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
-    compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
-    compile(group: 'org.codehaus.groovy', name: 'groovy')
     compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
-
-    // INTEGRATION DEPENDENCIES
-    compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
-        exclude group: 'club.minnced', module: 'opus-java'
-    }
-    compile(group: 'club.minnced', name: 'discord-webhooks', version: discordWebhookVersion)
-
-    // METRICS DEPENDENCIES
-    compile(group: 'io.sentry', name: 'sentry-logback', version: sentryVersion)
-    compile(group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jvm')
-    compile(group: 'io.prometheus', name: 'simpleclient', version: prometheusVersion)
-    compile(group: 'io.prometheus', name: 'simpleclient_common', version: prometheusVersion)
-    compile(group: 'io.prometheus', name: 'simpleclient_dropwizard', version: prometheusVersion)
 
     // DATABASE DEPENDENCIES
     compile(group: 'javax.annotation', name: 'javax.annotation-api')
@@ -65,7 +46,6 @@ dependencies {
     compile(group: 'org.liquibase', name: 'liquibase-core')
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
-    testCompile(group: 'org.springframework.security', name: 'spring-security-test')
 }
 
 dependencyManagement {

@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.caramel.juniperbot.core.utils.CommonUtils.HTTP_TIMEOUT_DURATION;
+import static ru.juniperbot.common.utils.CommonUtils.HTTP_TIMEOUT_DURATION;
 
 @Service
 public class DogApiService {

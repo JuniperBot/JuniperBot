@@ -21,7 +21,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildRepository;
+import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 
 @Repository

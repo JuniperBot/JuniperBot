@@ -22,10 +22,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
-import ru.caramel.juniperbot.core.common.persistence.LocalUser;
-import ru.caramel.juniperbot.core.common.service.MemberService;
-import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
+import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.persistence.entity.LocalUser;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
+import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.worker.common.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.discord.GuildDto;
 import ru.caramel.juniperbot.web.dto.discord.RoleDto;
@@ -50,6 +51,9 @@ public class GuildDao extends AbstractDao {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private DiscordEntityAccessor entityAccessor;
 
     @Transactional
     public GuildDto getGuild(GuildInfoRequest request) {
@@ -86,7 +90,7 @@ public class GuildDao extends AbstractDao {
             return null;
         }
         Guild guild = discordService.getGuildById(guildId);
-        return guild != null ? configService.getOrCreate(guild) : null;
+        return guild != null ? entityAccessor.getOrCreate(guild) : null;
     }
 
     @Transactional

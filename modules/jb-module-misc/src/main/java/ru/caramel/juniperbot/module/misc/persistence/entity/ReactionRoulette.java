@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
-import ru.caramel.juniperbot.core.common.persistence.base.GuildEntity;
+import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

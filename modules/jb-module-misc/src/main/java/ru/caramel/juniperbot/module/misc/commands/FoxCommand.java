@@ -16,7 +16,7 @@
  */
 package ru.caramel.juniperbot.module.misc.commands;
 
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.fox.key",
         description = "discord.command.fox.desc",

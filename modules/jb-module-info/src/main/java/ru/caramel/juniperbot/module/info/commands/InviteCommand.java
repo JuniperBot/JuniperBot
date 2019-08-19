@@ -27,11 +27,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.model.AvatarType;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.common.model.AvatarType;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.info.model.InviteInfo;
 
 import javax.annotation.PostConstruct;

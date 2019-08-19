@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.common.model.exception.DiscordException;
-import ru.caramel.juniperbot.core.common.model.exception.ValidationException;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.common.model.exception.DiscordException;
+import ru.juniperbot.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
@@ -52,7 +52,7 @@ public abstract class AudioCommand extends AbstractCommand {
             return false;
         }
         if (!featureSetService.isAvailable(message.getGuild())) {
-            featureSetService.sendBonusMessage(message.getChannel().getIdLong());
+            discordService.sendBonusMessage(message.getChannel().getIdLong());
             return false;
         }
         if (!musicConfigService.hasAccess(member)) {

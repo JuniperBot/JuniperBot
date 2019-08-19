@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.module.welcome.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.common.service.AbstractDomainServiceImpl;
+import ru.juniperbot.common.service.AbstractDomainServiceImpl;
 import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
 import ru.caramel.juniperbot.module.welcome.persistence.repository.WelcomeMessageRepository;
 import ru.caramel.juniperbot.module.welcome.service.WelcomeService;

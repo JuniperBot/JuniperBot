@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.command.model.CommandType;
+import ru.juniperbot.common.model.CommandType;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
 
 import javax.validation.constraints.NotBlank;

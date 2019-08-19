@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.social.service;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
-import ru.caramel.juniperbot.core.subscription.service.SubscriptionService;
+import ru.juniperbot.worker.common.notification.service.SubscriptionService;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
 

@@ -27,11 +27,11 @@ import org.joda.time.format.DateTimeFormatter;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
-import ru.caramel.juniperbot.core.common.service.ConfigService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.reminder.jobs.ReminderJob;
 import ru.caramel.juniperbot.module.reminder.utils.TimeSequenceParser;
 

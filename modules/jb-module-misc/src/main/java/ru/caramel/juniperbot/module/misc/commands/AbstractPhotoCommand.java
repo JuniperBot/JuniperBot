@@ -25,9 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.command.model.AbstractCommandAsync;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.worker.common.command.model.AbstractCommandAsync;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.misc.model.RandomPhotoResponse;
 
 import javax.annotation.PostConstruct;

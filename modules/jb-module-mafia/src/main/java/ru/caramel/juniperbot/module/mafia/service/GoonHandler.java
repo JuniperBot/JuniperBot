@@ -18,12 +18,11 @@ package ru.caramel.juniperbot.module.mafia.service;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.core.common.persistence.GuildConfig;
+import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 import ru.caramel.juniperbot.module.mafia.service.individual.BrokerHandler;
@@ -90,7 +89,7 @@ public class GoonHandler extends ChoiceStateHandler {
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         MessageBuilder builder = new MessageBuilder();
 
-        GuildConfig config = configService.get(instance.getGuild());
+        GuildConfig config = entityAccessor.get(instance.getGuild());
         String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
 
         EmbedBuilder embed = getBaseEmbed("mafia.goon.choice");

@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.core.common.model.exception.NotFoundException;
+import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;

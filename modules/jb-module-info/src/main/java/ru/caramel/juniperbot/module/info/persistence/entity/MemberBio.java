@@ -19,8 +19,8 @@ package ru.caramel.juniperbot.module.info.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.persistence.LocalMember;
-import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 

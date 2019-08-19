@@ -17,8 +17,8 @@
 package ru.caramel.juniperbot.module.ranking.commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.command.model.DiscordCommand;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.worker.common.command.model.DiscordCommand;
 
 @DiscordCommand(
         key = "discord.command.leaders.key",

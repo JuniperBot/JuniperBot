@@ -55,19 +55,6 @@
         </encoder>
     </appender>
 
-    <!--<appender name="WEBSOCKET" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/websocket.log</file>
-        <filter class="ru.caramel.juniperbot.web.common.DebugFilter"/>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/websocket.%d{yyyyMMdd}.%i.log.gz</fileNamePattern>
-            <maxHistory>5</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>-->
-
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -82,26 +69,14 @@
         </encoder>
     </appender>
 
-    <appender name="SENTRY" class="io.sentry.logback.SentryAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
-        </filter>
-    </appender>
-
     <logger name="net.dv8tion.jda.core.requests.RateLimiter" level="INFO" additivity="false">
         <appender-ref ref="RATELIMITER"/>
     </logger>
-
-    <!-- for debugging purposes -->
-    <!--<logger name="net.dv8tion.jda.core.requests.WebSocketClient" level="TRACE" additivity="false">
-        <appender-ref ref="WEBSOCKET" />
-    </logger>-->
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ERROR" />
         <appender-ref ref="FILE" />
-        <appender-ref ref="SENTRY"/>
     </root>
 
 </configuration>

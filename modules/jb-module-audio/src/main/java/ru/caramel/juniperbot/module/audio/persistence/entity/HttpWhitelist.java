@@ -19,7 +19,7 @@ package ru.caramel.juniperbot.module.audio.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.caramel.juniperbot.core.common.persistence.base.BaseEntity;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

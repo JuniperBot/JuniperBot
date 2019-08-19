@@ -32,8 +32,8 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
+import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.model.InstagramMedia;
 import ru.caramel.juniperbot.module.social.model.InstagramProfile;
 
@@ -66,7 +66,7 @@ public class InstagramService {
     private Long updateInterval;
 
     @Autowired
-    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
+    @Qualifier(CoreConfiguration.COMMON_SCHEDULER_NAME)
     private TaskScheduler scheduler;
 
     @Autowired

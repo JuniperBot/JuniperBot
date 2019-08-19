@@ -20,9 +20,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.core.command.persistence.CommandConfig;
-import ru.caramel.juniperbot.core.command.service.CommandConfigService;
-import ru.caramel.juniperbot.core.command.service.CommandsHolderService;
+import ru.juniperbot.common.persistence.entity.CommandConfig;
+import ru.juniperbot.common.service.CommandConfigService;
+import ru.juniperbot.worker.common.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.web.dto.config.CommandDto;
 import ru.caramel.juniperbot.web.dto.config.CommandGroupDto;
 

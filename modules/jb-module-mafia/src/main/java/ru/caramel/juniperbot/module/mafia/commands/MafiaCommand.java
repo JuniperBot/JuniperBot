@@ -17,7 +17,7 @@
 package ru.caramel.juniperbot.module.mafia.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.core.command.model.AbstractCommand;
+import ru.juniperbot.worker.common.command.model.AbstractCommand;
 import ru.caramel.juniperbot.module.mafia.service.MafiaService;
 
 public abstract class MafiaCommand extends AbstractCommand {

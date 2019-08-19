@@ -39,15 +39,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import ru.caramel.juniperbot.core.command.model.BotContext;
-import ru.caramel.juniperbot.core.common.service.BrandingService;
-import ru.caramel.juniperbot.core.common.service.DiscordService;
-import ru.caramel.juniperbot.core.configuration.SchedulerConfiguration;
-import ru.caramel.juniperbot.core.event.service.ContextService;
-import ru.caramel.juniperbot.core.feature.service.FeatureSetService;
-import ru.caramel.juniperbot.core.message.service.MessageService;
-import ru.caramel.juniperbot.core.utils.CommonUtils;
-import ru.caramel.juniperbot.core.utils.DiscordUtils;
+import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.worker.common.command.model.BotContext;
+import ru.juniperbot.common.service.BrandingService;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.feature.service.FeatureSetService;
+import ru.juniperbot.worker.common.message.service.MessageService;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.model.*;
 import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
@@ -70,7 +70,7 @@ public class AudioMessageManager {
     private Long playRefreshInterval;
 
     @Autowired
-    @Qualifier(SchedulerConfiguration.COMMON_SCHEDULER_NAME)
+    @Qualifier(CoreConfiguration.COMMON_SCHEDULER_NAME)
     private TaskScheduler scheduler;
 
     @Autowired
