@@ -179,7 +179,7 @@ public class HelpCommand extends AbstractCommand {
 
     private EmbedBuilder getBaseEmbed(String group) {
         EmbedBuilder embedBuilder = messageService.getBaseEmbed(true)
-                .setThumbnail(brandingService.getSmallAvatarUrl());
+                .setThumbnail(commonProperties.getBranding().getAvatarSmallUrl());
         if (COMMON_GROUP.equals(group)) {
             embedBuilder.setDescription(messageService.getMessage("discord.command.help.title"));
         } else {

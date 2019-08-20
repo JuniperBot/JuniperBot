@@ -56,11 +56,11 @@ public class InfoCommand extends AbstractInfoCommand {
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : configService.getDefaultPrefix();
+        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : commonProperties.getDefaultPrefix();
 
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));
-        builder.setThumbnail(brandingService.getAvatarUrl());
+        builder.setThumbnail(commonProperties.getBranding().getAvatarSmallUrl());
 
         String helpCommand = messageService.getMessageByLocale("discord.command.help.key",
                 context.getCommandLocale());

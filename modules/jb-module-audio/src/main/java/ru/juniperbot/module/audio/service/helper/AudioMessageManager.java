@@ -38,8 +38,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.MusicConfig;
-import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.common.service.MusicConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
@@ -74,9 +74,6 @@ public class AudioMessageManager {
     private MessageService messageService;
 
     @Autowired
-    private BrandingService brandingService;
-
-    @Autowired
     private ApplicationContext context;
 
     @Autowired
@@ -90,6 +87,9 @@ public class AudioMessageManager {
 
     @Autowired
     private MusicConfigService musicConfigService;
+
+    @Autowired
+    private CommonProperties commonProperties;
 
     private Map<Long, ScheduledFuture<?>> updaterTasks = new ConcurrentHashMap<>();
 
@@ -322,10 +322,10 @@ public class AudioMessageManager {
         EmbedBuilder builder = getQueueMessage();
         if (instance.getCursor() > 0) {
             builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist.played",
-                    instance.getCursor(), brandingService.getWebHost(), instance.getPlaylistUuid()));
+                    instance.getCursor(), commonProperties.getBranding().getWebsiteUrl(), instance.getPlaylistUuid()));
         } else {
             builder.setDescription(messageService.getMessage("discord.command.audio.queue.list.playlist",
-                    brandingService.getWebHost(), instance.getPlaylistUuid()));
+                    commonProperties.getBranding().getWebsiteUrl(), instance.getPlaylistUuid()));
         }
 
         addQueue(builder, instance, pageRequests, offset, false);
@@ -475,7 +475,7 @@ public class AudioMessageManager {
 
         if (instance.getPlaylistUuid() != null) {
             builder.setDescription(messageService.getMessage("discord.command.audio.panel.playlist",
-                    brandingService.getWebHost(), instance.getPlaylistUuid()));
+                    commonProperties.getBranding().getWebsiteUrl(), instance.getPlaylistUuid()));
         }
 
         int size = instance.getQueue().size();

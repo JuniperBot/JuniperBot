@@ -23,11 +23,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 
 @Import({
-        CoreConfiguration.class,
+        CommonConfiguration.class,
         QuartzConfiguration.class,
         MetricsConfiguration.class,
 })

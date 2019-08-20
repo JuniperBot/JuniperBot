@@ -16,11 +16,10 @@
  */
 package ru.juniperbot.common.service.impl;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.repository.GuildConfigRepository;
 import ru.juniperbot.common.service.ConfigService;
@@ -29,12 +28,8 @@ import ru.juniperbot.common.utils.LocaleUtils;
 @Service
 public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, GuildConfigRepository> implements ConfigService {
 
-    @Getter
-    @Value("${discord.defaultPrefix:!}")
-    private String defaultPrefix;
-
-    @Value("${discord.accentColor:#FFA550}")
-    private String accentColor;
+    @Autowired
+    private CommonProperties commonProperties;
 
     public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {
         super(repository, true);
@@ -44,7 +39,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Transactional(readOnly = true)
     public String getPrefix(long guildId) {
         String prefix = repository.findPrefixByGuildId(guildId);
-        return prefix != null ? prefix : defaultPrefix;
+        return prefix != null ? prefix : commonProperties.getDefaultPrefix();
     }
 
     @Transactional(readOnly = true)
@@ -62,8 +57,8 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Override
     protected GuildConfig createNew(long guildId) {
         GuildConfig config = new GuildConfig(guildId);
-        config.setPrefix(defaultPrefix);
-        config.setColor(accentColor);
+        config.setPrefix(commonProperties.getDefaultPrefix());
+        config.setColor(commonProperties.getDefaultAccentColor());
         config.setLocale(LocaleUtils.DEFAULT_LOCALE);
         config.setCommandLocale(LocaleUtils.DEFAULT_LOCALE);
         config.setTimeZone("Etc/Greenwich");

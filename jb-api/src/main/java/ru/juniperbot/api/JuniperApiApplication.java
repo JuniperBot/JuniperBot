@@ -29,12 +29,12 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.juniperbot.api.common.AtomFeedArgumentResolver;
-import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.support.ModuleMessageSourceImpl;
 
 import java.util.List;
 
-@Import({CoreConfiguration.class})
+@Import({CommonConfiguration.class})
 @ImportResource("classpath:security-context.xml")
 @SpringBootApplication(exclude = {
         SecurityAutoConfiguration.class,

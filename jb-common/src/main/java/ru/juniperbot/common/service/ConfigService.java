@@ -20,8 +20,6 @@ import ru.juniperbot.common.persistence.entity.GuildConfig;
 
 public interface ConfigService extends DomainService<GuildConfig> {
 
-    String getDefaultPrefix();
-
     String getPrefix(long guildId);
 
     String getLocale(long guildId);

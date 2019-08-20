@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.Playlist;
 import ru.juniperbot.common.persistence.entity.PlaylistItem;
-import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.common.service.PlaylistService;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.message.service.MessageService;
@@ -59,7 +59,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     private final static String PLAYLIST_PATTERN = "%s/playlist/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})";
 
     @Autowired
-    private BrandingService brandingService;
+    private CommonProperties commonProperties;
 
     @Autowired
     private MessageService messageService;
@@ -127,7 +127,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
     }
 
     private String extractUUID(String identifier) {
-        for (String host : brandingService.getWebAliases()) {
+        for (String host : commonProperties.getBranding().getWebsiteAliases()) {
             Pattern pattern = patternMap.computeIfAbsent(host, e -> {
                 e = e.replace("https://", "")
                         .replace("http://", "");

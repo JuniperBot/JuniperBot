@@ -46,8 +46,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.WebHook;
-import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.common.support.ModuleListener;
 import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.shared.support.DiscordHttpRequestFactory;
@@ -102,7 +102,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     private MBeanExporter mBeanExporter;
 
     @Autowired
-    private BrandingService brandingService;
+    private CommonProperties commonProperties;
 
     private RestTemplate restTemplate;
 
@@ -329,7 +329,8 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     public void sendBonusMessage(long channelId) {
         TextChannel channel = shardManager.getTextChannelById(channelId);
         if (channel != null) {
-            messageService.onEmbedMessage(channel, "discord.bonus.feature", brandingService.getWebHost());
+            messageService.onEmbedMessage(channel, "discord.bonus.feature",
+                    commonProperties.getBranding().getWebsiteUrl());
         }
     }
 
@@ -337,7 +338,8 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     public void sendBonusMessage(long channelId, String title) {
         TextChannel channel = shardManager.getTextChannelById(channelId);
         if (channel != null) {
-            messageService.onTitledMessage(channel, title, "discord.bonus.feature", brandingService.getWebHost());
+            messageService.onTitledMessage(channel, title, "discord.bonus.feature",
+                    commonProperties.getBranding().getWebsiteUrl());
         }
     }
 }

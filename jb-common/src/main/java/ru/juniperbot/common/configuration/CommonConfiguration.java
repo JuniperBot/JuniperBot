@@ -16,7 +16,7 @@
  */
 package ru.juniperbot.common.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
@@ -45,21 +45,15 @@ import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
         RabbitConfiguration.class
 })
 @Configuration
-public class CoreConfiguration {
+public class CommonConfiguration {
 
-    @Value("${core.taskExecutor.corePoolSize:5}")
-    private int taskExecutorCorePoolSize;
-
-    @Value("${core.taskExecutor.maxPoolSize:5}")
-    private int taskExecutorMaxPoolSize;
-
-    @Value("${core.scheduler.poolSize:10}")
-    private int schedulerPoolSize;
+    @Autowired
+    private CommonProperties commonProperties;
 
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(schedulerPoolSize);
+        scheduler.setPoolSize(commonProperties.getExecution().getSchedulerPoolSize());
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(30);
         scheduler.setThreadNamePrefix("taskScheduler");
@@ -70,8 +64,8 @@ public class CoreConfiguration {
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(taskExecutorCorePoolSize);
-        executor.setMaxPoolSize(taskExecutorMaxPoolSize);
+        executor.setCorePoolSize(commonProperties.getExecution().getCorePoolSize());
+        executor.setMaxPoolSize(commonProperties.getExecution().getMaxPoolSize());
         executor.setThreadNamePrefix("taskExecutor");
         return executor;
     }

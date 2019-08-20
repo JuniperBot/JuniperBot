@@ -45,11 +45,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.YouTubeChannel;
 import ru.juniperbot.common.persistence.entity.YouTubeConnection;
 import ru.juniperbot.common.persistence.repository.YouTubeChannelRepository;
 import ru.juniperbot.common.persistence.repository.YouTubeConnectionRepository;
-import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.service.YouTubeService;
 import ru.juniperbot.common.support.MapPlaceholderResolver;
@@ -79,7 +79,7 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
     private Long resubscribeThresholdPct;
 
     @Autowired
-    private BrandingService brandingService;
+    private CommonProperties commonProperties;
 
     @Autowired
     private YouTubeChannelRepository channelRepository;
@@ -209,7 +209,9 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish?secret=%s&channel=%s",
-                brandingService.getWebHost(), pubSubSecret, CommonUtils.urlEncode(channel.getChannelId())));
+                commonProperties.getBranding().getWebsiteUrl(),
+                pubSubSecret,
+                CommonUtils.urlEncode(channel.getChannelId())));
         map.add("hub.topic", CHANNEL_RSS_ENDPOINT + channel.getChannelId());
         map.add("hub.mode", "subscribe");
         map.add("hub.verify", "async");

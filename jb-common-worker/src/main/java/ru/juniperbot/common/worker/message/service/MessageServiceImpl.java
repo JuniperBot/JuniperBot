@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import ru.juniperbot.common.service.BrandingService;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.utils.PluralUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
@@ -53,7 +53,7 @@ public class MessageServiceImpl implements MessageService {
     private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
 
     @Autowired
-    private BrandingService brandingService;
+    private CommonProperties commonProperties;
 
     @Autowired
     private ApplicationContext context;
@@ -76,7 +76,8 @@ public class MessageServiceImpl implements MessageService {
     public EmbedBuilder getBaseEmbed(boolean copyright) {
         EmbedBuilder builder = new EmbedBuilder().setColor(contextService.getColor());
         if (copyright) {
-            builder.setFooter(getMessage("about.copy.content", Year.now()), brandingService.getCopyImageUrl());
+            builder.setFooter(getMessage("about.copy.content", Year.now()),
+                    commonProperties.getBranding().getCopyrightIconUrl());
         }
         return builder;
     }

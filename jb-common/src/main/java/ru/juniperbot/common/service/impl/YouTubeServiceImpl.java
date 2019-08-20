@@ -28,8 +28,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.service.YouTubeService;
 
 import javax.annotation.PostConstruct;
@@ -49,8 +50,8 @@ public class YouTubeServiceImpl implements YouTubeService {
 
     private static final Pattern CHANNEL_URL_PATTERN = Pattern.compile("(?:(?:https|http)\\:\\/\\/)?(?:[\\w]+\\.)?youtube\\.com\\/(?:c\\/|channel\\/)?([a-zA-Z0-9\\-]{1,})");
 
-    @Value("${integrations.youTube.apiKey}")
-    private String[] apiKeys;
+    @Autowired
+    private CommonProperties commonProperties;
 
     private volatile int keyCursor = 0;
 
@@ -245,12 +246,12 @@ public class YouTubeServiceImpl implements YouTubeService {
     }
 
     private synchronized String getApiKey() {
-        if (apiKeys == null || apiKeys.length == 0) {
+        if (CollectionUtils.isEmpty(commonProperties.getYouTubeApiKeys())) {
             return null;
         }
-        if (keyCursor >= apiKeys.length) {
+        if (keyCursor >= commonProperties.getYouTubeApiKeys().size()) {
             keyCursor = 0;
         }
-        return apiKeys[keyCursor++];
+        return commonProperties.getYouTubeApiKeys().get(keyCursor++);
     }
 }

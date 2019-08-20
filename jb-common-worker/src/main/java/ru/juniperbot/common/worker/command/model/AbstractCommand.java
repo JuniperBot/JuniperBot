@@ -24,7 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import ru.juniperbot.common.service.BrandingService;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.worker.command.service.InternalCommandsService;
 import ru.juniperbot.common.worker.event.service.ContextService;
@@ -51,7 +51,7 @@ public abstract class AbstractCommand implements Command {
     protected ContextService contextService;
 
     @Autowired
-    protected BrandingService brandingService;
+    protected CommonProperties commonProperties;
 
     @Autowired
     protected InternalCommandsService commandsService;

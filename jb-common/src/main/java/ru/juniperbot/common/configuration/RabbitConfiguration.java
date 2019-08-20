@@ -24,7 +24,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -47,15 +47,18 @@ public class RabbitConfiguration {
 
     public final static String QUEUE_PATREON_WEBHOOK_REQUEST = "juniperbot.patreon.webhook.request";
 
-    @Value("${juniper.rabbit.hostname:localhost}")
-    private String hostname;
-
-    @Value("${juniper.rabbit.port:" + com.rabbitmq.client.ConnectionFactory.DEFAULT_AMQP_PORT + "}")
-    private int port;
+    @Autowired
+    private CommonProperties commonProperties;
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        return new CachingConnectionFactory(hostname, port);
+        CommonProperties.RabbitMQ rabbitMQ = commonProperties.getRabbitMQ();
+        CachingConnectionFactory factory = new CachingConnectionFactory(rabbitMQ.getHostname(), rabbitMQ.getPort());
+        if (rabbitMQ.getUsername() != null && rabbitMQ.getPassword() != null) {
+            factory.setUsername(rabbitMQ.getUsername());
+            factory.setPassword(rabbitMQ.getPassword());
+        }
+        return factory;
     }
 
     @Bean

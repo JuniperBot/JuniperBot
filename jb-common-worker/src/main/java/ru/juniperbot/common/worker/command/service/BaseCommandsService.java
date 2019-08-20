@@ -28,6 +28,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.model.CoolDownMode;
 import ru.juniperbot.common.persistence.entity.CommandConfig;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
@@ -44,6 +45,9 @@ import java.util.Date;
 
 @Slf4j
 public abstract class BaseCommandsService implements CommandsService, CommandHandler {
+
+    @Autowired
+    protected CommonProperties commonProperties;
 
     @Autowired
     protected MessageService messageService;
@@ -102,7 +106,7 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
         GuildConfig guildConfig = entityAccessor.getOrCreate(event.getGuild());
 
         if (!usingMention) {
-            prefix = guildConfig != null ? guildConfig.getPrefix() : configService.getDefaultPrefix();
+            prefix = guildConfig != null ? guildConfig.getPrefix() : commonProperties.getDefaultPrefix();
             if (prefix.length() > content.length()) {
                 return true;
             }
