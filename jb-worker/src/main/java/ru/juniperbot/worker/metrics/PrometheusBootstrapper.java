@@ -21,8 +21,8 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.juniperbot.common.worker.metrics.service.DiscordMetricsRegistry;
+import ru.juniperbot.module.audio.service.LavaAudioService;
 
 import javax.annotation.PostConstruct;
 

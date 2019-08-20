@@ -45,7 +45,7 @@ allprojects {
         maven { url "$rootProject.projectDir/local" }
     }
 
-    group = 'ru.caramel'
+    group = 'ru.juniperbot'
     version = System.getenv('CI_VERSION') ?: '6.x-SNAPSHOT'
 }
 

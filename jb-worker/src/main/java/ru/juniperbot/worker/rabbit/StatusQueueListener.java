@@ -29,13 +29,13 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
-import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
 import ru.juniperbot.common.model.status.LavaLinkNodeDto;
 import ru.juniperbot.common.model.status.ShardDto;
 import ru.juniperbot.common.model.status.StatusDto;
 import ru.juniperbot.common.worker.metrics.service.DiscordMetricsRegistry;
+import ru.juniperbot.module.audio.service.LavaAudioService;
+import ru.juniperbot.module.audio.service.PlayerService;
 
 import java.util.Comparator;
 import java.util.Map;

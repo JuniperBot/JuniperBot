@@ -14,9 +14,9 @@ out/
 /jb-worker/application.yml
 /jb-worker/logs/*
 
-### Web ###
-/jb-web/application.yml
-/jb-web/logs/*
+### API ###
+/jb-api/application.yml
+/jb-api/logs/*
 
 ### STS ###
 .apt_generated

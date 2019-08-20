@@ -29,7 +29,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.caramel.juniperbot.module.ranking.commands.RankCommand;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.MemberBio;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
@@ -38,6 +37,7 @@ import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
+import ru.juniperbot.module.ranking.commands.RankCommand;
 
 import java.util.Iterator;
 import java.util.Objects;

@@ -27,11 +27,9 @@ import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import ru.juniperbot.common.configuration.CoreConfiguration;
 import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.common.utils.PluralUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
@@ -64,7 +62,6 @@ public class MessageServiceImpl implements MessageService {
     private ContextService contextService;
 
     @Autowired
-    @Qualifier(CoreConfiguration.COMMON_SCHEDULER_NAME)
     private TaskScheduler scheduler;
 
     @Autowired

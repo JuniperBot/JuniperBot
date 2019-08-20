@@ -37,17 +37,15 @@ import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 @EnableScheduling
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
-@EntityScan({"ru.caramel.juniperbot", "ru.juniperbot"})
-@EnableJpaRepositories({"ru.caramel.juniperbot", "ru.juniperbot"})
-@ComponentScan({"ru.caramel.juniperbot", "ru.juniperbot"})
+@EntityScan("ru.juniperbot")
+@EnableJpaRepositories("ru.juniperbot")
+@ComponentScan("ru.juniperbot")
 @Import({
         MBeanConfiguration.class,
         RabbitConfiguration.class
 })
 @Configuration
 public class CoreConfiguration {
-
-    public static final String COMMON_SCHEDULER_NAME = "jbCommonTaskScheduler";
 
     @Value("${core.taskExecutor.corePoolSize:5}")
     private int taskExecutorCorePoolSize;
@@ -58,8 +56,7 @@ public class CoreConfiguration {
     @Value("${core.scheduler.poolSize:10}")
     private int schedulerPoolSize;
 
-    @Primary
-    @Bean(COMMON_SCHEDULER_NAME)
+    @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(schedulerPoolSize);
@@ -70,7 +67,7 @@ public class CoreConfiguration {
     }
 
     @Primary
-    @Bean("executor")
+    @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(taskExecutorCorePoolSize);

@@ -23,9 +23,9 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
+import ru.juniperbot.module.ranking.service.RankingService;
 
 @Slf4j
 @Component

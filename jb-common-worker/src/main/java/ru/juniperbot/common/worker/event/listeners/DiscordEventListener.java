@@ -18,7 +18,6 @@ package ru.juniperbot.common.worker.event.listeners;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import ru.juniperbot.common.worker.event.service.ContextService;
@@ -28,7 +27,6 @@ import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 public abstract class DiscordEventListener extends ListenerAdapter {
 
     @Autowired
-    @Qualifier("executor")
     protected TaskExecutor taskExecutor;
 
     @Autowired
