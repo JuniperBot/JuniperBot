@@ -22,11 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.juniperbot.common.model.exception.NotFoundException;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dto.PageDto;
 import ru.caramel.juniperbot.web.dto.RankingInfoDto;
+import ru.juniperbot.common.service.RankingConfigService;
 
 @RestController
 public class RankingRestController extends BasePublicRestController {
@@ -34,7 +34,7 @@ public class RankingRestController extends BasePublicRestController {
     private static final int MAX_PAGE = 100;
 
     @Autowired
-    private RankingService rankingService;
+    private RankingConfigService rankingConfigService;
 
     @RequestMapping("/ranking/list/{guildId}")
     @ResponseBody
@@ -42,7 +42,7 @@ public class RankingRestController extends BasePublicRestController {
                                         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                         @RequestParam(value = "size", defaultValue = "100", required = false) int size,
                                         @RequestParam(value = "search", required = false) String search) {
-        if (!rankingService.isEnabled(guildId)) {
+        if (!rankingConfigService.isEnabled(guildId)) {
             throw new NotFoundException();
         }
         if (size > MAX_PAGE || size < 0) {
@@ -52,7 +52,7 @@ public class RankingRestController extends BasePublicRestController {
             page = 0;
         }
         Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "exp"));
-        return new PageDto<>(rankingService.getRankingInfos(guildId, search, pageRequest)
+        return new PageDto<>(rankingConfigService.getRankingInfos(guildId, search, pageRequest)
                 .map(apiMapperService::getRankingInfoDto));
     }
 }

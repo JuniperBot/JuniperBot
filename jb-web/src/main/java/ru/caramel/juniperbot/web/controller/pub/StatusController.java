@@ -16,37 +16,21 @@
  */
 package ru.caramel.juniperbot.web.controller.pub;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+//import io.prometheus.client.CollectorRegistry;
+//import io.prometheus.client.exporter.common.TextFormat;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
-import ru.caramel.juniperbot.web.dao.StatusDao;
-import ru.caramel.juniperbot.web.dto.StatusDto;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import ru.juniperbot.common.model.status.StatusDto;
 
 @RestController
 public class StatusController extends BasePublicRestController {
 
-    @Autowired
-    private StatusDao statusDao;
-
-    private final CollectorRegistry registry;
+    //private final CollectorRegistry registry;
 
     public StatusController() {
-        this.registry = CollectorRegistry.defaultRegistry;
+        //this.registry = CollectorRegistry.defaultRegistry;
     }
 
     @GetMapping("/health")
@@ -55,7 +39,8 @@ public class StatusController extends BasePublicRestController {
         return "OK";
     }
 
-    @GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
+    // TODO Prometheus endpoint. Maybe it should be at worker?
+    /*@GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
     public ResponseEntity<String> getMetrics(@RequestParam(name = "name[]", required = false) String[] includedParam)
             throws IOException {
         Set<String> params = includedParam == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(includedParam));
@@ -64,11 +49,11 @@ public class StatusController extends BasePublicRestController {
             writer.flush();
             return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
         }
-    }
+    }*/
 
     @GetMapping("/status")
     @ResponseBody
     public StatusDto get() {
-        return statusDao.get();
+        return gatewayService.getWorkerStatus();
     }
 }

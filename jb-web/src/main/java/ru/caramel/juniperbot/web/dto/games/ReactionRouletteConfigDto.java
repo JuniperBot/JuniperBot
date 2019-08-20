@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.games;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.web.dto.discord.EmoteDto;
+import ru.juniperbot.common.model.discord.EmoteDto;
 
 import java.io.Serializable;
 import java.util.Collections;

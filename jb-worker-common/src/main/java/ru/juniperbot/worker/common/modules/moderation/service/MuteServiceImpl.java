@@ -80,7 +80,7 @@ public class MuteServiceImpl implements MuteService {
     private Role getMutedRole(Guild guild, boolean create) {
         ModerationConfig moderationConfig = create
                 ? configService.getOrCreate(guild.getIdLong())
-                : configService.getByGuildId(guild.getIdLong());
+                : configService.get(guild);
 
         Role role = null;
         if (moderationConfig != null && moderationConfig.getMutedRoleId() != null) {

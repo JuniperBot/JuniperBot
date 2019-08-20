@@ -57,7 +57,7 @@ public class ReactionRouletteFilter extends MemberMessageFilter {
             chain.doFilter(event);
             return;
         }
-        ReactionRoulette roulette = reactionRouletteService.getByGuildId(guild.getIdLong());
+        ReactionRoulette roulette = reactionRouletteService.get(guild);
         if (roulette == null
                 || !roulette.isEnabled()
                 || CollectionUtils.isEmpty(roulette.getSelectedEmotes())) {

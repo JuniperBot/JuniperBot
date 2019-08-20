@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
-import ru.juniperbot.worker.common.message.resolver.MapPlaceholderResolver;
+import ru.juniperbot.common.support.MapPlaceholderResolver;
 
 import java.io.Serializable;
 

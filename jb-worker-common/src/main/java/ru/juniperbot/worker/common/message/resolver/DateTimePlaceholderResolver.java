@@ -97,7 +97,7 @@ public class DateTimePlaceholderResolver extends AbstractNodePlaceholderResolver
             return timeZone;
         }
         if (guild != null) {
-            GuildConfig config = applicationContext.getBean(ConfigService.class).getByGuildId(guild.getIdLong());
+            GuildConfig config = applicationContext.getBean(ConfigService.class).get(guild);
             if (config != null) {
                 try {
                     return timeZone = DateTimeZone.forID(config.getTimeZone());

@@ -56,9 +56,4 @@ public class WorkerConfiguration {
     public ThreadPoolTaskExecutorMBean eventTaskExecutorMBean() {
         return new ThreadPoolTaskExecutorMBean("Event TaskExecutor", (ThreadPoolTaskExecutor) eventExecutor());
     }
-
-    @Bean
-    public MessageSource messageSource() {
-        return new JbMessageSource();
-    }
 }

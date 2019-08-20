@@ -60,7 +60,7 @@ public class ValidationService {
     }
 
     public void validateSingle(AudioTrack track, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.getByGuildId(requestedBy.getGuild().getIdLong());
+        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;
@@ -90,7 +90,7 @@ public class ValidationService {
     }
 
     public List<AudioTrack> filterPlaylist(AudioPlaylist playlist, Member requestedBy) throws ValidationException {
-        MusicConfig config = musicConfigService.getByGuildId(requestedBy.getGuild().getIdLong());
+        MusicConfig config = musicConfigService.get(requestedBy.getGuild());
         Long queueLimit = config != null ? config.getQueueLimit() : null;
         Long durationLimit = config != null ? config.getDurationLimit() : null;
         Long duplicateLimit = config != null ? config.getDuplicateLimit() : null;

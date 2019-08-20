@@ -16,15 +16,7 @@
  */
 package ru.caramel.juniperbot.web.common.validation;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
-import ru.juniperbot.worker.common.message.service.MessageTemplateService;
 import ru.caramel.juniperbot.web.security.model.DiscordUserDetails;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
 
@@ -38,9 +30,6 @@ import java.util.regex.Pattern;
 public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity, String> {
 
     private final static Pattern PATTERN = Pattern.compile("^(\\d{1,19})?$");
-
-    @Autowired
-    private DiscordService discordService;
 
     private DiscordEntityType type;
 
@@ -60,7 +49,7 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
         if (StringUtils.isEmpty(value)) {
             return true;
         }
-        if (DiscordEntityType.TEXT_CHANNEL == type && MessageTemplateService.DM_CHANNEL.equals(value)) {
+        if (DiscordEntityType.TEXT_CHANNEL == type && "-1".equals(value)) {
             return allowDm;
         }
         if (!PATTERN.matcher(value).matches()) {
@@ -75,6 +64,9 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
         if (!strict) {
             return true;
         }
+
+        /*
+        // TODO IMPLEMENT MEMBER CHECK
 
         Guild guild = null;
         switch (type) {
@@ -102,5 +94,7 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
         }
 
         return member.isOwner() || member.hasPermission(Permission.ADMINISTRATOR);
+        */
+        return true;
     }
 }

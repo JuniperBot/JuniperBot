@@ -16,14 +16,12 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.common.service.ConfigService;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
-import ru.juniperbot.common.support.JbCacheManager;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
+import ru.juniperbot.common.model.discord.GuildDto;
+import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.service.GatewayService;
 
 public abstract class AbstractDao {
 
@@ -34,28 +32,27 @@ public abstract class AbstractDao {
     protected ConfigService configService;
 
     @Autowired
-    protected DiscordService discordService;
+    protected GatewayService gatewayService;
 
     protected String filterTextChannel(long guildId, String channelId) {
         if (StringUtils.isEmpty(channelId)) {
             return channelId;
         }
-        TextChannel channel = discordService.getTextChannelById(channelId);
-        if (channel == null) {
+        GuildDto guildDto = gatewayService.getGuildInfo(guildId);
+        if (guildDto == null) {
             return null;
         }
-        return channel.getGuild().getIdLong() == guildId ? channelId : null;
+        return guildDto.getTextChannels().stream().anyMatch(e -> channelId.equals(e.getId())) ? channelId : null;
     }
-
 
     protected String filterVoiceChannel(long guildId, String channelId) {
         if (StringUtils.isEmpty(channelId)) {
             return channelId;
         }
-        VoiceChannel channel = discordService.getVoiceChannelById(channelId);
-        if (channel == null) {
+        GuildDto guildDto = gatewayService.getGuildInfo(guildId);
+        if (guildDto == null) {
             return null;
         }
-        return channel.getGuild().getIdLong() == guildId ? channelId : null;
+        return guildDto.getVoiceChannels().stream().anyMatch(e -> channelId.equals(e.getId())) ? channelId : null;
     }
 }

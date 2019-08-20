@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -28,36 +27,27 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.common.persistence.repository.*;
-import ru.juniperbot.common.service.impl.AbstractDomainServiceImpl;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
-import ru.juniperbot.worker.common.shared.service.MemberService;
-import ru.juniperbot.worker.common.event.service.ContextService;
-import ru.juniperbot.common.persistence.entity.MessageTemplate;
-import ru.juniperbot.worker.common.message.service.MessageTemplateService;
-import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.utils.RankingUtils;
 import ru.juniperbot.common.model.RankingReward;
-import ru.juniperbot.common.persistence.entity.Cookie;
-import ru.juniperbot.common.persistence.entity.Ranking;
-import ru.juniperbot.common.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
+import ru.juniperbot.common.persistence.entity.*;
+import ru.juniperbot.common.persistence.repository.CookieRepository;
+import ru.juniperbot.common.persistence.repository.RankingRepository;
+import ru.juniperbot.common.service.MemberService;
+import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.message.service.MessageTemplateService;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
+import ru.juniperbot.worker.common.shared.service.DiscordService;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingService {
-
-    @Autowired
-    private LocalMemberRepository memberRepository;
+public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private RankingRepository rankingRepository;
@@ -77,6 +67,12 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
     @Autowired
     private MessageTemplateService templateService;
 
+    @Autowired
+    private DiscordEntityAccessor entityAccessor;
+
+    @Autowired
+    private RankingConfigService configService;
+
     private static Object DUMMY = new Object();
 
     private Cache<String, Object> coolDowns = CacheBuilder.newBuilder()
@@ -84,55 +80,15 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
             .expireAfterWrite(60, TimeUnit.SECONDS)
             .build();
 
-    public RankingServiceImpl(@Autowired RankingConfigRepository repository) {
-        super(repository, true);
-    }
-
-    @Override
-    protected RankingConfig createNew(long guildId) {
-        return new RankingConfig(guildId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public boolean isEnabled(long guildId) {
-        return repository.isEnabled(guildId);
-    }
-
-    @Transactional
-    @Override
-    public RankingInfo getRankingInfo(Member member) {
-        RankingInfo rankingInfo = RankingUtils.calculateInfo(getRanking(member));
-        rankingInfo.setRank(rankingRepository.getRank(member.getGuild().getIdLong(), rankingInfo.getTotalExp()));
-        return rankingInfo;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public long countRankings(long guildId) {
-        return rankingRepository.countByGuildId(guildId);
-    }
-
-    @Transactional
-    @Override
-    public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {
-        Page<Ranking> rankings = rankingRepository.findByGuildId(guildId, search != null ? search.toLowerCase() : "", pageable);
-        AtomicLong rankCounter = new AtomicLong(pageable.getOffset());
-        return rankings.map(e -> {
-            RankingInfo info = RankingUtils.calculateInfo(e);
-            info.setRank(StringUtils.isEmpty(search)
-                    ? rankCounter.incrementAndGet()
-                    : rankingRepository.getRank(guildId, info.getTotalExp()));
-            return info;
-        });
-    }
-
     @Transactional
     @Override
     public void onMessage(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        RankingConfig config = getByGuildId(guild.getIdLong());
-        if (config == null || !memberService.isApplicable(event.getMember()) || !config.isEnabled() || isBanned(config, event.getMember())) {
+        RankingConfig config = configService.get(guild);
+        if (config == null
+                || !config.isEnabled()
+                || !memberService.isApplicable(event.getMember())
+                || configService.isBanned(config, event.getMember())) {
             return;
         }
 
@@ -176,8 +132,8 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                     if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                         Member recipientMember = guild.getMember(user);
                         if (recipientMember != null && memberService.isApplicable(recipientMember)) {
-                            LocalMember sender = memberService.getOrCreate(event.getMember());
-                            LocalMember recipient = memberService.getOrCreate(recipientMember);
+                            LocalMember sender = entityAccessor.getOrCreate(event.getMember());
+                            LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
                             giveCookie(sender, recipient, checkDate);
                         }
                     }
@@ -192,19 +148,19 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         if (!memberService.isApplicable(senderMember) || !memberService.isApplicable(recipientMember)) {
             return;
         }
-        RankingConfig config = getByGuildId(senderMember.getGuild().getIdLong());
+        RankingConfig config = configService.get(senderMember.getGuild());
         if (config != null && config.isCookieEnabled()) {
-            LocalMember recipient = memberService.getOrCreate(recipientMember);
-            LocalMember sender = memberService.getOrCreate(senderMember);
+            LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
+            LocalMember sender = entityAccessor.getOrCreate(senderMember);
             giveCookie(sender, recipient, getCookieCoolDown());
         }
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
         if (!cookieRepository.isFull(sender, recipient, checkDate)) {
-            inTransaction(() -> {
+            configService.inTransaction(() -> {
                 cookieRepository.save(new Cookie(sender, recipient));
-                Ranking recipientRanking = getRanking(recipient);
+                Ranking recipientRanking = configService.getRanking(recipient);
                 if (recipientRanking != null) {
                     recipientRanking.incrementCookies();
                     rankingRepository.save(recipientRanking);
@@ -213,52 +169,13 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         }
     }
 
-    @Transactional
     @Override
-    public void update(long guildId, @NonNull String userId, Integer level, boolean resetCookies) {
-        LocalMember localMember = memberRepository.findByGuildIdAndUserId(guildId, userId);
-        Ranking ranking = getRanking(localMember);
-        if (ranking == null) {
-            return;
-        }
-
-        if (level != null) {
-            if (level > RankingUtils.MAX_LEVEL) {
-                level = RankingUtils.MAX_LEVEL;
-            } else if (level < 0) {
-                level = 0;
-            }
-
-            ranking.setExp(RankingUtils.getLevelTotalExp(level));
-            rankingRepository.save(ranking);
-            if (discordService.isConnected(guildId)) {
-                Guild guild = discordService.getShardManager().getGuildById(guildId);
-                if (guild != null) {
-                    Member member = guild.getMemberById(userId);
-                    if (member != null) {
-                        RankingConfig config = getByGuildId(guildId);
-                        updateRewards(config, member, ranking);
-                    }
-                }
-            }
-        }
-
-        if (resetCookies) {
-            cookieRepository.deleteByRecipient(guildId, userId);
-            ranking.setCookies(0);
-            rankingRepository.save(ranking);
-        }
-    }
-
     @Transactional
-    @Override
-    public void resetAll(long guildId, boolean levels, boolean cookies) {
-        if (levels) {
-            rankingRepository.resetAll(guildId);
-        }
-        if (cookies) {
-            cookieRepository.deleteByGuild(guildId);
-            rankingRepository.resetCookies(guildId);
+    public void updateRewards(Member member) {
+        RankingConfig config = configService.get(member.getGuild());
+        if (config != null) {
+            Ranking ranking = getRanking(member);
+            updateRewards(config, member, ranking);
         }
     }
 
@@ -301,14 +218,15 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
                 .collect(Collectors.toSet());
     }
 
-    @Override
-    public boolean isBanned(RankingConfig config, Member member) {
-        if (config.getBannedRoles() == null) {
-            return false;
+    private Ranking getRanking(Member member) {
+        Ranking ranking = configService.getRanking(member);
+        if (ranking == null) {
+            LocalMember localMember = entityAccessor.getOrCreate(member);
+            ranking = new Ranking();
+            ranking.setMember(localMember);
+            rankingRepository.save(ranking);
         }
-        List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
-        return CollectionUtils.isNotEmpty(member.getRoles()) && member.getRoles().stream()
-                .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
+        return ranking;
     }
 
     private boolean isIgnoredChannel(RankingConfig config, TextChannel channel) {
@@ -318,35 +236,7 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         return config.getIgnoredChannels().contains(channel.getIdLong());
     }
 
-    @Transactional
-    public Ranking getRanking(LocalMember member) {
-        Ranking ranking = rankingRepository.findByMember(member);
-        if (ranking == null && member != null) {
-            ranking = new Ranking();
-            ranking.setMember(member);
-            rankingRepository.save(ranking);
-        }
-        return ranking;
-    }
-
-    @Transactional
-    public Ranking getRanking(Member member) {
-        Ranking ranking = rankingRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
-        if (ranking == null) {
-            LocalMember localMember = memberService.getOrCreate(member);
-            ranking = new Ranking();
-            ranking.setMember(localMember);
-            rankingRepository.save(ranking);
-        }
-        return ranking;
-    }
-
     private static Date getCookieCoolDown() {
         return DateTime.now().minusMinutes(10).toDate();
-    }
-
-    @Override
-    protected Class<RankingConfig> getDomainClass() {
-        return RankingConfig.class;
     }
 }

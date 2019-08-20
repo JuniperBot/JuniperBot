@@ -33,9 +33,6 @@ import java.util.regex.Pattern;
 
 public final class DiscordUtils {
 
-
-    public final static String EVERYONE = "@everyone";
-
     private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
     private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)(~\\d+)?:");

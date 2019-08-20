@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.web.controller.priv;
 
-import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,11 +25,9 @@ import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dto.ServersDto;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
+import ru.juniperbot.common.model.discord.GuildDto;
 
 import java.util.List;
-
-import static net.dv8tion.jda.api.OnlineStatus.OFFLINE;
-import static net.dv8tion.jda.api.OnlineStatus.UNKNOWN;
 
 @RestController
 public class ServersController extends BaseRestController {
@@ -44,17 +41,14 @@ public class ServersController extends BaseRestController {
         List<DiscordGuildDetails> detailsList = discordTokenServices.getCurrentGuilds(true);
         ServersDto result = new ServersDto();
         result.setGuilds(apiMapperService.getGuildDtos(detailsList));
-        if (discordService.isConnected()) {
-            result.setConnected(true);
-            result.getGuilds().forEach(e -> {
-                Guild guild = discordService.getShardManager().getGuildById(e.getId());
-                if (guild != null) {
-                    e.setAdded(true);
-                    e.setMembers(guild.getMembers().stream()
-                            .filter(m -> m.getOnlineStatus() != OFFLINE && m.getOnlineStatus() != UNKNOWN).count());
-                }
-            });
-        }
+        result.getGuilds().forEach(e -> {
+            GuildDto guild = gatewayService.getGuildInfo(Long.valueOf(e.getId()));
+            if (guild != null) {
+                e.setAdded(true);
+                result.setConnected(true);
+                e.setMembers(guild.getOnlineCount());
+            }
+        });
         return result;
     }
 }

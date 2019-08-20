@@ -22,7 +22,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.configuration.RabbitConfiguration;
+import ru.juniperbot.common.model.discord.GuildDto;
+import ru.juniperbot.common.service.GatewayService;
 import ru.juniperbot.worker.common.command.model.AbstractCommand;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
@@ -56,8 +60,13 @@ public class HelpCommand extends AbstractCommand {
     @Autowired
     private CustomCommandRepository customCommandRepository;
 
+    @Autowired
+    private GatewayService gatewayService;
+
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
+        GuildDto guildDto = gatewayService.getGuildInfo(message.getGuild().getIdLong());
+
         boolean direct = Boolean.TRUE.equals(context.getConfig().getPrivateHelp());
 
         Map<String, CommandConfig> configMap = commandConfigService.findAllMap(context.getConfig().getGuildId());

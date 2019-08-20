@@ -16,29 +16,25 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.web.dto.GuildInfoDto;
+import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.entity.LocalUser;
-import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
-import ru.juniperbot.worker.common.shared.service.MemberService;
-import ru.juniperbot.worker.common.feature.service.FeatureSetService;
 import ru.caramel.juniperbot.web.dto.ShortMemberDto;
-import ru.caramel.juniperbot.web.dto.discord.GuildDto;
-import ru.caramel.juniperbot.web.dto.discord.RoleDto;
-import ru.caramel.juniperbot.web.dto.discord.TextChannelDto;
-import ru.caramel.juniperbot.web.dto.discord.VoiceChannelDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
+import ru.juniperbot.common.service.MemberService;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.caramel.juniperbot.web.dto.request.GuildInfoRequest.PartType.*;
 
 @Service
 public class GuildDao extends AbstractDao {
@@ -47,23 +43,17 @@ public class GuildDao extends AbstractDao {
     private DiscordTokenServices tokenServices;
 
     @Autowired
-    private FeatureSetService featureSetService;
-
-    @Autowired
     private MemberService memberService;
 
-    @Autowired
-    private DiscordEntityAccessor entityAccessor;
-
     @Transactional
-    public GuildDto getGuild(GuildInfoRequest request) {
-        GuildConfig config = getOrCreate(request.getId());
+    public GuildInfoDto getGuild(GuildInfoRequest request) {
+        GuildConfig config = configService.getByGuildId(request.getId());
         return getGuild(config, request.getParts());
     }
 
     @Transactional
-    public GuildDto getGuild(long guildId) {
-        GuildConfig config = getOrCreate(guildId);
+    public GuildInfoDto getGuild(long guildId) {
+        GuildConfig config = configService.getByGuildId(guildId);
         return getGuild(config, null);
     }
 
@@ -81,24 +71,12 @@ public class GuildDao extends AbstractDao {
         }).collect(Collectors.toList());
     }
 
-    private GuildConfig getOrCreate(long guildId) {
-        GuildConfig config = configService.getByGuildId(guildId);
-        if (config != null) {
-            return config;
-        }
-        if (!discordService.isConnected(guildId)) {
-            return null;
-        }
-        Guild guild = discordService.getGuildById(guildId);
-        return guild != null ? entityAccessor.getOrCreate(guild) : null;
-    }
-
     @Transactional
-    public GuildDto getGuild(GuildConfig config, Set<GuildInfoRequest.PartType> parts) {
+    public GuildInfoDto getGuild(GuildConfig config, Set<GuildInfoRequest.PartType> parts) {
         if (config == null) {
             return null;
         }
-        GuildDto.Builder builder = GuildDto.builder()
+        GuildInfoDto.Builder builder = GuildInfoDto.builder()
                 .name(config.getName())
                 .prefix(config.getPrefix())
                 .locale(config.getLocale())
@@ -106,60 +84,39 @@ public class GuildDao extends AbstractDao {
                 .commandLocale(config.getCommandLocale())
                 .id(String.valueOf(config.getGuildId()))
                 .icon(config.getIconUrl())
-                .timeZone(config.getTimeZone())
-                .featureSets(featureSetService.getByGuild(config.getGuildId()));
+                .timeZone(config.getTimeZone());
 
-        if (!discordService.isConnected()) {
+        GuildDto guildDto = gatewayService.getGuildInfo(config.getGuildId());
+        if (guildDto == null) {
             return builder.build();
         }
 
-        Guild guild = discordService.getGuildById(config.getGuildId());
-        if (guild == null || !guild.isAvailable()) {
+        builder.featureSets(guildDto.getFeatureSets());
+
+        if (!guildDto.isAvailable()) {
             return builder.build();
         }
 
-        builder.name(guild.getName())
-                .id(guild.getId())
-                .icon(guild.getIconUrl())
+        builder.name(guildDto.getName())
+                .icon(guildDto.getIconUrl())
                 .available(true);
 
         if (CollectionUtils.isEmpty(parts)
                 || !SecurityUtils.isAuthenticated()
-                || !tokenServices.hasPermission(guild.getIdLong())) {
+                || !tokenServices.hasPermission(config.getGuildId())) {
             return builder.build();
         }
 
-        for (GuildInfoRequest.PartType part : parts) {
-            switch (part) {
-                case ROLES:
-                    builder.roles(guild.getRoles().stream()
-                            .filter(e -> !e.isPublicRole())
-                            .map(e -> {
-                                RoleDto dto = apiMapper.getRoleDto(e);
-                                dto.setInteractable(guild.getSelfMember().canInteract(e));
-                                return dto;
-                            })
-                            .collect(Collectors.toList()));
-                    break;
+        if (parts.contains(ROLES)) {
+            builder.roles(guildDto.getRoles());
+        }
 
-                case TEXT_CHANNELS:
-                    builder.textChannels(guild.getTextChannels().stream()
-                            .map(e -> {
-                                TextChannelDto dto = apiMapper.getTextChannelDto(e);
-                                dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
-                                return dto;
-                            }).collect(Collectors.toList()));
-                    break;
+        if (parts.contains(TEXT_CHANNELS)) {
+            builder.textChannels(guildDto.getTextChannels());
+        }
 
-                case VOICE_CHANNELS:
-                    builder.voiceChannels(guild.getVoiceChannels().stream()
-                            .map(e -> {
-                                VoiceChannelDto dto = apiMapper.getVoiceChannelDto(e);
-                                dto.setPermissions(Permission.getRaw(guild.getSelfMember().getPermissions(e)));
-                                return dto;
-                            }).collect(Collectors.toList()));
-                    break;
-            }
+        if (parts.contains(VOICE_CHANNELS)) {
+            builder.voiceChannels(guildDto.getVoiceChannels());
         }
         return builder.build();
     }

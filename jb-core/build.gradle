@@ -22,6 +22,7 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion)
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion)
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-amqp')
     compile(group: 'org.springframework', name: 'spring-web')
     compile(group: 'org.springframework', name: 'spring-context-support')
 
@@ -38,6 +39,18 @@ dependencies {
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core')
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
     compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
+
+    // MAPSTRUCT
+    compile(group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion)
+    compile(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
+    annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
+
+    // DISCORD DEPENDENCIES
+    compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
+        exclude group: 'club.minnced', module: 'opus-java'
+    }
+    compile(group: 'club.minnced', name: 'discord-webhooks', version: discordWebhookVersion)
+    compile(group: 'com.google.apis', name: 'google-api-services-youtube', version: googleApiServicesYoutubeVersion)
 
     // DATABASE DEPENDENCIES
     compile(group: 'javax.annotation', name: 'javax.annotation-api')

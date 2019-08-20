@@ -122,7 +122,7 @@ public class DayHandler extends ChoiceStateHandler {
         EmbedBuilder embedBuilder = getBaseEmbed();
         embedBuilder.setDescription(message);
         if (!endOfGame) {
-            GuildConfig config = entityAccessor.get(instance.getGuild());
+            GuildConfig config = configService.get(instance.getGuild());
             String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
 
             embedBuilder.addField(messageService.getMessage("mafia.start.playerList.title"),

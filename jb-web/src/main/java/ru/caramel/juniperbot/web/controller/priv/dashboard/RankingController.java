@@ -19,13 +19,13 @@ package ru.caramel.juniperbot.web.controller.priv.dashboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.RankingDao;
 import ru.caramel.juniperbot.web.dto.config.RankingDto;
 import ru.caramel.juniperbot.web.dto.request.RankingResetRequest;
-import ru.caramel.juniperbot.web.dto.request.RankingUpdateRequest;
+import ru.juniperbot.common.model.request.RankingUpdateRequest;
+import ru.juniperbot.common.service.RankingConfigService;
 
 @RestController
 public class RankingController extends BaseRestController {
@@ -34,7 +34,7 @@ public class RankingController extends BaseRestController {
     private RankingDao rankingDao;
 
     @Autowired
-    private RankingService rankingService;
+    private RankingConfigService rankingConfigService;
 
     @RequestMapping(value = "/ranking/{guildId}", method = RequestMethod.GET)
     @ResponseBody
@@ -52,13 +52,15 @@ public class RankingController extends BaseRestController {
     public void resetAll(
             @GuildId @PathVariable("guildId") long guildId,
             @RequestBody @Validated RankingResetRequest request) {
-        rankingService.resetAll(guildId, request.isLevels(), request.isCookies());
+        rankingConfigService.resetAll(guildId, request.isLevels(), request.isCookies());
     }
 
     @RequestMapping(value = "/ranking/update/{guildId}", method = RequestMethod.POST)
     public void update(
             @GuildId @PathVariable("guildId") long guildId,
             @RequestBody @Validated RankingUpdateRequest request) {
-        rankingService.update(guildId, request.getUserId(), request.getLevel(), request.isResetCookies());
+        request.setGuildId(guildId);
+        rankingConfigService.update(request);
+        gatewayService.updateRanking(request);
     }
 }

@@ -32,8 +32,8 @@ import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
-import ru.caramel.juniperbot.module.reminder.jobs.ReminderJob;
 import ru.juniperbot.common.utils.TimeSequenceParser;
+import ru.juniperbot.worker.common.jobs.ReminderJob;
 
 import java.util.Date;
 import java.util.regex.Matcher;

@@ -16,23 +16,18 @@
  */
 package ru.caramel.juniperbot.web.service;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.*;
 import ru.juniperbot.common.persistence.entity.base.NamedReference;
 import ru.caramel.juniperbot.web.dto.*;
 import ru.caramel.juniperbot.web.dto.config.*;
-import ru.caramel.juniperbot.web.dto.discord.*;
 import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
-import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistItemDto;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
 
@@ -50,32 +45,7 @@ public interface ApiMapperService {
     })
     GuildShortDto getGuildDto(DiscordGuildDetails details);
 
-    @Mappings({
-            @Mapping(target = "interactable", ignore = true)
-    })
-    RoleDto getRoleDto(Role role);
-
-    EmoteDto getEmoteDto(Emote role);
-
-    @Mappings({
-            @Mapping(source = "NSFW", target = "nsfw"),
-            @Mapping(expression = "java(channel.canTalk())", target = "canTalk"),
-            @Mapping(target = "permissions", ignore = true)
-    })
-    TextChannelDto getTextChannelDto(TextChannel channel);
-
-    List<TextChannelDto> getTextChannelDto(List<TextChannel> channels);
-
-    @Mappings({
-            @Mapping(target = "permissions", ignore = true)
-    })
-    VoiceChannelDto getVoiceChannelDto(VoiceChannel channel);
-
-    List<VoiceChannelDto> getVoiceChannelDto(List<VoiceChannel> channels);
-
     List<GuildShortDto> getGuildDtos(List<DiscordGuildDetails> details);
-
-    List<EmoteDto> getEmotesDto(Collection<Emote> role);
 
     CommonConfigDto getCommonDto(GuildConfig config);
 

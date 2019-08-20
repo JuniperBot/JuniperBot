@@ -40,7 +40,7 @@ public class RankCommand extends RankingCommand {
         if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
             member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
         }
-        RankingInfo info = rankingService.getRankingInfo(member);
+        RankingInfo info = rankingConfigService.getRankingInfo(member);
         if (info == null) {
             messageService.sendMessageSilent(message.getChannel()::sendMessage, messageService.getMessage(
                     "discord.command.rank.unavailable"));
@@ -82,11 +82,11 @@ public class RankCommand extends RankingCommand {
     }
 
     public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
-        RankingConfig config = rankingService.getByGuildId(guild.getIdLong());
+        RankingConfig config = rankingConfigService.get(guild);
         if (config == null) {
             return;
         }
-        long totalMembers = rankingService.countRankings(guild.getIdLong());
+        long totalMembers = rankingConfigService.countRankings(guild.getIdLong());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
                 String.format("# %d/%d", info.getRank(), totalMembers), true);
         builder.addField(messageService.getMessage("discord.command.rank.info.lvl.title"),

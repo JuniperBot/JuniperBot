@@ -41,13 +41,14 @@ import ru.juniperbot.common.persistence.repository.MemberWarningRepository;
 import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.worker.common.modules.audit.service.AuditService;
 import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.juniperbot.worker.common.modules.moderation.model.ModerationActionRequest;
 import ru.juniperbot.worker.common.modules.moderation.model.WarningResult;
 import ru.juniperbot.common.service.ModerationConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
 import ru.juniperbot.worker.common.utils.DiscordUtils;
 
 import java.util.*;
@@ -87,6 +88,9 @@ public class ModerationServiceImpl implements ModerationService {
     @Autowired
     private AuditService auditService;
 
+    @Autowired
+    private DiscordEntityAccessor entityAccessor;
+
     private Cache<String, String> lastActionCache = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
             .expireAfterAccess(5, TimeUnit.MINUTES)
@@ -101,7 +105,7 @@ public class ModerationServiceImpl implements ModerationService {
         if (member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner()) {
             return true;
         }
-        ModerationConfig config = moderationConfigService.getByGuildId(member.getGuild().getIdLong());
+        ModerationConfig config = moderationConfigService.get(member.getGuild());
         return config != null && CollectionUtils.isNotEmpty(config.getRoles())
                 && member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
@@ -241,8 +245,8 @@ public class ModerationServiceImpl implements ModerationService {
 
         long guildId = member.getGuild().getIdLong();
         ModerationConfig moderationConfig = moderationConfigService.getOrCreate(member.getGuild().getIdLong());
-        LocalMember authorLocal = memberService.getOrCreate(author);
-        LocalMember memberLocal = memberService.getOrCreate(member);
+        LocalMember authorLocal = entityAccessor.getOrCreate(author);
+        LocalMember memberLocal = entityAccessor.getOrCreate(member);
 
         long number = warningRepository.countActiveByViolator(guildId, memberLocal) + 1;
 
@@ -302,7 +306,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public List<MemberWarning> getWarnings(Member member) {
-        LocalMember localMember = memberService.getOrCreate(member);
+        LocalMember localMember = entityAccessor.getOrCreate(member);
         return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
     }
 

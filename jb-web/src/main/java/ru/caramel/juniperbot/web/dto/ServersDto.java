@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.web.dto.discord.GuildShortDto;
 
 import java.io.Serializable;
 import java.util.List;

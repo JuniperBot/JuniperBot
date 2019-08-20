@@ -180,7 +180,7 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
         if (event.getMember() != null && commandConfig.getCoolDownMode() != CoolDownMode.NONE) {
             if (CollectionUtils.isEmpty(commandConfig.getCoolDownIgnoredRoles()) ||
                     event.getMember().getRoles().stream().noneMatch(e -> commandConfig.getCoolDownIgnoredRoles().contains(e.getIdLong()))) {
-                ModerationConfig moderationConfig = moderationConfigService.getByGuildId(event.getGuild().getIdLong());
+                ModerationConfig moderationConfig = moderationConfigService.get(event.getGuild());
                 if (!moderationService.isModerator(event.getMember())
                         || (moderationConfig != null && !moderationConfig.isCoolDownIgnored())) {
                     CoolDownHolder holder = coolDownService.getCoolDownHolderMap()

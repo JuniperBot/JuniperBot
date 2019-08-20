@@ -44,7 +44,7 @@ public class ChoosingHandler extends AbstractStateHandler {
         String delayText = getEndTimeText(instance, choosingDelay);
         EmbedBuilder builder = getBaseEmbed("mafia.start.message");
 
-        GuildConfig config = entityAccessor.get(instance.getGuild());
+        GuildConfig config = configService.get(instance.getGuild());
         String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
 
         builder.setFooter(messageService.getMessage("mafia.start.message.footer", delayText, instance.getPrefix(), nextCommand), null);

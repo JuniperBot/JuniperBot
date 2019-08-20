@@ -39,7 +39,8 @@ import ru.juniperbot.common.persistence.entity.PlaylistItem;
 import ru.juniperbot.common.persistence.repository.PlaylistItemRepository;
 import ru.juniperbot.common.persistence.repository.PlaylistRepository;
 import ru.juniperbot.common.service.PlaylistService;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
     private PlaylistItemRepository playlistItemRepository;
 
     @Autowired
-    private MemberService memberService;
+    private DiscordEntityAccessor entityAccessor;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -105,7 +106,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
         if (member == null) {
             return;
         }
-        LocalMember localMember = memberService.getOrCreate(member);
+        LocalMember localMember = entityAccessor.getOrCreate(member);
 
         synchronized (instance) {
             try {
@@ -148,7 +149,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
             instance.getPlaylist().forEach(e -> {
                 PlaylistItem item = PlaylistUtils.find(playlist, e.getTrack().getInfo());
                 if (item == null) {
-                    LocalMember member = memberService.getOrCreate(e.getMember());
+                    LocalMember member = entityAccessor.getOrCreate(e.getMember());
                     item = createItem(e.getTrack(), member);
                     item.setPlaylist(playlist);
                 }

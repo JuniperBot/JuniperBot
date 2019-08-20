@@ -24,6 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
 import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.juniperbot.worker.common.command.service.InternalCommandsService;
 import ru.juniperbot.common.service.BrandingService;
@@ -63,6 +64,9 @@ public abstract class AbstractCommand implements Command {
 
     @Autowired
     protected ApplicationContext applicationContext;
+
+    @Autowired
+    protected DiscordEntityAccessor entityAccessor;
 
     private DiscordCommand annotation;
 

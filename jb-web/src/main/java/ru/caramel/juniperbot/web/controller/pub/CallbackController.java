@@ -30,12 +30,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import ru.caramel.juniperbot.web.subscriptions.integrations.VkSubscriptionService;
+import ru.caramel.juniperbot.web.subscriptions.integrations.YouTubeSubscriptionService;
 import ru.juniperbot.common.model.exception.AccessDeniedException;
-import ru.juniperbot.worker.common.patreon.service.PatreonService;
+import ru.juniperbot.common.model.request.PatreonRequest;
+import ru.juniperbot.common.persistence.VkConnection;
 import ru.juniperbot.common.utils.GsonUtils;
-import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.module.social.service.VkService;
-import ru.caramel.juniperbot.module.social.service.YouTubeService;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.model.AtomFeed;
 import ru.caramel.juniperbot.web.utils.FeedUtils;
@@ -60,13 +60,10 @@ public class CallbackController extends BasePublicRestController {
             }.getType());
 
     @Autowired
-    private VkService vkService;
+    private VkSubscriptionService vkSubscriptionService;
 
     @Autowired
-    private YouTubeService youTubeService;
-
-    @Autowired
-    private PatreonService patreonService;
+    private YouTubeSubscriptionService youTubeService;
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/vk/callback/{token}", method = RequestMethod.POST)
@@ -76,7 +73,7 @@ public class CallbackController extends BasePublicRestController {
         String type = json.get("type").getAsString();
         Type typeOfClass = CALLBACK_TYPES.get(type);
 
-        VkConnection connection = vkService.getForToken(token);
+        VkConnection connection = vkSubscriptionService.getForToken(token);
         if (connection == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;
@@ -93,9 +90,9 @@ public class CallbackController extends BasePublicRestController {
 
             switch (message.getType()) {
                 case CONFIRMATION:
-                    return vkService.confirm(connection, message);
+                    return vkSubscriptionService.confirm(connection, message);
                 case WALL_POST_NEW:
-                    vkService.post(connection, message);
+                    vkSubscriptionService.post(connection, message);
                     break;
             }
         }
@@ -145,8 +142,6 @@ public class CallbackController extends BasePublicRestController {
     public void patreonCallback(@RequestBody String content,
                                 @RequestHeader("X-Patreon-Event") String event,
                                 @RequestHeader("X-Patreon-Signature") String signature) {
-        if (!patreonService.processWebHook(content, event, signature)) {
-            throw new AccessDeniedException();
-        }
+        gatewayService.sendPatreonUpdate(new PatreonRequest(content, event, signature));
     }
 }

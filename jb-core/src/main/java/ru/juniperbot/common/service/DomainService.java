@@ -16,9 +16,12 @@
  */
 package ru.juniperbot.common.service;
 
+import net.dv8tion.jda.api.entities.Guild;
 import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 
 public interface DomainService<T extends GuildEntity> {
+
+    T get(Guild guild);
 
     T get(long id);
 
@@ -33,4 +36,6 @@ public interface DomainService<T extends GuildEntity> {
     boolean isCacheable();
 
     void setCacheable(boolean cacheable);
+
+    void inTransaction(Runnable action);
 }

@@ -22,12 +22,6 @@ dependencies {
     compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: springBootVersion)
     compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
 
-    // DISCORD DEPENDENCIES
-    compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
-        exclude group: 'club.minnced', module: 'opus-java'
-    }
-    compile(group: 'club.minnced', name: 'discord-webhooks', version: discordWebhookVersion)
-
     // METRICS DEPENDENCIES
     compile(group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
     compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')

@@ -37,7 +37,7 @@ import ru.juniperbot.common.persistence.entity.MemberBio;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
 import ru.caramel.juniperbot.module.ranking.commands.RankCommand;
 import ru.juniperbot.common.model.RankingInfo;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.juniperbot.common.service.RankingConfigService;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -49,7 +49,7 @@ import java.util.Objects;
 public class UserInfoCommand extends AbstractInfoCommand {
 
     @Autowired
-    private RankingService rankingService;
+    private RankingConfigService rankingConfigService;
 
     @Autowired
     private RankCommand rankCommand;
@@ -90,8 +90,8 @@ public class UserInfoCommand extends AbstractInfoCommand {
         builder.addField(messageService.getMessage("discord.command.user.common"), commonBuilder.toString(), false);
 
         if (!user.isBot()) {
-            if (rankingService.isEnabled(member.getGuild().getIdLong())) {
-                RankingInfo info = rankingService.getRankingInfo(member);
+            if (rankingConfigService.isEnabled(member.getGuild().getIdLong())) {
+                RankingInfo info = rankingConfigService.getRankingInfo(member);
                 if (info != null) {
                     rankCommand.addFields(builder, info, member.getGuild());
                 }

@@ -89,7 +89,7 @@ public class GoonHandler extends ChoiceStateHandler {
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         MessageBuilder builder = new MessageBuilder();
 
-        GuildConfig config = entityAccessor.get(instance.getGuild());
+        GuildConfig config = configService.get(instance.getGuild());
         String nextCommand = messageService.getMessageByLocale("discord.command.mafia.done.key", config.getCommandLocale());
 
         EmbedBuilder embed = getBaseEmbed("mafia.goon.choice");

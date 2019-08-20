@@ -18,11 +18,15 @@ package ru.juniperbot.worker.common.shared.service;
 
 import net.dv8tion.jda.api.entities.*;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 
 public interface DiscordEntityAccessor {
 
-    GuildConfig get(Guild guild);
-
     GuildConfig getOrCreate(Guild guild);
+
+    LocalUser getOrCreate(User user);
+
+    LocalMember getOrCreate(Member member);
 
 }

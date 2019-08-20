@@ -37,7 +37,7 @@ import ru.juniperbot.worker.common.modules.audit.provider.ModerationAuditForward
 import ru.juniperbot.worker.common.modules.audit.provider.NicknameChangeAuditForwardProvider;
 import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.juniperbot.worker.common.modules.moderation.service.ModerationService;
@@ -67,7 +67,7 @@ public class MemberListener extends DiscordEventListener {
         if (event.getMember().getUser().isBot()) {
             return;
         }
-        LocalMember member = memberService.getOrCreate(event.getMember());
+        LocalMember member = entityAccessor.getOrCreate(event.getMember());
         muteService.refreshMute(event.getMember());
         getAuditService().log(event.getGuild(), AuditActionType.MEMBER_JOIN)
                 .withUser(member)
@@ -141,7 +141,7 @@ public class MemberListener extends DiscordEventListener {
         if (event.getMember().getUser().isBot()) {
             return;
         }
-        LocalMember member = memberService.getOrCreate(event.getMember());
+        LocalMember member = entityAccessor.getOrCreate(event.getMember());
         member.setLastKnownRoles(event.getMember().getRoles().stream()
                 .map(Role::getIdLong).collect(Collectors.toList()));
         memberService.save(member);
@@ -156,7 +156,7 @@ public class MemberListener extends DiscordEventListener {
     @Override
     @Transactional
     public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
-        LocalMember member = memberService.getOrCreate(event.getMember());
+        LocalMember member = entityAccessor.getOrCreate(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
             getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)
                     .withUser(member)

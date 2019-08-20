@@ -34,7 +34,7 @@ import ru.juniperbot.common.persistence.entity.MessageHistory;
 import ru.juniperbot.common.persistence.repository.MessageHistoryRepository;
 import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.service.AuditConfigService;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
 
 import java.util.Date;
 import java.util.Objects;
@@ -148,7 +148,7 @@ public class HistoryServiceImpl implements HistoryService {
         if (!historyEnabled) {
             return false;
         }
-        AuditConfig config = auditConfigService.getByGuildId(guild.getIdLong());
+        AuditConfig config = auditConfigService.get(guild);
         return config != null && config.isEnabled();
     }
 

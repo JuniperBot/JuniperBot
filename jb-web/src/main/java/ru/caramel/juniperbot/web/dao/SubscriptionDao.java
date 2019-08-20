@@ -19,18 +19,18 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;
-import ru.caramel.juniperbot.module.social.persistence.entity.VkConnection;
-import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;
-import ru.caramel.juniperbot.module.social.persistence.repository.TwitchConnectionRepository;
-import ru.caramel.juniperbot.module.social.persistence.repository.VkConnectionRepository;
-import ru.caramel.juniperbot.module.social.persistence.repository.YouTubeConnectionRepository;
-import ru.caramel.juniperbot.module.social.service.JuniPostService;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
-import ru.caramel.juniperbot.web.service.subscriptions.SubscriptionHandler;
+import ru.caramel.juniperbot.web.subscriptions.handlers.SubscriptionHandler;
+import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.TwitchConnection;
+import ru.juniperbot.common.persistence.entity.YouTubeConnection;
+import ru.juniperbot.common.persistence.repository.TwitchConnectionRepository;
+import ru.juniperbot.common.persistence.repository.VkConnectionRepository;
+import ru.juniperbot.common.persistence.repository.YouTubeConnectionRepository;
+import ru.juniperbot.common.service.JuniPostService;
 
 import java.util.*;
 

@@ -22,7 +22,7 @@ import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;
-import ru.caramel.juniperbot.web.dto.discord.GuildDto;
+import ru.caramel.juniperbot.web.dto.GuildInfoDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 
 @RestController
@@ -33,8 +33,8 @@ public class GuildInfoPublicController extends BasePublicRestController {
 
     @RequestMapping(value = "/guild/{guildId}", method = RequestMethod.GET)
     @ResponseBody
-    public GuildDto getGuild(@GuildId(validate = false) @PathVariable long guildId) {
-        GuildDto dto = guildDao.getGuild(new GuildInfoRequest(guildId));
+    public GuildInfoDto getGuild(@GuildId(validate = false) @PathVariable long guildId) {
+        GuildInfoDto dto = guildDao.getGuild(new GuildInfoRequest(guildId));
         if (dto == null) {
             throw new NotFoundException();
         }

@@ -18,7 +18,7 @@ package ru.caramel.juniperbot.web.dto.playlist;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.web.dto.discord.GuildDto;
+import ru.caramel.juniperbot.web.dto.GuildInfoDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,7 +31,7 @@ public class PlaylistDto implements Serializable {
 
     private Date date;
 
-    private GuildDto guild;
+    private GuildInfoDto guild;
 
     private List<PlaylistItemDto> items;
 }

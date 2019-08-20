@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.worker.common.command.service.CommandHandler;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.worker.common.event.service.ContextService;
@@ -67,7 +68,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             .build();
 
     @Autowired
-    private DiscordEntityAccessor entityAccessor;
+    private ConfigService configService;
 
     @Autowired
     private ContextService contextService;
@@ -106,7 +107,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             return false;
         }
 
-        GuildConfig config = entityAccessor.get(event.getGuild());
+        GuildConfig config = configService.get(event.getGuild());
         if (config == null
                 || !config.isAssistantEnabled()
                 || !event.getMessage().isMentioned(event.getJDA().getSelfUser())

@@ -19,6 +19,7 @@ package ru.juniperbot.common.service.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -62,17 +63,23 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     @Override
     @Transactional(readOnly = true)
-    public T getByGuildId(long guildId) {
-        if (cacheable) {
-            return cacheManager.get(getDomainClass(), guildId, repository::findByGuildId);
-        }
-        return repository.findByGuildId(guildId);
+    public T get(Guild guild) {
+        return getByGuildId(guild.getIdLong());
     }
 
     @Override
     @Transactional(readOnly = true)
     public T get(long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public T getByGuildId(long guildId) {
+        if (cacheable) {
+            return cacheManager.get(getDomainClass(), guildId, repository::findByGuildId);
+        }
+        return repository.findByGuildId(guildId);
     }
 
     @Override
@@ -107,7 +114,8 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
         return result;
     }
 
-    protected void inTransaction(Runnable action) {
+    @Override
+    public void inTransaction(Runnable action) {
         try {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override

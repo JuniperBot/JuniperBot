@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.persistence.entity.MemberBio;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
@@ -45,7 +45,7 @@ public class BioCommand extends AbstractInfoCommand {
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
-        LocalMember localMember = memberService.getOrCreate(message.getMember());
+        LocalMember localMember = entityAccessor.getOrCreate(message.getMember());
         MemberBio bio = bioRepository.findByMember(localMember);
         if (bio == null) {
             bio = new MemberBio();

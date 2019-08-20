@@ -21,6 +21,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.juniperbot.common.service.ConfigService;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
+import ru.juniperbot.common.service.GatewayService;
 
 @RequestMapping("api/priv")
 public abstract class BaseRestController {
@@ -34,4 +35,6 @@ public abstract class BaseRestController {
     @Autowired
     protected TaskExecutor taskExecutor;
 
+    @Autowired
+    protected GatewayService gatewayService;
 }

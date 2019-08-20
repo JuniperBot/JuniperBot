@@ -25,18 +25,18 @@ import ru.juniperbot.worker.common.command.model.AbstractCommand;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.juniperbot.common.service.RankingConfigService;
 
 public abstract class RankingCommand extends AbstractCommand {
 
     @Autowired
-    protected RankingService rankingService;
+    protected RankingConfigService rankingConfigService;
 
     protected abstract boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        RankingConfig rankingConfig = rankingService.getByGuildId(message.getGuild().getIdLong());
+        RankingConfig rankingConfig = rankingConfigService.get(message.getGuild());
         return rankingConfig != null
                 && rankingConfig.isEnabled()
                 && doInternal(message, context, content);
@@ -44,6 +44,6 @@ public abstract class RankingCommand extends AbstractCommand {
 
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
-        return guild != null && rankingService.isEnabled(guild.getIdLong());
+        return guild != null && rankingConfigService.isEnabled(guild.getIdLong());
     }
 }

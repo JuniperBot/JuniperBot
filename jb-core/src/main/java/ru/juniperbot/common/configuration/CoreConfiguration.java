@@ -18,6 +18,7 @@ package ru.juniperbot.common.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -29,6 +30,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.juniperbot.common.support.JbCacheManager;
 import ru.juniperbot.common.support.JbCacheManagerImpl;
+import ru.juniperbot.common.support.JbMessageSource;
 import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 
 @EnableAsync
@@ -39,7 +41,8 @@ import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 @EnableJpaRepositories({"ru.caramel.juniperbot", "ru.juniperbot"})
 @ComponentScan({"ru.caramel.juniperbot", "ru.juniperbot"})
 @Import({
-        MBeanConfiguration.class
+        MBeanConfiguration.class,
+        RabbitConfiguration.class
 })
 @Configuration
 public class CoreConfiguration {
@@ -80,6 +83,11 @@ public class CoreConfiguration {
     @Bean("cacheManager")
     public JbCacheManager cacheManager() {
         return new JbCacheManagerImpl();
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        return new JbMessageSource();
     }
 
     @Bean

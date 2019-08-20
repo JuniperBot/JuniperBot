@@ -23,7 +23,7 @@ import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;
 import ru.caramel.juniperbot.web.dto.ShortMemberDto;
-import ru.caramel.juniperbot.web.dto.discord.GuildDto;
+import ru.caramel.juniperbot.web.dto.GuildInfoDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 
 import java.util.List;
@@ -36,8 +36,8 @@ public class GuildInfoController extends BaseRestController {
 
     @RequestMapping(value = "/guild", method = RequestMethod.POST)
     @ResponseBody
-    public GuildDto getGuild(@RequestBody GuildInfoRequest request) {
-        GuildDto dto = guildDao.getGuild(request);
+    public GuildInfoDto getGuild(@RequestBody GuildInfoRequest request) {
+        GuildInfoDto dto = guildDao.getGuild(request);
         if (dto == null) {
             throw new NotFoundException();
         }

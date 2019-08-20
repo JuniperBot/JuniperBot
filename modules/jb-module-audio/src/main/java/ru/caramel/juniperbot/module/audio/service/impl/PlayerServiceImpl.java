@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import ru.juniperbot.common.model.exception.DiscordException;
+import ru.juniperbot.common.service.YouTubeService;
 import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.feature.service.FeatureSetService;
@@ -55,7 +56,6 @@ import ru.caramel.juniperbot.module.audio.service.StoredPlaylistService;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.helper.PlayerListenerAdapter;
 import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
-import ru.caramel.juniperbot.module.social.service.YouTubeService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -506,7 +506,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     @Transactional
     public VoiceChannel getDesiredChannel(Member member) {
-        MusicConfig musicConfig = musicConfigService.getByGuildId(member.getGuild().getIdLong());
+        MusicConfig musicConfig = musicConfigService.get(member.getGuild());
         VoiceChannel channel = null;
         if (musicConfig != null) {
             if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
@@ -531,7 +531,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     @Transactional
     public boolean hasAccess(Member member) {
-        MusicConfig config = musicConfigService.getByGuildId(member.getGuild().getIdLong());
+        MusicConfig config = musicConfigService.get(member.getGuild());
         return config == null
                 || CollectionUtils.isEmpty(config.getRoles())
                 || member.isOwner()

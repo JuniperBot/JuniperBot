@@ -20,9 +20,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.persistence.entity.CommandConfig;
 import ru.juniperbot.common.service.CommandConfigService;
-import ru.juniperbot.worker.common.command.service.CommandsHolderService;
 import ru.caramel.juniperbot.web.dto.config.CommandDto;
 import ru.caramel.juniperbot.web.dto.config.CommandGroupDto;
 
@@ -33,26 +33,29 @@ import java.util.stream.Collectors;
 public class CommandsDao extends AbstractDao {
 
     @Autowired
-    private CommandsHolderService holderService;
-
-    @Autowired
     private CommandConfigService commandConfigService;
 
     @Transactional
     public List<CommandGroupDto> get(long guildId) {
         Map<String, CommandConfig> commandConfigs = commandConfigService.findAllMap(guildId);
-        return holderService.getDescriptors().entrySet().stream()
+
+        Map<String, List<CommandInfo>> descriptors = gatewayService.getCommandList().stream()
+                .filter(e -> !e.isHidden())
+                .sorted(Comparator.comparingInt(CommandInfo::getPriority))
+                .collect(Collectors.groupingBy(e -> e.getGroup()[0], LinkedHashMap::new, Collectors.toList()));
+
+        return descriptors.entrySet().stream()
                 .filter(e -> CollectionUtils.isNotEmpty(e.getValue()))
                 .map(e -> {
                     CommandGroupDto groupDto = new CommandGroupDto();
                     groupDto.setKey(e.getKey());
                     groupDto.setCommands(e.getValue().stream().map(c -> {
-                        CommandConfig commandConfig = commandConfigs.get(c.key());
+                        CommandConfig commandConfig = commandConfigs.get(c.getKey());
                         if (commandConfig != null) {
                             return apiMapper.getCommandDto(commandConfig);
                         }
                         CommandDto commandDto = new CommandDto();
-                        commandDto.setKey(c.key());
+                        commandDto.setKey(c.getKey());
                         commandDto.setEnabled(true);
                         return commandDto;
                     }).collect(Collectors.toList()));
@@ -87,7 +90,10 @@ public class CommandsDao extends AbstractDao {
             return;
         }
         Map<String, CommandConfig> commandConfigs = commandConfigService.findAllMap(guildId);
-        Set<String> availableCommands = holderService.getPublicCommands().keySet();
+        Set<String> availableCommands = gatewayService.getCommandList().stream()
+                .filter(e -> !e.isHidden())
+                .map(CommandInfo::getKey)
+                .collect(Collectors.toSet());
         List<CommandConfig> toSave = dto.stream()
                 .filter(e -> e.getKey() != null && availableCommands.contains(e.getKey()))
                 .map(e -> {

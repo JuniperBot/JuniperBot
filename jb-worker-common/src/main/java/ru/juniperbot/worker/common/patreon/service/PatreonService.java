@@ -16,11 +16,12 @@
  */
 package ru.juniperbot.worker.common.patreon.service;
 
+import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.worker.common.feature.service.FeatureSetProvider;
 
 public interface PatreonService extends FeatureSetProvider {
 
-    boolean processWebHook(String content, String trigger, String signature);
+    boolean processWebHook(PatreonRequest request);
 
     void update();
 

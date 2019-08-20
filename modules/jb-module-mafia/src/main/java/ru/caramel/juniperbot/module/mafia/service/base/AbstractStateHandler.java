@@ -85,9 +85,6 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     @Autowired
     protected ConfigService configService;
 
-    @Autowired
-    protected DiscordEntityAccessor entityAccessor;
-
     protected EmbedBuilder getBaseEmbed() {
         EmbedBuilder embed = messageService.getBaseEmbed();
         embed.setTitle(messageService.getMessage("discord.command.group.mafia"));

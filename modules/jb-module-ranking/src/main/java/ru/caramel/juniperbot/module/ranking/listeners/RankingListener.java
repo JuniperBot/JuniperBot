@@ -23,10 +23,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.juniperbot.common.model.request.RankingUpdateRequest;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.juniperbot.common.service.RankingConfigService;
 
 @DiscordEvent
 public class RankingListener extends DiscordEventListener {
@@ -34,12 +36,18 @@ public class RankingListener extends DiscordEventListener {
     @Autowired
     private RankingService rankingService;
 
+    @Autowired
+    private RankingConfigService rankingConfigService;
+
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
         taskExecutor.execute(() -> {
-            RankingConfig config = rankingService.getByGuildId(event.getGuild().getIdLong());
+            RankingConfig config = rankingConfigService.getByGuildId(event.getGuild().getIdLong());
             if (config != null && config.isResetOnLeave()) {
-                rankingService.update(event.getGuild().getIdLong(), event.getMember().getUser().getId(), 0, true);
+                rankingConfigService.update(new RankingUpdateRequest(event.getGuild().getIdLong(),
+                        event.getMember().getUser().getId(),
+                        0,
+                        true));
             }
         });
     }

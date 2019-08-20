@@ -25,7 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.worker.common.shared.service.MemberService;
+import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.juniperbot.worker.common.event.service.ContextService;
@@ -36,7 +36,7 @@ import ru.juniperbot.worker.common.shared.service.SupportService;
 import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.juniperbot.common.model.RankingReward;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
+import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.persistence.entity.WelcomeMessage;
 import ru.juniperbot.common.service.WelcomeService;
 
@@ -60,7 +60,7 @@ public class WelcomeUserListener extends DiscordEventListener {
     private WelcomeService welcomeService;
 
     @Autowired
-    private RankingService rankingService;
+    private RankingConfigService rankingConfigService;
 
     @Autowired
     private MemberService memberService;
@@ -81,7 +81,7 @@ public class WelcomeUserListener extends DiscordEventListener {
         }
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
-            WelcomeMessage message = welcomeService.getByGuildId(guild.getIdLong());
+            WelcomeMessage message = welcomeService.get(guild);
             Set<Long> roleIdsToAdd = new HashSet<>();
             if (message != null) {
                 roleIdsToAdd.addAll(processWelcome(event, message));
@@ -117,9 +117,9 @@ public class WelcomeUserListener extends DiscordEventListener {
 
         Guild guild = event.getGuild();
 
-        RankingConfig rankingInfo = rankingService.getByGuildId(guild.getIdLong());
-        if (rankingInfo != null && CollectionUtils.isNotEmpty(rankingInfo.getRewards())) {
-            rankingInfo.getRewards().stream()
+        RankingConfig rankingConfig = rankingConfigService.get(guild);
+        if (rankingConfig != null && CollectionUtils.isNotEmpty(rankingConfig.getRewards())) {
+            rankingConfig.getRewards().stream()
                     .filter(e -> e != null && e.getLevel() != null && e.getLevel().equals(0))
                     .map(RankingReward::getRoleId)
                     .filter(StringUtils::isNumeric)
@@ -185,7 +185,7 @@ public class WelcomeUserListener extends DiscordEventListener {
         }
         Guild guild = event.getGuild();
         contextService.withContextAsync(guild, () -> {
-            WelcomeMessage message = welcomeService.getByGuildId(event.getGuild().getIdLong());
+            WelcomeMessage message = welcomeService.get(event.getGuild());
             if (message == null || !message.isLeaveEnabled() || message.getLeaveTemplate() == null) {
                 return;
             }

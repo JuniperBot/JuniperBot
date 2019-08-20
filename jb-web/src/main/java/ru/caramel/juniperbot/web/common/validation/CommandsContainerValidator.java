@@ -23,7 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import ru.juniperbot.worker.common.command.service.CommandsHolderService;
+import ru.juniperbot.common.model.command.CommandInfo;
+import ru.juniperbot.common.service.GatewayService;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class CommandsContainerValidator implements Validator {
     private SpringValidatorAdapter validatorAdapter;
 
     @Autowired
-    private CommandsHolderService holderService;
+    private GatewayService gatewayService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -50,6 +51,7 @@ public class CommandsContainerValidator implements Validator {
     public void validate(Object target, Errors errors) {
         validatorAdapter.validate(target, errors);
         if (target instanceof List) {
+            List<CommandInfo> commandInfoList = gatewayService.getCommandList();
             List<CustomCommandDto> container = (List<CustomCommandDto>) target;
             if (CollectionUtils.isNotEmpty(container)) {
                 Set<String> existingKey = new HashSet<>();
@@ -60,7 +62,7 @@ public class CommandsContainerValidator implements Validator {
                     if (StringUtils.isNotEmpty(key)) {
                         if (!existingKey.add(key)) {
                             errors.rejectValue(path + "key", "validation.commands.key.unique.message");
-                        } else if (holderService.getByLocale(key, true) != null) {
+                        } else if (commandInfoList.stream().anyMatch(e -> key.equals(e.getKey()))) {
                             errors.rejectValue(path + "key", "validation.commands.key.service.message");
                         }
                     }

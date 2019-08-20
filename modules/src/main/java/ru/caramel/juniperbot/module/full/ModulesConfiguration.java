@@ -22,7 +22,6 @@ import ru.caramel.juniperbot.module.audio.AudioConfiguration;
 import ru.caramel.juniperbot.module.mafia.MafiaConfiguration;
 import ru.caramel.juniperbot.module.misc.MiscConfiguration;
 import ru.caramel.juniperbot.module.ranking.RankingConfiguration;
-import ru.caramel.juniperbot.module.social.SocialConfiguration;
 import ru.caramel.juniperbot.module.steam.SteamConfiguration;
 import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
 
@@ -30,7 +29,6 @@ import ru.caramel.juniperbot.module.wikifur.WikiFurConfiguration;
         AudioConfiguration.class,
         SteamConfiguration.class,
         WikiFurConfiguration.class,
-        SocialConfiguration.class,
         MiscConfiguration.class,
         RankingConfiguration.class,
         MafiaConfiguration.class

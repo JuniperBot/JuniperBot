@@ -53,7 +53,7 @@ public class HereCommand extends AudioCommand {
         if (guild == null) {
             return false;
         }
-        MusicConfig musicConfig = musicConfigService.getByGuildId(guild.getIdLong());
+        MusicConfig musicConfig = musicConfigService.get(guild);
         return musicConfig != null && musicConfig.isUserJoinEnabled();
     }
 

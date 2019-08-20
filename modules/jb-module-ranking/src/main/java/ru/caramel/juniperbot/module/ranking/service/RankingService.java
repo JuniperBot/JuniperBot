@@ -20,29 +20,19 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.juniperbot.common.service.DomainService;
 import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.Ranking;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
+import ru.juniperbot.common.service.DomainService;
 
-public interface RankingService extends DomainService<RankingConfig> {
+public interface RankingService {
 
     String COOKIE_EMOTE = "\uD83C\uDF6A";
 
     void onMessage(GuildMessageReceivedEvent event);
 
-    boolean isEnabled(long guildId);
-
-    RankingInfo getRankingInfo(Member member);
-
-    long countRankings(long guildId);
-
-    Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
-
-    void update(long guildId, String userId, Integer level, boolean resetCookies);
-
-    void resetAll(long guildId, boolean levels, boolean cookies);
-
-    boolean isBanned(RankingConfig config, Member member);
-
     void giveCookie(Member senderMember, Member recipientMember);
+
+    void updateRewards(Member member);
 }

@@ -44,6 +44,10 @@ import java.util.stream.Stream;
 
 public final class CommonUtils {
 
+    public final static String EVERYONE = "@everyone";
+
+    public final static String ZERO_WIDTH_SPACE = "\u200E";
+
     public final static int HTTP_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
 
     public final static Duration HTTP_TIMEOUT_DURATION = Duration.ofSeconds(10);

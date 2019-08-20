@@ -22,11 +22,11 @@ import ru.juniperbot.common.persistence.entity.WebHook;
 
 public interface WebHookService {
 
-    Webhook getWebHook(Guild guild, WebHook webHook);
+    Webhook getWebHook(long id, Guild guild);
 
-    boolean updateWebHook(long guildId, Long channelId, WebHook webHook, String name, String iconUrl);
+    boolean updateWebHook(long id, long guildId, String channelId, String name, String iconUrl);
 
-    boolean delete(long guildId, WebHook webHook);
+    boolean delete(long id, long guildId);
 
     void invalidateCache(long guildId);
 }

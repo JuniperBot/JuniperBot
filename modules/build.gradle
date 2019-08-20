@@ -22,7 +22,6 @@ dependencies {
     compile project(':modules:jb-module-mafia')
     compile project(':modules:jb-module-misc')
     compile project(':modules:jb-module-ranking')
-    compile project(':modules:jb-module-social')
     compile project(':modules:jb-module-steam')
     compile project(':modules:jb-module-wikifur')
 }

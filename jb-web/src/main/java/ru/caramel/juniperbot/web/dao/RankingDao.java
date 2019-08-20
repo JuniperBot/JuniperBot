@@ -19,11 +19,11 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.ranking.service.RankingService;
-import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 import ru.caramel.juniperbot.web.dto.config.RankingDto;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
+import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.utils.RankingUtils;
 
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class RankingDao extends AbstractDao {
 
     @Autowired
-    private RankingService rankingService;
+    private RankingConfigService rankingService;
 
     @Autowired
     private MessageTemplateDao templateDao;

@@ -16,6 +16,7 @@
  */
 package ru.juniperbot.common.persistence.repository;
 
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -55,4 +56,7 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
     @Query(value = "SELECT count(r.id) + 1 FROM ranking r JOIN member m ON m.id = r.member_id AND m.guild_id = ?1 WHERE r.exp > ?2", nativeQuery = true)
     long getRank(long guildId, long exp);
 
+    default Ranking findByMember(Member member) {
+        return findByGuildIdAndUserId(member.getGuild().getIdLong(), member.getUser().getId());
+    }
 }

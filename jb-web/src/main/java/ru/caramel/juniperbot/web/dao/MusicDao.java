@@ -16,11 +16,11 @@
  */
 package ru.caramel.juniperbot.web.dao;
 
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.web.dto.config.MusicConfigDto;
+import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.persistence.entity.MusicConfig;
 import ru.juniperbot.common.service.MusicConfigService;
 
@@ -34,11 +34,13 @@ public class MusicDao extends AbstractDao {
     public MusicConfigDto getConfig(long guildId) {
         MusicConfig musicConfig = musicConfigService.getOrCreate(guildId);
         MusicConfigDto musicConfigDto = apiMapper.getMusicDto(musicConfig);
-        if (discordService.isConnected(guildId) && (musicConfigDto.getChannelId() == null ||
-                discordService.getShardManager().getVoiceChannelById(musicConfigDto.getChannelId()) == null)) {
-            VoiceChannel channel = discordService.getDefaultMusicChannel(guildId);
-            if (channel != null) {
-                musicConfigDto.setChannelId(channel.getId());
+
+        GuildDto guildDto = gatewayService.getGuildInfo(guildId);
+
+        if (guildDto != null && (musicConfigDto.getChannelId() == null
+                || guildDto.getVoiceChannels().stream().noneMatch(e -> musicConfigDto.getChannelId().equals(e.getId())))) {
+            if (guildDto.getDefaultMusicChannelId() != null) {
+                musicConfigDto.setChannelId(guildDto.getDefaultMusicChannelId());
             }
         }
         return musicConfigDto;

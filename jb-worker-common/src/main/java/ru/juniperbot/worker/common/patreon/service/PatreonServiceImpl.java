@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.worker.common.shared.service.EmergencyService;
 import ru.juniperbot.worker.common.feature.provider.FeatureProvider;
 import ru.juniperbot.common.model.FeatureSet;
@@ -188,9 +189,12 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     @Override
     @Transactional
     @Synchronized("$webHookLock")
-    public boolean processWebHook(String content, String trigger, String signature) {
+    public boolean processWebHook(PatreonRequest request) {
         try {
-            log.info("Incoming Patreon WebHook [{}]: {}", trigger, content);
+            log.info("Incoming Patreon WebHook {}", request);
+            String content = request.getContent();
+            String signature = request.getSignature();
+            String event = request.getEvent();
             if (signature != null && webHookHmac != null && !signature.equalsIgnoreCase(webHookHmac.hmacHex(content))) {
                 log.warn("Denied Patreon WebHook!");
                 return false;
@@ -203,7 +207,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 return true; // treat it is as success, we could not find such user yet
             }
 
-            switch (trigger) {
+            switch (event) {
                 case "members:pledge:create":
                 case "members:pledge:update":
                     patron.setActive(true);
@@ -222,7 +226,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             }
             repository.save(patron);
         } catch (Exception e) {
-            log.error("Could not perform Patreon WebHook [event={}]: {}", trigger, content, e);
+            log.error("Could not perform Patreon WebHook [{}]: {}", request, e);
             emergencyService.error("Could not perform Patreon WebHook", e);
         }
         return true;

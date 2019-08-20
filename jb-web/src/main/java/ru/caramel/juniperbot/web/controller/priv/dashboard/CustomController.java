@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.worker.common.command.service.CommandsHolderService;
+import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
@@ -30,15 +30,13 @@ import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandsContainerDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class CustomController extends BaseRestController {
 
     @Autowired
     private CustomCommandsDao commandsDao;
-
-    @Autowired
-    private CommandsHolderService holderService;
 
     @Autowired
     private CommandsContainerValidator validator;
@@ -53,7 +51,8 @@ public class CustomController extends BaseRestController {
     public CustomCommandsContainerDto load(@GuildId @PathVariable long guildId) {
         CustomCommandsContainerDto container = new CustomCommandsContainerDto();
         container.setCommands(commandsDao.get(guildId));
-        container.setReservedKeys(holderService.getPublicCommandKeys());
+        List<CommandInfo> commandInfoList = gatewayService.getCommandList();
+        container.setReservedKeys(commandInfoList.stream().map(CommandInfo::getKey).collect(Collectors.toSet()));
         return container;
     }
 

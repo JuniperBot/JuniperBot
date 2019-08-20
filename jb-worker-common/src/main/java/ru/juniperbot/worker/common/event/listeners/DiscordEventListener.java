@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import ru.juniperbot.worker.common.modules.audit.service.AuditService;
 import ru.juniperbot.worker.common.event.service.ContextService;
+import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
 
 public abstract class DiscordEventListener extends ListenerAdapter {
 
@@ -35,6 +36,9 @@ public abstract class DiscordEventListener extends ListenerAdapter {
 
     @Autowired
     protected ApplicationContext applicationContext;
+
+    @Autowired
+    protected DiscordEntityAccessor entityAccessor;
 
     private AuditService auditService;
 
