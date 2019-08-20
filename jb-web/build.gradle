@@ -34,7 +34,6 @@ bootJar {
 dependencies {
 
     compile project(':jb-core')
-    compile project(':modules')
 
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')
@@ -50,6 +49,10 @@ dependencies {
 
     compile(group: 'org.openpnp', name: 'opencv', version: opencvVersion + '-0')
     compile(group: 'org.opencv', name: 'opencv', version: opencvVersion)
+
+    compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
+        exclude group: 'club.minnced', module: 'opus-java'
+    }
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
     testCompile(group: 'org.springframework.security', name: 'spring-security-test')

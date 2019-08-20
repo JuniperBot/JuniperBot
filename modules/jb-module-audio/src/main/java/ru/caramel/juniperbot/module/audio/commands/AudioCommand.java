@@ -25,7 +25,7 @@ import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
+import ru.juniperbot.common.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 
@@ -55,7 +55,7 @@ public abstract class AudioCommand extends AbstractCommand {
             discordService.sendBonusMessage(message.getChannel().getIdLong());
             return false;
         }
-        if (!musicConfigService.hasAccess(member)) {
+        if (!playerService.hasAccess(member)) {
             throw new ValidationException("discord.command.audio.missingAccess");
         }
         if (isActiveOnly() && !playerService.isActive(message.getGuild())) {

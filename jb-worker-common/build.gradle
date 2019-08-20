@@ -36,4 +36,7 @@ dependencies {
     compile(group: 'io.prometheus', name: 'simpleclient_common', version: prometheusVersion)
     compile(group: 'io.prometheus', name: 'simpleclient_dropwizard', version: prometheusVersion)
 
+
+    implementation(group: 'org.goldrenard', name: 'jb', version: programJbVersion)
+
 }

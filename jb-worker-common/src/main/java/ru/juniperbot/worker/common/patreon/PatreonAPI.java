@@ -32,6 +32,7 @@ import ru.juniperbot.common.model.patreon.Member;
 import ru.juniperbot.common.model.patreon.User;
 import ru.juniperbot.common.model.patreon.shared.BaseResource;
 import ru.juniperbot.common.model.patreon.shared.Field;
+import ru.juniperbot.worker.common.shared.support.JsonApiHttpMessageConverter;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

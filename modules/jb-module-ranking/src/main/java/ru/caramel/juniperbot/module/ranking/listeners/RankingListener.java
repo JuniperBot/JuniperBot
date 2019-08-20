@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 @DiscordEvent

@@ -33,21 +33,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.common.persistence.repository.LocalMemberRepository;
-import ru.juniperbot.common.service.AbstractDomainServiceImpl;
+import ru.juniperbot.common.persistence.repository.*;
+import ru.juniperbot.common.service.impl.AbstractDomainServiceImpl;
 import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.juniperbot.worker.common.shared.service.MemberService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
 import ru.juniperbot.worker.common.message.service.MessageTemplateService;
-import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.module.ranking.model.Reward;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.Cookie;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
-import ru.caramel.juniperbot.module.ranking.persistence.repository.CookieRepository;
-import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingConfigRepository;
-import ru.caramel.juniperbot.module.ranking.persistence.repository.RankingRepository;
+import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.model.RankingReward;
+import ru.juniperbot.common.persistence.entity.Cookie;
+import ru.juniperbot.common.persistence.entity.Ranking;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 
 import java.util.*;
@@ -275,18 +272,18 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
 
         int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
 
-        List<Reward> rewards = config.getRewards().stream()
+        List<RankingReward> rewards = config.getRewards().stream()
                 .filter(e -> e.getRoleId() != null && e.getLevel() <= newLevel)
-                .sorted(Comparator.comparing(Reward::getLevel))
+                .sorted(Comparator.comparing(RankingReward::getLevel))
                 .collect(Collectors.toList());
 
         if (rewards.isEmpty()) {
             return;
         }
-        Reward highest = rewards.remove(rewards.size() - 1);
+        RankingReward highest = rewards.remove(rewards.size() - 1);
 
-        List<Reward> rewardsToAdd = new ArrayList<>();
-        List<Reward> rewardsToRemove = new ArrayList<>();
+        List<RankingReward> rewardsToAdd = new ArrayList<>();
+        List<RankingReward> rewardsToRemove = new ArrayList<>();
         rewards.forEach(e -> (e.isReset() ? rewardsToRemove : rewardsToAdd).add(e));
         rewardsToAdd.add(highest);
 
@@ -295,10 +292,10 @@ public class RankingServiceImpl extends AbstractDomainServiceImpl<RankingConfig,
         member.getGuild().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
     }
 
-    private Set<Role> getRoles(Member member, List<Reward> rewards) {
+    private Set<Role> getRoles(Member member, List<RankingReward> rewards) {
         Member self = member.getGuild().getSelfMember();
         return rewards.stream()
-                .map(Reward::getRoleId)                                          // map by id
+                .map(RankingReward::getRoleId)                                          // map by id
                 .map(roleId -> member.getGuild().getRoleById(roleId))            // find actual role object
                 .filter(role -> role != null && self.canInteract(role) && !role.isManaged())          // check that we can assign that role
                 .collect(Collectors.toSet());

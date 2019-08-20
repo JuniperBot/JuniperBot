@@ -2,4 +2,4 @@
 #ignore everything except the following files, they are used in the Dockerfile to build the JuniperBot image
 !Dockerfile
 !/jb-web/build/libs/JuniperBot.jar
-!/modules/jb-module-aiml/bots/**
+!/aiml/**

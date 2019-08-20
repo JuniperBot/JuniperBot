@@ -30,12 +30,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.juniperbot.common.configuration.CoreConfiguration;
 import ru.juniperbot.common.support.ModuleMessageSourceImpl;
-import ru.caramel.juniperbot.module.full.ModulesConfiguration;
 import ru.caramel.juniperbot.web.common.AtomFeedArgumentResolver;
 
 import java.util.List;
 
-@Import({CoreConfiguration.class, ModulesConfiguration.class})
+@Import({CoreConfiguration.class})
 @ImportResource("classpath:security-context.xml")
 @SpringBootApplication(exclude = {
         SecurityAutoConfiguration.class,

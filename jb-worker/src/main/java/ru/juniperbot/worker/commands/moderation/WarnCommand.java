@@ -28,8 +28,8 @@ import org.ocpsoft.prettytime.units.Millisecond;
 import org.ocpsoft.prettytime.units.Second;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.worker.common.moderation.model.ModerationActionRequest;
-import ru.juniperbot.worker.common.moderation.model.WarningResult;
+import ru.juniperbot.worker.common.modules.moderation.model.ModerationActionRequest;
+import ru.juniperbot.worker.common.modules.moderation.model.WarningResult;
 
 import java.util.*;
 import java.util.stream.Collectors;

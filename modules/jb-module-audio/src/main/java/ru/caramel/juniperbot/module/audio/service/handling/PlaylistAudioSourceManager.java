@@ -29,13 +29,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.service.BrandingService;
+import ru.juniperbot.common.service.PlaylistService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.caramel.juniperbot.module.audio.model.StoredPlaylist;
 import ru.caramel.juniperbot.module.audio.model.TrackData;
-import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
-import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
-import ru.caramel.juniperbot.module.audio.service.PlaylistService;
+import ru.juniperbot.common.persistence.entity.Playlist;
+import ru.juniperbot.common.persistence.entity.PlaylistItem;
+import ru.caramel.juniperbot.module.audio.service.StoredPlaylistService;
 
 import javax.annotation.PostConstruct;
 import java.io.DataInput;
@@ -68,6 +69,9 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
 
     @Autowired
     private PlaylistService playlistService;
+
+    @Autowired
+    private StoredPlaylistService storedPlaylistService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -114,7 +118,7 @@ public class PlaylistAudioSourceManager implements AudioSourceManager {
                 }
             });
             if (!tracks.isEmpty()) {
-                playlistService.refreshStoredPlaylist(playlist, tracks);
+                storedPlaylistService.refreshStoredPlaylist(playlist, tracks);
                 return new StoredPlaylist(playlist, tracks);
             }
         }

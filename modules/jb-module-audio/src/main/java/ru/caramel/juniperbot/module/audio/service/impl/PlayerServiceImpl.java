@@ -47,11 +47,11 @@ import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.feature.service.FeatureSetService;
 import ru.juniperbot.common.support.ModuleListener;
 import ru.caramel.juniperbot.module.audio.model.*;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
+import ru.juniperbot.common.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
-import ru.caramel.juniperbot.module.audio.service.PlaylistService;
+import ru.caramel.juniperbot.module.audio.service.StoredPlaylistService;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 import ru.caramel.juniperbot.module.audio.service.helper.PlayerListenerAdapter;
 import ru.caramel.juniperbot.module.audio.service.helper.ValidationService;
@@ -74,7 +74,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     private DiscordService discordService;
 
     @Autowired
-    private PlaylistService playlistService;
+    private StoredPlaylistService storedPlaylistService;
 
     @Autowired
     private MusicConfigService musicConfigService;
@@ -351,7 +351,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
 
         if (store) {
-            playlistService.storeToPlaylist(instance, requests);
+            storedPlaylistService.storeToPlaylist(instance, requests);
         }
 
         play(request, instance);
@@ -368,7 +368,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             return;
         }
         PlaybackInstance instance = getOrCreate(guild);
-        playlistService.storeToPlaylist(instance, Collections.singletonList(request));
+        storedPlaylistService.storeToPlaylist(instance, Collections.singletonList(request));
         play(request, instance);
     }
 
@@ -448,7 +448,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         PlaybackInstance instance = get(guild);
         boolean result = instance != null && instance.shuffle();
         if (result) {
-            playlistService.refreshStoredPlaylist(instance);
+            storedPlaylistService.refreshStoredPlaylist(instance);
         }
         return result;
     }
@@ -462,7 +462,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         }
         TrackRequest result = instance.removeByIndex(index);
         if (result != null && instance.getPlaylistId() != null) {
-            playlistService.refreshStoredPlaylist(instance);
+            storedPlaylistService.refreshStoredPlaylist(instance);
         }
         return result;
     }
@@ -473,7 +473,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Override
     public VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException {
-        VoiceChannel channel = musicConfigService.getDesiredChannel(member);
+        VoiceChannel channel = getDesiredChannel(member);
         if (channel == null) {
             return null;
         }
@@ -504,9 +504,39 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     @Override
+    @Transactional
+    public VoiceChannel getDesiredChannel(Member member) {
+        MusicConfig musicConfig = musicConfigService.getByGuildId(member.getGuild().getIdLong());
+        VoiceChannel channel = null;
+        if (musicConfig != null) {
+            if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+                channel = member.getVoiceState().getChannel();
+            }
+            if (channel == null && musicConfig.getChannelId() != null) {
+                channel = member.getGuild().getVoiceChannelById(musicConfig.getChannelId());
+            }
+        }
+        if (channel == null) {
+            channel = discordService.getDefaultMusicChannel(member.getGuild().getIdLong());
+        }
+        return channel;
+    }
+
+    @Override
     public boolean isInChannel(Member member) {
         VoiceChannel channel = getChannel(member, get(member.getGuild()));
         return channel != null && channel.getMembers().contains(member);
+    }
+
+    @Override
+    @Transactional
+    public boolean hasAccess(Member member) {
+        MusicConfig config = musicConfigService.getByGuildId(member.getGuild().getIdLong());
+        return config == null
+                || CollectionUtils.isEmpty(config.getRoles())
+                || member.isOwner()
+                || member.hasPermission(Permission.ADMINISTRATOR)
+                || member.getRoles().stream().anyMatch(e -> config.getRoles().contains(e.getIdLong()));
     }
 
     @Override
@@ -518,7 +548,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     private VoiceChannel getChannel(Member member, PlaybackInstance instance) {
         return isActive(instance)
                 ? getConnectedChannel(instance.getGuildId())
-                : musicConfigService.getDesiredChannel(member);
+                : getDesiredChannel(member);
     }
 
     /* ========================================================

@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.worker.common.shared.service.DiscordService;
-import ru.juniperbot.worker.common.moderation.service.MuteService;
+import ru.juniperbot.worker.common.modules.moderation.service.MuteService;
 import ru.juniperbot.worker.common.shared.support.AbstractJob;
 
 import java.util.concurrent.TimeUnit;

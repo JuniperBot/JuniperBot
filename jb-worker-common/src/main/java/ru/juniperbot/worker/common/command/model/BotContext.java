@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.DateTimeZone;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.utils.LocaleUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,6 @@ public class BotContext {
     }
 
     public String getCommandLocale() {
-        return config != null ? config.getCommandLocale() : GuildConfig.DEFAULT_LOCALE;
+        return config != null ? config.getCommandLocale() : LocaleUtils.DEFAULT_LOCALE;
     }
 }

@@ -24,8 +24,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.caramel.juniperbot.module.audio.persistence.entity.HttpWhitelist;
-import ru.caramel.juniperbot.module.audio.persistence.repository.HttpWhitelistRepository;
+import ru.juniperbot.common.persistence.entity.HttpWhitelist;
+import ru.juniperbot.common.persistence.repository.HttpWhitelistRepository;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;

@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import ru.juniperbot.worker.common.audit.service.HistoryService;
+import ru.juniperbot.worker.common.modules.audit.service.HistoryService;
 import ru.juniperbot.worker.common.event.intercept.Filter;
 import ru.juniperbot.worker.common.event.intercept.FilterChain;
 

@@ -21,7 +21,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ru.caramel.juniperbot.module.audio.persistence.entity.PlaylistItem;
+import ru.juniperbot.common.persistence.entity.PlaylistItem;
 
 @Getter
 @Setter

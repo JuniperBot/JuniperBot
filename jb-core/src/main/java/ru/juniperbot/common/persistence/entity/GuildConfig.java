@@ -35,10 +35,6 @@ import javax.validation.constraints.Size;
 @Table(name = "guild_config")
 public class GuildConfig extends GuildEntity {
 
-    public static final String DEFAULT_LOCALE = "en";
-
-    public static final String RU_LOCALE = "ru";
-
     private static final long serialVersionUID = 1599157155969887890L;
 
     @Basic

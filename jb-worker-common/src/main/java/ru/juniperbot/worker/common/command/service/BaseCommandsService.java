@@ -37,7 +37,7 @@ import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.juniperbot.common.persistence.entity.ModerationConfig;
-import ru.juniperbot.worker.common.moderation.service.ModerationService;
+import ru.juniperbot.worker.common.modules.moderation.service.ModerationService;
 import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
 
 import java.util.Date;

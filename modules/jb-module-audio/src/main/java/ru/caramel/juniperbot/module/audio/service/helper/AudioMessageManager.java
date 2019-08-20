@@ -49,8 +49,8 @@ import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.model.*;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
+import ru.juniperbot.common.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.utils.MessageController;
 
 import java.awt.*;

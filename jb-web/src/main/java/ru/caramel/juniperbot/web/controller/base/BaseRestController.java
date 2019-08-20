@@ -20,14 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.juniperbot.common.service.ConfigService;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
 
 @RequestMapping("api/priv")
 public abstract class BaseRestController {
-
-    @Autowired
-    protected DiscordService discordService;
 
     @Autowired
     protected ConfigService configService;

@@ -42,6 +42,10 @@ public class MessageTemplate extends BaseEntity {
 
     public static final int URL_MAX_LENGTH = 2000;
 
+    public static final int TITLE_MAX_LENGTH = 256;
+
+    public static final int VALUE_MAX_LENGTH = 1024;
+
     @Column
     @Enumerated(EnumType.STRING)
     @NotNull

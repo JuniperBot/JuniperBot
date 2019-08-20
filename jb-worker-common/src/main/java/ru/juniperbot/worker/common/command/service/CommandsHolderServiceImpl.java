@@ -22,6 +22,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.utils.LocaleUtils;
 import ru.juniperbot.worker.common.command.model.Command;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.worker.common.event.service.ContextService;
@@ -114,7 +115,7 @@ public class CommandsHolderServiceImpl implements CommandsHolderService {
         this.publicCommands = new HashMap<>();
         this.publicCommandKeys = new HashSet<>();
         this.reverseCommandKeys = new HashSet<>();
-        Collection<Locale> locales = contextService.getSupportedLocales().values();
+        Collection<Locale> locales = LocaleUtils.SUPPORTED_LOCALES.values();
         commands.stream().filter(e -> e.getClass().isAnnotationPresent(DiscordCommand.class)).forEach(e -> {
             DiscordCommand annotation = e.getClass().getAnnotation(DiscordCommand.class);
             String rawKey = annotation.key();

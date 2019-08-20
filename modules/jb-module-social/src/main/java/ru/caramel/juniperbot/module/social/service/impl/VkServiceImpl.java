@@ -49,7 +49,7 @@ import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.juniperbot.common.persistence.entity.WebHook;
 import ru.juniperbot.common.persistence.repository.WebHookRepository;
-import ru.juniperbot.worker.common.notification.service.WebHookService;
+import ru.juniperbot.worker.common.modules.notification.service.WebHookService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.social.model.VkConnectionStatus;

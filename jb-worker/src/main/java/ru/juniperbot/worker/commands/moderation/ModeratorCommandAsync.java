@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.worker.common.command.model.AbstractCommandAsync;
-import ru.juniperbot.worker.common.moderation.service.ModerationService;
+import ru.juniperbot.worker.common.modules.moderation.service.ModerationService;
 
 public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
 

@@ -20,7 +20,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
+import ru.juniperbot.common.persistence.entity.Playlist;
 
 import java.util.List;
 

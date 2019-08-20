@@ -19,9 +19,9 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.welcome.persistence.entity.WelcomeMessage;
-import ru.caramel.juniperbot.module.welcome.service.WelcomeService;
 import ru.caramel.juniperbot.web.dto.config.WelcomeDto;
+import ru.juniperbot.common.persistence.entity.WelcomeMessage;
+import ru.juniperbot.common.service.WelcomeService;
 
 @Service
 public class WelcomeDao extends AbstractDao {

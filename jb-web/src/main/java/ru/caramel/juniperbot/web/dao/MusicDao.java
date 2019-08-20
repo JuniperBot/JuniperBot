@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.web.dto.config.MusicConfigDto;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
+import ru.juniperbot.common.service.MusicConfigService;
 
 @Service
 public class MusicDao extends AbstractDao {

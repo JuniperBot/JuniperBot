@@ -37,7 +37,6 @@ import ru.caramel.juniperbot.module.audio.commands.control.VolumeCommand;
 import ru.caramel.juniperbot.module.audio.commands.queue.SkipCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.RepeatMode;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 import ru.caramel.juniperbot.module.audio.service.helper.AudioMessageManager;
 
@@ -95,8 +94,6 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    private final MusicConfigService musicConfigService;
-
     private final InternalCommandsService commandsService;
 
     private boolean cancelled = false;
@@ -112,7 +109,6 @@ public class MessageController {
         this.playerService = context.getBean(PlayerService.class);
         this.messageManager = context.getBean(AudioMessageManager.class);
         this.contextService = context.getBean(ContextService.class);
-        this.musicConfigService = context.getBean(MusicConfigService.class);
         this.commandsService = context.getBean(InternalCommandsService.class);
         this.messageService = context.getBean(MessageService.class);
         init(message);
@@ -150,7 +146,7 @@ public class MessageController {
     private void handleAction(Action action, Member member) {
         Guild guild = jda.getGuildById(guildId);
         if (guild == null
-                || !musicConfigService.hasAccess(member)
+                || !playerService.hasAccess(member)
                 || !playerService.isInChannel(member)
                 || !playerService.isActive(guild)
                 || !isAvailable(action, member)) {

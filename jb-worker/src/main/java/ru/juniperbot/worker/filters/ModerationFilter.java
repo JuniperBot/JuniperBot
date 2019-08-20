@@ -30,7 +30,7 @@ import ru.juniperbot.worker.common.event.intercept.Filter;
 import ru.juniperbot.worker.common.event.intercept.FilterChain;
 import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
 import ru.juniperbot.worker.common.message.service.MessageService;
-import ru.juniperbot.worker.common.moderation.service.MuteService;
+import ru.juniperbot.worker.common.modules.moderation.service.MuteService;
 
 @Slf4j
 @Order(Filter.PRE_FILTER)

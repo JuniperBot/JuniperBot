@@ -25,8 +25,8 @@ import org.springframework.stereotype.Service;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
-import ru.caramel.juniperbot.module.audio.persistence.entity.MusicConfig;
-import ru.caramel.juniperbot.module.audio.service.MusicConfigService;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
+import ru.juniperbot.common.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
 
 import java.util.List;

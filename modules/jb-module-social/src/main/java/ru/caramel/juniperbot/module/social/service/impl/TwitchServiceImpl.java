@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.worker.common.message.resolver.MapPlaceholderResolver;
-import ru.juniperbot.worker.common.notification.service.BaseSubscriptionService;
+import ru.juniperbot.worker.common.modules.notification.service.BaseSubscriptionService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.model.TwitchNotification;
 import ru.caramel.juniperbot.module.social.persistence.entity.TwitchConnection;

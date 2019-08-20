@@ -27,7 +27,7 @@ import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
 import ru.juniperbot.common.persistence.entity.WebHook;
 import ru.juniperbot.common.persistence.entity.base.WebHookOwnedEntity;
 import ru.juniperbot.common.persistence.repository.WebHookRepository;
-import ru.juniperbot.worker.common.notification.service.WebHookService;
+import ru.juniperbot.worker.common.modules.notification.service.WebHookService;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;

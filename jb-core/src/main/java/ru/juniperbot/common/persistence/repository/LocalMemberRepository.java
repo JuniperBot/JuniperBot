@@ -19,8 +19,8 @@ package ru.juniperbot.common.persistence.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 
 import java.util.List;
 

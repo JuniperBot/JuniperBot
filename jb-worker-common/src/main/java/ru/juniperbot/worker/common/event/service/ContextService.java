@@ -37,8 +37,6 @@ public interface ContextService {
 
     Color getColor();
 
-    Locale getDefaultLocale();
-
     Color getDefaultColor();
 
     Locale getLocale(String localeName);
@@ -46,10 +44,6 @@ public interface ContextService {
     Locale getLocale(Guild guild);
 
     Locale getLocale(long guildId);
-
-    Map<String, Locale> getSupportedLocales();
-
-    boolean isSupported(String tag);
 
     void initContext(GenericEvent event);
 

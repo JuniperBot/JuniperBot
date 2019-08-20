@@ -32,7 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.common.configuration.CoreConfiguration;
-import ru.juniperbot.worker.common.audit.service.ActionsHolderService;
+import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.utils.DiscordUtils;

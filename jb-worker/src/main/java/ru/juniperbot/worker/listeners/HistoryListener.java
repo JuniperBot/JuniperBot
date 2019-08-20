@@ -17,8 +17,8 @@ package ru.juniperbot.worker.listeners;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.audit.service.ActionsHolderService;
-import ru.juniperbot.worker.common.audit.service.HistoryService;
+import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
+import ru.juniperbot.worker.common.modules.audit.service.HistoryService;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 

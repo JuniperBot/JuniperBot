@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.caramel.juniperbot.module.ranking.model.Reward;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
+import ru.juniperbot.common.model.RankingReward;
 
 import javax.validation.Valid;
 import java.io.Serializable;
@@ -42,7 +42,7 @@ public class RankingDto implements Serializable {
 
     private String[] bannedRoles;
 
-    private List<Reward> rewards;
+    private List<RankingReward> rewards;
 
     private Set<String> ignoredChannels;
 

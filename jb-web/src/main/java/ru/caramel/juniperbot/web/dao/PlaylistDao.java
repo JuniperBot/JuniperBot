@@ -19,9 +19,9 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.audio.persistence.entity.Playlist;
-import ru.caramel.juniperbot.module.audio.service.PlaylistService;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
+import ru.juniperbot.common.persistence.entity.Playlist;
+import ru.juniperbot.common.service.PlaylistService;
 
 @Service
 public class PlaylistDao extends AbstractDao {

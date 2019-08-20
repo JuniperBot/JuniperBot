@@ -52,7 +52,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.juniperbot.common.service.BrandingService;
 import ru.juniperbot.worker.common.shared.service.EmergencyService;
 import ru.juniperbot.worker.common.message.resolver.MapPlaceholderResolver;
-import ru.juniperbot.worker.common.notification.service.BaseSubscriptionService;
+import ru.juniperbot.worker.common.modules.notification.service.BaseSubscriptionService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeChannel;
 import ru.caramel.juniperbot.module.social.persistence.entity.YouTubeConnection;

@@ -19,6 +19,7 @@ package ru.caramel.juniperbot.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import ru.juniperbot.common.persistence.entity.MessageTemplate;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -29,10 +30,10 @@ public class MessageTemplateFieldDto implements Serializable {
 
     private static final long serialVersionUID = 1623503754293776997L;
 
-    @Size(min = 1, max = MessageEmbed.TITLE_MAX_LENGTH)
+    @Size(min = 1, max = MessageTemplate.TITLE_MAX_LENGTH)
     private String name;
 
-    @Size(min = 1, max = MessageEmbed.VALUE_MAX_LENGTH)
+    @Size(min = 1, max = MessageTemplate.VALUE_MAX_LENGTH)
     private String value;
 
     private boolean inline;

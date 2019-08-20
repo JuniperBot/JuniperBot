@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.juniperbot.common.model.MessageTemplateType;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
@@ -61,7 +60,7 @@ public class MessageTemplateDto implements Serializable {
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
     public String thumbnailUrl;
 
-    @Size(max = MessageEmbed.TITLE_MAX_LENGTH)
+    @Size(max = MessageTemplate.TITLE_MAX_LENGTH)
     public String author;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
@@ -70,7 +69,7 @@ public class MessageTemplateDto implements Serializable {
     @Size(max = MessageTemplate.URL_MAX_LENGTH)
     public String authorIconUrl;
 
-    @Size(max = MessageEmbed.TITLE_MAX_LENGTH)
+    @Size(max = MessageTemplate.TITLE_MAX_LENGTH)
     public String title;
 
     @Size(max = MessageTemplate.URL_MAX_LENGTH)

@@ -41,7 +41,7 @@ public final class PluralUtils {
         enRules = Collections.unmodifiableMap(enRules);
 
         Map<String/* lang */, Map<String/* key */, Pattern>> rules = new HashMap<>();
-        rules.put(GuildConfig.RU_LOCALE, ruRules);
+        rules.put(LocaleUtils.RU_LOCALE, ruRules);
         rules.put(Locale.ENGLISH.getLanguage(), enRules);
 
         pluralRules = Collections.unmodifiableMap(rules);

@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.juniperbot.common.service.DomainService;
-import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 
 public interface RankingService extends DomainService<RankingConfig> {
 

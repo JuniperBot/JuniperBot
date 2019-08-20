@@ -1,7 +1,7 @@
 package ru.caramel.juniperbot.module.ranking.utils;
 
-import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.Ranking;
+import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.Ranking;
 
 public final class RankingUtils {
 

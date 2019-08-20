@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.utils.LocaleUtils;
 import ru.juniperbot.worker.common.command.service.CoolDownService;
 import ru.juniperbot.worker.common.event.DiscordEvent;
 import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
@@ -56,12 +57,12 @@ public class GuildListener extends DiscordEventListener {
         GuildConfig config = entityAccessor.getOrCreate(event.getGuild());
         switch (event.getGuild().getRegion()) {
             case RUSSIA:
-                config.setLocale(GuildConfig.RU_LOCALE);
-                config.setCommandLocale(GuildConfig.RU_LOCALE);
+                config.setLocale(LocaleUtils.RU_LOCALE);
+                config.setCommandLocale(LocaleUtils.RU_LOCALE);
                 break;
             default:
-                config.setLocale(GuildConfig.DEFAULT_LOCALE);
-                config.setCommandLocale(GuildConfig.DEFAULT_LOCALE);
+                config.setLocale(LocaleUtils.DEFAULT_LOCALE);
+                config.setCommandLocale(LocaleUtils.DEFAULT_LOCALE);
                 break;
         }
         configService.save(config);

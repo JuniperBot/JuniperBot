@@ -54,6 +54,8 @@ public interface PlayerService {
 
     boolean isInChannel(Member member);
 
+    boolean hasAccess(Member member);
+
     VoiceChannel getChannel(Member member);
 
     VoiceChannel connectToChannel(PlaybackInstance instance, Member member) throws DiscordException;
@@ -61,6 +63,8 @@ public interface PlayerService {
     VoiceChannel getConnectedChannel(Guild guild);
 
     VoiceChannel getConnectedChannel(long guildId);
+
+    VoiceChannel getDesiredChannel(Member member);
 
     void monitor();
 

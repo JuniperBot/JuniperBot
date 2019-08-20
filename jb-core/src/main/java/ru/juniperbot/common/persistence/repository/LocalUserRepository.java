@@ -20,6 +20,8 @@ import org.springframework.stereotype.Repository;
 import ru.juniperbot.common.persistence.repository.base.FeaturedUserRepository;
 import ru.juniperbot.common.persistence.entity.LocalUser;
 
+import java.util.List;
+
 @Repository
 public interface LocalUserRepository extends FeaturedUserRepository<LocalUser> {
 

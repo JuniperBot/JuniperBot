@@ -19,11 +19,11 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.caramel.juniperbot.module.ranking.utils.RankingUtils;
 import ru.caramel.juniperbot.web.dto.config.RankingDto;
 import ru.caramel.juniperbot.web.service.ApiMapperService;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 
 import java.util.stream.Collectors;
 

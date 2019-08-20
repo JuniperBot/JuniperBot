@@ -31,7 +31,7 @@ import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
 import ru.juniperbot.worker.common.event.service.ContextService;
 import ru.juniperbot.worker.common.message.service.MessageService;
-import ru.juniperbot.worker.common.moderation.service.ModerationService;
+import ru.juniperbot.worker.common.modules.moderation.service.ModerationService;
 import ru.juniperbot.common.support.ModuleListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;

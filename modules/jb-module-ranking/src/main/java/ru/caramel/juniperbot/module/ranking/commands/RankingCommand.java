@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.worker.common.command.model.AbstractCommand;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.common.model.exception.DiscordException;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 
 public abstract class RankingCommand extends AbstractCommand {

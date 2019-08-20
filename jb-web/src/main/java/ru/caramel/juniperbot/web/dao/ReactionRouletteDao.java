@@ -19,9 +19,9 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.caramel.juniperbot.module.misc.persistence.entity.ReactionRoulette;
-import ru.caramel.juniperbot.module.misc.service.ReactionRouletteService;
 import ru.caramel.juniperbot.web.dto.games.ReactionRouletteDto;
+import ru.juniperbot.common.persistence.entity.ReactionRoulette;
+import ru.juniperbot.common.service.ReactionRouletteService;
 
 @Service
 public class ReactionRouletteDao extends AbstractDao {

@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.juniperbot.worker.common.command.model.BotContext;
 import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.caramel.juniperbot.module.ranking.model.RankingInfo;
-import ru.caramel.juniperbot.module.ranking.persistence.entity.RankingConfig;
+import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 
 @DiscordCommand(
         key = "discord.command.rank.key",

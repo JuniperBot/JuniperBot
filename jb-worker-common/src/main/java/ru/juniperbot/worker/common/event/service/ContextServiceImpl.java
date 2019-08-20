@@ -34,15 +34,11 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.utils.LocaleUtils;
 
-import javax.annotation.PostConstruct;
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -70,9 +66,6 @@ public class ContextServiceImpl implements ContextService {
     @Getter
     private Color accentColor;
 
-    @Getter
-    private Map<String, Locale> supportedLocales;
-
     @Autowired
     private ConfigService configService;
 
@@ -81,14 +74,6 @@ public class ContextServiceImpl implements ContextService {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
-
-    @PostConstruct
-    public void init() {
-        Map<String, Locale> localeMap = new HashMap<>();
-        localeMap.put(GuildConfig.DEFAULT_LOCALE, Locale.US);
-        localeMap.put(GuildConfig.RU_LOCALE, Locale.forLanguageTag("ru-RU"));
-        supportedLocales = Collections.unmodifiableMap(localeMap);
-    }
 
     @Override
     public Locale getLocale() {
@@ -100,7 +85,7 @@ public class ContextServiceImpl implements ContextService {
                 locale = localeHolder.get();
             }
         }
-        return locale != null ? locale : getDefaultLocale();
+        return locale != null ? locale : LocaleUtils.getDefaultLocale();
     }
 
     @Override
@@ -117,18 +102,13 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public Locale getDefaultLocale() {
-        return supportedLocales.get(GuildConfig.DEFAULT_LOCALE);
-    }
-
-    @Override
     public Color getDefaultColor() {
         return accentColor;
     }
 
     @Override
     public Locale getLocale(String localeName) {
-        return supportedLocales.getOrDefault(localeName, getDefaultLocale());
+        return LocaleUtils.getOrDefault(localeName);
     }
 
     @Override
@@ -138,7 +118,7 @@ public class ContextServiceImpl implements ContextService {
 
     @Override
     public Locale getLocale(long guildId) {
-        return supportedLocales.getOrDefault(configService.getLocale(guildId), getDefaultLocale());
+        return LocaleUtils.getOrDefault(configService.getLocale(guildId));
     }
 
     @Override
@@ -165,11 +145,6 @@ public class ContextServiceImpl implements ContextService {
         } else {
             guildHolder.set(guildId);
         }
-    }
-
-    @Override
-    public boolean isSupported(String tag) {
-        return supportedLocales.containsKey(tag);
     }
 
     @Override
@@ -237,29 +212,22 @@ public class ContextServiceImpl implements ContextService {
 
     @Override
     public void withContext(Long guildId, Runnable action) {
-        if (guildId == null) {
-            action.run();
-            return;
-        }
-        ContextHolder currentContext = getContext();
-        resetContext();
-        initContext(guildId);
-        try {
-            action.run();
-        } finally {
-            setContext(currentContext);
-        }
+        withContext(guildId, this::initContext, action);
     }
 
     @Override
     public void withContext(Guild guild, Runnable action) {
-        if (guild == null) {
+        withContext(guild, this::initContext, action);
+    }
+
+    private <T> void withContext(T value, Consumer<T> init, Runnable action) {
+        if (value == null) {
             action.run();
             return;
         }
         ContextHolder currentContext = getContext();
         resetContext();
-        initContext(guild);
+        init.accept(value);
         try {
             action.run();
         } finally {
@@ -345,6 +313,6 @@ public class ContextServiceImpl implements ContextService {
     }
 
     private void setLocale(String tag) {
-        setLocale(supportedLocales.get(tag));
+        setLocale(LocaleUtils.get(tag));
     }
 }

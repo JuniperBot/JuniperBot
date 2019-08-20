@@ -52,4 +52,18 @@ public class WorkerApplication {
         source.setBasename("audit-jbmessages");
         return source;
     }
+
+    @Bean
+    public ModuleMessageSourceImpl infoMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("info-jbmessages");
+        return source;
+    }
+
+    @Bean
+    public ModuleMessageSourceImpl reminderMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("reminder-jbmessages");
+        return source;
+    }
 }
