@@ -54,14 +54,14 @@ public interface DiscordMapperService {
     @Mappings({
             @Mapping(source = "NSFW", target = "nsfw"),
             @Mapping(expression = "java(channel.canTalk())", target = "canTalk"),
-            @Mapping(expression = "java(net.dv8tion.jda.api.Permission.getRaw(channel.getGuild().getSelfMember().getPermissions(channel)))",target = "permissions"),
+            @Mapping(expression = "java(net.dv8tion.jda.api.Permission.getRaw(channel.getGuild().getSelfMember().getPermissions(channel)))", target = "permissions"),
     })
     TextChannelDto getTextChannelDto(TextChannel channel);
 
     List<TextChannelDto> getTextChannelDto(List<TextChannel> channels);
 
     @Mappings({
-            @Mapping(expression = "java(net.dv8tion.jda.api.Permission.getRaw(channel.getGuild().getSelfMember().getPermissions(channel)))",target = "permissions")
+            @Mapping(expression = "java(net.dv8tion.jda.api.Permission.getRaw(channel.getGuild().getSelfMember().getPermissions(channel)))", target = "permissions")
     })
     VoiceChannelDto getVoiceChannelDto(VoiceChannel channel);
 

@@ -289,7 +289,8 @@ public class ModerationServiceImpl implements ModerationService {
             result.request(request)
                     .punished(performAction(request));
         } else {
-            notifyUserAction(e -> {}, member, "discord.command.mod.action.message.warn", reason, number);
+            notifyUserAction(e -> {
+            }, member, "discord.command.mod.action.message.warn", reason, number);
         }
 
         auditService.log(guildId, AuditActionType.MEMBER_WARN)

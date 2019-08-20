@@ -30,13 +30,13 @@ import static java.util.regex.Pattern.compile;
 public class TimeSequenceParser {
 
     public enum FieldType {
-        MONTH       (Calendar.MONTH,        11,     compile("^месяц(а|ев)?$"),      compile("^months?$")),
-        WEEK        (Calendar.WEEK_OF_YEAR, 31,     compile("^недел[юиь]$"),        compile("^weeks?$")),
-        DAY         (Calendar.DAY_OF_YEAR,  6,      compile("^день|дн(я|ей)$"),     compile("^days?$")),
-        HOUR        (Calendar.HOUR_OF_DAY,  23,     compile("^час(а|ов)?$"),        compile("^hours?$")),
-        MINUTE      (Calendar.MINUTE,       59,     compile("^минут[уы]?$"),        compile("^minutes?$")),
-        SECOND      (Calendar.SECOND,       59,     compile("^секунд[уы]?$"),       compile("^seconds?$")),
-        MILLISECOND (Calendar.MILLISECOND,  999,    compile("^миллисекунд[уы]?$"),  compile("^milliseconds?$"));
+        MONTH(Calendar.MONTH, 11, compile("^месяц(а|ев)?$"), compile("^months?$")),
+        WEEK(Calendar.WEEK_OF_YEAR, 31, compile("^недел[юиь]$"), compile("^weeks?$")),
+        DAY(Calendar.DAY_OF_YEAR, 6, compile("^день|дн(я|ей)$"), compile("^days?$")),
+        HOUR(Calendar.HOUR_OF_DAY, 23, compile("^час(а|ов)?$"), compile("^hours?$")),
+        MINUTE(Calendar.MINUTE, 59, compile("^минут[уы]?$"), compile("^minutes?$")),
+        SECOND(Calendar.SECOND, 59, compile("^секунд[уы]?$"), compile("^seconds?$")),
+        MILLISECOND(Calendar.MILLISECOND, 999, compile("^миллисекунд[уы]?$"), compile("^milliseconds?$"));
 
         @Getter
         private final int type;

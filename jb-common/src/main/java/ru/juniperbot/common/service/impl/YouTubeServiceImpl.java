@@ -82,7 +82,8 @@ public class YouTubeServiceImpl implements YouTubeService {
     public void init() {
         try {
             youTube = new YouTube
-                    .Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), e -> {})
+                    .Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), e -> {
+            })
                     .setApplicationName(YouTubeServiceImpl.class.getSimpleName())
                     .build();
         } catch (Throwable t) {

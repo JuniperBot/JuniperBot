@@ -408,7 +408,8 @@ public class AudioMessageManager {
             if (controller != null) {
                 controller.doForMessage(message -> {
                     if (message != null) {
-                        message.editMessage(getPlayMessage(request).build()).queue(m -> {}, t -> {
+                        message.editMessage(getPlayMessage(request).build()).queue(m -> {
+                        }, t -> {
                             if (t instanceof ErrorResponseException) {
                                 handleUpdateError(request, (ErrorResponseException) t);
                             }

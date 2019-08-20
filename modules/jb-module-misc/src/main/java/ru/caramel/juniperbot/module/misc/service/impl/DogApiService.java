@@ -72,7 +72,8 @@ public class DogApiService {
         if (restTemplate == null) {
             return Collections.emptyList();
         }
-        return execute(query.toUri(), new ParameterizedTypeReference<List<DogImage>>() {});
+        return execute(query.toUri(), new ParameterizedTypeReference<List<DogImage>>() {
+        });
     }
 
     private <T> T execute(UriComponentsBuilder builder, ParameterizedTypeReference<T> type) {

@@ -42,7 +42,8 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public GuildDto getGuildInfo(long guildId) {
         GuildDto dto = template.convertSendAndReceiveAsType(QUEUE_GUILD_INFO_REQUEST, guildId,
-                new ParameterizedTypeReference<GuildDto>() {});
+                new ParameterizedTypeReference<GuildDto>() {
+                });
         return dto != null && dto.getId() != null ? dto : null;
     }
 
@@ -54,19 +55,22 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public List<CommandInfo> getCommandList() {
         return template.convertSendAndReceiveAsType(QUEUE_COMMAND_LIST_REQUEST, "1",
-                new ParameterizedTypeReference<List<CommandInfo>>() {});
+                new ParameterizedTypeReference<List<CommandInfo>>() {
+                });
     }
 
     @Override
     public StatusDto getWorkerStatus() {
         return template.convertSendAndReceiveAsType(QUEUE_STATUS_REQUEST, "1",
-                new ParameterizedTypeReference<StatusDto>() {});
+                new ParameterizedTypeReference<StatusDto>() {
+                });
     }
 
     @Override
     public WebhookDto getWebhook(WebhookRequest request) {
         WebhookDto dto = template.convertSendAndReceiveAsType(QUEUE_WEBHOOK_GET_REQUEST, request,
-                new ParameterizedTypeReference<WebhookDto>() {});
+                new ParameterizedTypeReference<WebhookDto>() {
+                });
         return dto != null && dto.getId() != null ? dto : null;
     }
 
@@ -78,12 +82,14 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public boolean deleteWebhook(WebhookRequest request) {
         return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_WEBHOOK_DELETE_REQUEST, request,
-                new ParameterizedTypeReference<Boolean>() {}));
+                new ParameterizedTypeReference<Boolean>() {
+                }));
     }
 
     @Override
     public boolean sendPatreonUpdate(PatreonRequest request) {
         return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_PATREON_WEBHOOK_REQUEST, request,
-                new ParameterizedTypeReference<Boolean>() {}));
+                new ParameterizedTypeReference<Boolean>() {
+                }));
     }
 }

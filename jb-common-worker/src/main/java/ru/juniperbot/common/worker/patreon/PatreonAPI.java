@@ -109,7 +109,8 @@ public class PatreonAPI {
         addFieldsParam(builder, Member.class, optionalMemberAndDefaultFields);
         addFieldsParam(builder, User.class, User.UserField.getDefaultFields());
 
-        return execute(builder, new ParameterizedTypeReference<JSONAPIDocument<List<Member>>>() {});
+        return execute(builder, new ParameterizedTypeReference<JSONAPIDocument<List<Member>>>() {
+        });
     }
 
     private <T> T execute(UriComponentsBuilder builder, ParameterizedTypeReference<T> type) {

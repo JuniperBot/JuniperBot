@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
@@ -44,7 +43,7 @@ public class PlayCommand extends AudioCommand {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String query) throws DiscordException {
+    public boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String query) {
         if (!message.getMessage().getAttachments().isEmpty()) {
             query = message.getMessage().getAttachments().get(0).getUrl();
         }
