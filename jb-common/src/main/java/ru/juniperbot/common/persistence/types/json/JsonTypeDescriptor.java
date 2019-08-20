@@ -41,6 +41,7 @@ public class JsonTypeDescriptor
     private Type type;
 
     @Override
+    @SuppressWarnings("deprecation")
     public void setParameterValues(Properties parameters) {
         jsonObjectClass = ((ParameterType) parameters.get(PARAMETER_TYPE)).getReturnedClass();
         try {

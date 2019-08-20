@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.persistence;
+package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;

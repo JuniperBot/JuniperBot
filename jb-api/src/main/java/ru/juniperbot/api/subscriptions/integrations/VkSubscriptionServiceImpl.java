@@ -45,7 +45,7 @@ import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
 import ru.juniperbot.api.model.VkInfo;
 import ru.juniperbot.common.model.VkConnectionStatus;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 import ru.juniperbot.common.persistence.repository.VkConnectionRepository;
 import ru.juniperbot.common.utils.CommonUtils;
 

@@ -20,7 +20,7 @@ import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;
 import ru.juniperbot.api.model.VkInfo;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 
 import java.util.List;
 

@@ -24,7 +24,7 @@ import ru.juniperbot.api.dto.request.SubscriptionCreateRequest;
 import ru.juniperbot.api.dto.request.SubscriptionCreateResponse;
 import ru.juniperbot.api.model.SubscriptionType;
 import ru.juniperbot.api.subscriptions.handlers.SubscriptionHandler;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 import ru.juniperbot.common.persistence.entity.TwitchConnection;
 import ru.juniperbot.common.persistence.entity.YouTubeConnection;
 import ru.juniperbot.common.persistence.repository.TwitchConnectionRepository;

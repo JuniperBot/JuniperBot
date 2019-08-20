@@ -3,7 +3,6 @@
 target/
 build/
 out/
-**/src/main/generated/
 /conf/
 !gradle/wrapper/gradle-wrapper.jar
 /logs/*

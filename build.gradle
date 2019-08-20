@@ -25,7 +25,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("gradle.plugin.at.comm_unity.gradle.plugins:jpamodelgen-plugin:1.1.4")
     }
 }
 
@@ -53,15 +52,17 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'at.comm_unity.gradle.plugins.jpamodelgen'
 
     sourceCompatibility = JavaVersion.VERSION_1_10
     targetCompatibility = JavaVersion.VERSION_1_10
 
     compileJava.options.encoding = 'UTF-8'
+    compileJava.options.annotationProcessorPath = configurations.annotationProcessor
     compileJava.options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
 
     ext {
+        generatedMainJava = "${buildDir}/generated/main/java"
+
         //@formatter:off
 
         // Common Properties
@@ -113,23 +114,17 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
+        options.annotationProcessorGeneratedSourcesDirectory = file(generatedMainJava)
         options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
     }
 
-    jpaModelgen {
-        library = "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
-        jpaModelgenSourcesDir = "src/main/generated"
-    }
-
     sourceSets {
-        main {
-            java {
-                srcDirs += "src/main/generated"
-            }
-        }
+        main.java.srcDir generatedMainJava
     }
 
     dependencies {
+        annotationProcessor "javax.xml.bind:jaxb-api:2.3.0"
+        annotationProcessor(group: 'org.hibernate', name: 'hibernate-jpamodelgen', version: hibernateVersion)
         compileOnly(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
         annotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
         testCompile(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)

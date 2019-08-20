@@ -17,7 +17,7 @@
 package ru.juniperbot.common.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 import ru.juniperbot.common.persistence.repository.base.BaseSubscriptionRepository;
 
 @Repository

@@ -28,7 +28,7 @@ import ru.juniperbot.api.model.SubscriptionType;
 import ru.juniperbot.api.model.VkInfo;
 import ru.juniperbot.api.subscriptions.integrations.VkSubscriptionService;
 import ru.juniperbot.common.model.VkConnectionStatus;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 
 import java.util.*;
 import java.util.stream.Collectors;

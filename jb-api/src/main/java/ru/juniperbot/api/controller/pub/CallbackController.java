@@ -37,7 +37,7 @@ import ru.juniperbot.api.subscriptions.integrations.YouTubeSubscriptionService;
 import ru.juniperbot.api.utils.FeedUtils;
 import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.juniperbot.common.model.request.PatreonRequest;
-import ru.juniperbot.common.persistence.VkConnection;
+import ru.juniperbot.common.persistence.entity.VkConnection;
 import ru.juniperbot.common.utils.GsonUtils;
 
 import javax.servlet.http.HttpServletResponse;

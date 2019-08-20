@@ -34,6 +34,7 @@ bootJar {
 dependencies {
 
     compile project(':jb-common')
+    annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
 
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')
