@@ -18,12 +18,12 @@ package ru.caramel.juniperbot.module.audio.commands.queue;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.worker.common.utils.DiscordUtils;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.utils.DiscordUtils;
 
 @DiscordCommand(
         key = "discord.command.audio.remove.key",

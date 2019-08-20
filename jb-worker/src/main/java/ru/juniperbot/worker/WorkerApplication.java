@@ -20,9 +20,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
 import ru.caramel.juniperbot.module.full.ModulesConfiguration;
-import ru.juniperbot.worker.common.configuration.WorkerConfiguration;
+import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+import ru.juniperbot.common.worker.configuration.WorkerConfiguration;
 
 @SpringBootApplication
 @Import({WorkerConfiguration.class, ModulesConfiguration.class})

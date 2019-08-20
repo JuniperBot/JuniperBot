@@ -23,9 +23,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.service.GatewayService;
-import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 
 import java.util.Collection;
 import java.util.HashSet;

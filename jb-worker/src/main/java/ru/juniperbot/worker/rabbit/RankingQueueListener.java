@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
 
 @Slf4j
 @Component

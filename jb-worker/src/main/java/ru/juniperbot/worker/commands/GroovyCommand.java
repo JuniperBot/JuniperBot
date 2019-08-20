@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
-import ru.juniperbot.worker.service.GroovyService;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.shared.service.DiscordService;
+import ru.juniperbot.worker.service.GroovyService;
 
 import java.awt.*;
 

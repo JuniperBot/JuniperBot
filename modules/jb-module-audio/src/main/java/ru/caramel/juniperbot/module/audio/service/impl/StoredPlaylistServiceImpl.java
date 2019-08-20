@@ -39,8 +39,7 @@ import ru.juniperbot.common.persistence.entity.PlaylistItem;
 import ru.juniperbot.common.persistence.repository.PlaylistItemRepository;
 import ru.juniperbot.common.persistence.repository.PlaylistRepository;
 import ru.juniperbot.common.service.PlaylistService;
-import ru.juniperbot.common.service.MemberService;
-import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
+import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 
 import java.util.*;
 import java.util.stream.Collectors;

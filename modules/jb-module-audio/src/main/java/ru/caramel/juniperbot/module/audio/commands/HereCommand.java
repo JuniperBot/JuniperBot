@@ -21,11 +21,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.common.persistence.entity.MusicConfig;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.common.model.exception.DiscordException;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
+import ru.juniperbot.common.model.exception.DiscordException;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 @DiscordCommand(
         key = "discord.command.here.key",

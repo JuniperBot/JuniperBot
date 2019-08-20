@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 import ru.juniperbot.common.persistence.entity.CommandConfig;
 import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.repository.CustomCommandRepository;
-import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 
 import java.util.*;
 import java.util.stream.Collectors;

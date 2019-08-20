@@ -38,8 +38,8 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetailsSource;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import ru.juniperbot.common.utils.GsonUtils;
 import ru.caramel.juniperbot.web.security.model.TokenRequestDto;
+import ru.juniperbot.common.utils.GsonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

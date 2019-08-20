@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import ru.juniperbot.worker.common.modules.audit.service.HistoryService;
-import ru.juniperbot.worker.common.event.intercept.Filter;
-import ru.juniperbot.worker.common.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.event.intercept.Filter;
+import ru.juniperbot.common.worker.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.modules.audit.service.HistoryService;
 
 @Slf4j
 @Order(Filter.POST_FILTER)

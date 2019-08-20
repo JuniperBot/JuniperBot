@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.audio.commands.queue;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 @DiscordCommand(
         key = "discord.command.current.key",

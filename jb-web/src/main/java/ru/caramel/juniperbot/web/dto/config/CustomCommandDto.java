@@ -18,8 +18,8 @@ package ru.caramel.juniperbot.web.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.juniperbot.common.model.CommandType;
 import ru.caramel.juniperbot.web.dto.MessageTemplateDto;
+import ru.juniperbot.common.model.CommandType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -19,13 +19,13 @@ package ru.juniperbot.worker.commands;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
-import ru.juniperbot.worker.common.shared.model.InstagramMedia;
-import ru.juniperbot.worker.common.shared.model.InstagramProfile;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.shared.model.InstagramMedia;
+import ru.juniperbot.common.worker.shared.model.InstagramProfile;
 import ru.juniperbot.worker.service.InstagramService;
 import ru.juniperbot.worker.service.PostService;
 

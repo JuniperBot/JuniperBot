@@ -22,14 +22,14 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.command.model.AbstractCommandAsync;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.caramel.juniperbot.module.misc.model.dogapi.DogBreed;
 import ru.caramel.juniperbot.module.misc.model.dogapi.DogImage;
 import ru.caramel.juniperbot.module.misc.model.dogapi.DogMeasure;
 import ru.caramel.juniperbot.module.misc.model.dogapi.DogSearchQuery;
 import ru.caramel.juniperbot.module.misc.service.impl.DogApiService;
+import ru.juniperbot.common.worker.command.model.AbstractCommandAsync;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 import java.util.Deque;
 import java.util.Locale;

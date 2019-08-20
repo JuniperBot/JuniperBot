@@ -17,13 +17,13 @@
 package ru.caramel.juniperbot.module.audio.commands.control;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
+import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.utils.CommonUtils;
-import ru.caramel.juniperbot.module.audio.commands.AudioCommand;
-import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 @DiscordCommand(
         key = VolumeCommand.KEY,

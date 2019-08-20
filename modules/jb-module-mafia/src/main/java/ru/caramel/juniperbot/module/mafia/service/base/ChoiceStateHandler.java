@@ -23,11 +23,11 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import ru.juniperbot.worker.common.event.listeners.ReactionsListener;
 import ru.caramel.juniperbot.module.mafia.model.MafiaInstance;
 import ru.caramel.juniperbot.module.mafia.model.MafiaPlayer;
 import ru.caramel.juniperbot.module.mafia.model.MafiaRole;
 import ru.caramel.juniperbot.module.mafia.model.MafiaState;
+import ru.juniperbot.common.worker.event.listeners.ReactionsListener;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

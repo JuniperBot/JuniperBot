@@ -25,10 +25,10 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
-import ru.juniperbot.worker.common.event.DiscordEvent;
-import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.worker.event.DiscordEvent;
+import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 
 @DiscordEvent
 public class RankingListener extends DiscordEventListener {

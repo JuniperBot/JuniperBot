@@ -44,10 +44,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
 import ru.caramel.juniperbot.web.model.VkInfo;
-import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.model.VkConnectionStatus;
 import ru.juniperbot.common.persistence.VkConnection;
 import ru.juniperbot.common.persistence.repository.VkConnectionRepository;
+import ru.juniperbot.common.utils.CommonUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;

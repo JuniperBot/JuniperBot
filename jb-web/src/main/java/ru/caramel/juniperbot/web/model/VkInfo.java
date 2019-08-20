@@ -16,9 +16,6 @@
  */
 package ru.caramel.juniperbot.web.model;
 
-import com.github.twitch4j.helix.domain.Game;
-import com.github.twitch4j.helix.domain.Stream;
-import com.github.twitch4j.helix.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

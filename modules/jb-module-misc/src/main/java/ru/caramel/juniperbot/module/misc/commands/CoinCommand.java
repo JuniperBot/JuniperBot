@@ -17,10 +17,10 @@
 package ru.caramel.juniperbot.module.misc.commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.common.utils.ArrayUtil;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 @DiscordCommand(key = "discord.command.coin.key",
         description = "discord.command.coin.desc",

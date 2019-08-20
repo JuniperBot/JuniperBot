@@ -18,9 +18,9 @@ package ru.caramel.juniperbot.module.misc.commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 import java.util.HashMap;
 import java.util.Map;

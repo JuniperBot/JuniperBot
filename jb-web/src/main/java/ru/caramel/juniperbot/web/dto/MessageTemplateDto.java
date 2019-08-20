@@ -19,10 +19,10 @@ package ru.caramel.juniperbot.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.juniperbot.common.model.MessageTemplateType;
-import ru.juniperbot.common.persistence.entity.MessageTemplate;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntity;
 import ru.caramel.juniperbot.web.common.validation.DiscordEntityType;
+import ru.juniperbot.common.model.MessageTemplateType;
+import ru.juniperbot.common.persistence.entity.MessageTemplate;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

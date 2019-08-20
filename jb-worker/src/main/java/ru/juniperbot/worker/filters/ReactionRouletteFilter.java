@@ -27,11 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.worker.common.event.intercept.Filter;
-import ru.juniperbot.worker.common.event.intercept.FilterChain;
-import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
 import ru.juniperbot.common.persistence.entity.ReactionRoulette;
 import ru.juniperbot.common.service.ReactionRouletteService;
+import ru.juniperbot.common.worker.event.intercept.Filter;
+import ru.juniperbot.common.worker.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.event.intercept.MemberMessageFilter;
 
 import java.util.HashMap;
 import java.util.List;

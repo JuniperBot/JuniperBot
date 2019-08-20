@@ -33,7 +33,7 @@ bootJar {
 
 dependencies {
 
-    compile project(':jb-core')
+    compile project(':jb-common')
 
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')

@@ -17,21 +17,13 @@
 package ru.juniperbot.worker.rabbit;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
-import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.model.request.PatreonRequest;
-import ru.juniperbot.common.service.DiscordMapperService;
-import ru.juniperbot.worker.common.feature.service.FeatureSetService;
-import ru.juniperbot.worker.common.patreon.service.PatreonService;
-
-import static net.dv8tion.jda.api.OnlineStatus.OFFLINE;
-import static net.dv8tion.jda.api.OnlineStatus.UNKNOWN;
+import ru.juniperbot.common.worker.patreon.service.PatreonService;
 
 @EnableRabbit
 @Component

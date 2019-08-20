@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
-import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Date;

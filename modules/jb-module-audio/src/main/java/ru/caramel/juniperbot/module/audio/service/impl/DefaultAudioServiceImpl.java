@@ -37,11 +37,11 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import ru.juniperbot.common.configuration.CoreConfiguration;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
 import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
 import ru.caramel.juniperbot.module.audio.service.LavaAudioService;
 import ru.caramel.juniperbot.module.audio.utils.GuildAudioSendHandler;
+import ru.juniperbot.common.configuration.CoreConfiguration;
+import ru.juniperbot.common.worker.shared.service.DiscordService;
 
 import java.net.URI;
 import java.net.URISyntaxException;

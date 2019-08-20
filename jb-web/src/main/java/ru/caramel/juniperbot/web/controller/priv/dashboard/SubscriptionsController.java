@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.SubscriptionDao;
@@ -31,6 +30,7 @@ import ru.caramel.juniperbot.web.dto.config.SuggestionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateRequest;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
+import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.juniperbot.common.service.YouTubeService;
 
 import java.util.Collections;

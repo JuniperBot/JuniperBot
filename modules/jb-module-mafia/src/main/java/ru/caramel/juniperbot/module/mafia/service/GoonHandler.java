@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.caramel.juniperbot.module.mafia.model.*;
 import ru.caramel.juniperbot.module.mafia.service.base.ChoiceStateHandler;
 import ru.caramel.juniperbot.module.mafia.service.individual.BrokerHandler;
+import ru.juniperbot.common.persistence.entity.GuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;

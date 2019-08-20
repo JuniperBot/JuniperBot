@@ -22,10 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.worker.common.command.service.CommandHandler;
-import ru.juniperbot.worker.common.event.intercept.Filter;
-import ru.juniperbot.worker.common.event.intercept.FilterChain;
-import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
+import ru.juniperbot.common.worker.command.service.CommandHandler;
+import ru.juniperbot.common.worker.event.intercept.Filter;
+import ru.juniperbot.common.worker.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.event.intercept.MemberMessageFilter;
 
 import java.util.List;
 

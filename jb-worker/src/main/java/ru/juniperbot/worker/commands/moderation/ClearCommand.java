@@ -25,12 +25,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
 
 import java.util.List;
 import java.util.Objects;

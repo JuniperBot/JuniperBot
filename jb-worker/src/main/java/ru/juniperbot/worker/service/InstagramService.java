@@ -34,8 +34,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.juniperbot.common.configuration.CoreConfiguration;
 import ru.juniperbot.common.utils.CommonUtils;
-import ru.juniperbot.worker.common.shared.model.InstagramMedia;
-import ru.juniperbot.worker.common.shared.model.InstagramProfile;
+import ru.juniperbot.common.worker.shared.model.InstagramMedia;
+import ru.juniperbot.common.worker.shared.model.InstagramProfile;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;

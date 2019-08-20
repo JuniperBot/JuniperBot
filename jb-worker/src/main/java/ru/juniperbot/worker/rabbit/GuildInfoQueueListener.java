@@ -26,8 +26,7 @@ import org.springframework.stereotype.Component;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.service.DiscordMapperService;
-import ru.juniperbot.worker.common.feature.service.FeatureSetService;
-import ru.juniperbot.worker.common.shared.service.DiscordService;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 
 import static net.dv8tion.jda.api.OnlineStatus.OFFLINE;
 import static net.dv8tion.jda.api.OnlineStatus.UNKNOWN;

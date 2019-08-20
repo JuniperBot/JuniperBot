@@ -23,10 +23,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.juniperbot.common.model.exception.AccessDeniedException;
-import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.model.DiscordGuildDetails;
+import ru.juniperbot.common.model.exception.AccessDeniedException;
+import ru.juniperbot.common.model.exception.NotFoundException;
 
 import java.lang.annotation.Annotation;
 

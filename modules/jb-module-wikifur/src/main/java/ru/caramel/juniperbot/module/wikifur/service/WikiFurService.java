@@ -24,10 +24,10 @@ import org.sweble.wikitext.parser.nodes.WtPageName;
 import org.sweble.wikitext.parser.nodes.WtRedirect;
 import org.sweble.wikitext.parser.nodes.WtText;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
-import ru.juniperbot.worker.common.message.service.MessageService;
 import ru.caramel.juniperbot.module.wikifur.model.WikiFurConfig;
 import ru.caramel.juniperbot.module.wikifur.utils.SearchQuery;
 import ru.caramel.juniperbot.module.wikifur.utils.TextConverter;
+import ru.juniperbot.common.worker.message.service.MessageService;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;

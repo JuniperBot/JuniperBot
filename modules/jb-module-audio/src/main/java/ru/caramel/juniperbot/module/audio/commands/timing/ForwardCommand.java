@@ -18,10 +18,10 @@ package ru.caramel.juniperbot.module.audio.commands.timing;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.audio.model.PlaybackInstance;
 import ru.caramel.juniperbot.module.audio.model.TrackRequest;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 @DiscordCommand(
         key = "discord.command.forward.key",

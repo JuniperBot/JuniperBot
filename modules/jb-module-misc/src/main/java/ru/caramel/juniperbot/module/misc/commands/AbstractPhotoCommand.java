@@ -25,10 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import ru.juniperbot.worker.common.command.model.AbstractCommandAsync;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.misc.model.RandomPhotoResponse;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.command.model.AbstractCommandAsync;
+import ru.juniperbot.common.worker.command.model.BotContext;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;

@@ -28,7 +28,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import ru.juniperbot.common.utils.CommonUtils;
 import ru.caramel.juniperbot.module.steam.model.GetAppListResponse;
 import ru.caramel.juniperbot.module.steam.model.SteamAppEntry;
 import ru.caramel.juniperbot.module.steam.model.details.SteamAppDetails;
@@ -36,6 +35,7 @@ import ru.caramel.juniperbot.module.steam.persistence.entity.SteamApp;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamCache;
 import ru.caramel.juniperbot.module.steam.persistence.repository.SteamAppRepository;
 import ru.caramel.juniperbot.module.steam.persistence.repository.SteamCacheRepository;
+import ru.juniperbot.common.utils.CommonUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;

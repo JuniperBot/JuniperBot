@@ -18,10 +18,10 @@ package ru.caramel.juniperbot.web.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.controller.base.BasePublicRestController;
 import ru.caramel.juniperbot.web.dao.PlaylistDao;
 import ru.caramel.juniperbot.web.dto.playlist.PlaylistDto;
+import ru.juniperbot.common.model.exception.NotFoundException;
 
 @RestController
 public class PlaylistController extends BasePublicRestController {

@@ -23,12 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.utils.LocaleUtils;
-import ru.juniperbot.worker.common.command.service.CoolDownService;
-import ru.juniperbot.worker.common.event.DiscordEvent;
-import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
-import ru.juniperbot.worker.common.event.service.ContextService;
-import ru.juniperbot.worker.common.message.service.MessageService;
-import ru.juniperbot.worker.common.shared.service.DiscordEntityAccessor;
+import ru.juniperbot.common.worker.command.service.CoolDownService;
+import ru.juniperbot.common.worker.event.DiscordEvent;
+import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
+import ru.juniperbot.common.worker.event.service.ContextService;
+import ru.juniperbot.common.worker.message.service.MessageService;
+import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 
 import java.util.function.Function;
 

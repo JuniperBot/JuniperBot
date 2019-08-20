@@ -18,7 +18,6 @@ package ru.caramel.juniperbot.web.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
 
 import javax.validation.constraints.Size;

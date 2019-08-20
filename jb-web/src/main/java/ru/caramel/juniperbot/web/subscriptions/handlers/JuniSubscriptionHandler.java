@@ -19,11 +19,11 @@ package ru.caramel.juniperbot.web.subscriptions.handlers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.model.SubscriptionStatus;
 import ru.caramel.juniperbot.web.model.SubscriptionType;
+import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.juniperbot.common.persistence.entity.JuniPost;
 import ru.juniperbot.common.service.JuniPostService;
 

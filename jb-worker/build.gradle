@@ -34,7 +34,7 @@ bootJar {
 dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
 
-    compile project(':jb-worker-common')
+    compile project(':jb-common-worker')
     compile project(':modules')
 
     compile(group: 'org.codehaus.groovy', name: 'groovy')

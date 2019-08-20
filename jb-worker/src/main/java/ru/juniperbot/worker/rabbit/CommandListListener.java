@@ -17,7 +17,6 @@
 package ru.juniperbot.worker.rabbit;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,14 @@ import org.springframework.stereotype.Component;
 import ru.juniperbot.common.configuration.RabbitConfiguration;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.utils.LocaleUtils;
-import ru.juniperbot.worker.common.command.model.Command;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
-import ru.juniperbot.worker.common.command.service.CommandsHolderService;
-import ru.juniperbot.worker.common.message.service.MessageService;
+import ru.juniperbot.common.worker.command.model.Command;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.service.CommandsHolderService;
+import ru.juniperbot.common.worker.message.service.MessageService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j

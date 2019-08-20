@@ -19,11 +19,11 @@ package ru.caramel.juniperbot.web.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.common.persistence.entity.ModerationAction;
-import ru.juniperbot.common.persistence.repository.ModerationActionRepository;
-import ru.juniperbot.common.persistence.entity.ModerationConfig;
-import ru.juniperbot.common.service.ModerationConfigService;
 import ru.caramel.juniperbot.web.dto.config.ModerationConfigDto;
+import ru.juniperbot.common.persistence.entity.ModerationAction;
+import ru.juniperbot.common.persistence.entity.ModerationConfig;
+import ru.juniperbot.common.persistence.repository.ModerationActionRepository;
+import ru.juniperbot.common.service.ModerationConfigService;
 
 import java.util.*;
 import java.util.stream.Collectors;

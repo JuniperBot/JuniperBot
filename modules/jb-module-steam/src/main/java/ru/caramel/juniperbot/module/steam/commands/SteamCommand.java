@@ -26,12 +26,12 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
-import ru.juniperbot.worker.common.command.model.BotContext;
-import ru.juniperbot.worker.common.command.model.DiscordCommand;
 import ru.caramel.juniperbot.module.steam.model.details.*;
 import ru.caramel.juniperbot.module.steam.persistence.entity.SteamApp;
 import ru.caramel.juniperbot.module.steam.service.SteamService;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 import java.util.List;
 

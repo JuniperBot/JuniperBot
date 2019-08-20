@@ -17,10 +17,10 @@ package ru.juniperbot.worker.listeners;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.worker.common.modules.audit.service.ActionsHolderService;
-import ru.juniperbot.worker.common.modules.audit.service.HistoryService;
-import ru.juniperbot.worker.common.event.DiscordEvent;
-import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
+import ru.juniperbot.common.worker.event.DiscordEvent;
+import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
+import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
+import ru.juniperbot.common.worker.modules.audit.service.HistoryService;
 
 @DiscordEvent
 public class HistoryListener extends DiscordEventListener {

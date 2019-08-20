@@ -17,7 +17,7 @@
 description = 'JuniperBot Modules'
 
 dependencies {
-    compile project(':jb-core')
+    compile project(':jb-common')
     compile project(':modules:jb-module-audio')
     compile project(':modules:jb-module-mafia')
     compile project(':modules:jb-module-misc')

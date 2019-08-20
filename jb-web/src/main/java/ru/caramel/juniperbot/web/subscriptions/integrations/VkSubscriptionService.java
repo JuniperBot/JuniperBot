@@ -16,7 +16,6 @@
  */
 package ru.caramel.juniperbot.web.subscriptions.integrations;
 
-import com.github.twitch4j.helix.domain.User;
 import com.vk.api.sdk.callback.objects.messages.CallbackMessage;
 import com.vk.api.sdk.objects.wall.Wallpost;
 import com.vk.api.sdk.objects.wall.WallpostAttachmentType;

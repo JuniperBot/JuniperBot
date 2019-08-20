@@ -20,8 +20,8 @@ import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import ru.juniperbot.worker.common.shared.service.AudioService;
 import ru.caramel.juniperbot.module.audio.model.LavaLinkConfiguration;
+import ru.juniperbot.common.worker.shared.service.AudioService;
 
 public interface LavaAudioService extends AudioService {
 

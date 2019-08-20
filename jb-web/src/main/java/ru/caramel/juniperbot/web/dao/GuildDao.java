@@ -21,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.caramel.juniperbot.web.dto.GuildInfoDto;
-import ru.juniperbot.common.model.discord.GuildDto;
-import ru.juniperbot.common.persistence.entity.GuildConfig;
-import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
 import ru.caramel.juniperbot.web.security.utils.SecurityUtils;
+import ru.juniperbot.common.model.discord.GuildDto;
+import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.service.MemberService;
 
 import java.util.List;

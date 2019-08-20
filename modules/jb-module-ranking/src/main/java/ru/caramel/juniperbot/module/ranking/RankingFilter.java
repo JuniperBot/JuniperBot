@@ -22,10 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.caramel.juniperbot.module.ranking.service.RankingService;
-import ru.juniperbot.worker.common.event.intercept.Filter;
-import ru.juniperbot.worker.common.event.intercept.FilterChain;
-import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
-import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.worker.event.intercept.Filter;
+import ru.juniperbot.common.worker.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.event.intercept.MemberMessageFilter;
 
 @Slf4j
 @Order(Filter.POST_FILTER)

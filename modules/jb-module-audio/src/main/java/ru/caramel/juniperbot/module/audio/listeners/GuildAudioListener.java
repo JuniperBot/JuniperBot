@@ -27,12 +27,12 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.common.persistence.entity.MusicConfig;
-import ru.juniperbot.worker.common.event.DiscordEvent;
-import ru.juniperbot.worker.common.event.listeners.DiscordEventListener;
-import ru.juniperbot.worker.common.feature.service.FeatureSetService;
-import ru.juniperbot.common.service.MusicConfigService;
 import ru.caramel.juniperbot.module.audio.service.PlayerService;
+import ru.juniperbot.common.persistence.entity.MusicConfig;
+import ru.juniperbot.common.service.MusicConfigService;
+import ru.juniperbot.common.worker.event.DiscordEvent;
+import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 
 import java.util.Objects;
 

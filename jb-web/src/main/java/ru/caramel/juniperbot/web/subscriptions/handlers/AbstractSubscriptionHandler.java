@@ -17,17 +17,17 @@
 package ru.caramel.juniperbot.web.subscriptions.handlers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.common.model.discord.WebhookDto;
-import ru.juniperbot.common.model.exception.AccessDeniedException;
-import ru.juniperbot.common.model.request.WebhookRequest;
-import ru.juniperbot.common.service.ConfigService;
-import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
-import ru.juniperbot.common.persistence.entity.WebHook;
-import ru.juniperbot.common.persistence.entity.base.WebHookOwnedEntity;
-import ru.juniperbot.common.persistence.repository.WebHookRepository;
 import ru.caramel.juniperbot.web.dto.config.SubscriptionDto;
 import ru.caramel.juniperbot.web.dto.request.SubscriptionCreateResponse;
 import ru.caramel.juniperbot.web.security.auth.DiscordTokenServices;
+import ru.juniperbot.common.model.discord.WebhookDto;
+import ru.juniperbot.common.model.exception.AccessDeniedException;
+import ru.juniperbot.common.model.request.WebhookRequest;
+import ru.juniperbot.common.persistence.entity.WebHook;
+import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
+import ru.juniperbot.common.persistence.entity.base.WebHookOwnedEntity;
+import ru.juniperbot.common.persistence.repository.WebHookRepository;
+import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.service.GatewayService;
 
 import java.util.Map;

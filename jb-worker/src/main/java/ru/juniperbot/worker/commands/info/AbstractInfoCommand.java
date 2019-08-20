@@ -19,7 +19,7 @@ package ru.juniperbot.worker.commands.info;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
-import ru.juniperbot.worker.common.command.model.AbstractCommand;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
 
 public abstract class AbstractInfoCommand extends AbstractCommand {
 

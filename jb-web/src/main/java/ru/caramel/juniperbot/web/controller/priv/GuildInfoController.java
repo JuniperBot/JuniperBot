@@ -18,13 +18,13 @@ package ru.caramel.juniperbot.web.controller.priv;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.GuildDao;
-import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.GuildInfoDto;
+import ru.caramel.juniperbot.web.dto.ShortMemberDto;
 import ru.caramel.juniperbot.web.dto.request.GuildInfoRequest;
+import ru.juniperbot.common.model.exception.NotFoundException;
 
 import java.util.List;
 

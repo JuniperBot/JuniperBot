@@ -26,11 +26,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.juniperbot.worker.common.event.intercept.Filter;
-import ru.juniperbot.worker.common.event.intercept.FilterChain;
-import ru.juniperbot.worker.common.event.intercept.MemberMessageFilter;
-import ru.juniperbot.worker.common.message.service.MessageService;
-import ru.juniperbot.worker.common.modules.moderation.service.MuteService;
+import ru.juniperbot.common.worker.event.intercept.Filter;
+import ru.juniperbot.common.worker.event.intercept.FilterChain;
+import ru.juniperbot.common.worker.event.intercept.MemberMessageFilter;
+import ru.juniperbot.common.worker.message.service.MessageService;
+import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
 
 @Slf4j
 @Order(Filter.PRE_FILTER)

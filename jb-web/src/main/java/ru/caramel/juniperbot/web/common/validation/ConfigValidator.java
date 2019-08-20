@@ -22,8 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import ru.juniperbot.common.utils.LocaleUtils;
 import ru.caramel.juniperbot.web.dto.config.CommonConfigDto;
+import ru.juniperbot.common.utils.LocaleUtils;
 
 @Component
 public class ConfigValidator implements Validator {

@@ -20,14 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.common.model.command.CommandInfo;
-import ru.juniperbot.common.model.exception.NotFoundException;
 import ru.caramel.juniperbot.web.common.aspect.GuildId;
 import ru.caramel.juniperbot.web.common.validation.CommandsContainerValidator;
 import ru.caramel.juniperbot.web.controller.base.BaseRestController;
 import ru.caramel.juniperbot.web.dao.CustomCommandsDao;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandDto;
 import ru.caramel.juniperbot.web.dto.config.CustomCommandsContainerDto;
+import ru.juniperbot.common.model.command.CommandInfo;
+import ru.juniperbot.common.model.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
