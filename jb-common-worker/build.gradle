@@ -18,7 +18,7 @@ description = 'JuniperBot Discord Bot Worker Common Library'
 
 dependencies {
     api project(':jb-common')
-    api "org.springframework.boot:spring-boot-starter-quartz:${springBootVersion}"
+    api "org.springframework.boot:spring-boot-starter-quartz"
     api "org.springframework.cloud:spring-cloud-starter-consul-discovery:${springConsulVersion}"
     api "org.ocpsoft.prettytime:prettytime:${prettytimeVersion}"
 

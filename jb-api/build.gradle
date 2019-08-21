@@ -28,7 +28,7 @@ ext {
 mainClassName = 'ru.juniperbot.api.JuniperApiApplication'
 
 bootJar {
-    archiveName = "JuniperBot-API.jar"
+    archiveFileName = "JuniperBot-API.jar"
 }
 
 dependencies {
@@ -54,8 +54,8 @@ dependencies {
     implementation "com.vk.api:sdk:${vkSdkVersion}"
     implementation "com.rometools:rome:${romeVersion}"
 
-    testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "org.springframework.security:spring-security-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
 
 }
 

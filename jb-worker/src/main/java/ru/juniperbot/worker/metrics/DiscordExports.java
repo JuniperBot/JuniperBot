@@ -74,6 +74,9 @@ public class DiscordExports extends io.prometheus.client.Collector implements io
     }
 
     private MetricFamilySamples getLavaLinkSamples() {
+        if (lavaAudioService.getLavaLink() == null) {
+            return null;
+        }
         List<MetricFamilySamples.Sample> samples = new ArrayList<>(lavaAudioService
                 .getLavaLink().getNodes().size() * 2);
 

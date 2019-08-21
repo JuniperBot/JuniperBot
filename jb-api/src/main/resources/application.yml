@@ -25,7 +25,7 @@ spring:
   application:
     version: "@build.version@"
     timestamp: "@build.timestamp@"
-    name: "JuniperBot"
+    name: "JuniperBot-API"
   jpa:
     generate-ddl: "false"
     open-in-view: "false"
@@ -52,8 +52,3 @@ spring:
       org.quartz.jobStore.tablePrefix: "qrtz_"
       org.quartz.jobStore.isClustered: "false"
       org.quartz.jobStore.clusterCheckinInterval: "20000"
-
-dependencies:
-  jda.version: "@JDA.version@"
-  lavaPlayer.version: "@lavaplayer.version@"
-  spring.version: "@spring.version@"

@@ -28,19 +28,19 @@ ext {
 mainClassName = 'ru.juniperbot.worker.WorkerApplication'
 
 bootJar {
-    archiveName = "JuniperBot-Worker.jar"
+    archiveFileName = "JuniperBot-Worker.jar"
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web"
 
-    compile project(':jb-common-worker')
-    compile project(':modules')
+    implementation project(':jb-common-worker')
+    implementation project(':modules')
 
-    compile "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
-    compile "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
+    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
+    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
 
-    compile "org.codehaus.groovy:groovy"
+    implementation "org.codehaus.groovy:groovy"
 }
 
 processResources {

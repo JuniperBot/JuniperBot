@@ -1,9 +1,14 @@
 spring:
+  http:
+    encoding:
+      enabled: "true"
+      charset: "UTF-8"
+      force: "true"
   cloud:
     consul:
       enabled: false
       discovery:
-        healthCheckPath: /api/public/health
+        healthCheckPath: /health
         healthCheckInterval: 15s
   application:
     version: "@build.version@"

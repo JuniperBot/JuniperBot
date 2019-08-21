@@ -16,9 +16,6 @@
  */
 package ru.juniperbot.api.controller.pub;
 
-//import io.prometheus.client.CollectorRegistry;
-//import io.prometheus.client.exporter.common.TextFormat;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,29 +25,11 @@ import ru.juniperbot.common.model.status.StatusDto;
 @RestController
 public class StatusController extends BasePublicRestController {
 
-    //private final CollectorRegistry registry;
-
-    public StatusController() {
-        //this.registry = CollectorRegistry.defaultRegistry;
-    }
-
     @GetMapping("/health")
     @ResponseBody
     public String getHealth() {
         return "OK";
     }
-
-    // TODO Prometheus endpoint. Maybe it should be at worker?
-    /*@GetMapping(value = "metrics", produces = TextFormat.CONTENT_TYPE_004)
-    public ResponseEntity<String> getMetrics(@RequestParam(name = "name[]", required = false) String[] includedParam)
-            throws IOException {
-        Set<String> params = includedParam == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(includedParam));
-        try (Writer writer = new StringWriter()) {
-            TextFormat.write004(writer, this.registry.filteredMetricFamilySamples(params));
-            writer.flush();
-            return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
-        }
-    }*/
 
     @GetMapping("/status")
     @ResponseBody
