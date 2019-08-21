@@ -32,10 +32,12 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 import ru.juniperbot.module.audio.service.LavaAudioService;
@@ -57,6 +59,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     private DiscoveryClient discoveryClient;
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     private TaskScheduler scheduler;
 
     @Autowired

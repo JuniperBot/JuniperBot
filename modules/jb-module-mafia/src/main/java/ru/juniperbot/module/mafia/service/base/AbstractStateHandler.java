@@ -21,8 +21,10 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.worker.event.listeners.ReactionsListener;
 import ru.juniperbot.common.worker.event.service.ContextService;
@@ -52,6 +54,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     protected static final long INDIVIDUAL_DELAY = 120000;
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     protected TaskScheduler scheduler;
 
     @Autowired

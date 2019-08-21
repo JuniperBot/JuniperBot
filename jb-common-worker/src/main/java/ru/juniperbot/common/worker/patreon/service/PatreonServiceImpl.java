@@ -24,8 +24,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.model.FeatureSet;
 import ru.juniperbot.common.model.patreon.Member;
 import ru.juniperbot.common.model.patreon.User;
@@ -69,6 +71,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     private SupportService supportService;
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     private TaskScheduler scheduler;
 
     private PatreonAPI creatorApi;

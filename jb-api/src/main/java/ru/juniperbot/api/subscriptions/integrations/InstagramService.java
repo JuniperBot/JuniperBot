@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.juniperbot.api.ApiProperties;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.model.InstagramMedia;
 import ru.juniperbot.common.model.InstagramProfile;
@@ -68,6 +70,7 @@ public class InstagramService {
     private static final Pattern PATTERN = Pattern.compile("window._sharedData = (.*);</script>");
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     private TaskScheduler scheduler;
 
     @Autowired

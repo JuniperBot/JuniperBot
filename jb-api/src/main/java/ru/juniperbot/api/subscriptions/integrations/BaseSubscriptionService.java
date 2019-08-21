@@ -19,10 +19,12 @@ package ru.juniperbot.api.subscriptions.integrations;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.model.request.WebhookRequest;
 import ru.juniperbot.common.persistence.entity.WebHook;
 import ru.juniperbot.common.persistence.entity.base.BaseSubscriptionEntity;
@@ -43,6 +45,7 @@ public abstract class BaseSubscriptionService<T extends BaseSubscriptionEntity, 
     protected static PropertyPlaceholderHelper PLACEHOLDER = new PropertyPlaceholderHelper("{", "}");
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     protected TaskScheduler scheduler;
 
     @Autowired

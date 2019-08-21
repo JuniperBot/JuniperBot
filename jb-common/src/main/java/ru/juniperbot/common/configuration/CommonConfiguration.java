@@ -47,16 +47,18 @@ import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 @Configuration
 public class CommonConfiguration {
 
+    public final static String SCHEDULER = "taskScheduler";
+
     @Autowired
     private CommonProperties commonProperties;
 
-    @Bean
+    @Bean(SCHEDULER)
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(commonProperties.getExecution().getSchedulerPoolSize());
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(30);
-        scheduler.setThreadNamePrefix("taskScheduler");
+        scheduler.setThreadNamePrefix(SCHEDULER);
         return scheduler;
     }
 

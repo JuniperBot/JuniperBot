@@ -34,9 +34,11 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.MusicConfig;
 import ru.juniperbot.common.service.MusicConfigService;
@@ -65,6 +67,7 @@ public class AudioMessageManager {
     private static final int MAX_SHORT_QUEUE = 3;
 
     @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
     private TaskScheduler scheduler;
 
     @Autowired
