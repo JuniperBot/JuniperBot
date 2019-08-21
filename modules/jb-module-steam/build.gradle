@@ -17,6 +17,6 @@
 description = 'JuniperBot Module: Steam'
 
 dependencies {
-    compile project(':jb-common-worker')
-    compile(group: 'org.joda', name: 'joda-money', version: jodaMoneyVersion)
+    implementation project(':jb-common-worker')
+    implementation "org.joda:joda-money:${jodaMoneyVersion}"
 }

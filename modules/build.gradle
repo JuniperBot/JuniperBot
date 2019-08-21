@@ -17,11 +17,11 @@
 description = 'JuniperBot Modules'
 
 dependencies {
-    compile project(':jb-common')
-    compile project(':modules:jb-module-audio')
-    compile project(':modules:jb-module-mafia')
-    compile project(':modules:jb-module-misc')
-    compile project(':modules:jb-module-ranking')
-    compile project(':modules:jb-module-steam')
-    compile project(':modules:jb-module-wikifur')
+    api project(':jb-common')
+    api project(':modules:jb-module-audio')
+    api project(':modules:jb-module-mafia')
+    api project(':modules:jb-module-misc')
+    api project(':modules:jb-module-ranking')
+    api project(':modules:jb-module-steam')
+    api project(':modules:jb-module-wikifur')
 }

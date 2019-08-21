@@ -17,20 +17,18 @@
 description = 'JuniperBot Discord Bot Worker Common Library'
 
 dependencies {
-    compile project(':jb-common')
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion)
-    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: springBootVersion)
-    compile(group: 'org.ocpsoft.prettytime', name: 'prettytime', version: prettytimeVersion)
+    api project(':jb-common')
+    api "org.springframework.boot:spring-boot-starter-quartz:${springBootVersion}"
+    api "org.springframework.cloud:spring-cloud-starter-consul-discovery:${springConsulVersion}"
+    api "org.ocpsoft.prettytime:prettytime:${prettytimeVersion}"
 
     // METRICS DEPENDENCIES
-    compile(group: 'com.ryantenney.metrics', name: 'metrics-spring', version: metricsSpringVersion)
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jmx')
-    compile(group: 'io.dropwizard.metrics', name: 'metrics-jvm')
-    compile(group: 'io.prometheus', name: 'simpleclient', version: prometheusVersion)
-    compile(group: 'io.prometheus', name: 'simpleclient_common', version: prometheusVersion)
-    compile(group: 'io.prometheus', name: 'simpleclient_dropwizard', version: prometheusVersion)
+    api "com.ryantenney.metrics:metrics-spring:${metricsSpringVersion}"
+    api "io.dropwizard.metrics:metrics-jmx"
+    api "io.dropwizard.metrics:metrics-jvm"
+    api "io.prometheus:simpleclient:${prometheusVersion}"
+    api "io.prometheus:simpleclient_common:${prometheusVersion}"
+    api "io.prometheus:simpleclient_dropwizard:${prometheusVersion}"
 
-
-    implementation(group: 'org.goldrenard', name: 'jb', version: programJbVersion)
-
+    implementation "org.goldrenard:jb:${programJbVersion}"
 }

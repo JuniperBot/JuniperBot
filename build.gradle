@@ -16,7 +16,7 @@
  */
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.7.RELEASE'
     }
     repositories {
         jcenter()
@@ -26,6 +26,10 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
+}
+
+plugins {
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 }
 
 allprojects {
@@ -50,14 +54,15 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
 
-    sourceCompatibility = JavaVersion.VERSION_1_10
-    targetCompatibility = JavaVersion.VERSION_1_10
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
+    compileJava.options.compilerArgs << "-Xlint:deprecation"
 
     ext {
         generatedMainJava = "${buildDir}/generated"
@@ -67,7 +72,7 @@ subprojects {
         // Common Properties
         springBootVersion                  = "${springBootVersion}"
         springCloudVersion                 = 'Greenwich.RELEASE'
-        springOauthVersion                 = '2.1.0.RELEASE'
+        springConsulVersion                = '2.1.2.RELEASE'
         hibernateVersion                   = '5.3.7.Final'
         lombokVersion                      = '1.18.4'
         jsonVersion                        = '20160810'
@@ -114,7 +119,7 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
         options.annotationProcessorGeneratedSourcesDirectory = file(generatedMainJava)
-        options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
+        options.compilerArgs << "-Xlint:deprecation"
     }
 
     sourceSets {
@@ -122,12 +127,16 @@ subprojects {
     }
 
     dependencies {
+        compileOnly "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
+        compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "javax.xml.bind:jaxb-api"
-        annotationProcessor(group: 'org.hibernate', name: 'hibernate-jpamodelgen', version: hibernateVersion)
-        compileOnly(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        annotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        testCompile(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        testAnnotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
+        annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
+        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        testCompile "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
 
     dependencyManagement {

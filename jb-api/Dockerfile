@@ -1,4 +1,4 @@
-FROM openjdk:10.0.2-jre-slim
+FROM openjdk:11.0.4-jre-slim-buster
 MAINTAINER Caramel <goldrenard@gmail.com>
 RUN mkdir -p /JuniperBot-API/logs /JuniperBot-API/temp
 WORKDIR /JuniperBot-API

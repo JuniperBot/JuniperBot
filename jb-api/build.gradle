@@ -33,29 +33,29 @@ bootJar {
 
 dependencies {
 
-    compile project(':jb-common')
-    annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
+    implementation project(':jb-common')
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security')
-    compile(group: 'org.springframework.security', name: 'spring-security-acl')
-    compile(group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: springOauthVersion)
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.security:spring-security-acl"
+    implementation "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springBootVersion}"
 
-    compile(group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: jmxRemote)
-    compile(group: 'org.glassfish.external', name: 'opendmk_jmxremote_optional_jar', version: jmxRemoteLegacy)
+    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
+    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
 
-    compile(group: 'org.openpnp', name: 'opencv', version: opencvVersion + '-0')
-    compile(group: 'org.opencv', name: 'opencv', version: opencvVersion)
+    implementation "org.openpnp:opencv:${opencvVersion}-0"
+    implementation "org.opencv:opencv:${opencvVersion}"
 
     // SOCIAL DEPENDENCIES
-    compile(group: 'com.github.twitch4j', name: 'twitch4j', version: twitch4jVersion) {
-        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+    implementation ("com.github.twitch4j:twitch4j:${twitch4jVersion}") {
+        exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
     }
-    compile(group: 'com.vk.api', name: 'sdk', version: vkSdkVersion)
-    compile(group: 'com.rometools', name: 'rome', version: romeVersion)
+    implementation "com.vk.api:sdk:${vkSdkVersion}"
+    implementation "com.rometools:rome:${romeVersion}"
 
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
-    testCompile(group: 'org.springframework.security', name: 'spring-security-test')
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "org.springframework.security:spring-security-test"
 
 }
 

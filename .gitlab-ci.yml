@@ -12,7 +12,7 @@ stages:
 - trigger
 
 build:
-  image: openjdk:10.0.2-jdk-slim
+  image: openjdk:11.0.4-jdk-slim-buster
   stage: build
   before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle

@@ -19,46 +19,41 @@ description = 'JuniperBot Discord Bot Core Library'
 dependencies {
 
     // SPRING CORE DEPENDENCIES
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion)
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion)
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-amqp')
-    compile(group: 'org.springframework', name: 'spring-web')
-    compile(group: 'org.springframework', name: 'spring-context-support')
+    api "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    api "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    api "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
+    api "org.springframework.boot:spring-boot-starter-amqp"
+    api "org.springframework:spring-web"
+    api "org.springframework:spring-context-support"
 
     // COMMON CORE DEPENDENCIES
-    compile(group: 'org.apache.commons', name: 'commons-lang3')
-    compile(group: 'commons-io', name: 'commons-io', version: commonsIoVersion)
-    compile(group: 'commons-validator', name: 'commons-validator', version: commonsValidatorVersion)
-    compile(group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion)
-    compile(group: 'org.apache.commons', name: 'commons-collections4', version: commonsCollections4Version)
-    compile(group: 'joda-time', name: 'joda-time')
-    compile(group: 'com.google.code.gson', name: 'gson', version: gsonVersion)
-    compile(group: 'com.google.guava', name: 'guava', version: guavaVersion)
-    compile(group: 'org.json', name: 'json', version: jsonVersion)
-    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core')
-    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
-    compile(group: 'com.github.jasminb', name: 'jsonapi-converter', version: jsonApiConverter)
-
-    // MAPSTRUCT
-    compile(group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion)
-    compile(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
-    annotationProcessor(group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion)
+    api "org.apache.commons:commons-lang3"
+    api "commons-io:commons-io:${commonsIoVersion}"
+    api "commons-validator:commons-validator:${commonsValidatorVersion}"
+    api "commons-codec:commons-codec:${commonsCodecVersion}"
+    api "org.apache.commons:commons-collections4:${commonsCollections4Version}"
+    api "joda-time:joda-time"
+    api "com.google.code.gson:gson:${gsonVersion}"
+    api "com.google.guava:guava:${guavaVersion}"
+    api "org.json:json:${jsonVersion}"
+    api "com.fasterxml.jackson.core:jackson-core"
+    api "com.fasterxml.jackson.core:jackson-databind"
+    api "com.github.jasminb:jsonapi-converter:${jsonApiConverter}"
 
     // DISCORD DEPENDENCIES
-    compile(group: 'net.dv8tion', name: 'JDA', version: jdaVersion) {
+    api ("net.dv8tion:JDA:${jdaVersion}") {
         exclude group: 'club.minnced', module: 'opus-java'
     }
-    compile(group: 'club.minnced', name: 'discord-webhooks', version: discordWebhookVersion)
-    compile(group: 'com.google.apis', name: 'google-api-services-youtube', version: googleApiServicesYoutubeVersion)
+    api "club.minnced:discord-webhooks:${discordWebhookVersion}"
+    api "com.google.apis:google-api-services-youtube:${googleApiServicesYoutubeVersion}"
 
     // DATABASE DEPENDENCIES
-    compile(group: 'javax.annotation', name: 'javax.annotation-api')
-    compile(group: 'org.hibernate.validator', name: 'hibernate-validator')
-    compile(group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion)
-    compile(group: 'org.liquibase', name: 'liquibase-core')
+    implementation "javax.annotation:javax.annotation-api"
+    implementation "org.hibernate.validator:hibernate-validator"
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation "org.liquibase:liquibase-core"
 
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
 
 dependencyManagement {

@@ -17,6 +17,6 @@
 description = 'JuniperBot Module: Audio'
 
 dependencies {
-    compile project(':jb-common-worker')
-    compile(group: 'org.goldrenard', name: 'Lavalink-Client', version: lavalinkVersion)
+    implementation project(':jb-common-worker')
+    api  "org.goldrenard:Lavalink-Client:${lavalinkVersion}"
 }

@@ -32,15 +32,15 @@ bootJar {
 }
 
 dependencies {
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion)
+    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
 
     compile project(':jb-common-worker')
     compile project(':modules')
 
-    compile(group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: jmxRemote)
-    compile(group: 'org.glassfish.external', name: 'opendmk_jmxremote_optional_jar', version: jmxRemoteLegacy)
+    compile "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
+    compile "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
 
-    compile(group: 'org.codehaus.groovy', name: 'groovy')
+    compile "org.codehaus.groovy:groovy"
 }
 
 processResources {

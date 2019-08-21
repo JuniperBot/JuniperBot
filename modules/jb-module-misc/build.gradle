@@ -17,5 +17,5 @@
 description = 'JuniperBot Module: Misc'
 
 dependencies {
-    compile project(':jb-common-worker')
+    implementation project(':jb-common-worker')
 }
