@@ -33,9 +33,9 @@ import java.util.Set;
 @ConfigurationProperties("juniperbot.common")
 public class CommonProperties {
 
-    private String defaultPrefix = "!";
+    private Jmx jmx = new Jmx();
 
-    private String defaultAccentColor = "#FFA550";
+    private Discord discord = new Discord();
 
     private Execution execution = new Execution();
 
@@ -44,6 +44,23 @@ public class CommonProperties {
     private Branding branding = new Branding();
 
     private List<String> youTubeApiKeys = new ArrayList<>();
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Jmx {
+        private boolean enabled;
+        private int port = 9875;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Discord {
+        private String defaultPrefix = "!";
+        private String defaultAccentColor = "#FFA550";
+        private String superUserId;
+    }
 
     @Getter
     @Setter

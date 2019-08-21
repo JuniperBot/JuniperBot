@@ -56,7 +56,7 @@ public class InfoCommand extends AbstractInfoCommand {
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : commonProperties.getDefaultPrefix();
+        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : commonProperties.getDiscord().getDefaultPrefix();
 
         EmbedBuilder builder = messageService.getBaseEmbed(true);
         builder.setAuthor(message.getJDA().getSelfUser().getName(), messageService.getMessage("about.support.page"));

@@ -26,7 +26,6 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -45,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.YouTubeChannel;
 import ru.juniperbot.common.persistence.entity.YouTubeConnection;
@@ -70,16 +69,11 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
 
     private static final String CHANNEL_RSS_ENDPOINT = "https://www.youtube.com/xml/feeds/videos.xml?channel_id=";
 
-    @Getter
-    @Value("${integrations.youTube.pubSubSecret}")
-    private String pubSubSecret;
-
-    @Getter
-    @Value("${integrations.youTube.resubscribeThresholdPct:10}")
-    private Long resubscribeThresholdPct;
-
     @Autowired
     private CommonProperties commonProperties;
+
+    @Autowired
+    private ApiProperties apiProperties;
 
     @Autowired
     private YouTubeChannelRepository channelRepository;
@@ -210,12 +204,12 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("hub.callback", String.format("%s/api/public/youtube/callback/publish?secret=%s&channel=%s",
                 commonProperties.getBranding().getWebsiteUrl(),
-                pubSubSecret,
+                apiProperties.getYouTube().getPubSubSecret(),
                 CommonUtils.urlEncode(channel.getChannelId())));
         map.add("hub.topic", CHANNEL_RSS_ENDPOINT + channel.getChannelId());
         map.add("hub.mode", "subscribe");
         map.add("hub.verify", "async");
-        map.add("hub.verify_token", pubSubSecret);
+        map.add("hub.verify_token", apiProperties.getYouTube().getPubSubSecret());
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(PUSH_ENDPOINT, request, String.class);
@@ -266,7 +260,7 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
         }
         AtomicLong failed = new AtomicLong();
         AtomicLong successful = new AtomicLong();
-        long threshold = channels.size() * (resubscribeThresholdPct / 100);
+        long threshold = channels.size() * (apiProperties.getYouTube().getResubscribeThresholdPct() / 100);
         if (threshold == 0) {
             threshold = 1;
         }

@@ -30,8 +30,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.api.model.TwitchNotification;
 import ru.juniperbot.common.persistence.entity.TwitchConnection;
 import ru.juniperbot.common.persistence.repository.TwitchConnectionRepository;
@@ -52,17 +52,8 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
 
     private static final Color TWITCH_COLOR = CommonUtils.hex2Rgb("64439A");
 
-    @Value("${integrations.twitch.clientId:}")
-    private String clientId;
-
-    @Value("${integrations.twitch.secret:}")
-    private String secret;
-
-    @Value("${integrations.twitch.oauthKey:}")
-    private String oauthKey;
-
-    @Value("${integrations.twitch.updateInterval:}")
-    private Long updateInterval;
+    @Autowired
+    private ApiProperties apiProperties;
 
     private TwitchClient client;
 
@@ -79,17 +70,18 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(secret)) {
+        if (StringUtils.isEmpty(apiProperties.getTwitch().getClientId())
+                || StringUtils.isEmpty(apiProperties.getTwitch().getSecret())) {
             log.warn("No valid Twitch credentials provided");
             return;
         }
         client = TwitchClientBuilder.builder()
                 .withEnableHelix(true)
-                .withClientId(clientId)
-                .withClientSecret(secret)
+                .withClientId(apiProperties.getTwitch().getClientId())
+                .withClientSecret(apiProperties.getTwitch().getSecret())
                 .build();
         helix = client.getHelix();
-        schedule(updateInterval);
+        schedule(apiProperties.getTwitch().getUpdateInterval());
     }
 
     @Override

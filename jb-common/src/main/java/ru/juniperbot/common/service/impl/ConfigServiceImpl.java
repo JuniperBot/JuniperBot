@@ -39,7 +39,7 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Transactional(readOnly = true)
     public String getPrefix(long guildId) {
         String prefix = repository.findPrefixByGuildId(guildId);
-        return prefix != null ? prefix : commonProperties.getDefaultPrefix();
+        return prefix != null ? prefix : commonProperties.getDiscord().getDefaultPrefix();
     }
 
     @Transactional(readOnly = true)
@@ -57,8 +57,8 @@ public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, Gu
     @Override
     protected GuildConfig createNew(long guildId) {
         GuildConfig config = new GuildConfig(guildId);
-        config.setPrefix(commonProperties.getDefaultPrefix());
-        config.setColor(commonProperties.getDefaultAccentColor());
+        config.setPrefix(commonProperties.getDiscord().getDefaultPrefix());
+        config.setColor(commonProperties.getDiscord().getDefaultAccentColor());
         config.setLocale(LocaleUtils.DEFAULT_LOCALE);
         config.setCommandLocale(LocaleUtils.DEFAULT_LOCALE);
         config.setTimeZone("Etc/Greenwich");

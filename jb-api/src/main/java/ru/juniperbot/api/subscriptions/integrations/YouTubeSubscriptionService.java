@@ -23,8 +23,6 @@ import ru.juniperbot.common.persistence.entity.YouTubeConnection;
 
 public interface YouTubeSubscriptionService extends SubscriptionService<YouTubeConnection, Video, Channel> {
 
-    String getPubSubSecret();
-
     void notifyVideo(String channelId, String videoId);
 
     void subscribe(YouTubeChannel channel);

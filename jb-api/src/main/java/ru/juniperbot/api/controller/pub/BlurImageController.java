@@ -21,12 +21,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.api.controller.base.BasePublicRestController;
 import ru.juniperbot.api.service.OpenCVService;
 import ru.juniperbot.api.utils.BoxBlurFilter;
@@ -56,14 +56,8 @@ public class BlurImageController extends BasePublicRestController {
     @Autowired
     private OpenCVService openCVService;
 
-    @Value("${features.blur.opencv.enabled:true}")
-    private boolean useOpenCV;
-
-    @Value("${features.blur.opencv.radius:201}")
-    private int blurRadius;
-
-    @Value("${features.blur.cache:}")
-    private String cacheFolder;
+    @Autowired
+    private ApiProperties apiProperties;
 
     private static class ImageInfo {
         private InputStream inputStream;
@@ -132,10 +126,10 @@ public class BlurImageController extends BasePublicRestController {
     }
 
     private File getCache() throws IOException {
-        if (StringUtils.isEmpty(cacheFolder)) {
+        if (StringUtils.isEmpty(apiProperties.getBlur().getCachePath())) {
             return null;
         }
-        File cacheDirectory = new File(cacheFolder);
+        File cacheDirectory = new File(apiProperties.getBlur().getCachePath());
         FileUtils.forceMkdir(cacheDirectory);
         return cacheDirectory;
     }
@@ -149,9 +143,9 @@ public class BlurImageController extends BasePublicRestController {
             BufferedImage image = ImageIO.read(input);
             image = scaleImage(image, BufferedImage.TYPE_INT_RGB, 1080, 1080);
             BufferedImage blurredImage = null;
-            if (useOpenCV && openCVService.isInitialized()) {
+            if (apiProperties.getBlur().isUseOpenCV() && openCVService.isInitialized()) {
                 try {
-                    blurredImage = openCVService.blur(image, blurRadius);
+                    blurredImage = openCVService.blur(image, apiProperties.getBlur().getRadius());
                 } catch (IOException e) {
                     // fall down and apply legacy box blur
                 }

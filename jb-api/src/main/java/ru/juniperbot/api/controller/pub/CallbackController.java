@@ -103,7 +103,7 @@ public class CallbackController extends BasePublicRestController {
     public void youTubeCallback(
             @AtomFeed SyndFeed feed,
             @RequestParam("secret") String secret) {
-        if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
+        if (!Objects.equals(apiProperties.getYouTube().getPubSubSecret(), secret)) {
             throw new AccessDeniedException();
         }
         taskExecutor.execute(() -> {
@@ -130,7 +130,7 @@ public class CallbackController extends BasePublicRestController {
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.GET)
     public String youTubeCallbackChallenge(@RequestParam("hub.verify_token") String secret,
                                            @RequestParam("hub.challenge") String challenge) {
-        if (!Objects.equals(youTubeService.getPubSubSecret(), secret)) {
+        if (!Objects.equals(apiProperties.getYouTube().getPubSubSecret(), secret)) {
             log.warn("YouTube callback challenge denied, wrong secret");
             throw new AccessDeniedException();
         }

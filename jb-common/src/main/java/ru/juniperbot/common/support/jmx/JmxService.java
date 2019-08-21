@@ -14,28 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.service;
+package ru.juniperbot.common.support.jmx;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jmx.support.ConnectorServerFactoryBean;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 
 import javax.management.JMException;
 import java.io.IOException;
 
 @Service
-@ConditionalOnProperty(prefix = "jmx", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "juniperbot.common.jmx", name = "enabled", havingValue = "true")
 public class JmxService extends ConnectorServerFactoryBean {
 
     private static final String SERVICE_URL = "service:jmx:jmxmp://localhost:%s";
 
-    @Value("${jmx.port:9875}")
-    private int port;
+    @Autowired
+    private CommonProperties commonProperties;
 
     @Override
     public void afterPropertiesSet() throws JMException, IOException {
-        setServiceUrl(String.format(SERVICE_URL, port));
+        setServiceUrl(String.format(SERVICE_URL, commonProperties.getJmx().getPort()));
         super.afterPropertiesSet();
     }
 }

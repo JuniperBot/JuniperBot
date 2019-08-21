@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -40,9 +40,11 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.web.client.HttpClientErrorException;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.api.security.model.DiscordGuildDetails;
 import ru.juniperbot.api.security.model.DiscordUserDetails;
 import ru.juniperbot.api.security.utils.SecurityUtils;
+import ru.juniperbot.common.configuration.CommonProperties;
 
 import java.util.List;
 import java.util.Map;
@@ -56,18 +58,15 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class DiscordTokenServices implements ResourceServerTokenServices {
 
-    private final String userInfoEndpointUrl;
-
-    private final String guildsInfoEndpointUrl;
-
-    private final String clientId;
-
     private final OAuth2ProtectedResourceDetails resource;
 
     private Map<String, OAuth2RestTemplate> restTemplates = new ConcurrentHashMap<>();
 
-    @Value("${discord.client.superUserId}")
-    private String superUserId;
+    @Autowired
+    private CommonProperties commonProperties;
+
+    @Autowired
+    private ApiProperties apiProperties;
 
     @Setter
     @Getter
@@ -84,7 +83,8 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
             .build(
                     new CacheLoader<>() {
                         public List<DiscordGuildDetails> load(String accessToken) {
-                            List<Map<Object, Object>> list = executeRequest(List.class, guildsInfoEndpointUrl, accessToken);
+                            List<Map<Object, Object>> list = executeRequest(List.class,
+                                    apiProperties.getDiscord().getGuildsInfoUri(), accessToken);
                             return list.stream().map(DiscordGuildDetails::create).collect(Collectors.toList());
                         }
                     });
@@ -96,11 +96,13 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
             .build(
                     new CacheLoader<>() {
                         public OAuth2Authentication load(String accessToken) {
-                            Map map = executeRequest(Map.class, userInfoEndpointUrl, accessToken);
+                            Map map = executeRequest(Map.class,
+                                    apiProperties.getDiscord().getUserInfoUri(), accessToken);
                             Object principal = map.get("username");
                             principal = (principal == null ? "unknown" : principal);
                             List<GrantedAuthority> authorities = authoritiesExtractor.extractAuthorities(map);
-                            OAuth2Request request = new OAuth2Request(null, clientId, null, true, null,
+                            OAuth2Request request = new OAuth2Request(null,
+                                    apiProperties.getDiscord().getClientId(), null, true, null,
                                     null, null, null, null);
                             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                                     principal, "N/A", authorities);
@@ -109,10 +111,7 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
                         }
                     });
 
-    public DiscordTokenServices(String userInfoEndpointUrl, String guildsInfoEndpointUrl, String clientId, OAuth2ProtectedResourceDetails resource) {
-        this.userInfoEndpointUrl = userInfoEndpointUrl;
-        this.guildsInfoEndpointUrl = guildsInfoEndpointUrl;
-        this.clientId = clientId;
+    public DiscordTokenServices(OAuth2ProtectedResourceDetails resource) {
         this.resource = resource;
     }
 
@@ -147,6 +146,7 @@ public class DiscordTokenServices implements ResourceServerTokenServices {
 
     public boolean hasPermission(DiscordGuildDetails details) {
         DiscordUserDetails user = SecurityUtils.getCurrentUser();
+        String superUserId = commonProperties.getDiscord().getSuperUserId();
         return details.isOwner() || details.getPermissions().contains(Permission.ADMINISTRATOR)
                 || (StringUtils.isNotEmpty(superUserId) && user != null && Objects.equals(superUserId, user.getId()));
     }

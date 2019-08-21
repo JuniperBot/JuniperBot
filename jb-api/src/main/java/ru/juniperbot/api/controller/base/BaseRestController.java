@@ -19,12 +19,16 @@ package ru.juniperbot.api.controller.base;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.api.service.ApiMapperService;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.service.GatewayService;
 
 @RequestMapping("api/priv")
 public abstract class BaseRestController {
+
+    @Autowired
+    protected ApiProperties apiProperties;
 
     @Autowired
     protected ConfigService configService;

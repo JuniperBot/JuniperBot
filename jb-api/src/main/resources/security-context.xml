@@ -41,13 +41,13 @@
 
     <bean id="publicConfiguration" class="org.springframework.web.cors.CorsConfiguration"
           p:allowedOrigins="*"
-          p:allowedMethods="#{'${security.cors.allowedMethods:GET,HEAD,POST,OPTIONS,PUT,DELETE}'.split(',')}"
+          p:allowedMethods="#{apiProperties.cors.allowedMethods}"
           p:allowedHeaders="*">
     </bean>
 
     <bean id="domainConfiguration" class="org.springframework.web.cors.CorsConfiguration"
-          p:allowedOrigins="#{'${security.cors.allowedOrigins}'.split(',')}"
-          p:allowedMethods="#{'${security.cors.allowedMethods:GET,HEAD,POST,OPTIONS,PUT,DELETE}'.split(',')}"
+          p:allowedOrigins="#{apiProperties.cors.privateOrigins}"
+          p:allowedMethods="#{apiProperties.cors.allowedMethods}"
           p:allowedHeaders="*">
     </bean>
 
@@ -111,13 +111,13 @@
     </bean>
 
     <oauth2:resource id="oauthResource"
-                     client-id="${discord.oauth.clientId}"
-                     client-secret="${discord.oauth.clientSecret}"
-                     user-authorization-uri="${discord.oauth.authorize}"
-                     access-token-uri="${discord.oauth.token}"
+                     client-id="${juniperbot.api.discord.clientId}"
+                     client-secret="${juniperbot.api.discord.clientSecret}"
+                     user-authorization-uri="${juniperbot.api.discord.authorizeUri}"
+                     access-token-uri="${juniperbot.api.discord.tokenUri}"
                      type="authorization_code"
                      client-authentication-scheme="query"
-                     scope="${discord.oauth.scope}"/>
+                     scope="${juniperbot.api.discord.scope}"/>
 
     <bean id="requestFactory" class="ru.juniperbot.api.security.auth.DiscordHttpRequestFactory"/>
     <bean id="tokenProvider"
@@ -127,9 +127,6 @@
 
     <bean id="discordTokenServices" class="ru.juniperbot.api.security.auth.DiscordTokenServices"
           p:requestFactory-ref="requestFactory">
-        <constructor-arg value="${discord.oauth.userInfoUri}"/>
-        <constructor-arg value="${discord.oauth.guildsInfoUri}"/>
-        <constructor-arg value="${discord.oauth.clientId}"/>
         <constructor-arg ref="oauthResource"/>
     </bean>
 

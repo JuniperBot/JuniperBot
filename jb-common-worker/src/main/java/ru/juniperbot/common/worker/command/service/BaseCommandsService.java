@@ -106,7 +106,7 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
         GuildConfig guildConfig = entityAccessor.getOrCreate(event.getGuild());
 
         if (!usingMention) {
-            prefix = guildConfig != null ? guildConfig.getPrefix() : commonProperties.getDefaultPrefix();
+            prefix = guildConfig != null ? guildConfig.getPrefix() : commonProperties.getDiscord().getDefaultPrefix();
             if (prefix.length() > content.length()) {
                 return true;
             }

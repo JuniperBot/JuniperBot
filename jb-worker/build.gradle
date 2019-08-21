@@ -37,6 +37,9 @@ dependencies {
     compile project(':jb-common-worker')
     compile project(':modules')
 
+    compile(group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: jmxRemote)
+    compile(group: 'org.glassfish.external', name: 'opendmk_jmxremote_optional_jar', version: jmxRemoteLegacy)
+
     compile(group: 'org.codehaus.groovy', name: 'groovy')
 }
 

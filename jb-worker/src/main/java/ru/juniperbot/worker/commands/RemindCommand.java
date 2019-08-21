@@ -90,7 +90,7 @@ public class RemindCommand extends AbstractCommand {
             // fall down
         }
 
-        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : commonProperties.getDefaultPrefix();
+        String prefix = context.getConfig() != null ? context.getConfig().getPrefix() : commonProperties.getDiscord().getDefaultPrefix();
 
         String remindCommand = messageService.getMessageByLocale("discord.command.remind.key",
                 context.getCommandLocale());

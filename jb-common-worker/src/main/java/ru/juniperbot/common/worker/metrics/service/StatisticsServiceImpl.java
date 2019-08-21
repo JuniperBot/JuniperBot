@@ -59,9 +59,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
-    @Value("${discord.oauth.clientId}")
-    private String clientId;
-
     @Value("${discord.stats.discordbotsOrgToken:}")
     private String orgToken;
 
@@ -116,11 +113,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     @Async
     public void notifyProviders(JDA shard) {
-        notifyProvider(new DiscordBotsOrgStats(shard), ORG_ENDPOINT, orgToken);
-        notifyProvider(new DiscordBotsGgStats(shard), GG_ENDPOINT, ggToken);
+        notifyProvider(shard, new DiscordBotsOrgStats(shard), ORG_ENDPOINT, orgToken);
+        notifyProvider(shard, new DiscordBotsGgStats(shard), GG_ENDPOINT, ggToken);
     }
 
-    private void notifyProvider(Serializable stats, String endPoint, String token) {
+    private void notifyProvider(JDA shard, Serializable stats, String endPoint, String token) {
         if (StringUtils.isEmpty(token)) {
             return;
         }
@@ -128,7 +125,8 @@ public class StatisticsServiceImpl implements StatisticsService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", token);
             HttpEntity<Serializable> request = new HttpEntity<>(stats, headers);
-            ResponseEntity<String> response = restTemplate.exchange(endPoint, HttpMethod.POST, request, String.class, clientId);
+            ResponseEntity<String> response = restTemplate.exchange(endPoint, HttpMethod.POST, request, String.class,
+                    shard.getSelfUser().getId());
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
                 log.warn("Could not report stats {} to endpoint {}: response is {}", stats, endPoint,
                         response.getStatusCode());

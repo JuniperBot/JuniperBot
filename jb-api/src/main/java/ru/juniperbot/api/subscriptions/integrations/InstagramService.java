@@ -31,13 +31,13 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.api.ApiProperties;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.model.InstagramMedia;
 import ru.juniperbot.common.model.InstagramProfile;
@@ -67,15 +67,6 @@ public class InstagramService {
 
     private static final Pattern PATTERN = Pattern.compile("window._sharedData = (.*);</script>");
 
-    @Value("${integrations.instagram.pollUserName:juniperfoxx}")
-    private String pollUserName;
-
-    @Value("${integrations.instagram.ttl:30000}")
-    private Long ttl;
-
-    @Value("${integrations.instagram.updateInterval:30000}")
-    private Long updateInterval;
-
     @Autowired
     private TaskScheduler scheduler;
 
@@ -88,6 +79,9 @@ public class InstagramService {
     @Autowired
     private CommonProperties commonProperties;
 
+    @Autowired
+    private ApiProperties apiProperties;
+
     private InstagramProfile cache;
 
     private long latestUpdate;
@@ -96,11 +90,7 @@ public class InstagramService {
 
     private long latestId;
 
-    @Value("${spring.application.name}")
-    private String userName;
-
     @Getter
-    @Value("${instagram.pollUserName:juniperfoxx}")
     private String accountName;
 
     @Getter
@@ -108,16 +98,18 @@ public class InstagramService {
 
     @PostConstruct
     public void init() {
+        accountName = apiProperties.getInstagram().getPollUserName();
         restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
-        scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+        scheduler.scheduleWithFixedDelay(this::update, apiProperties.getInstagram().getUpdateInterval());
     }
 
     @Synchronized("$recentLock")
     public InstagramProfile getRecent() {
         try {
             long currentTimestamp = System.currentTimeMillis();
-            if (currentTimestamp > latestUpdate + ttl) {
-                ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL + pollUserName, String.class);
+            if (currentTimestamp > latestUpdate + apiProperties.getInstagram().getTtl()) {
+                ResponseEntity<String> response = restTemplate.getForEntity(ROOT_URL
+                        + apiProperties.getInstagram().getPollUserName(), String.class);
                 if (HttpStatus.OK == response.getStatusCode()) {
                     String result = response.getBody();
                     if (result == null) {
@@ -240,7 +232,7 @@ public class InstagramService {
         WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
                 .setImageUrl(media.getImageUrl())
                 .setTimestamp(media.getDate().toInstant())
-                .setColor(CommonUtils.hex2Rgb(commonProperties.getDefaultAccentColor()).getRGB())
+                .setColor(CommonUtils.hex2Rgb(commonProperties.getDiscord().getDefaultAccentColor()).getRGB())
                 .setAuthor(new WebhookEmbed.EmbedAuthor(profile.getFullName(), profile.getImageUrl(), null));
 
         if (media.getText() != null) {
