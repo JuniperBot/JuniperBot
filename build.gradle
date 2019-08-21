@@ -45,7 +45,7 @@ allprojects {
     }
 
     group = 'ru.juniperbot'
-    version = System.getenv('CI_VERSION') ?: '6.x-SNAPSHOT'
+    version = System.getenv('CI_VERSION') ?: '7.x-SNAPSHOT'
 }
 
 subprojects {

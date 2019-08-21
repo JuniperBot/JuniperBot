@@ -4,14 +4,14 @@ services:
 
 variables:
   DOCKER_DRIVER: overlay
-  CI_VERSION: '6.9.$CI_PIPELINE_IID'
+  CI_VERSION: '7.0.$CI_PIPELINE_IID'
 
 stages:
 - build
 - package
 - trigger
 
-build-backend:
+build:
   image: openjdk:10.0.2-jdk-slim
   stage: build
   before_script:
@@ -25,17 +25,33 @@ build-backend:
   artifacts:
     expire_in: 1 week
     paths:
-    - jb-web/build/libs/JuniperBot.jar
+    - jb-api/build/libs/JuniperBot-API.jar
+    - jb-worker/build/libs/JuniperBot-Worker.jar
 
-build-docker:
+package-worker:
   stage: package
   script:
+  - cd jb-worker
   - docker build -t registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME -t registry.gitlab.com/juniperbot/backend:$CI_VERSION .
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
   - docker push registry.gitlab.com/juniperbot/backend:$CI_COMMIT_REF_NAME
   - docker push registry.gitlab.com/juniperbot/backend:$CI_VERSION
   dependencies:
-  - build-backend
+  - build
+  only:
+  - master
+  - develop
+
+package-api:
+  stage: package
+  script:
+  - cd jb-api
+  - docker build -t registry.gitlab.com/juniperbot/api:$CI_COMMIT_REF_NAME -t registry.gitlab.com/juniperbot/api:$CI_VERSION .
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - docker push registry.gitlab.com/juniperbot/api:$CI_COMMIT_REF_NAME
+  - docker push registry.gitlab.com/juniperbot/api:$CI_VERSION
+  dependencies:
+  - build
   only:
   - master
   - develop

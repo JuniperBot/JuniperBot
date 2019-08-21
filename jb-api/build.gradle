@@ -28,7 +28,7 @@ ext {
 mainClassName = 'ru.juniperbot.api.JuniperApiApplication'
 
 bootJar {
-    archiveName = "JuniperBot.jar"
+    archiveName = "JuniperBot-API.jar"
 }
 
 dependencies {
