@@ -57,11 +57,10 @@ subprojects {
     targetCompatibility = JavaVersion.VERSION_1_10
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.annotationProcessorPath = configurations.annotationProcessor
     compileJava.options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
 
     ext {
-        generatedMainJava = "${buildDir}/generated/main/java"
+        generatedMainJava = "${buildDir}/generated"
 
         //@formatter:off
 
@@ -119,11 +118,11 @@ subprojects {
     }
 
     sourceSets {
-        main.java.srcDir generatedMainJava
+        main.java.srcDirs += generatedMainJava
     }
 
     dependencies {
-        annotationProcessor "javax.xml.bind:jaxb-api:2.3.0"
+        annotationProcessor "javax.xml.bind:jaxb-api"
         annotationProcessor(group: 'org.hibernate', name: 'hibernate-jpamodelgen', version: hibernateVersion)
         compileOnly(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
         annotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
