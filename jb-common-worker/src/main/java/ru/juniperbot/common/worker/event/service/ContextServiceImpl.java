@@ -28,12 +28,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.utils.LocaleUtils;
 
@@ -65,6 +65,9 @@ public class ContextServiceImpl implements ContextService {
 
     @Getter
     private Color accentColor;
+
+    @Autowired
+    private CommonProperties commonProperties;
 
     @Autowired
     private ConfigService configService;
@@ -103,6 +106,10 @@ public class ContextServiceImpl implements ContextService {
 
     @Override
     public Color getDefaultColor() {
+        if (accentColor == null) {
+            String defaultAccentColor = commonProperties.getDiscord().getDefaultAccentColor();
+            accentColor = StringUtils.isNotEmpty(defaultAccentColor) ? Color.decode(defaultAccentColor) : null;
+        }
         return accentColor;
     }
 
@@ -289,11 +296,6 @@ public class ContextServiceImpl implements ContextService {
         guildHolder.remove();
         localeHolder.remove();
         colorHolder.remove();
-    }
-
-    @Value("${discord.accentColor:#FFA550}")
-    public void setAccentColor(String color) {
-        accentColor = StringUtils.isNotEmpty(color) ? Color.decode(color) : null;
     }
 
     public ContextHolder getContext() {

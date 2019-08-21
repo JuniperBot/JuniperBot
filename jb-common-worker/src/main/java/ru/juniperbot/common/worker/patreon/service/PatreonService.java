@@ -24,6 +24,4 @@ public interface PatreonService extends FeatureSetProvider {
     boolean processWebHook(PatreonRequest request);
 
     void update();
-
-    void setUpdateEnabled(boolean enabled);
 }

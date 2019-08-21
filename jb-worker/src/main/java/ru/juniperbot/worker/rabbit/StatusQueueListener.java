@@ -80,7 +80,7 @@ public class StatusQueueListener extends BaseQueueListener {
                 })
                 .collect(Collectors.toList()));
 
-        if (lavaAudioService.getConfiguration().isEnabled()) {
+        if (workerProperties.getAudio().getLavalink().isEnabled()) {
             result.setLinkNodes(lavaAudioService.getLavaLink().getNodes().stream()
                     .sorted(Comparator.comparing(LavalinkSocket::getName))
                     .map(e -> {

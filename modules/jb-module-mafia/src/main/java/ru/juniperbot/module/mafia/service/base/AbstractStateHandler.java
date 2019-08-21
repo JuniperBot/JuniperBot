@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import ru.juniperbot.common.service.ConfigService;
@@ -42,20 +41,15 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
 
     protected static final String CHOOSE = "✅";
 
-    @Value("${features.mafia.debug:false}")
-    protected boolean debug;
+    protected static final boolean DEBUG = false;
 
-    @Value("${features.mafia.dayDelay:300000}")
-    protected Long dayDelay;
+    protected static final long DAY_DELAY = 300000;
 
-    @Value("${features.mafia.choosingDelay:300000}")
-    protected Long choosingDelay;
+    protected static final long CHOOSING_DELAY = 300000;
 
-    @Value("${features.mafia.meetingDelay:30000}")
-    protected Long meetingDelay;
+    protected static final long MEETING_DELAY = 30000;
 
-    @Value("${features.mafia.individualDelay:120000}")
-    protected Long individualDelay;
+    protected static final long INDIVIDUAL_DELAY = 120000;
 
     @Autowired
     protected TaskScheduler scheduler;

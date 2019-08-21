@@ -19,6 +19,7 @@ package ru.juniperbot.worker.rabbit;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 
 @Slf4j
@@ -26,6 +27,9 @@ public abstract class BaseQueueListener {
 
     @Autowired
     protected DiscordService discordService;
+
+    @Autowired
+    protected WorkerProperties workerProperties;
 
     protected Guild getGuildById(Long guildId) {
         if (guildId == null || !discordService.isConnected(guildId)) {

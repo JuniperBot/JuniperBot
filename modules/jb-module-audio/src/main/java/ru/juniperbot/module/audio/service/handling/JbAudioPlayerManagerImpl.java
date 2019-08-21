@@ -33,8 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
@@ -46,23 +46,19 @@ import java.util.List;
 @Component
 public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implements JbAudioPlayerManager {
 
-    @Value("${discord.audio.resamplingQuality:MEDIUM}")
-    private AudioConfiguration.ResamplingQuality resamplingQuality;
-
-    @Value("${discord.audio.frameBufferDuration:2000}")
-    private int frameBufferDuration;
-
-    @Value("${discord.audio.itemLoaderThreadPoolSize:500}")
-    private int itemLoaderThreadPoolSize;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private List<AudioSourceManager> audioSourceManagers;
 
     @PostConstruct
     public void init() {
-        getConfiguration().setResamplingQuality(resamplingQuality);
-        setFrameBufferDuration(frameBufferDuration);
-        setItemLoaderThreadPoolSize(itemLoaderThreadPoolSize);
+        WorkerProperties.Audio configuration = workerProperties.getAudio();
+        getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality
+                .valueOf(configuration.getResamplingQuality()));
+        setFrameBufferDuration(configuration.getFrameBufferDuration());
+        setItemLoaderThreadPoolSize(configuration.getItemLoaderThreadPoolSize());
         registerSourceManager(new YoutubeAudioSourceManager(true));
         registerSourceManager(new SoundCloudAudioSourceManager());
         registerSourceManager(new BandcampAudioSourceManager());

@@ -17,15 +17,12 @@
 package ru.juniperbot.common.worker.metrics.service;
 
 import com.codahale.metrics.*;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.juniperbot.common.persistence.entity.StoredMetric;
 import ru.juniperbot.common.persistence.repository.StoredMetricRepository;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.metrics.model.DiscordBotsGgStats;
 import ru.juniperbot.common.worker.metrics.model.DiscordBotsOrgStats;
 import ru.juniperbot.common.worker.metrics.model.PersistentMetric;
@@ -59,22 +57,14 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
 
-    @Value("${discord.stats.discordbotsOrgToken:}")
-    private String orgToken;
-
-    @Value("${discord.stats.discordbotsGgToken:}")
-    private String ggToken;
-
-    @Getter
-    @Setter
-    @Value("${discord.stats.detailedMetrics:true}")
-    private boolean detailed;
-
     @Autowired
     private MetricRegistry metricRegistry;
 
     @Autowired
     private StoredMetricRepository metricRepository;
+
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Override
     public Timer getTimer(String name) {
@@ -113,8 +103,10 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     @Async
     public void notifyProviders(JDA shard) {
-        notifyProvider(shard, new DiscordBotsOrgStats(shard), ORG_ENDPOINT, orgToken);
-        notifyProvider(shard, new DiscordBotsGgStats(shard), GG_ENDPOINT, ggToken);
+        notifyProvider(shard, new DiscordBotsOrgStats(shard), ORG_ENDPOINT,
+                workerProperties.getStats().getDiscordbotsOrgToken());
+        notifyProvider(shard, new DiscordBotsGgStats(shard), GG_ENDPOINT,
+                workerProperties.getStats().getDiscordbotsGgToken());
     }
 
     private void notifyProvider(JDA shard, Serializable stats, String endPoint, String token) {

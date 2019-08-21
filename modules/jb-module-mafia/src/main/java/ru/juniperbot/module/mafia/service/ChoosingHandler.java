@@ -41,7 +41,7 @@ public class ChoosingHandler extends AbstractStateHandler {
     @Override
     public boolean onStart(User user, MafiaInstance instance) {
         instance.tick();
-        String delayText = getEndTimeText(instance, choosingDelay);
+        String delayText = getEndTimeText(instance, CHOOSING_DELAY);
         EmbedBuilder builder = getBaseEmbed("mafia.start.message");
 
         GuildConfig config = configService.get(instance.getGuild());
@@ -74,14 +74,14 @@ public class ChoosingHandler extends AbstractStateHandler {
                 return false;
             });
         });
-        return scheduleEnd(instance, choosingDelay);
+        return scheduleEnd(instance, CHOOSING_DELAY);
     }
 
     @Override
     public boolean onEnd(User user, MafiaInstance instance) {
         instance.setState(MafiaState.MEETING);
         int playerCount = instance.getPlayers().size();
-        int minPlayers = debug ? 2 : 3;
+        int minPlayers = DEBUG ? 2 : 3;
         if (playerCount < minPlayers) {
             instance.setEndReason(messageService.getMessage("mafia.start.minPlayers.title", minPlayers));
             return true;

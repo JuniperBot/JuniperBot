@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.message.service.MessageService;
 
 import java.awt.*;
@@ -31,8 +31,8 @@ import java.awt.*;
 @Service
 public class EmergencyServiceImpl implements EmergencyService {
 
-    @Value("${discord.emergencyChannelId:}")
-    private String emergencyChannelId;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private DiscordService discordService;
@@ -42,7 +42,8 @@ public class EmergencyServiceImpl implements EmergencyService {
 
     @Override
     public void error(String message, Throwable throwable) {
-        if (emergencyChannelId == null || !discordService.isConnected()) {
+        Long emergencyChannelId = workerProperties.getSupport().getEmergencyChannelId();
+        if (emergencyChannelId == null || !discordService.isConnected(workerProperties.getSupport().getGuildId())) {
             return;
         }
         TextChannel channel = discordService.getShardManager().getTextChannelById(emergencyChannelId);
@@ -64,7 +65,8 @@ public class EmergencyServiceImpl implements EmergencyService {
 
     @Override
     public void error(String message) {
-        if (emergencyChannelId == null || !discordService.isConnected()) {
+        Long emergencyChannelId = workerProperties.getSupport().getEmergencyChannelId();
+        if (emergencyChannelId == null || !discordService.isConnected(workerProperties.getSupport().getGuildId())) {
             return;
         }
         TextChannel channel = discordService.getShardManager().getTextChannelById(emergencyChannelId);

@@ -80,7 +80,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
                     individual.getName()));
             return true;
         }
-        return scheduleEnd(instance, individualDelay);
+        return scheduleEnd(instance, INDIVIDUAL_DELAY);
     }
 
     @Override
@@ -100,7 +100,7 @@ public abstract class IndividualHandler<T extends MafiaStateHandler> extends Abs
 
         EmbedBuilder builder = getBaseEmbed(welcomeCode);
         builder.setFooter(messageService.getMessage("mafia.invidual.choice.footer", getEndTimeText(instance,
-                endDelay != null ? endDelay : individualDelay)), null);
+                endDelay != null ? endDelay : INDIVIDUAL_DELAY)), null);
         List<MafiaPlayer> players = new ArrayList<>(instance.getAlive());
         players.remove(individual);
         if (!players.isEmpty()) {

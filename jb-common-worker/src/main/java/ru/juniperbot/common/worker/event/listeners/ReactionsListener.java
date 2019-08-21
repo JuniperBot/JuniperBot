@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.service.ContextService;
 
@@ -47,8 +47,8 @@ public class ReactionsListener extends DiscordEventListener {
     @Autowired
     private ContextService contextService;
 
-    @Value("${core.listenerTtlMs:3600000}")
-    private long listenerTtlMs;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Override
     public void onGenericMessageReaction(GenericMessageReactionEvent event) {
@@ -78,7 +78,7 @@ public class ReactionsListener extends DiscordEventListener {
     public void monitor() {
         long currentTimeMillis = System.currentTimeMillis();
         Set<String> oldListeners = messageTtl.entrySet().stream()
-                .filter(e -> currentTimeMillis - e.getValue() > listenerTtlMs)
+                .filter(e -> currentTimeMillis - e.getValue() > workerProperties.getDiscord().getReactionsTtlMs())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
         unsubscribeAll(oldListeners);

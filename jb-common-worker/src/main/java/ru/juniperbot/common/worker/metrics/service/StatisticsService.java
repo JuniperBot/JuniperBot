@@ -38,10 +38,6 @@ public interface StatisticsService {
 
     void persistMetrics();
 
-    boolean isDetailed();
-
-    void setDetailed(boolean detailed);
-
     void doWithTimer(String name, Runnable action);
 
     void doWithTimer(Timer timer, Runnable action);

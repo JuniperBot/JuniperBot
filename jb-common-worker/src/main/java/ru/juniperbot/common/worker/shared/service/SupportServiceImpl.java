@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Role;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.juniperbot.common.worker.shared.model.SupportConfiguration;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 
 import java.util.Objects;
 import java.util.Set;
@@ -31,14 +31,14 @@ import java.util.Set;
 public class SupportServiceImpl implements SupportService {
 
     @Autowired
-    private SupportConfiguration configuration;
+    private WorkerProperties workerProperties;
 
     @Autowired
     private DiscordService discordService;
 
     @Override
     public void grantDonators(Set<String> donatorIds) {
-        if (CollectionUtils.isEmpty(donatorIds) || !discordService.isConnected(configuration.getGuildId())) {
+        if (CollectionUtils.isEmpty(donatorIds)) {
             return;
         }
         Role donatorRole = getDonatorRole();
@@ -46,30 +46,31 @@ public class SupportServiceImpl implements SupportService {
             return;
         }
         Guild guild = donatorRole.getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-            return;
+        if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            donatorIds.stream()
+                    .map(guild::getMemberById)
+                    .filter(Objects::nonNull)
+                    .filter(e -> !e.getRoles().contains(donatorRole))
+                    .forEach(e -> guild.addRoleToMember(e, donatorRole).queue());
         }
-        donatorIds.stream()
-                .map(guild::getMemberById)
-                .filter(Objects::nonNull)
-                .filter(e -> !e.getRoles().contains(donatorRole))
-                .forEach(e -> guild.addRoleToMember(e, donatorRole).queue());
     }
 
     @Override
     public Guild getSupportGuild() {
-        if (configuration.getGuildId() == null) {
+        Long guildId = workerProperties.getSupport().getGuildId();
+        if (guildId == null || !discordService.isConnected(guildId)) {
             return null;
         }
-        return discordService.getGuildById(configuration.getGuildId());
+        return discordService.getGuildById(guildId);
     }
 
     @Override
     public Role getDonatorRole() {
-        if (configuration.getDonatorRoleId() == null) {
+        Long donatorRoleId = workerProperties.getSupport().getDonatorRoleId();
+        if (donatorRoleId == null) {
             return null;
         }
         Guild guild = getSupportGuild();
-        return guild != null ? guild.getRoleById(configuration.getDonatorRoleId()) : null;
+        return guild != null ? guild.getRoleById(donatorRoleId) : null;
     }
 }

@@ -16,8 +16,6 @@
  */
 package ru.juniperbot.common.worker.event.service;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -26,10 +24,10 @@ import net.dv8tion.jda.api.hooks.EventListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.intercept.EventFilterFactory;
 import ru.juniperbot.common.worker.event.intercept.FilterChain;
@@ -46,10 +44,8 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     private final Map<Class<?>, EventFilterFactory<?>> filterFactoryMap = new ConcurrentHashMap<>();
 
-    @Getter
-    @Setter
-    @Value("${discord.asyncEvents:true}")
-    private boolean async;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private ContextService contextService;
@@ -60,7 +56,7 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     @Override
     public void handle(GenericEvent event) {
-        if (async) {
+        if (workerProperties.getEvents().isAsyncExecution()) {
             try {
                 taskExecutor.execute(() -> handleEvent(event));
             } catch (TaskRejectedException e) {

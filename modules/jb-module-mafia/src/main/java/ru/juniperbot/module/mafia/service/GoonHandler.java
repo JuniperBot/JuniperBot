@@ -96,7 +96,7 @@ public class GoonHandler extends ChoiceStateHandler {
         embed.addField(messageService.getMessage("mafia.start.playerList.title"),
                 getPlayerList(players), false);
         embed.setFooter(messageService.getMessage("mafia.goon.choice.footer",
-                getEndTimeText(instance, dayDelay), instance.getPrefix(), nextCommand), null);
+                getEndTimeText(instance, DAY_DELAY), instance.getPrefix(), nextCommand), null);
         builder.setEmbed(embed.build());
         builder.setContent(instance.getGoonsMentions());
 
@@ -106,7 +106,7 @@ public class GoonHandler extends ChoiceStateHandler {
         }
         goonChannel.sendMessage(builder.build())
                 .queue(message -> sendChoice(instance, message, instance.getGoons()));
-        return scheduleEnd(instance, dayDelay);
+        return scheduleEnd(instance, DAY_DELAY);
     }
 
     @SuppressWarnings("unchecked")

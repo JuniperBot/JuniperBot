@@ -28,8 +28,6 @@ public interface DiscordService {
 
     String getUserId();
 
-    int getShardsNum();
-
     JDA getJda();
 
     User getSelfUser();

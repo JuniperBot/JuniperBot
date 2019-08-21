@@ -24,7 +24,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.model.FeatureSet;
@@ -34,6 +33,7 @@ import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.common.persistence.entity.PatreonUser;
 import ru.juniperbot.common.persistence.repository.PatreonUserRepository;
 import ru.juniperbot.common.utils.PatreonUtils;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.feature.provider.BaseOwnerFeatureSetProvider;
 import ru.juniperbot.common.worker.feature.provider.FeatureProvider;
 import ru.juniperbot.common.worker.patreon.PatreonAPI;
@@ -56,23 +56,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     private final Object $webHookLock = new Object[0];
 
-    @Value("${integrations.patreon.campaignId:1552419}")
-    private String campaignId;
-
-    @Value("${integrations.patreon.webhookSecret:}")
-    private String webHookSecret;
-
-    @Value("${integrations.patreon.accessToken:}")
-    private String accessToken;
-
-    @Value("${integrations.patreon.refreshToken:}")
-    private String refreshToken;
-
-    @Value("${integrations.patreon.updateEnabled:false}")
-    private boolean updateEnabled;
-
-    @Value("${integrations.patreon.updateInterval:600000}")
-    private Long updateInterval;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private EmergencyService emergencyService;
@@ -99,16 +84,19 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         List<PatreonUser> activeUsers = repository.findActive();
         featureSets.putAll(activeUsers.stream().collect(Collectors.toMap(e -> Long.valueOf(e.getUserId()), PatreonUser::getFeatureSets)));
 
+        String accessToken = workerProperties.getPatreon().getAccessToken();
         if (StringUtils.isNotEmpty(accessToken)) {
             creatorApi = new PatreonAPI(accessToken);
-            if (updateEnabled) {
-                updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
+            if (workerProperties.getPatreon().isUpdateEnabled()) {
+                updateFuture = scheduler.scheduleWithFixedDelay(this::update,
+                        workerProperties.getPatreon().getUpdateInterval());
             }
         } else {
             log.warn("No Patreon credentials specified, integration would not work");
         }
-        if (StringUtils.isNotEmpty(webHookSecret)) {
-            webHookHmac = new HmacUtils(HmacAlgorithms.HMAC_MD5, webHookSecret);
+        String webhookSecret = workerProperties.getPatreon().getWebhookSecret();
+        if (StringUtils.isNotEmpty(webhookSecret)) {
+            webHookHmac = new HmacUtils(HmacAlgorithms.HMAC_MD5, webhookSecret);
         } else {
             log.warn("No Patreon WebHook secret specified, WebHooks would not work");
         }
@@ -128,7 +116,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
             Set<String> donators = new HashSet<>();
 
-            List<Member> members = creatorApi.fetchAllMembers(campaignId);
+            List<Member> members = creatorApi.fetchAllMembers(workerProperties.getPatreon().getCampaignId());
             for (Member member : members) {
                 User patron = member.getUser();
                 if (member.getUser() == null) {
@@ -251,25 +239,6 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             patron.setUserId(discordUserId);
         }
         return patron;
-    }
-
-    @Override
-    public void setUpdateEnabled(boolean enabled) {
-        this.updateEnabled = enabled;
-        if (enabled && updateFuture == null) {
-            synchronized ($lock) {
-                if (updateFuture == null) {
-                    updateFuture = scheduler.scheduleWithFixedDelay(this::update, updateInterval);
-                }
-            }
-        } else if (!enabled && updateFuture != null) {
-            synchronized ($lock) {
-                if (updateFuture != null) {
-                    updateFuture.cancel(false);
-                    updateFuture = null;
-                }
-            }
-        }
     }
 
     private static String getDiscordId(User user) {

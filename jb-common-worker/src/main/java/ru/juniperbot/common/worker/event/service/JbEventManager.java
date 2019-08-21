@@ -20,7 +20,4 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 
 public interface JbEventManager extends IEventManager {
 
-    boolean isAsync();
-
-    void setAsync(boolean async);
 }

@@ -34,12 +34,12 @@ import org.goldrenard.jb.core.Bot;
 import org.goldrenard.jb.core.Chat;
 import org.goldrenard.jb.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.worker.command.service.CommandHandler;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.service.ContextService;
 
 import java.util.Map;
@@ -52,13 +52,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AimlServiceImpl implements AimlService, CommandHandler {
 
-    @Value("${integrations.aiml.path:}")
-    private String path;
-
     @Getter
     @Setter
-    @Value("${integrations.aiml.enabled:true}")
-    private boolean enabled;
+    private boolean enabled = true;
 
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
@@ -66,6 +62,9 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
             .concurrencyLevel(4)
             .expireAfterAccess(1, TimeUnit.HOURS)
             .build();
+
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private ConfigService configService;
@@ -77,7 +76,7 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
         return bots.computeIfAbsent(name, e -> {
             BotConfiguration configuration = BotConfiguration.builder()
                     .name(name)
-                    .path(path)
+                    .path(workerProperties.getAiml().getBrainsPath())
                     .action("chat")
                     .build();
             return new Bot(configuration);
@@ -103,7 +102,11 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Override
     public boolean handleMessage(GuildMessageReceivedEvent event) {
-        if (!enabled || StringUtils.isEmpty(path) || event.getAuthor() == null || event.getGuild() == null) {
+        if (!enabled
+                || !workerProperties.getAiml().isEnabled()
+                || StringUtils.isEmpty(workerProperties.getAiml().getBrainsPath())
+                || event.getAuthor() == null
+                || event.getGuild() == null) {
             return false;
         }
 

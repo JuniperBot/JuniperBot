@@ -128,7 +128,7 @@ public class DayHandler extends ChoiceStateHandler {
             embedBuilder.addField(messageService.getMessage("mafia.start.playerList.title"),
                     getPlayerList(instance.getAlive()), false);
             embedBuilder.setFooter(messageService.getMessage("mafia.day.start.footer",
-                    getEndTimeText(instance, dayDelay), instance.getPrefix(), nextCommand), null);
+                    getEndTimeText(instance, DAY_DELAY), instance.getPrefix(), nextCommand), null);
         } else {
             instance.setIgnoredReason();
         }
@@ -147,7 +147,7 @@ public class DayHandler extends ChoiceStateHandler {
         }
         channel.sendMessage(embedBuilder.build()).queue(onMessage);
 
-        return endOfGame || scheduleEnd(instance, dayDelay);
+        return endOfGame || scheduleEnd(instance, DAY_DELAY);
     }
 
     @Override

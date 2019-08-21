@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ import ru.juniperbot.common.persistence.entity.AuditAction;
 import ru.juniperbot.common.persistence.entity.AuditConfig;
 import ru.juniperbot.common.persistence.repository.AuditActionRepository;
 import ru.juniperbot.common.service.AuditConfigService;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 import ru.juniperbot.common.worker.modules.audit.provider.AuditForwardProvider;
@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
 public class AuditServiceImpl
         implements AuditService {
 
-    @Value("${discord.audit.durationMonths:1}")
-    private int durationMonths;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private AuditActionRepository actionRepository;
@@ -78,7 +78,7 @@ public class AuditServiceImpl
     @Scheduled(cron = "0 0 0 1 * ?")
     @Transactional
     public void runCleanUp() {
-        runCleanUp(this.durationMonths);
+        runCleanUp(this.workerProperties.getAudit().getKeepMonths());
     }
 
     @Override

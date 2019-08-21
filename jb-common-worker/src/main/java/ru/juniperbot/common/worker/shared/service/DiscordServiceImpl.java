@@ -22,7 +22,6 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
@@ -40,7 +39,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.MBeanExporter;
@@ -49,6 +47,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.WebHook;
 import ru.juniperbot.common.support.ModuleListener;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.shared.support.DiscordHttpRequestFactory;
 import ru.juniperbot.common.worker.shared.support.JmxJDAMBean;
@@ -64,24 +63,8 @@ import java.util.function.Consumer;
 @Service
 public class DiscordServiceImpl extends ListenerAdapter implements DiscordService {
 
-    @Getter
-    @Value("${discord.engine.shards:2}")
-    private int shardsNum;
-
-    @Value("${discord.engine.corePoolSize:5}")
-    private int corePoolSize;
-
-    @Value("${discord.client.token}")
-    private String token;
-
-    @Value("${discord.client.accountType:BOT}")
-    private AccountType accountType;
-
-    @Value("${discord.client.playingStatus:}")
-    private String playingStatus;
-
-    @Value("${discord.client.superUserId:}")
-    private String superUserId;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Autowired
     private MessageService messageService;
@@ -104,21 +87,19 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
     @Autowired
     private CommonProperties commonProperties;
 
-    private RestTemplate restTemplate;
-
     private volatile String cachedUserId;
 
     @PostConstruct
     public void init() {
+        String token = workerProperties.getDiscord().getToken();
         Objects.requireNonNull(token, "No Discord Token specified");
-        restTemplate = new RestTemplate(new DiscordHttpRequestFactory(token));
         try {
             RestAction.setPassContext(false);
             DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                     .setToken(token)
                     .setEventManagerProvider(id -> eventManager)
                     .addEventListeners(this)
-                    .setShardsTotal(shardsNum)
+                    .setShardsTotal(workerProperties.getDiscord().getShardsTotal())
                     .setEnableShutdownHook(false);
             if (audioService != null) {
                 audioService.configure(this, builder);
@@ -242,12 +223,12 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     @Override
     public JDA getShard(long guildId) {
-        return shardManager.getShardById((int) ((guildId >> 22) % shardsNum));
+        return shardManager.getShardById((int) ((guildId >> 22) % workerProperties.getDiscord().getShardsTotal()));
     }
 
     @Override
     public boolean isSuperUser(User user) {
-        return user != null && Objects.equals(user.getId(), superUserId);
+        return user != null && Objects.equals(user.getId(), commonProperties.getDiscord().getSuperUserId());
     }
 
     @Override
@@ -288,6 +269,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
         }
 
         int attempt = 0;
+        RestTemplate restTemplate = new RestTemplate(new DiscordHttpRequestFactory(workerProperties.getDiscord().getToken()));
         while (cachedUserId == null && attempt++ < 5) {
             try {
                 ResponseEntity<String> response = restTemplate.getForEntity(Requester.DISCORD_API_PREFIX + "/users/@me", String.class);
@@ -319,6 +301,7 @@ public class DiscordServiceImpl extends ListenerAdapter implements DiscordServic
 
     private void setUpStatus() {
         shardManager.setStatus(OnlineStatus.IDLE);
+        String playingStatus = workerProperties.getDiscord().getPlayingStatus();
         if (StringUtils.isNotEmpty(playingStatus)) {
             shardManager.setActivity(Activity.playing(playingStatus));
         }

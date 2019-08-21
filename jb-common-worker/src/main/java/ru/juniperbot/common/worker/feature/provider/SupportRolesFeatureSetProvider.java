@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.FeatureSet;
-import ru.juniperbot.common.worker.shared.model.SupportConfiguration;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 
 import java.util.Collection;
@@ -33,17 +33,18 @@ import java.util.stream.Collectors;
 public class SupportRolesFeatureSetProvider extends BaseOwnerFeatureSetProvider {
 
     @Autowired
-    private SupportConfiguration configuration;
+    private WorkerProperties workerProperties;
 
     @Autowired
     private DiscordService discordService;
 
     @Override
     public Set<FeatureSet> getByUser(long userId) {
-        if (!discordService.isConnected(configuration.getGuildId())) {
+        Long guildId = workerProperties.getSupport().getGuildId();
+        if (!discordService.isConnected(guildId)) {
             return Collections.emptySet();
         }
-        Guild guild = discordService.getGuildById(configuration.getGuildId());
+        Guild guild = discordService.getGuildById(guildId);
         if (guild == null) {
             return Collections.emptySet();
         }
@@ -52,7 +53,7 @@ public class SupportRolesFeatureSetProvider extends BaseOwnerFeatureSetProvider 
             return Collections.emptySet();
         }
         return member.getRoles().stream()
-                .map(r -> configuration.getFeaturedRoles().get(r.getId()))
+                .map(r -> workerProperties.getSupport().getFeaturedRoles().get(r.getId()))
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());

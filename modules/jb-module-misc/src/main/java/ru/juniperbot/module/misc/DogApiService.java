@@ -17,7 +17,7 @@
 package ru.juniperbot.module.misc;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.module.misc.model.dogapi.DogImage;
 import ru.juniperbot.module.misc.model.dogapi.DogSearchQuery;
 
@@ -42,30 +43,29 @@ public class DogApiService {
 
     private static final String BASE_URI = "https://api.thedogapi.com/v1/";
 
-    @Value("${integrations.dogApi.key:}")
-    private String apiKey;
-
-    @Value("${integrations.dogApi.userId:}")
-    private String userId;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     private RestTemplate restTemplate;
 
     @PostConstruct
     public void init() {
-        if (StringUtils.isNotEmpty(apiKey)) {
-            this.restTemplate = new RestTemplateBuilder()
-                    .rootUri(BASE_URI)
-                    .setConnectTimeout(HTTP_TIMEOUT_DURATION)
-                    .setReadTimeout(HTTP_TIMEOUT_DURATION)
-                    .uriTemplateHandler(new DefaultUriBuilderFactory(BASE_URI))
-                    .additionalInterceptors((request, body, execution) -> {
-                        HttpHeaders headers = request.getHeaders();
-                        headers.add("x-api-key", apiKey);
-                        headers.add("User-Agent", "JuniperBot");
-                        return execution.execute(request, body);
-                    })
-                    .build();
+        String apiKey = workerProperties.getDogApi().getKey();
+        if (StringUtils.isEmpty(apiKey)) {
+            return;
         }
+        this.restTemplate = new RestTemplateBuilder()
+                .rootUri(BASE_URI)
+                .setConnectTimeout(HTTP_TIMEOUT_DURATION)
+                .setReadTimeout(HTTP_TIMEOUT_DURATION)
+                .uriTemplateHandler(new DefaultUriBuilderFactory(BASE_URI))
+                .additionalInterceptors((request, body, execution) -> {
+                    HttpHeaders headers = request.getHeaders();
+                    headers.add("x-api-key", apiKey);
+                    headers.add("User-Agent", "JuniperBot");
+                    return execution.execute(request, body);
+                })
+                .build();
     }
 
     public List<DogImage> search(DogSearchQuery query) {

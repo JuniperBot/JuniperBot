@@ -36,8 +36,8 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
-import ru.juniperbot.module.audio.model.LavaLinkConfiguration;
 import ru.juniperbot.module.audio.service.LavaAudioService;
 import ru.juniperbot.module.audio.utils.GuildAudioSendHandler;
 
@@ -51,10 +51,6 @@ import java.util.stream.Collectors;
 public class DefaultAudioServiceImpl implements LavaAudioService {
 
     @Autowired
-    @Getter
-    private LavaLinkConfiguration configuration;
-
-    @Autowired
     private AudioPlayerManager playerManager;
 
     @Autowired
@@ -63,6 +59,9 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     @Autowired
     private TaskScheduler scheduler;
 
+    @Autowired
+    private WorkerProperties workerProperties;
+
     @Getter
     private JdaLavalink lavaLink = null;
 
@@ -70,16 +69,16 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     @Override
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
-        if (configuration.isEnabled()) {
+        if (getConfiguration().isEnabled()) {
             lavaLink = new JdaLavalink(
                     discordService.getUserId(),
-                    discordService.getShardsNum(),
+                    workerProperties.getDiscord().getShardsTotal(),
                     discordService::getShardById
             );
             builder.setVoiceDispatchInterceptor(lavaLink.getVoiceInterceptor());
             builder.addEventListeners(lavaLink);
-            if (CollectionUtils.isNotEmpty(configuration.getNodes())) {
-                configuration.getNodes().forEach(e -> {
+            if (CollectionUtils.isNotEmpty(getConfiguration().getNodes())) {
+                getConfiguration().getNodes().forEach(e -> {
                     try {
                         lavaLink.addNode(e.getName(), new URI(e.getUrl()), e.getPassword());
                     } catch (URISyntaxException e1) {
@@ -88,7 +87,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                 });
             }
 
-            var discovery = configuration.getDiscovery();
+            var discovery = getConfiguration().getDiscovery();
             if (discovery != null && discovery.isEnabled() && StringUtils.isNotEmpty(discovery.getServiceName())) {
                 scheduler.scheduleWithFixedDelay(this::lookUpDiscovery, 60000);
             }
@@ -135,7 +134,7 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     @Synchronized
     private void lookUpDiscovery() {
-        var discovery = configuration.getDiscovery();
+        var discovery = getConfiguration().getDiscovery();
         if (discovery == null || !discovery.isEnabled() || StringUtils.isEmpty(discovery.getServiceName())) {
             return;
         }
@@ -182,5 +181,9 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
             AudioManager audioManager = guild.getAudioManager();
             return audioManager != null && (audioManager.isConnected() || audioManager.isAttemptingToConnect());
         }
+    }
+
+    private WorkerProperties.Audio.Lavalink getConfiguration() {
+        return workerProperties.getAudio().getLavalink();
     }
 }

@@ -16,7 +16,7 @@
  */
 package ru.juniperbot.common.worker.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,17 +35,14 @@ import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 @Configuration
 public class WorkerConfiguration {
 
-    @Value("${core.eventExecutor.corePoolSize:5}")
-    private int eventExecutorCorePoolSize;
-
-    @Value("${core.eventExecutor.maxPoolSize:5}")
-    private int eventExecutorMaxPoolSize;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Bean("eventManagerExecutor")
     public TaskExecutor eventExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(eventExecutorCorePoolSize);
-        executor.setMaxPoolSize(eventExecutorMaxPoolSize);
+        executor.setCorePoolSize(workerProperties.getEvents().getCorePoolSize());
+        executor.setMaxPoolSize(workerProperties.getEvents().getMaxPoolSize());
         executor.setThreadNamePrefix("eventExecutor");
         return executor;
     }

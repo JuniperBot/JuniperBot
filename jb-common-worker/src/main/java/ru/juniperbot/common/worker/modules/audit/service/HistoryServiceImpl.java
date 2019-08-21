@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +33,7 @@ import ru.juniperbot.common.persistence.entity.MessageHistory;
 import ru.juniperbot.common.persistence.repository.MessageHistoryRepository;
 import ru.juniperbot.common.service.AuditConfigService;
 import ru.juniperbot.common.service.MemberService;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 
 import java.util.Date;
@@ -57,11 +57,8 @@ public class HistoryServiceImpl implements HistoryService {
     @Autowired
     private MessageHistoryRepository historyRepository;
 
-    @Value("${discord.history.enabled:true}")
-    private boolean historyEnabled;
-
-    @Value("${discord.history.durationDays:7}")
-    private int durationDays;
+    @Autowired
+    private WorkerProperties workerProperties;
 
     @Override
     @Transactional
@@ -135,7 +132,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void runCleanUp() {
-        runCleanUp(this.durationDays);
+        runCleanUp(this.workerProperties.getAudit().getHistoryDays());
     }
 
     @Override
@@ -145,7 +142,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     private boolean isEnabled(Guild guild) {
-        if (!historyEnabled) {
+        if (!workerProperties.getAudit().isHistoryEnabled()) {
             return false;
         }
         AuditConfig config = auditConfigService.get(guild);

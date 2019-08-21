@@ -49,9 +49,9 @@ public class MeetingHandler extends AbstractStateHandler {
         EmbedBuilder builder = getBaseEmbed("mafia.meeting.welcome");
         builder.addField(messageService.getMessage("mafia.start.playerList.title"),
                 getPlayerList(instance.getPlayers()), false);
-        if (meetingDelay >= 60000) {
+        if (MEETING_DELAY >= 60000) {
             builder.setFooter(messageService.getMessage("mafia.meeting.welcome.footer",
-                    getEndTimeText(instance, meetingDelay)), null);
+                    getEndTimeText(instance, MEETING_DELAY)), null);
         }
 
         TextChannel channel = instance.getChannel();
@@ -74,13 +74,13 @@ public class MeetingHandler extends AbstractStateHandler {
             return true;
         }
         if (instance.getCop() != null) {
-            if (!copHandler.sendChoiceMessage(instance, "mafia.meeting.cop.welcome", meetingDelay, false)) {
+            if (!copHandler.sendChoiceMessage(instance, "mafia.meeting.cop.welcome", MEETING_DELAY, false)) {
                 instance.setEndReason(messageService.getMessage("mafia.end.reason.couldNotDM",
                         instance.getCop().getName()));
                 return true;
             }
         }
-        return scheduleEnd(instance, meetingDelay);
+        return scheduleEnd(instance, MEETING_DELAY);
     }
 
     @Override
