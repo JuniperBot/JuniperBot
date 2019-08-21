@@ -25,7 +25,7 @@ ext {
     moduleName = 'JuniperBot-Worker'
 }
 
-mainClassName = 'ru.juniperbot.worker.WorkerApplication'
+mainClassName = 'ru.juniperbot.worker.JuniperWorkerApplication'
 
 bootJar {
     archiveFileName = "JuniperBot-Worker.jar"
