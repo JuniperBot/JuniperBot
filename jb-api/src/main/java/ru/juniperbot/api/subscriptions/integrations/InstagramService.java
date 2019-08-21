@@ -14,15 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.worker.service;
+package ru.juniperbot.api.subscriptions.integrations;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,9 +38,14 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.common.configuration.CommonProperties;
+import ru.juniperbot.common.model.InstagramMedia;
+import ru.juniperbot.common.model.InstagramProfile;
+import ru.juniperbot.common.persistence.entity.JuniPost;
+import ru.juniperbot.common.persistence.repository.JuniPostRepository;
+import ru.juniperbot.common.persistence.repository.WebHookRepository;
 import ru.juniperbot.common.utils.CommonUtils;
-import ru.juniperbot.common.worker.shared.model.InstagramMedia;
-import ru.juniperbot.common.worker.shared.model.InstagramProfile;
+import ru.juniperbot.common.utils.WebhookUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -41,6 +53,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,13 +80,31 @@ public class InstagramService {
     private TaskScheduler scheduler;
 
     @Autowired
-    private PostService postService;
+    private JuniPostRepository juniPostRepository;
+
+    @Autowired
+    private WebHookRepository webHookRepository;
+
+    @Autowired
+    private CommonProperties commonProperties;
 
     private InstagramProfile cache;
 
     private long latestUpdate;
 
     private RestTemplate restTemplate;
+
+    private long latestId;
+
+    @Value("${spring.application.name}")
+    private String userName;
+
+    @Getter
+    @Value("${instagram.pollUserName:juniperfoxx}")
+    private String accountName;
+
+    @Getter
+    private String iconUrl = "https://pbs.twimg.com/profile_images/913664565547638784/n31ZigvV.jpg";
 
     @PostConstruct
     public void init() {
@@ -169,8 +200,64 @@ public class InstagramService {
 
     private void update() {
         InstagramProfile profile = getRecent();
-        if (profile != null && CollectionUtils.isNotEmpty(profile.getFeed())) {
-            postService.onInstagramUpdated(profile);
+        if (profile == null || CollectionUtils.isEmpty(profile.getFeed())) {
+            return;
         }
+        accountName = profile.getFullName();
+        iconUrl = profile.getImageUrl();
+        if (profile.getFeed().stream().anyMatch(e -> e.getId() == latestId)) {
+            List<InstagramMedia> newMedias = new ArrayList<>();
+            for (InstagramMedia media : profile.getFeed()) {
+                if (media.getId() == latestId) {
+                    break;
+                }
+                newMedias.add(media);
+            }
+
+            int size = Math.min(3, newMedias.size());
+            if (size > 0) {
+                List<WebhookEmbed> embeds = newMedias.stream()
+                        .map(e -> convertToWebhookEmbed(profile, e).build())
+                        .collect(Collectors.toList());
+
+                WebhookMessage message = new WebhookMessageBuilder()
+                        .setAvatarUrl(iconUrl)
+                        .setUsername(accountName)
+                        .addEmbeds(embeds)
+                        .build();
+
+                List<JuniPost> juniPosts = juniPostRepository.findActive();
+                juniPosts.forEach(e -> WebhookUtils.sendWebhook(e.getWebHook(), message, e2 -> {
+                    e2.setEnabled(false);
+                    webHookRepository.save(e2);
+                }));
+            }
+        }
+        latestId = profile.getFeed().get(0).getId();
+    }
+
+    public WebhookEmbedBuilder convertToWebhookEmbed(InstagramProfile profile, InstagramMedia media) {
+        WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
+                .setImageUrl(media.getImageUrl())
+                .setTimestamp(media.getDate().toInstant())
+                .setColor(CommonUtils.hex2Rgb(commonProperties.getDefaultAccentColor()).getRGB())
+                .setAuthor(new WebhookEmbed.EmbedAuthor(profile.getFullName(), profile.getImageUrl(), null));
+
+        if (media.getText() != null) {
+            String text = media.getText();
+            if (StringUtils.isNotEmpty(text)) {
+                if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
+                    text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
+                }
+                String link = media.getLink();
+                if (media.getText().length() > 200) {
+                    builder.setTitle(new WebhookEmbed.EmbedTitle(link, link));
+                    builder.setDescription(text);
+                } else {
+                    builder.setTitle(new WebhookEmbed.EmbedTitle(text, link));
+                }
+            }
+        }
+        return builder;
     }
 }

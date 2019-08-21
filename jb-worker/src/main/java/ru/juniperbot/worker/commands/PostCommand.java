@@ -16,18 +16,18 @@
  */
 package ru.juniperbot.worker.commands;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.model.InstagramMedia;
+import ru.juniperbot.common.model.InstagramProfile;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
-import ru.juniperbot.common.worker.shared.model.InstagramMedia;
-import ru.juniperbot.common.worker.shared.model.InstagramProfile;
-import ru.juniperbot.worker.service.InstagramService;
-import ru.juniperbot.worker.service.PostService;
 
 import java.util.List;
 
@@ -37,16 +37,10 @@ import java.util.List;
         priority = 5)
 public class PostCommand extends AbstractCommand {
 
-    @Autowired
-    private InstagramService instagramService;
-
-    @Autowired
-    protected PostService postService;
-
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
         int count = parseCount(content);
-        InstagramProfile profile = instagramService.getRecent();
+        InstagramProfile profile = gatewayService.getInstagramProfile();
 
         if (profile == null) {
             messageService.onError(message.getChannel(), "discord.command.post.error");
@@ -63,8 +57,42 @@ public class PostCommand extends AbstractCommand {
             count = medias.size();
         }
         medias = medias.subList(0, count);
-        postService.post(profile, medias, message.getChannel());
+        post(profile, medias, message.getChannel());
         return true;
+    }
+
+    public void post(InstagramProfile profile, List<InstagramMedia> medias, MessageChannel channel) {
+        if (medias.size() > 0) {
+            for (int i = 0; i < Math.min(3, medias.size()); i++) {
+                EmbedBuilder builder = convertToEmbed(profile, medias.get(i));
+                messageService.sendMessageSilent(channel::sendMessage, builder.build());
+            }
+        }
+    }
+
+    public EmbedBuilder convertToEmbed(InstagramProfile profile, InstagramMedia media) {
+        EmbedBuilder builder = new EmbedBuilder()
+                .setImage(media.getImageUrl())
+                .setTimestamp(media.getDate().toInstant())
+                .setColor(contextService.getColor())
+                .setAuthor(profile.getFullName(), null, profile.getImageUrl());
+
+        if (media.getText() != null) {
+            String text = media.getText();
+            if (StringUtils.isNotEmpty(text)) {
+                if (text.length() > MessageEmbed.EMBED_MAX_LENGTH_CLIENT) {
+                    text = text.substring(0, MessageEmbed.EMBED_MAX_LENGTH_CLIENT - 1);
+                }
+                String link = media.getLink();
+                if (media.getText().length() > 200) {
+                    builder.setTitle(link, link);
+                    builder.setDescription(text);
+                } else {
+                    builder.setTitle(text, link);
+                }
+            }
+        }
+        return builder;
     }
 
     private static int parseCount(String content) throws ValidationException {
@@ -77,7 +105,7 @@ public class PostCommand extends AbstractCommand {
             }
             if (count == 0) {
                 throw new ValidationException("discord.command.post.parse.zero");
-            } else if (count > PostService.MAX_DETAILED) {
+            } else if (count > 3) {
                 throw new ValidationException("discord.command.post.parse.max");
             } else if (count < 0) {
                 throw new ValidationException("discord.global.integer.negative");

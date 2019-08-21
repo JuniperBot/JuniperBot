@@ -20,6 +20,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.model.InstagramProfile;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.model.discord.WebhookDto;
@@ -91,5 +92,12 @@ public class GatewayServiceImpl implements GatewayService {
         return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_PATREON_WEBHOOK_REQUEST, request,
                 new ParameterizedTypeReference<Boolean>() {
                 }));
+    }
+
+    @Override
+    public InstagramProfile getInstagramProfile() {
+        return template.convertSendAndReceiveAsType(QUEUE_INSTAGRAM_PROFILE_REQUEST, "1",
+                new ParameterizedTypeReference<InstagramProfile>() {
+                });
     }
 }

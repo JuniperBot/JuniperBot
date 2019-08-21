@@ -23,6 +23,7 @@ import ru.juniperbot.api.dto.config.SubscriptionDto;
 import ru.juniperbot.api.dto.request.SubscriptionCreateResponse;
 import ru.juniperbot.api.model.SubscriptionStatus;
 import ru.juniperbot.api.model.SubscriptionType;
+import ru.juniperbot.api.subscriptions.integrations.InstagramService;
 import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.juniperbot.common.persistence.entity.JuniPost;
 import ru.juniperbot.common.service.JuniPostService;
@@ -35,12 +36,15 @@ public class JuniSubscriptionHandler extends AbstractSubscriptionHandler<JuniPos
     @Autowired
     private JuniPostService juniPostService;
 
+    @Autowired
+    private InstagramService instagramService;
+
     @Override
     public SubscriptionDto getSubscription(JuniPost juniPost) {
         SubscriptionDto dto = getDtoForHook(juniPost.getGuildId(), juniPost.getWebHook());
         dto.setId(juniPost.getId());
-        dto.setName("Juniper");
-        dto.setIconUrl("https://pbs.twimg.com/profile_images/913664565547638784/n31ZigvV.jpg");
+        dto.setName(instagramService.getAccountName());
+        dto.setIconUrl(instagramService.getIconUrl());
         dto.setStatus(SubscriptionStatus.ACTIVE);
         dto.setType(SubscriptionType.JUNIPERFOXX);
         return dto;

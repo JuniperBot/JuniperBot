@@ -14,16 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.worker.shared.model;
+package ru.juniperbot.common.model;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
-public class InstagramProfile {
+public class InstagramProfile implements Serializable {
+
+    private static final long serialVersionUID = -2291842535257502751L;
 
     private String fullName;
 

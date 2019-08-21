@@ -47,6 +47,8 @@ public class RabbitConfiguration {
 
     public final static String QUEUE_PATREON_WEBHOOK_REQUEST = "juniperbot.patreon.webhook.request";
 
+    public final static String QUEUE_INSTAGRAM_PROFILE_REQUEST = "juniperbot.instagram.profile.request";
+
     @Autowired
     private CommonProperties commonProperties;
 
@@ -116,5 +118,10 @@ public class RabbitConfiguration {
     @Bean
     public Queue patreonWebhookRequest() {
         return new Queue(QUEUE_PATREON_WEBHOOK_REQUEST);
+    }
+
+    @Bean
+    public Queue instagramMediaRequest() {
+        return new Queue(QUEUE_INSTAGRAM_PROFILE_REQUEST);
     }
 }
