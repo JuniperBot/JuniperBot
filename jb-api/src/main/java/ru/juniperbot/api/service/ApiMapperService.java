@@ -150,7 +150,9 @@ public interface ApiMapperService {
             @Mapping(target = "deleteSource", ignore = true),
             @Mapping(target = "coolDown", ignore = true),
             @Mapping(target = "coolDownMode", ignore = true),
-            @Mapping(target = "coolDownIgnoredRoles", ignore = true)
+            @Mapping(target = "coolDownIgnoredRoles", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(command.getRolesToAdd()))", target = "rolesToAdd"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(command.getRolesToRemove()))", target = "rolesToRemove")
     })
     CustomCommandDto getCustomCommandDto(CustomCommand command);
 
@@ -161,7 +163,9 @@ public interface ApiMapperService {
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "commandConfig", ignore = true),
-            @Mapping(target = "messageTemplate", ignore = true)
+            @Mapping(target = "messageTemplate", ignore = true),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToAdd()))", target = "rolesToAdd"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToRemove()))", target = "rolesToRemove")
     })
     void updateCustomCommand(CustomCommandDto source, @MappingTarget CustomCommand target);
 

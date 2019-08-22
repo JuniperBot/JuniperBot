@@ -18,12 +18,14 @@ package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import ru.juniperbot.common.model.CommandType;
 import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,6 +34,14 @@ import javax.validation.constraints.Size;
 public class CustomCommand extends GuildEntity {
 
     private static final long serialVersionUID = -8582315203089732918L;
+
+    @Size(min = 1, max = 25)
+    @NotNull
+    private String key;
+
+    @Column(columnDefinition = "text")
+    @NotNull
+    private String content;
 
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinColumn(name = "command_config_id")
@@ -42,16 +52,16 @@ public class CustomCommand extends GuildEntity {
     @NotNull
     private CommandType type;
 
-    @Size(min = 1, max = 25)
-    @NotNull
-    private String key;
-
-    @Column(columnDefinition = "text")
-    @NotNull
-    private String content;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "message_template_id")
     private MessageTemplate messageTemplate;
+
+    @Type(type = "jsonb")
+    @Column(name = "roles_to_add", columnDefinition = "json")
+    private List<Long> rolesToAdd;
+
+    @Type(type = "jsonb")
+    @Column(name = "roles_to_remove", columnDefinition = "json")
+    private List<Long> rolesToRemove;
 
 }

@@ -17,7 +17,7 @@
 package ru.juniperbot.common.model;
 
 public enum CommandType {
-    MESSAGE, ALIAS;
+    MESSAGE, ALIAS, CHANGE_ROLES;
 
     @Override
     public String toString() {

@@ -68,7 +68,7 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
             return false;
         }
 
-        return !strict || gatewayService.checkChannelOwner(CheckOwnerRequest.builder()
+        return !strict || gatewayService.isChannelOwner(CheckOwnerRequest.builder()
                 .type(type)
                 .channelId(value)
                 .userId(userDetails.getId())

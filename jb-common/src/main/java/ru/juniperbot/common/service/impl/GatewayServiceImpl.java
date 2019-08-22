@@ -96,7 +96,7 @@ public class GatewayServiceImpl implements GatewayService {
     }
 
     @Override
-    public boolean checkChannelOwner(CheckOwnerRequest request) {
+    public boolean isChannelOwner(CheckOwnerRequest request) {
         return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_CHECK_OWNER_REQUEST, request,
                 new ParameterizedTypeReference<Boolean>() {
                 }));

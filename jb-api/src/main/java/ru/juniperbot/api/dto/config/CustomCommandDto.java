@@ -25,6 +25,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -47,4 +48,8 @@ public class CustomCommandDto extends CommandDto {
     private String content;
 
     private MessageTemplateDto messageTemplate;
+
+    private Set<String> rolesToAdd;
+
+    private Set<String> rolesToRemove;
 }

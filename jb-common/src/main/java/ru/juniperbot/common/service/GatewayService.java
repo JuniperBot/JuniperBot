@@ -46,7 +46,7 @@ public interface GatewayService {
 
     boolean sendPatreonUpdate(PatreonRequest request);
 
-    boolean checkChannelOwner(CheckOwnerRequest request);
+    boolean isChannelOwner(CheckOwnerRequest request);
 
     InstagramProfile getInstagramProfile();
 }
