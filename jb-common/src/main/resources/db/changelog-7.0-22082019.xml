@@ -46,4 +46,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7.0-22082019-3" author="caramel">
+        <addColumn tableName="guild_config">
+            <column name="voice_links" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

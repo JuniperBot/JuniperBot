@@ -18,11 +18,13 @@ package ru.juniperbot.api.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.juniperbot.common.model.InVoiceLink;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -53,4 +55,6 @@ public class CommonConfigDto implements Serializable {
     private boolean privateHelp;
 
     private boolean assistantEnabled;
+
+    private List<InVoiceLink> voiceLinks;
 }

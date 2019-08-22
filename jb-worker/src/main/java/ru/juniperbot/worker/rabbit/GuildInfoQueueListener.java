@@ -19,6 +19,7 @@ package ru.juniperbot.worker.rabbit;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,10 @@ public class GuildInfoQueueListener extends BaseQueueListener {
         }
 
         GuildDto dto = discordMapperService.getGuildDto(guild);
+        if (CollectionUtils.isNotEmpty(dto.getRoles())) {
+            // remove public @everyone role
+            dto.getRoles().removeIf(e -> guild.getId().equals(e.getId()));
+        }
         dto.setFeatureSets(featureSetService.getByGuild(guildId));
         dto.setOnlineCount(guild.getMembers().stream()
                 .filter(m -> m.getOnlineStatus() != OFFLINE && m.getOnlineStatus() != UNKNOWN).count());
