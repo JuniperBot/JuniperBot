@@ -103,7 +103,8 @@ public class InstagramService {
     public void init() {
         accountName = apiProperties.getInstagram().getPollUserName();
         restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
-        scheduler.scheduleWithFixedDelay(this::update, apiProperties.getInstagram().getUpdateInterval());
+        // This thing is totally broken now since Instagram requires full authentication even for looking at someone's page
+        //scheduler.scheduleWithFixedDelay(this::update, apiProperties.getInstagram().getUpdateInterval());
     }
 
     @Synchronized("$recentLock")

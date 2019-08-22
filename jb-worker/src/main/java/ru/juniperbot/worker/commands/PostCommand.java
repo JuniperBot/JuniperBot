@@ -27,14 +27,14 @@ import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
-import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
 import java.util.List;
 
-@DiscordCommand(key = "discord.command.post.key",
+// This thing is totally broken now since Instagram requires full authentication even for looking at someone's page
+/*@DiscordCommand(key = "discord.command.post.key",
         description = "discord.command.post.desc",
         group = "discord.command.group.fun",
-        priority = 5)
+        priority = 5)*/
 public class PostCommand extends AbstractCommand {
 
     @Override

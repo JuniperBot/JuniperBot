@@ -57,10 +57,11 @@ public class SubscriptionDao extends AbstractDao {
     public List<SubscriptionDto> getSubscriptions(long guildId) {
         List<SubscriptionDto> result = new ArrayList<>();
 
-        SubscriptionDto dto = getSubscription(juniPostService.getOrCreate(guildId));
+        // This thing is totally broken now since Instagram requires full authentication even for looking at someone's page
+        /*SubscriptionDto dto = getSubscription(juniPostService.getOrCreate(guildId));
         if (dto != null) {
             result.add(dto);
-        }
+        }*/
 
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(guildId);
         vkConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);
