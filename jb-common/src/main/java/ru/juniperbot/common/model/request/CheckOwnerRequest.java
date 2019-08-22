@@ -14,23 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.service;
+package ru.juniperbot.common.model.request;
 
-import ru.juniperbot.module.steam.model.details.SteamAppDetails;
-import ru.juniperbot.module.steam.persistence.entity.SteamApp;
+import lombok.*;
+import net.dv8tion.jda.api.entities.ChannelType;
 
-import java.util.List;
-import java.util.Locale;
+import java.io.Serializable;
 
-public interface SteamService {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Builder(builderClassName = "Builder")
+public class CheckOwnerRequest implements Serializable {
 
-    void rebuildApps();
+    private static final long serialVersionUID = -1351749351615140744L;
 
-    List<SteamApp> find(String query);
+    private ChannelType type;
 
-    SteamApp findOne(String query);
+    private String channelId;
 
-    SteamApp findByAppId(Long appId);
-
-    SteamAppDetails getDetails(SteamApp steamApp, Locale locale);
+    private String userId;
 }

@@ -49,6 +49,8 @@ public class RabbitConfiguration {
 
     public final static String QUEUE_INSTAGRAM_PROFILE_REQUEST = "juniperbot.instagram.profile.request";
 
+    public final static String QUEUE_CHECK_OWNER_REQUEST = "juniperbot.check.owner.request";
+
     @Autowired
     private CommonProperties commonProperties;
 
@@ -123,5 +125,10 @@ public class RabbitConfiguration {
     @Bean
     public Queue instagramMediaRequest() {
         return new Queue(QUEUE_INSTAGRAM_PROFILE_REQUEST);
+    }
+
+    @Bean
+    public Queue checkOwnerRequest() {
+        return new Queue(QUEUE_CHECK_OWNER_REQUEST);
     }
 }

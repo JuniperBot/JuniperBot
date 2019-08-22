@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model;
+package ru.juniperbot.api.model.steam;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +23,10 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public class SteamAppList implements Serializable {
+public class SteamAppEntry implements Serializable {
+    private static final long serialVersionUID = -7469494510965437668L;
 
-    private static final long serialVersionUID = 514779988102571009L;
+    private Long appid;
 
-    private SteamAppEntry[] apps;
+    private String name;
 }

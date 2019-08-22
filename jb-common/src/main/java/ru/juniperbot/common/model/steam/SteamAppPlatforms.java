@@ -14,19 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam;
+package ru.juniperbot.common.model.steam;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
-@Configuration
-public class SteamConfiguration {
+import java.io.Serializable;
 
-    @Bean
-    public ModuleMessageSourceImpl steamMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("steam-jbmessages");
-        return source;
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SteamAppPlatforms implements Serializable {
+
+    private static final long serialVersionUID = 316006036135840230L;
+
+    private boolean windows;
+
+    private boolean mac;
+
+    private boolean linux;
+
+    @JsonIgnore
+    public boolean isCorrect() {
+        return windows || mac || linux;
     }
 }

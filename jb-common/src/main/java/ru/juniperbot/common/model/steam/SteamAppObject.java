@@ -14,10 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model;
+package ru.juniperbot.common.model.steam;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,14 +23,8 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public class GetAppListResponse implements Serializable {
-    private static final long serialVersionUID = -5918934238979830337L;
+public abstract class SteamAppObject implements Serializable {
+    private static final long serialVersionUID = -5217231441244820516L;
 
-    @JsonProperty("applist")
-    private SteamAppList appList;
-
-    @JsonIgnore
-    public SteamAppEntry[] getApps() {
-        return appList != null && appList.getApps() != null ? appList.getApps() : null;
-    }
+    private long id;
 }

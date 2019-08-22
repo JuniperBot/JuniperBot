@@ -14,17 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model.details;
+package ru.juniperbot.common.persistence.repository;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.juniperbot.common.persistence.entity.SteamCache;
 
-import java.io.Serializable;
+@Repository
+public interface SteamCacheRepository extends JpaRepository<SteamCache, Long> {
 
-@Getter
-@Setter
-public abstract class SteamAppObject implements Serializable {
-    private static final long serialVersionUID = -5217231441244820516L;
-
-    private long id;
+    SteamCache findByAppIdAndLocale(Long appId, String locale);
 }

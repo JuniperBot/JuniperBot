@@ -14,17 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model.details;
+package ru.juniperbot.common.model.steam;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamAppCategory extends SteamAppObject {
-    private static final long serialVersionUID = 6164093227983352695L;
+public class SteamAppPrice implements Serializable {
+    private static final long serialVersionUID = -32572487900411648L;
 
-    private String description;
+    private String currency;
+
+    private Long initial;
+
+    @JsonProperty("final")
+    private Long finalPrice;
+
+    @JsonProperty("discount_percent")
+    private byte discountPercent;
+
+    @JsonIgnore
+    public boolean isCorrect() {
+        return StringUtils.isNotEmpty(currency) && getPrice() != null;
+    }
+
+    @JsonIgnore
+    public Long getPrice() {
+        return finalPrice != null ? finalPrice : initial;
+    }
 }

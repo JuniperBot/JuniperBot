@@ -22,12 +22,10 @@ import ru.juniperbot.module.audio.AudioConfiguration;
 import ru.juniperbot.module.mafia.MafiaConfiguration;
 import ru.juniperbot.module.misc.MiscConfiguration;
 import ru.juniperbot.module.ranking.RankingConfiguration;
-import ru.juniperbot.module.steam.SteamConfiguration;
 import ru.juniperbot.module.wikifur.WikiFurConfiguration;
 
 @Import({
         AudioConfiguration.class,
-        SteamConfiguration.class,
         WikiFurConfiguration.class,
         MiscConfiguration.class,
         RankingConfiguration.class,

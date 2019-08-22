@@ -14,9 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.common.validation;
+package ru.juniperbot.api.model.steam;
 
-public enum DiscordEntityType {
-    TEXT_CHANNEL,
-    VOICE_CHANNEL
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+
+@Getter
+@Setter
+public class SteamAppList implements Serializable {
+
+    private static final long serialVersionUID = 514779988102571009L;
+
+    private SteamAppEntry[] apps;
 }

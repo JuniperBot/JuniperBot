@@ -66,4 +66,11 @@ public class JuniperWorkerApplication {
         source.setBasename("reminder-jbmessages");
         return source;
     }
+
+    @Bean
+    public ModuleMessageSourceImpl steamMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("steam-jbmessages");
+        return source;
+    }
 }

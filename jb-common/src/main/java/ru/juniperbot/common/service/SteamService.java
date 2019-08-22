@@ -14,9 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-description = 'JuniperBot Module: Steam'
+package ru.juniperbot.common.service;
 
-dependencies {
-    implementation project(':jb-common-worker')
-    implementation "org.joda:joda-money:${jodaMoneyVersion}"
+import ru.juniperbot.common.model.steam.SteamAppDetails;
+import ru.juniperbot.common.persistence.entity.SteamApp;
+
+import java.util.List;
+import java.util.Locale;
+
+public interface SteamService {
+
+    List<SteamApp> find(String query);
+
+    SteamApp findOne(String query);
+
+    SteamApp findByAppId(Long appId);
+
+    SteamAppDetails getDetails(SteamApp steamApp, Locale locale);
 }

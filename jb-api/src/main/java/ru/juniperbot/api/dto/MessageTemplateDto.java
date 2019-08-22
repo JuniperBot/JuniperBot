@@ -18,9 +18,9 @@ package ru.juniperbot.api.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.ChannelType;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.juniperbot.api.common.validation.DiscordEntity;
-import ru.juniperbot.api.common.validation.DiscordEntityType;
 import ru.juniperbot.common.model.MessageTemplateType;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
 
@@ -46,7 +46,7 @@ public class MessageTemplateDto implements Serializable {
     @Size(max = 1800)
     private String content;
 
-    @DiscordEntity(value = DiscordEntityType.TEXT_CHANNEL, allowDm = true)
+    @DiscordEntity(value = ChannelType.TEXT, allowDm = true)
     private String channelId;
 
     private boolean tts;

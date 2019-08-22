@@ -14,40 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model.details;
+package ru.juniperbot.api.model.steam;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamAppPrice implements Serializable {
-    private static final long serialVersionUID = -32572487900411648L;
+public class GetAppListResponse implements Serializable {
+    private static final long serialVersionUID = -5918934238979830337L;
 
-    private String currency;
-
-    private Long initial;
-
-    @JsonProperty("final")
-    private Long finalPrice;
-
-    @JsonProperty("discount_percent")
-    private byte discountPercent;
+    @JsonProperty("applist")
+    private SteamAppList appList;
 
     @JsonIgnore
-    public boolean isCorrect() {
-        return StringUtils.isNotEmpty(currency) && getPrice() != null;
-    }
-
-    @JsonIgnore
-    public Long getPrice() {
-        return finalPrice != null ? finalPrice : initial;
+    public SteamAppEntry[] getApps() {
+        return appList != null && appList.getApps() != null ? appList.getApps() : null;
     }
 }

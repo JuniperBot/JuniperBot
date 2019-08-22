@@ -16,6 +16,8 @@
  */
 package ru.juniperbot.api.common.validation;
 
+import net.dv8tion.jda.api.entities.ChannelType;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
@@ -25,7 +27,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DiscordEntity {
-    DiscordEntityType value();
+    ChannelType value();
 
     boolean allowDm() default false;
 

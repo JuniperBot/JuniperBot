@@ -18,8 +18,8 @@ package ru.juniperbot.api.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.ChannelType;
 import ru.juniperbot.api.common.validation.DiscordEntity;
-import ru.juniperbot.api.common.validation.DiscordEntityType;
 import ru.juniperbot.common.model.AuditActionType;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class AuditConfigDto implements Serializable {
 
     private boolean forwardEnabled;
 
-    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
+    @DiscordEntity(ChannelType.TEXT)
     private String forwardChannelId;
 
     private List<AuditActionType> forwardActions;

@@ -14,30 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model.details;
+package ru.juniperbot.common.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "steam_app")
+@ToString
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamAppPlatforms implements Serializable {
+public class SteamApp extends BaseEntity {
 
-    private static final long serialVersionUID = 316006036135840230L;
+    private static final long serialVersionUID = -7966161606616937933L;
 
-    private boolean windows;
+    @Column(name = "app_id")
+    private Long appId;
 
-    private boolean mac;
+    @Column
+    private String name;
 
-    private boolean linux;
-
-    @JsonIgnore
-    public boolean isCorrect() {
-        return windows || mac || linux;
-    }
+    @Column(insertable = false)
+    private String terms;
 }

@@ -24,6 +24,7 @@ import ru.juniperbot.common.model.InstagramProfile;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.model.discord.WebhookDto;
+import ru.juniperbot.common.model.request.CheckOwnerRequest;
 import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
 import ru.juniperbot.common.model.request.WebhookRequest;
@@ -90,6 +91,13 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public boolean sendPatreonUpdate(PatreonRequest request) {
         return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_PATREON_WEBHOOK_REQUEST, request,
+                new ParameterizedTypeReference<Boolean>() {
+                }));
+    }
+
+    @Override
+    public boolean checkChannelOwner(CheckOwnerRequest request) {
+        return Boolean.TRUE.equals(template.convertSendAndReceiveAsType(QUEUE_CHECK_OWNER_REQUEST, request,
                 new ParameterizedTypeReference<Boolean>() {
                 }));
     }

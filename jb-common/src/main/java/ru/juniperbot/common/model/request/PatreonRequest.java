@@ -27,6 +27,8 @@ import java.io.Serializable;
 @ToString
 public class PatreonRequest implements Serializable {
 
+    private static final long serialVersionUID = 3511438820269548513L;
+
     private String content;
 
     private String event;

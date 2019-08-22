@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.persistence.entity;
+package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
+import ru.juniperbot.common.model.steam.SteamAppDetails;
 import ru.juniperbot.common.persistence.entity.base.BaseEntity;
-import ru.juniperbot.module.steam.model.details.SteamAppDetails;
 
 import javax.persistence.*;
 import java.util.Date;

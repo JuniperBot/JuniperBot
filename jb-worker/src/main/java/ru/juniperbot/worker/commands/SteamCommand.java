@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.commands;
+package ru.juniperbot.worker.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,12 +26,12 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.model.steam.*;
+import ru.juniperbot.common.persistence.entity.SteamApp;
+import ru.juniperbot.common.service.SteamService;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
-import ru.juniperbot.module.steam.model.details.*;
-import ru.juniperbot.module.steam.persistence.entity.SteamApp;
-import ru.juniperbot.module.steam.service.SteamService;
 
 import java.util.List;
 

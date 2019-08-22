@@ -20,6 +20,7 @@ import ru.juniperbot.common.model.InstagramProfile;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.model.discord.WebhookDto;
+import ru.juniperbot.common.model.request.CheckOwnerRequest;
 import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
 import ru.juniperbot.common.model.request.WebhookRequest;
@@ -44,6 +45,8 @@ public interface GatewayService {
     boolean deleteWebhook(WebhookRequest request);
 
     boolean sendPatreonUpdate(PatreonRequest request);
+
+    boolean checkChannelOwner(CheckOwnerRequest request);
 
     InstagramProfile getInstagramProfile();
 }

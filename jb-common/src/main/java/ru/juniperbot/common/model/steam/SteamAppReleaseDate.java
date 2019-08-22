@@ -14,32 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.persistence.entity;
+package ru.juniperbot.common.model.steam;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.juniperbot.common.persistence.entity.base.BaseEntity;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serializable;
 
-@Entity
-@Table(name = "steam_app")
-@ToString
 @Getter
 @Setter
-public class SteamApp extends BaseEntity {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SteamAppReleaseDate implements Serializable {
 
-    private static final long serialVersionUID = -7966161606616937933L;
+    private static final long serialVersionUID = 316006036135840230L;
 
-    @Column(name = "app_id")
-    private Long appId;
+    @JsonProperty("coming_soon")
+    private boolean comingSoon;
 
-    @Column
-    private String name;
+    private String date;
 
-    @Column(insertable = false)
-    private String terms;
+    @JsonIgnore
+    public boolean isCorrect() {
+        return comingSoon || StringUtils.isNotEmpty(date);
+    }
 }

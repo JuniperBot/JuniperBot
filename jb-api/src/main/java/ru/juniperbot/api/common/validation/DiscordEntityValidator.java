@@ -16,9 +16,13 @@
  */
 package ru.juniperbot.api.common.validation;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.api.security.model.DiscordUserDetails;
 import ru.juniperbot.api.security.utils.SecurityUtils;
+import ru.juniperbot.common.model.request.CheckOwnerRequest;
+import ru.juniperbot.common.service.GatewayService;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -31,11 +35,14 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
 
     private final static Pattern PATTERN = Pattern.compile("^(\\d{1,19})?$");
 
-    private DiscordEntityType type;
+    private ChannelType type;
 
     private boolean allowDm;
 
     private boolean strict;
+
+    @Autowired
+    private GatewayService gatewayService;
 
     @Override
     public void initialize(DiscordEntity constraintAnnotation) {
@@ -49,7 +56,7 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
         if (StringUtils.isEmpty(value)) {
             return true;
         }
-        if (DiscordEntityType.TEXT_CHANNEL == type && "-1".equals(value)) {
+        if (ChannelType.TEXT == type && "-1".equals(value)) {
             return allowDm;
         }
         if (!PATTERN.matcher(value).matches()) {
@@ -61,40 +68,10 @@ public class DiscordEntityValidator implements ConstraintValidator<DiscordEntity
             return false;
         }
 
-        if (!strict) {
-            return true;
-        }
-
-        /*
-        // TODO IMPLEMENT MEMBER CHECK
-
-        Guild guild = null;
-        switch (type) {
-            case TEXT_CHANNEL:
-                TextChannel textChannel = discordService.getTextChannelById(value);
-                if (textChannel != null) {
-                    guild = textChannel.getGuild();
-                }
-                break;
-            case VOICE_CHANNEL:
-                VoiceChannel voiceChannel = discordService.getVoiceChannelById(value);
-                if (voiceChannel != null) {
-                    guild = voiceChannel.getGuild();
-                }
-                break;
-        }
-
-        if (guild == null) {
-            return true;
-        }
-
-        Member member = guild.getMemberById(userDetails.getId());
-        if (member == null) {
-            return false;
-        }
-
-        return member.isOwner() || member.hasPermission(Permission.ADMINISTRATOR);
-        */
-        return true;
+        return !strict || gatewayService.checkChannelOwner(CheckOwnerRequest.builder()
+                .type(type)
+                .channelId(value)
+                .userId(userDetails.getId())
+                .build());
     }
 }

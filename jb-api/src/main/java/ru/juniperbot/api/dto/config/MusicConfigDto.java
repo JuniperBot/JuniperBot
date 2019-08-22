@@ -18,8 +18,8 @@ package ru.juniperbot.api.dto.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.ChannelType;
 import ru.juniperbot.api.common.validation.DiscordEntity;
-import ru.juniperbot.api.common.validation.DiscordEntityType;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -32,12 +32,12 @@ public class MusicConfigDto implements Serializable {
 
     private static final long serialVersionUID = 7176312892290286477L;
 
-    @DiscordEntity(DiscordEntityType.VOICE_CHANNEL)
+    @DiscordEntity(ChannelType.VOICE)
     private String channelId;
 
     private boolean userJoinEnabled;
 
-    @DiscordEntity(DiscordEntityType.TEXT_CHANNEL)
+    @DiscordEntity(ChannelType.TEXT)
     private String textChannelId;
 
     @Size(max = 255)

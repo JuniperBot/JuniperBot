@@ -14,44 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.model.details;
+package ru.juniperbot.common.model.steam;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.util.List;
-
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamAppDetails implements Serializable {
-    private static final long serialVersionUID = -1557841368928963623L;
+public class SteamAppScreenshot extends SteamAppObject {
 
-    private String name;
+    private static final long serialVersionUID = 316006036135840230L;
 
-    @JsonProperty("short_description")
-    private String shortDescription;
+    @JsonProperty("path_thumbnail")
+    private String thumbnail;
 
-    @JsonProperty("header_image")
-    private String headerImage;
-
-    @JsonProperty("website")
-    private String webSite;
-
-    private List<String> developers;
-
-    private List<String> publishers;
-
-    @JsonProperty("price_overview")
-    private SteamAppPrice price;
-
-    private SteamAppPlatforms platforms;
-
-    @JsonProperty("release_date")
-    private SteamAppReleaseDate releaseDate;
-
-    private List<SteamAppScreenshot> screenshots;
+    @JsonProperty("path_full")
+    private String full;
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.steam.service;
+package ru.juniperbot.common.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,31 +24,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import ru.juniperbot.common.model.steam.SteamAppDetails;
+import ru.juniperbot.common.persistence.entity.SteamApp;
+import ru.juniperbot.common.persistence.entity.SteamCache;
+import ru.juniperbot.common.persistence.repository.SteamAppRepository;
+import ru.juniperbot.common.persistence.repository.SteamCacheRepository;
+import ru.juniperbot.common.service.SteamService;
 import ru.juniperbot.common.utils.CommonUtils;
-import ru.juniperbot.module.steam.model.GetAppListResponse;
-import ru.juniperbot.module.steam.model.SteamAppEntry;
-import ru.juniperbot.module.steam.model.details.SteamAppDetails;
-import ru.juniperbot.module.steam.persistence.entity.SteamApp;
-import ru.juniperbot.module.steam.persistence.entity.SteamCache;
-import ru.juniperbot.module.steam.persistence.repository.SteamAppRepository;
-import ru.juniperbot.module.steam.persistence.repository.SteamCacheRepository;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
 public class SteamServiceImpl implements SteamService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static final String APPS_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
 
     private static final String DETAILS_ENDPOINT = "https://store.steampowered.com/api/appdetails?appids=%s&l=%s";
 
@@ -59,57 +54,6 @@ public class SteamServiceImpl implements SteamService {
     private SteamCacheRepository cacheRepository;
 
     private RestTemplate restTemplate = new RestTemplate(CommonUtils.createRequestFactory());
-
-    @PostConstruct
-    public void init() {
-        if (appRepository.count() == 0) {
-            try {
-                rebuildApps();
-            } catch (Exception e) {
-                log.error("Cannot initiate app repository", e);
-            }
-        }
-    }
-
-    @Scheduled(cron = "0 0 0 * * ?")
-    @Transactional
-    @Override
-    public void rebuildApps() {
-        ResponseEntity<GetAppListResponse> response = restTemplate.getForEntity(APPS_ENDPOINT, GetAppListResponse.class);
-        if (!HttpStatus.OK.equals(response.getStatusCode())) {
-            log.warn("Could not get app list, endpoint returned {}", response.getStatusCode());
-        }
-        if (response.getBody() == null) {
-            log.warn("Empty Apps list returned");
-            return;
-        }
-        SteamAppEntry[] apps = response.getBody().getApps();
-        long count = appRepository.count();
-        if (apps != null && apps.length != count) {
-            Map<Long, String> newMap = Stream.of(apps).collect(Collectors.toMap(SteamAppEntry::getAppid, SteamAppEntry::getName));
-            Set<Long> existentApps = appRepository.findAllIds();
-
-            // Apps to add
-            Set<Long> idsToAdd = new HashSet<>(newMap.keySet());
-            idsToAdd.removeAll(existentApps);
-
-            if (!idsToAdd.isEmpty()) {
-                List<SteamApp> appsToAdd = idsToAdd.stream().map(e -> {
-                    SteamApp app = new SteamApp();
-                    app.setAppId(e);
-                    app.setName(newMap.get(e));
-                    return app;
-                }).collect(Collectors.toList());
-                appRepository.saveAll(appsToAdd);
-            }
-
-            // Apps to remove
-            existentApps.removeAll(newMap.keySet());
-            if (!existentApps.isEmpty()) {
-                appRepository.deleteApps(existentApps);
-            }
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)

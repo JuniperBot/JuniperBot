@@ -22,6 +22,5 @@ dependencies {
     api project(':modules:jb-module-mafia')
     api project(':modules:jb-module-misc')
     api project(':modules:jb-module-ranking')
-    api project(':modules:jb-module-steam')
     api project(':modules:jb-module-wikifur')
 }
