@@ -30,6 +30,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.juniperbot.common.service.DomainService;
+import ru.juniperbot.common.service.GatewayService;
 import ru.juniperbot.common.support.JbCacheManager;
 
 @Slf4j
@@ -51,6 +52,9 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
+
+    @Autowired
+    protected GatewayService gatewayService;
 
     protected AbstractDomainServiceImpl(R repository) {
         this(repository, false);
@@ -86,9 +90,7 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Transactional
     public T save(T entity) {
         T result = repository.save(entity);
-        if (cacheable) {
-            cacheManager.evict(getDomainClass(), entity.getGuildId());
-        }
+        evict(entity.getGuildId());
         return result;
     }
 
@@ -96,6 +98,14 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
     @Override
     public boolean exists(long guildId) {
         return repository.existsByGuildId(guildId);
+    }
+
+    @Override
+    public void evict(long guildId) {
+        gatewayService.evictCache(getDomainClass().getName(), guildId);
+        if (cacheable) {
+            cacheManager.evict(getDomainClass(), guildId);
+        }
     }
 
     @Override

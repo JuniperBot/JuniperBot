@@ -43,6 +43,8 @@ public class CommonProperties {
 
     private Branding branding = new Branding();
 
+    private DomainCache domainCache = new DomainCache();
+
     private List<String> youTubeApiKeys = new ArrayList<>();
 
     @Getter
@@ -90,5 +92,18 @@ public class CommonProperties {
         private String copyrightIconUrl;
         private String websiteUrl;
         private Set<String> websiteAliases;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class DomainCache {
+        private boolean auditConfig = true;
+        private boolean guildConfig = true;
+        private boolean moderationConfig = true;
+        private boolean musicConfig = true;
+        private boolean rankingConfig = true;
+        private boolean reactionRouletteConfig = true;
+        private boolean welcomeConfig = true;
     }
 }

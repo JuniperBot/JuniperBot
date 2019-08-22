@@ -53,6 +53,10 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
     @Query("UPDATE Ranking r SET r.cookies = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
     int resetCookies(@Param("guildId") long guildId);
 
+    @Modifying
+    @Query("UPDATE Ranking r SET r.voiceActivity = 0 WHERE r.member IN (SELECT m FROM LocalMember m WHERE m.guildId = :guildId)")
+    int resetVoiceActivity(@Param("guildId") long guildId);
+
     @Query(value = "SELECT count(r.id) + 1 FROM ranking r JOIN member m ON m.id = r.member_id AND m.guild_id = ?1 WHERE r.exp > ?2", nativeQuery = true)
     long getRank(long guildId, long exp);
 

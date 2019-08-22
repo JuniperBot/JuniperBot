@@ -50,6 +50,7 @@ public final class RankingUtils {
         info.setRemainingExp(getRemainingExp(ranking.getExp()));
         info.setLevelExp(getLevelExp(info.getLevel()));
         info.setCookies(ranking.getCookies());
+        info.setVoiceActivity(ranking.getVoiceActivity());
         return info;
     }
 }

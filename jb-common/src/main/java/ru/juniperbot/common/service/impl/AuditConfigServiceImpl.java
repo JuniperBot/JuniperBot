@@ -18,6 +18,7 @@ package ru.juniperbot.common.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.AuditConfig;
 import ru.juniperbot.common.persistence.repository.AuditConfigRepository;
 import ru.juniperbot.common.service.AuditConfigService;
@@ -27,8 +28,9 @@ public class AuditConfigServiceImpl
         extends AbstractDomainServiceImpl<AuditConfig, AuditConfigRepository>
         implements AuditConfigService {
 
-    public AuditConfigServiceImpl(@Autowired AuditConfigRepository repository) {
-        super(repository, true);
+    public AuditConfigServiceImpl(@Autowired AuditConfigRepository repository,
+                                  @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isAuditConfig());
     }
 
     @Override

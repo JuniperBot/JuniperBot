@@ -52,7 +52,7 @@ public class RankingController extends BaseRestController {
     public void resetAll(
             @GuildId @PathVariable("guildId") long guildId,
             @RequestBody @Validated RankingResetRequest request) {
-        rankingConfigService.resetAll(guildId, request.isLevels(), request.isCookies());
+        rankingConfigService.resetAll(guildId, request.isLevels(), request.isCookies(), request.isVoiceActivity());
     }
 
     @RequestMapping(value = "/ranking/update/{guildId}", method = RequestMethod.POST)

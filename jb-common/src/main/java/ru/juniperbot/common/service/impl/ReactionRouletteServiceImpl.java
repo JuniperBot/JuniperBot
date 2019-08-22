@@ -18,15 +18,19 @@ package ru.juniperbot.common.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.ReactionRoulette;
 import ru.juniperbot.common.persistence.repository.ReactionRouletteRepository;
 import ru.juniperbot.common.service.ReactionRouletteService;
 
 @Service
-public class ReactionRouletteServiceImpl extends AbstractDomainServiceImpl<ReactionRoulette, ReactionRouletteRepository> implements ReactionRouletteService {
+public class ReactionRouletteServiceImpl
+        extends AbstractDomainServiceImpl<ReactionRoulette, ReactionRouletteRepository>
+        implements ReactionRouletteService {
 
-    public ReactionRouletteServiceImpl(@Autowired ReactionRouletteRepository repository) {
-        super(repository, true);
+    public ReactionRouletteServiceImpl(@Autowired ReactionRouletteRepository repository,
+                                       @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isReactionRouletteConfig());
     }
 
     @Override

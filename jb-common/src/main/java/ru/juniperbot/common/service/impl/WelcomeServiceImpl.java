@@ -18,15 +18,19 @@ package ru.juniperbot.common.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.WelcomeMessage;
 import ru.juniperbot.common.persistence.repository.WelcomeMessageRepository;
 import ru.juniperbot.common.service.WelcomeService;
 
 @Service
-public class WelcomeServiceImpl extends AbstractDomainServiceImpl<WelcomeMessage, WelcomeMessageRepository> implements WelcomeService {
+public class WelcomeServiceImpl
+        extends AbstractDomainServiceImpl<WelcomeMessage, WelcomeMessageRepository>
+        implements WelcomeService {
 
-    public WelcomeServiceImpl(@Autowired WelcomeMessageRepository repository) {
-        super(repository, true);
+    public WelcomeServiceImpl(@Autowired WelcomeMessageRepository repository,
+                              @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isWelcomeConfig());
     }
 
     @Override

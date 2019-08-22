@@ -48,6 +48,8 @@ public class RankingInfo {
 
     private long cookies;
 
+    private long voiceActivity;
+
     public RankingInfo(LocalMember member) {
         this.id = member.getUser().getUserId();
         this.name = member.getUser().getName();

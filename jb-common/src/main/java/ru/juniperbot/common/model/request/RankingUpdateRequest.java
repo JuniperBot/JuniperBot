@@ -40,4 +40,6 @@ public class RankingUpdateRequest implements Serializable {
     private Integer level;
 
     private boolean resetCookies;
+
+    private boolean resetVoiceActivity;
 }

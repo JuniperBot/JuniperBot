@@ -108,7 +108,8 @@ public interface ApiMapperService {
     void updateMusicConfig(MusicConfigDto source, @MappingTarget MusicConfig target);
 
     @Mappings({
-            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels")
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredVoiceChannels()))", target = "ignoredVoiceChannels")
     })
     RankingDto getRankingDto(RankingConfig source);
 

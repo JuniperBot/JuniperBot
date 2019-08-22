@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
 import ru.juniperbot.common.persistence.entity.LocalMember;
@@ -43,7 +44,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
-public class RankingConfigServiceImpl extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository> implements RankingConfigService {
+public class RankingConfigServiceImpl
+        extends AbstractDomainServiceImpl<RankingConfig, RankingConfigRepository>
+        implements RankingConfigService {
 
     @Autowired
     private LocalMemberRepository memberRepository;
@@ -54,8 +57,9 @@ public class RankingConfigServiceImpl extends AbstractDomainServiceImpl<RankingC
     @Autowired
     private CookieRepository cookieRepository;
 
-    public RankingConfigServiceImpl(@Autowired RankingConfigRepository repository) {
-        super(repository, true);
+    public RankingConfigServiceImpl(@Autowired RankingConfigRepository repository,
+                                    @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isRankingConfig());
     }
 
     @Override
@@ -119,25 +123,30 @@ public class RankingConfigServiceImpl extends AbstractDomainServiceImpl<RankingC
                 level = 0;
             }
             ranking.setExp(RankingUtils.getLevelTotalExp(level));
-            rankingRepository.save(ranking);
         }
 
         if (request.isResetCookies()) {
             cookieRepository.deleteByRecipient(request.getGuildId(), request.getUserId());
             ranking.setCookies(0);
-            rankingRepository.save(ranking);
         }
+        if (request.isResetVoiceActivity()) {
+            ranking.setVoiceActivity(0);
+        }
+        rankingRepository.save(ranking);
     }
 
     @Transactional
     @Override
-    public void resetAll(long guildId, boolean levels, boolean cookies) {
+    public void resetAll(long guildId, boolean levels, boolean cookies, boolean voiceActivity) {
         if (levels) {
             rankingRepository.resetAll(guildId);
         }
         if (cookies) {
             cookieRepository.deleteByGuild(guildId);
             rankingRepository.resetCookies(guildId);
+        }
+        if (voiceActivity) {
+            rankingRepository.resetVoiceActivity(guildId);
         }
     }
 

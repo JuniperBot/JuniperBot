@@ -26,13 +26,16 @@ import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.utils.LocaleUtils;
 
 @Service
-public class ConfigServiceImpl extends AbstractDomainServiceImpl<GuildConfig, GuildConfigRepository> implements ConfigService {
+public class ConfigServiceImpl
+        extends AbstractDomainServiceImpl<GuildConfig, GuildConfigRepository>
+        implements ConfigService {
 
     @Autowired
     private CommonProperties commonProperties;
 
-    public ConfigServiceImpl(@Autowired GuildConfigRepository repository) {
-        super(repository, true);
+    public ConfigServiceImpl(@Autowired GuildConfigRepository repository,
+                             @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isGuildConfig());
     }
 
     @Override

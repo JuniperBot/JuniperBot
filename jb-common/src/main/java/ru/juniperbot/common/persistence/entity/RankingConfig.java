@@ -59,6 +59,10 @@ public class RankingConfig extends GuildEntity {
     @Column(name = "ignored_channels", columnDefinition = "json")
     private List<Long> ignoredChannels;
 
+    @Type(type = "jsonb")
+    @Column(name = "ignored_voice_channels", columnDefinition = "json")
+    private List<Long> ignoredVoiceChannels;
+
     @Column(name = "cookie_enabled")
     private boolean cookieEnabled;
 

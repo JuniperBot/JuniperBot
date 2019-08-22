@@ -47,6 +47,7 @@ public class RankingListener extends DiscordEventListener {
                 rankingConfigService.update(new RankingUpdateRequest(event.getGuild().getIdLong(),
                         event.getMember().getUser().getId(),
                         0,
+                        true,
                         true));
             }
         });

@@ -49,4 +49,6 @@ public interface GatewayService {
     boolean isChannelOwner(CheckOwnerRequest request);
 
     InstagramProfile getInstagramProfile();
+
+    void evictCache(String cacheName, long guildId);
 }

@@ -51,6 +51,8 @@ public class RabbitConfiguration {
 
     public final static String QUEUE_CHECK_OWNER_REQUEST = "juniperbot.check.owner.request";
 
+    public final static String QUEUE_CACHE_EVICT_REQUEST = "juniperbot.cache.evict.request";
+
     @Autowired
     private CommonProperties commonProperties;
 
@@ -130,5 +132,10 @@ public class RabbitConfiguration {
     @Bean
     public Queue checkOwnerRequest() {
         return new Queue(QUEUE_CHECK_OWNER_REQUEST);
+    }
+
+    @Bean
+    public Queue cacheEvictRequest() {
+        return new Queue(QUEUE_CACHE_EVICT_REQUEST);
     }
 }

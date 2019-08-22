@@ -46,5 +46,7 @@ public class RankingDto implements Serializable {
 
     private Set<String> ignoredChannels;
 
+    private Set<String> ignoredVoiceChannels;
+
     private boolean cookieEnabled;
 }

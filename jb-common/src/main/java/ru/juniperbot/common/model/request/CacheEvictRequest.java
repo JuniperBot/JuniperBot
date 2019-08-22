@@ -14,30 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.service;
+package ru.juniperbot.common.model.request;
 
-import net.dv8tion.jda.api.entities.Guild;
-import ru.juniperbot.common.persistence.entity.base.GuildEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface DomainService<T extends GuildEntity> {
+import java.io.Serializable;
 
-    T get(Guild guild);
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CacheEvictRequest implements Serializable {
 
-    T get(long id);
+    private static final long serialVersionUID = -2207114753515539658L;
 
-    T getByGuildId(long guildId);
+    private String cacheName;
 
-    T getOrCreate(long guildId);
-
-    T save(T entity);
-
-    boolean exists(long guildId);
-
-    void evict(long guildId);
-
-    boolean isCacheable();
-
-    void setCacheable(boolean cacheable);
-
-    void inTransaction(Runnable action);
+    private long guildId;
 }

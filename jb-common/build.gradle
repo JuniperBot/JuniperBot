@@ -39,6 +39,7 @@ dependencies {
     api "com.fasterxml.jackson.core:jackson-core"
     api "com.fasterxml.jackson.core:jackson-databind"
     api "com.github.jasminb:jsonapi-converter:${jsonApiConverter}"
+    api "org.ocpsoft.prettytime:prettytime:${prettytimeVersion}"
 
     // DISCORD DEPENDENCIES
     api ("net.dv8tion:JDA:${jdaVersion}") {

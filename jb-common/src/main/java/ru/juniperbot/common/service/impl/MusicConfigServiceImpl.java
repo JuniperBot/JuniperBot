@@ -19,15 +19,19 @@ package ru.juniperbot.common.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.persistence.entity.MusicConfig;
 import ru.juniperbot.common.persistence.repository.MusicConfigRepository;
 import ru.juniperbot.common.service.MusicConfigService;
 
 @Service
-public class MusicConfigServiceImpl extends AbstractDomainServiceImpl<MusicConfig, MusicConfigRepository> implements MusicConfigService {
+public class MusicConfigServiceImpl
+        extends AbstractDomainServiceImpl<MusicConfig, MusicConfigRepository>
+        implements MusicConfigService {
 
-    public MusicConfigServiceImpl(@Autowired MusicConfigRepository repository) {
-        super(repository, true);
+    public MusicConfigServiceImpl(@Autowired MusicConfigRepository repository,
+                                  @Autowired CommonProperties commonProperties) {
+        super(repository, commonProperties.getDomainCache().isMusicConfig());
     }
 
     @Override

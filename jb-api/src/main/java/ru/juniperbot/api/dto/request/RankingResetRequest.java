@@ -30,4 +30,6 @@ public class RankingResetRequest implements Serializable {
     private boolean levels;
 
     private boolean cookies;
+
+    private boolean voiceActivity;
 }

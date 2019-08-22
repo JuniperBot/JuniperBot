@@ -37,7 +37,7 @@ public interface RankingConfigService extends DomainService<RankingConfig> {
 
     void update(RankingUpdateRequest request);
 
-    void resetAll(long guildId, boolean levels, boolean cookies);
+    void resetAll(long guildId, boolean levels, boolean cookies, boolean voiceActivity);
 
     boolean isBanned(RankingConfig config, Member member);
 

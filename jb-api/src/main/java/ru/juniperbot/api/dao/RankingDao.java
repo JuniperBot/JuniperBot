@@ -50,6 +50,7 @@ public class RankingDao extends AbstractDao {
         config.setResetOnLeave(dto.isResetOnLeave());
         config.setBannedRoles(dto.getBannedRoles());
         config.setIgnoredChannels(ApiMapperService.toLongList(dto.getIgnoredChannels()));
+        config.setIgnoredVoiceChannels(ApiMapperService.toLongList(dto.getIgnoredVoiceChannels()));
         config.setCookieEnabled(dto.isCookieEnabled());
 
         config.setAnnounceTemplate(templateDao.updateOrCreate(dto.getAnnounceTemplate(), config.getAnnounceTemplate()));

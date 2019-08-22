@@ -20,7 +20,6 @@ dependencies {
     api project(':jb-common')
     api "org.springframework.boot:spring-boot-starter-quartz"
     api "org.springframework.cloud:spring-cloud-starter-consul-discovery:${springConsulVersion}"
-    api "org.ocpsoft.prettytime:prettytime:${prettytimeVersion}"
 
     // METRICS DEPENDENCIES
     api "com.ryantenney.metrics:metrics-spring:${metricsSpringVersion}"

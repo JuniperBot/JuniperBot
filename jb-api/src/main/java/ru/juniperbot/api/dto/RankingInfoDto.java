@@ -50,4 +50,6 @@ public class RankingInfoDto implements Serializable {
     private int pct;
 
     private long cookies;
+
+    private long voiceActivity;
 }

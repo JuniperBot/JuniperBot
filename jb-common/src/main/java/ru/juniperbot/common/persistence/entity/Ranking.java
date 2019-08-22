@@ -43,6 +43,9 @@ public class Ranking extends BaseEntity {
     private long exp;
 
     @Column
+    private long voiceActivity;
+
+    @Column
     private long cookies;
 
     @Transient

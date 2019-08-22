@@ -35,4 +35,15 @@
         <sql>ALTER TABLE custom_command ALTER COLUMN type TYPE varchar(50)</sql>
     </changeSet>
 
+    <changeSet id="7.0-22082019-2" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="ignored_voice_channels" type="jsonb"/>
+        </addColumn>
+        <addColumn tableName="ranking">
+            <column name="voice_activity" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

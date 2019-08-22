@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
@@ -94,9 +95,14 @@ public class RankCommand extends RankingCommand {
         builder.addField(messageService.getMessage("discord.command.rank.info.exp.title"),
                 messageService.getMessage("discord.command.rank.info.exp.format",
                         info.getRemainingExp(), info.getLevelExp(), info.getTotalExp()), true);
-        if (config != null && config.isCookieEnabled()) {
+        if (config.isCookieEnabled()) {
             builder.addField(messageService.getMessage("discord.command.rank.info.cookies.title"),
                     String.format("%d \uD83C\uDF6A", info.getCookies()), true);
+        }
+        builder.addField(messageService.getMessage("discord.command.rank.info.voiceActivity.title"),
+                CommonUtils.formatDuration(info.getVoiceActivity()), true);
+        if (config.isCookieEnabled()) {
+            builder.addBlankField(true);
         }
     }
 }

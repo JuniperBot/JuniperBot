@@ -27,5 +27,7 @@ public interface RankingService {
 
     void giveCookie(Member senderMember, Member recipientMember);
 
+    void addVoiceActivity(Member member, long duration);
+
     void updateRewards(Member member);
 }

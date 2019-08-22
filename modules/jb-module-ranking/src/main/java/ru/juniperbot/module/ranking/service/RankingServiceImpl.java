@@ -156,6 +156,17 @@ public class RankingServiceImpl implements RankingService {
         }
     }
 
+    @Override
+    @Transactional
+    public void addVoiceActivity(Member member, long duration) {
+        if (!memberService.isApplicable(member) || !configService.isEnabled(member.getGuild().getIdLong())) {
+            return;
+        }
+        Ranking ranking = getRanking(member);
+        ranking.setVoiceActivity(ranking.getVoiceActivity() + duration);
+        rankingRepository.save(ranking);
+    }
+
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
         if (!cookieRepository.isFull(sender, recipient, checkDate)) {
             configService.inTransaction(() -> {
