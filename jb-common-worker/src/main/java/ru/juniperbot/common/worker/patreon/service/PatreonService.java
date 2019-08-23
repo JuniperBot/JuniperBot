@@ -24,4 +24,6 @@ public interface PatreonService extends FeatureSetProvider {
     boolean processWebHook(PatreonRequest request);
 
     void update();
+
+    boolean tryBoost(long userId, long guildId);
 }

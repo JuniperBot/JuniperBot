@@ -36,4 +36,7 @@ public class PatreonUser extends FeaturedUserEntity {
 
     @Column
     private boolean active;
+
+    @Column
+    private Long boostedGuildId;
 }

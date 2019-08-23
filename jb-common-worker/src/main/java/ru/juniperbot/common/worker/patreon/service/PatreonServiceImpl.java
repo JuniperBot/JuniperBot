@@ -45,7 +45,6 @@ import ru.juniperbot.common.worker.shared.service.SupportService;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,6 +56,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     private final Object $lock = new Object[0];
 
     private final Object $webHookLock = new Object[0];
+
+    private final Object $boostLock = new Object[0];
 
     @Autowired
     private WorkerProperties workerProperties;
@@ -78,21 +79,20 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
     private HmacUtils webHookHmac;
 
-    private ScheduledFuture<?> updateFuture;
-
     private final Map<Long, Set<FeatureSet>> featureSets = new ConcurrentHashMap<>();
+
+    private final Map</* Boosted Guild ID */Long, /* User IDs */Set<Long>> boostedGuilds = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
         List<PatreonUser> activeUsers = repository.findActive();
-        featureSets.putAll(activeUsers.stream().collect(Collectors.toMap(e -> Long.valueOf(e.getUserId()), PatreonUser::getFeatureSets)));
+        activeUsers.forEach(this::enableFeatures);
 
         String accessToken = workerProperties.getPatreon().getAccessToken();
         if (StringUtils.isNotEmpty(accessToken)) {
             creatorApi = new PatreonAPI(accessToken);
             if (workerProperties.getPatreon().isUpdateEnabled()) {
-                updateFuture = scheduler.scheduleWithFixedDelay(this::update,
-                        workerProperties.getPatreon().getUpdateInterval());
+                scheduler.scheduleWithFixedDelay(this::update, workerProperties.getPatreon().getUpdateInterval());
             }
         } else {
             log.warn("No Patreon credentials specified, integration would not work");
@@ -115,7 +115,6 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             Map<String, PatreonUser> patreonByUserId = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getUserId, e -> e));
 
             patreonUsers.forEach(e -> e.setActive(false));
-            Map<Long, Set<FeatureSet>> featureSets = new HashMap<>();
 
             Set<String> donators = new HashSet<>();
 
@@ -151,14 +150,14 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                 patreon.setActive(member.isActiveAndPaid());
                 patreon.setFeatureSets(getFeatureSets(member));
 
-                featureSets.put(Long.valueOf(patreon.getUserId()), patreon.getFeatureSets());
                 if (member.isActiveAndPaid() && discordUserId != null) {
                     donators.add(discordUserId);
                 }
             }
 
             this.featureSets.clear();
-            this.featureSets.putAll(featureSets);
+            this.boostedGuilds.clear();
+            patreonUsers.forEach(this::enableFeatures);
             repository.saveAll(patreonUsers);
             repository.flush();
             supportService.grantDonators(donators);
@@ -170,8 +169,48 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     }
 
     @Override
+    @Transactional
+    @Synchronized("$boostLock")
+    public boolean tryBoost(long userId, long guildId) {
+        PatreonUser user = repository.findByUserId(String.valueOf(userId));
+        if (user == null || !user.isActive() || CollectionUtils.isEmpty(user.getFeatureSets())) {
+            return false;
+        }
+
+        // unboost previous guild
+        if (user.getBoostedGuildId() != null) {
+            Set<Long> boostedUsers = this.boostedGuilds.get(user.getBoostedGuildId());
+            if (boostedUsers != null) {
+                boostedUsers.remove(userId);
+            }
+        }
+        // boost new guild
+        boostedGuilds.computeIfAbsent(guildId, e -> new HashSet<>()).add(userId);
+        user.setBoostedGuildId(guildId);
+        repository.save(user);
+        return true;
+    }
+
+    @Override
     public Set<FeatureSet> getByUser(long userId) {
         return featureSets.getOrDefault(userId, Set.of());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAvailable(long guildId, FeatureSet featureSet) {
+        if (super.isAvailable(guildId, featureSet)) {
+            return true;
+        }
+        return this.boostedGuilds.getOrDefault(guildId, Set.of()).stream().anyMatch(e -> isAvailableForUser(e, featureSet));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<FeatureSet> getByGuild(long guildId) {
+        Set<FeatureSet> result = new HashSet<>(super.getByGuild(guildId));
+        this.boostedGuilds.getOrDefault(guildId, Set.of()).forEach(e -> result.addAll(getByUser(e)));
+        return result;
     }
 
     @Override
@@ -201,7 +240,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     patron.setActive(true);
                     Set<FeatureSet> entitledFeatureSets = getFeatureSets(member);
                     patron.setFeatureSets(entitledFeatureSets);
-                    featureSets.put(Long.valueOf(patron.getUserId()), entitledFeatureSets);
+                    enableFeatures(patron);
                     if (CollectionUtils.isNotEmpty(entitledFeatureSets)) {
                         supportService.grantDonators(Collections.singleton(patron.getUserId()));
                     }
@@ -209,7 +248,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
                     break;
                 case "members:pledge:delete":
                     patron.setActive(false);
-                    featureSets.remove(Long.valueOf(patron.getUserId()));
+                    disableFeatures(patron);
                     break;
             }
             repository.save(patron);
@@ -218,6 +257,26 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             emergencyService.error("Could not perform Patreon WebHook", e);
         }
         return true;
+    }
+
+    private void enableFeatures(PatreonUser user) {
+        if (!user.isActive()) {
+            return;
+        }
+        Long userId = Long.valueOf(user.getUserId());
+        featureSets.put(userId, user.getFeatureSets());
+
+        if (user.getBoostedGuildId() != null) {
+            boostedGuilds.computeIfAbsent(user.getBoostedGuildId(), e -> new HashSet<>()).add(userId);
+        }
+    }
+
+    private void disableFeatures(PatreonUser user) {
+        Long userId = Long.valueOf(user.getUserId());
+        featureSets.remove(userId);
+        if (user.getBoostedGuildId() != null) {
+            boostedGuilds.computeIfAbsent(user.getBoostedGuildId(), e -> new HashSet<>()).remove(userId);
+        }
     }
 
     private PatreonUser getOrCreatePatron(Member member) {

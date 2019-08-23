@@ -52,4 +52,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7.0-22082019-4" author="caramel">
+        <addColumn tableName="patreon_user">
+            <column name="boosted_guild_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

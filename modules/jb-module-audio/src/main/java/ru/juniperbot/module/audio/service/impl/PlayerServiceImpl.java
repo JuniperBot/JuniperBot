@@ -206,7 +206,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     @Override
     protected void onTrackEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
         notifyCurrentEnd(instance, endReason);
-        if (endReason.mayStartNext) {
+        if (endReason.mayStartNext && featureSetService.isAvailable(instance.getGuildId())) {
             if (instance.playNext()) {
                 return;
             }
