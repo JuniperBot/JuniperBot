@@ -36,7 +36,7 @@ public class HereCommand extends AudioCommand {
 
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException {
-        if (!message.getMember().getVoiceState().inVoiceChannel()) {
+        if (message.getMember().getVoiceState() == null || !message.getMember().getVoiceState().inVoiceChannel()) {
             messageService.onError(message.getChannel(), "discord.command.here.notInChannel");
             return fail(message);
         }

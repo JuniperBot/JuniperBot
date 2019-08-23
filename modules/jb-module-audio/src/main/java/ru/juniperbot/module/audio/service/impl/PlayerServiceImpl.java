@@ -493,7 +493,8 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         // there is also no reason to look the channel up remotely from lavalink, if we have access to a real guild
         // object here, since we can use the voice state of ourselves (and lavalink 1.x is buggy in keeping up with the
         // current voice channel if the bot is moved around in the client)
-        return guild.getSelfMember().getVoiceState().getChannel();
+        return guild.getSelfMember().getVoiceState() != null
+                ? guild.getSelfMember().getVoiceState().getChannel() : null;
     }
 
     @Override
@@ -507,7 +508,9 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         MusicConfig musicConfig = musicConfigService.get(member.getGuild());
         VoiceChannel channel = null;
         if (musicConfig != null) {
-            if (musicConfig.isUserJoinEnabled() && member.getVoiceState().inVoiceChannel()) {
+            if (musicConfig.isUserJoinEnabled()
+                    && member.getVoiceState() != null
+                    && member.getVoiceState().inVoiceChannel()) {
                 channel = member.getVoiceState().getChannel();
             }
             if (channel == null && musicConfig.getChannelId() != null) {
