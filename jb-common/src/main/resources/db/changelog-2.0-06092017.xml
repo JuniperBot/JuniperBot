@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2.0-06092017-1" author="caramel">
+        <createTable tableName="welcome_message">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_welcome_message"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_welcome_message_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="join_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="join_rich_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="join_message" type="VARCHAR(1800)"/>
+            <column name="join_channel_id" type="BIGINT"/>
+            <column name="join_to_dm" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="leave_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="leave_rich_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="leave_message" type="VARCHAR(1800)"/>
+            <column name="leave_channel_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2.0-06092017-2" author="caramel">
+        <createIndex indexName="idx_welcome_message_guild_config_id" tableName="welcome_message" unique="true">
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

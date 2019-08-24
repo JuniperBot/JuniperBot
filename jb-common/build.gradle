@@ -1,0 +1,62 @@
+/*
+ * This file is part of JuniperBot.
+ *
+ * JuniperBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+ */
+description = 'JuniperBot Discord Bot Core Library'
+
+dependencies {
+
+    // SPRING CORE DEPENDENCIES
+    api "org.springframework.boot:spring-boot-starter"
+    api "org.springframework.boot:spring-boot-starter-data-jpa"
+    api "org.springframework.boot:spring-boot-starter-aop"
+    api "org.springframework.boot:spring-boot-starter-amqp"
+    api "org.springframework:spring-web"
+    api "org.springframework:spring-context-support"
+
+    // COMMON CORE DEPENDENCIES
+    api "org.apache.commons:commons-lang3"
+    api "commons-io:commons-io:${commonsIoVersion}"
+    api "commons-validator:commons-validator:${commonsValidatorVersion}"
+    api "commons-codec:commons-codec:${commonsCodecVersion}"
+    api "org.apache.commons:commons-collections4:${commonsCollections4Version}"
+    api "joda-time:joda-time"
+    api "com.google.code.gson:gson:${gsonVersion}"
+    api "com.google.guava:guava:${guavaVersion}"
+    api "org.json:json:${jsonVersion}"
+    api "com.fasterxml.jackson.core:jackson-core"
+    api "com.fasterxml.jackson.core:jackson-databind"
+    api "com.github.jasminb:jsonapi-converter:${jsonApiConverter}"
+    api "org.ocpsoft.prettytime:prettytime:${prettytimeVersion}"
+
+    // DISCORD DEPENDENCIES
+    api ("net.dv8tion:JDA:${jdaVersion}") {
+        exclude group: 'club.minnced', module: 'opus-java'
+    }
+    api "club.minnced:discord-webhooks:${discordWebhookVersion}"
+    api "com.google.apis:google-api-services-youtube:${googleApiServicesYoutubeVersion}"
+
+    // DATABASE DEPENDENCIES
+    implementation "javax.annotation:javax.annotation-api"
+    implementation "org.hibernate.validator:hibernate-validator"
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation "org.liquibase:liquibase-core"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}") }
+}

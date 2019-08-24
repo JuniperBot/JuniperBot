@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="6.1-09112018-1" author="caramel">
+        <createTable tableName="youtube_channel">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_youtube_channel"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="channel_id" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="expires_at" type="DATE" defaultValueComputed="now()"/>
+        </createTable>
+        <createIndex indexName="idx_youtube_channel_channel_id" tableName="youtube_channel" unique="true">
+            <column name="channel_id" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createIndex>
+        <createIndex indexName="idx_youtube_channel_expires_at" tableName="youtube_channel">
+            <column name="expires_at" type="DATE"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-2" author="caramel">
+        <sql>INSERT INTO youtube_channel(version, channel_id) SELECT DISTINCT 0, channel_id FROM youtube_connection</sql>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-3" author="caramel">
+        <renameColumn tableName="youtube_connection" oldColumnName="channel_id" newColumnName="text_channel_id"/>
+        <addColumn tableName="youtube_connection">
+            <column name="channel_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_youtube_connection_channel"
+                             references="youtube_channel(id)"/>
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE youtube_connection AS con
+            SET channel_id = channel.id
+            FROM (SELECT * FROM youtube_channel) AS channel
+            WHERE con.text_channel_id = channel.channel_id
+        </sql>
+        <addNotNullConstraint tableName="youtube_connection" columnName="channel_id"/>
+        <dropColumn tableName="youtube_connection">
+            <column name="text_channel_id"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-4" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="cookie_enabled" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-5" author="caramel">
+        <addColumn tableName="command_config">
+            <column name="cooldown_ignored_roles" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-6" author="caramel">
+        <addColumn tableName="reaction_roulette">
+            <column name="selected_emotes" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.1-09112018-7" author="caramel">
+        <addColumn tableName="metric">
+            <column name="data" type="JSONB"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

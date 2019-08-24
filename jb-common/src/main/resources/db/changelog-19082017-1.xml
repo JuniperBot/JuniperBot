@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="19082017-1-1" author="caramel">
+        <createTable tableName="auto_post">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_auto_post"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="VARCHAR(255)"/>
+            <column name="channel_id" type="VARCHAR(255)"/>
+            <column name="latest_id" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="19082017-1-2" author="caramel">
+        <createIndex indexName="idx_auto_post_pair" tableName="auto_post" unique="true">
+            <column name="guild_id" type="VARCHAR(255)"/>
+            <column name="channel_id" type="VARCHAR(255)"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="19082017-1-3" author="caramel">
+        <createTable tableName="guild_config">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_guild_config"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="prefix" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="music_playlist_enabled" type="BOOLEAN"/>
+            <column name="music_channel_id" type="BIGINT"/>
+            <column name="music_queue_limit" type="BIGINT"/>
+            <column name="music_duration_limit" type="BIGINT"/>
+            <column name="music_duplicate_limit" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="19082017-1-4" author="caramel">
+        <createIndex indexName="idx_guild_config_guild_id" tableName="guild_config" unique="true">
+            <column name="guild_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="19082017-1-5" author="caramel">
+        <createTable tableName="reminder">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_reminder"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_id" type="VARCHAR(255)"/>
+            <column name="user_id" type="VARCHAR(255)"/>
+            <column name="channel_id" type="VARCHAR(255)"/>
+            <column name="message" type="VARCHAR(2048)"/>
+            <column name="date" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

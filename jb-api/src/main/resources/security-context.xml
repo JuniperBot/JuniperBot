@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/security/oauth2
+        http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
+
+    <bean id="authenticationManager"
+          class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager"
+          p:tokenServices-ref="discordTokenServices" />
+
+    <security:global-method-security authentication-manager-ref="authenticationManager" />
+
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+
+    <bean id="accessDeniedHandler"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+
+    <bean id="publicConfiguration" class="org.springframework.web.cors.CorsConfiguration"
+          p:allowedOrigins="*"
+          p:allowedMethods="#{apiProperties.cors.allowedMethods}"
+          p:allowedHeaders="*">
+    </bean>
+
+    <bean id="domainConfiguration" class="org.springframework.web.cors.CorsConfiguration"
+          p:allowedOrigins="#{apiProperties.cors.privateOrigins}"
+          p:allowedMethods="#{apiProperties.cors.allowedMethods}"
+          p:allowedHeaders="*">
+    </bean>
+
+    <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/api/public/**" value-ref="publicConfiguration"/>
+                <entry key="/api/oauth2/token" value-ref="publicConfiguration"/>
+                <entry key="/api/priv/**" value-ref="domainConfiguration"/>
+            </map>
+        </property>
+    </bean>
+
+    <security:http pattern="/api/oauth2/token"
+                   authentication-manager-ref="authenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="oAuth2TokenRequestFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
+        <security:access-denied-handler ref="accessDeniedHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <security:http pattern="/api/priv/**"
+                   create-session="stateless"
+                   authentication-manager-ref="authenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   disable-url-rewriting="true"
+                   use-expressions="true"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
+        <security:intercept-url pattern="/api/priv/**" access="hasRole('ROLE_USER')"/>
+        <security:custom-filter ref="oauth2AuthenticationFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="infoMdcFilter" after="LAST"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
+        <security:access-denied-handler ref="accessDeniedHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <security:http pattern="/api/public/**"
+                   authentication-manager-ref="authenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   xmlns="http://www.springframework.org/schema/security">
+        <security:cors configuration-source-ref="corsSource"/>
+        <security:custom-filter ref="infoMdcFilter" after="LAST"/>
+        <security:custom-filter ref="anonymousAuthFilter" before="ANONYMOUS_FILTER"/>
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <bean id="anonymousAuthFilter"
+          class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+        <constructor-arg value="anon"/>
+    </bean>
+
+    <bean id="anonymousAuthenticationProvider"
+          class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+        <constructor-arg value="anon"/>
+    </bean>
+
+    <oauth2:resource id="oauthResource"
+                     client-id="${juniperbot.api.discord.clientId}"
+                     client-secret="${juniperbot.api.discord.clientSecret}"
+                     user-authorization-uri="${juniperbot.api.discord.authorizeUri}"
+                     access-token-uri="${juniperbot.api.discord.tokenUri}"
+                     type="authorization_code"
+                     client-authentication-scheme="query"
+                     scope="${juniperbot.api.discord.scope}"/>
+
+    <bean id="requestFactory" class="ru.juniperbot.api.security.auth.DiscordHttpRequestFactory"/>
+    <bean id="tokenProvider"
+          class="org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider"
+          p:requestFactory-ref="requestFactory"
+          p:stateMandatory="false" />
+
+    <bean id="discordTokenServices" class="ru.juniperbot.api.security.auth.DiscordTokenServices"
+          p:requestFactory-ref="requestFactory">
+        <constructor-arg ref="oauthResource"/>
+    </bean>
+
+    <oauth2:client id="oauth2RedirectForAccessTokenFilter"/>
+    <bean id="oauth2AuthenticationFilter"
+      class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter"
+      p:authenticationManager-ref="authenticationManager" />
+
+    <bean id="infoMdcFilter"
+          class="ru.juniperbot.api.common.InfoMdcFilter" />
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="oauth2AuthenticationFilter"/>
+        <property name="enabled" value="false"/>
+    </bean>
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="infoMdcFilter"/>
+        <property name="enabled" value="false"/>
+    </bean>
+
+    <bean id="oAuth2TokenRequestFilter"
+          class="ru.juniperbot.api.security.auth.OAuth2TokenRequestFilter"
+          p:tokenServices-ref="discordTokenServices">
+        <constructor-arg name="defaultFilterProcessesUrl" value="/api/oauth2/token"/>
+        <property name="authenticationSuccessHandler">
+            <bean class="ru.juniperbot.api.security.auth.TokenRequestSuccessHandler"/>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.boot.web.servlet.FilterRegistrationBean">
+        <property name="filter" ref="oAuth2TokenRequestFilter"/>
+        <property name="enabled" value="false"/>
+    </bean>
+
+</beans>

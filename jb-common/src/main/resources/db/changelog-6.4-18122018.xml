@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="6.4-18122018-1" author="caramel">
+        <createTable tableName="message_template">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_message_template"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="content" type="TEXT"/>
+            <column name="channel_id" type="VARCHAR(255)"/>
+            <column name="tts" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="color" type="VARCHAR(7)"/>
+            <column name="image_url" type="VARCHAR(2000)"/>
+            <column name="thumbnail_url" type="VARCHAR(2000)"/>
+            <column name="author" type="TEXT"/>
+            <column name="author_url" type="VARCHAR(2000)"/>
+            <column name="author_icon_url" type="VARCHAR(2000)"/>
+            <column name="title" type="TEXT"/>
+            <column name="title_url" type="VARCHAR(2000)"/>
+            <column name="footer" type="TEXT"/>
+            <column name="footer_icon_url" type="VARCHAR(2000)"/>
+            <column name="temp_id" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="message_template_field">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_message_template_field"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="message_template_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_pk_message_template_field_message_template"
+                             references="message_template(id)" />
+            </column>
+            <column name="index" type="INTEGER"/>
+            <column name="name" type="TEXT"/>
+            <column name="value" type="TEXT"/>
+            <column name="inline" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <!-- Replacement Links -->
+        <addColumn tableName="ranking_config">
+            <column name="announce_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_ranking_config_message_template"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-3" author="caramel">
+        <sql>
+            <![CDATA[
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  CASE is_embed
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  announcement,
+                  CASE is_whisper
+                    WHEN true THEN '-1'
+                    WHEN false THEN announcement_channel_id
+                  END
+                  FROM ranking_config
+                  WHERE announcement IS NOT NULL;
+
+                UPDATE ranking_config c
+                SET announce_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-4" author="caramel">
+        <comment>Удалить ненужное из ranking_config</comment>
+        <dropColumn tableName="ranking_config">
+            <column name="is_whisper"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="is_embed"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="announcement_channel_id"/>
+        </dropColumn>
+        <dropColumn tableName="ranking_config">
+            <column name="announcement"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-5" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="join_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_join"
+                             references="message_template(id)" />
+            </column>
+            <column name="join_dm_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_join_dm"
+                             references="message_template(id)" />
+            </column>
+            <column name="leave_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_welcome_message_message_leave"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-6" author="caramel">
+        <sql>
+            <![CDATA[
+
+                -- migrate join message
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  CASE join_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  join_message,
+                  join_channel_id::varchar
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET join_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+                -- migrate leave message
+                INSERT INTO message_template (temp_id, version, type, content, channel_id) SELECT
+                  id,
+                  0,
+                  CASE leave_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  leave_message,
+                  leave_channel_id::varchar
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET leave_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+                -- migrate join dm message
+                INSERT INTO message_template (temp_id, version, type, content) SELECT
+                  id,
+                  0,
+                  CASE join_dm_rich_enabled
+                    WHEN true THEN 'EMBED'
+                    WHEN false THEN 'TEXT'
+                  END,
+                  join_dm_message
+                  FROM welcome_message;
+
+                UPDATE welcome_message c
+                SET join_dm_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-7" author="caramel">
+        <comment>Удалить ненужное из welcome_message</comment>
+        <dropColumn tableName="welcome_message">
+            <column name="join_rich_enabled"/>
+            <column name="join_message"/>
+            <column name="join_channel_id"/>
+            <column name="join_dm_rich_enabled"/>
+            <column name="join_dm_message"/>
+            <column name="leave_rich_enabled"/>
+            <column name="leave_message"/>
+            <column name="leave_channel_id"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-8" author="caramel">
+        <addColumn tableName="custom_command">
+            <column name="message_template_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_pk_custom_command_message_template"
+                             references="message_template(id)" />
+            </column>
+        </addColumn>
+        <sql>
+            <![CDATA[
+
+                INSERT INTO message_template (temp_id, version, type, content) SELECT
+                  id,
+                  0,
+                  'TEXT',
+                  content
+                  FROM custom_command c
+                  WHERE c.type = 'MESSAGE' AND c.content IS NOT NULL;
+
+                UPDATE custom_command c
+                SET message_template_id = t.id
+                FROM message_template t
+                WHERE t.temp_id = c.id;
+
+                UPDATE message_template SET temp_id = null;
+
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-9" author="caramel">
+        <sql>
+            <![CDATA[
+                UPDATE message_template SET content = REPLACE(content, '{guild}', '{server}');
+                UPDATE message_template SET content = REPLACE(content, '{author}', '{member}');
+                UPDATE message_template SET content = REPLACE(content, '{user}', '{member}');
+
+                UPDATE custom_command SET content = REPLACE(content, '{guild}', '{server}');
+                UPDATE custom_command SET content = REPLACE(content, '{author}', '{member}');
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="6.4-18122018-10" author="caramel">
+        <modifyDataType tableName="twitch_connection" columnName="description" newDataType="VARCHAR(300)"/>
+    </changeSet>
+
+</databaseChangeLog>

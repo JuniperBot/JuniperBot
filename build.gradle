@@ -1,22 +1,22 @@
 /*
- * This file is part of JuniperBotJ.
+ * This file is part of JuniperBot.
  *
- * JuniperBotJ is free software: you can redistribute it and/or modify
+ * JuniperBot is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
 
- * JuniperBotJ is distributed in the hope that it will be useful,
+ * JuniperBot is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
 
  * You should have received a copy of the GNU General Public License
- * along with JuniperBotJ. If not, see <http://www.gnu.org/licenses/>.
+ * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.7.RELEASE'
     }
     repositories {
         jcenter()
@@ -25,8 +25,11 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("gradle.plugin.at.comm_unity.gradle.plugins:jpamodelgen-plugin:1.1.4")
     }
+}
+
+plugins {
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 }
 
 allprojects {
@@ -45,29 +48,31 @@ allprojects {
         maven { url "$rootProject.projectDir/local" }
     }
 
-    group = 'ru.caramel'
-    version = System.getenv('CI_VERSION') ?: '6.x-SNAPSHOT'
+    group = 'ru.juniperbot'
+    version = System.getenv('CI_VERSION') ?: '7.x-SNAPSHOT'
 }
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'at.comm_unity.gradle.plugins.jpamodelgen'
 
-    sourceCompatibility = JavaVersion.VERSION_1_10
-    targetCompatibility = JavaVersion.VERSION_1_10
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
+    compileJava.options.compilerArgs << "-Xlint:deprecation"
 
     ext {
+        generatedMainJava = "${buildDir}/generated"
+
         //@formatter:off
 
         // Common Properties
         springBootVersion                  = "${springBootVersion}"
         springCloudVersion                 = 'Greenwich.RELEASE'
-        springOauthVersion                 = '2.1.0.RELEASE'
+        springConsulVersion                = '2.1.2.RELEASE'
         hibernateVersion                   = '5.3.7.Final'
         lombokVersion                      = '1.18.4'
         jsonVersion                        = '20160810'
@@ -85,7 +90,6 @@ subprojects {
         jsoupVersion                       = '1.11.2'
         mapstructVersion                   = '1.2.0.Final'
         opencvVersion                      = '3.2.0'
-        sentryVersion                      = '1.7.9'
         jacksonVersion                     = '2.9.7'
         
         jmxRemote                          = '4.1.1'
@@ -114,27 +118,25 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs << "-Xlint:deprecation" << "--add-modules=java.xml.ws.annotation"
-    }
-
-    jpaModelgen {
-        library = "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
-        jpaModelgenSourcesDir = "src/main/generated"
+        options.annotationProcessorGeneratedSourcesDirectory = file(generatedMainJava)
+        options.compilerArgs << "-Xlint:deprecation"
     }
 
     sourceSets {
-        main {
-            java {
-                srcDirs += "src/main/generated"
-            }
-        }
+        main.java.srcDirs += generatedMainJava
     }
 
     dependencies {
-        compileOnly(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        annotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        testCompile(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
-        testAnnotationProcessor(group: 'org.projectlombok', name: 'lombok', version: lombokVersion)
+        compileOnly "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
+        compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "javax.xml.bind:jaxb-api"
+        annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
+        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        testCompile "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
 
     dependencyManagement {

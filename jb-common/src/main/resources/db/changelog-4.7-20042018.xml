@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="4.7-20042018-1" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="is_embed" type="BOOLEAN"/>
+        </addColumn>
+        <addColumn tableName="ranking_config">
+            <column name="announcement_channel_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-2" author="caramel">
+        <sql>UPDATE ranking_config SET is_embed = false</sql>
+        <addNotNullConstraint tableName="ranking_config" columnName="is_embed"/>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-4" author="caramel">
+        <addColumn tableName="welcome_message">
+            <column name="join_role_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-5" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="auto_play" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-6" author="caramel">
+        <addColumn tableName="music_config">
+            <column name="text_channel_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4.7-20042018-7" author="caramel">
+        <createTable tableName="reaction_roulette">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_reaction_roulette"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="guild_config_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_reaction_roulette_guild_config"
+                             references="guild_config(id)"/>
+            </column>
+            <column name="is_enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reaction" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="percent" type="INTEGER" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="reaction_roulette" indexName="idx_reaction_roulette_guild_config_id">
+            <column name="guild_config_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

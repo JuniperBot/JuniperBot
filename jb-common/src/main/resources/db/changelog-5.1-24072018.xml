@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="5.1-24072018-1" author="caramel">
+        <addColumn tableName="vk_connection">
+            <column name="group_only_posts" type="BOOLEAN"/>
+        </addColumn>
+        <sql>UPDATE vk_connection SET group_only_posts = FALSE</sql>
+        <addNotNullConstraint tableName="vk_connection" columnName="group_only_posts"/>
+    </changeSet>
+
+    <changeSet id="5.1-24072018-2" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="ignored_channels" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5.1-24072018-3" author="caramel">
+        <addColumn tableName="mod_config">
+            <column name="warn_exceed_action" type="VARCHAR(10)"/>
+        </addColumn>
+        <addColumn tableName="mod_config">
+            <column name="mute_count" type="INTEGER"/>
+        </addColumn>
+        <sql>UPDATE mod_config SET warn_exceed_action = 'BAN', mute_count = 1440</sql>
+        <addNotNullConstraint tableName="mod_config" columnName="warn_exceed_action"/>
+        <addNotNullConstraint tableName="mod_config" columnName="mute_count"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,57 @@
+/*
+ * This file is part of JuniperBot.
+ *
+ * JuniperBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+ */
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+description = 'JuniperBot Discord Bot Worker Application'
+
+ext {
+    moduleName = 'JuniperBot-Worker'
+}
+
+mainClassName = 'ru.juniperbot.worker.JuniperWorkerApplication'
+
+bootJar {
+    archiveFileName = "JuniperBot-Worker.jar"
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web"
+
+    implementation project(':jb-common-worker')
+    implementation project(':modules')
+
+    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
+    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
+    implementation "org.joda:joda-money:${jodaMoneyVersion}"
+
+    implementation "org.codehaus.groovy:groovy"
+}
+
+processResources {
+    filesMatching("**/application.yml") {
+        filter ReplaceTokens, tokens: [
+                "build.version"     : project.version,
+                "build.timestamp"   : System.currentTimeMillis() + '',
+                "JDA.version"       : jdaVersion,
+                "lavaplayer.version": lavaplayerVersion,
+                "spring.version"    : dependencyManagement.importedProperties['spring.version']
+        ]
+    }
+}

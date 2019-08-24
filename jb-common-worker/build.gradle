@@ -1,0 +1,33 @@
+/*
+ * This file is part of JuniperBot.
+ *
+ * JuniperBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * JuniperBot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+ */
+description = 'JuniperBot Discord Bot Worker Common Library'
+
+dependencies {
+    api project(':jb-common')
+    api "org.springframework.boot:spring-boot-starter-quartz"
+    api "org.springframework.cloud:spring-cloud-starter-consul-discovery:${springConsulVersion}"
+
+    // METRICS DEPENDENCIES
+    api "com.ryantenney.metrics:metrics-spring:${metricsSpringVersion}"
+    api "io.dropwizard.metrics:metrics-jmx"
+    api "io.dropwizard.metrics:metrics-jvm"
+    api "io.prometheus:simpleclient:${prometheusVersion}"
+    api "io.prometheus:simpleclient_common:${prometheusVersion}"
+    api "io.prometheus:simpleclient_dropwizard:${prometheusVersion}"
+
+    implementation "org.goldrenard:jb:${programJbVersion}"
+}

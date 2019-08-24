@@ -1,5 +1,4 @@
 # JuniperBot
-[![Build status](https://ci.appveyor.com/api/projects/status/ps9kfhaxomrt4l75/branch/master?svg=true)](https://ci.appveyor.com/project/GoldRenard/juniperbotj/branch/master)
 [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m780010966-3242e97a2ffbe3e33ef10eb4.svg)](https://stats.uptimerobot.com/00yWZcKjN)
 [![Uptime Robot ratio](https://img.shields.io/uptimerobot/ratio/m780010966-3242e97a2ffbe3e33ef10eb4.svg)](https://stats.uptimerobot.com/00yWZcKjN)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](LICENSE)
