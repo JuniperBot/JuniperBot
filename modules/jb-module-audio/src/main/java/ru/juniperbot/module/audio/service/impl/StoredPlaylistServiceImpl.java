@@ -107,19 +107,17 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
         }
         LocalMember localMember = entityAccessor.getOrCreate(member);
 
-        synchronized (instance) {
-            try {
-                Playlist playlist = getPlaylist(instance);
-                for (TrackRequest request : requests) {
-                    PlaylistItem item = createItem(request.getTrack(), localMember);
-                    item.setPlaylist(playlist);
-                    item.setData(getAudioPlayerManager().encodeTrack(request.getTrack()));
-                    playlist.getItems().add(item);
-                }
-                playlistRepository.save(playlist);
-            } catch (Exception e) {
-                log.warn("[store] Could not update playlist", e);
+        try {
+            Playlist playlist = getPlaylist(instance);
+            for (TrackRequest request : requests) {
+                PlaylistItem item = createItem(request.getTrack(), localMember);
+                item.setPlaylist(playlist);
+                item.setData(getAudioPlayerManager().encodeTrack(request.getTrack()));
+                playlist.getItems().add(item);
             }
+            playlistRepository.save(playlist);
+        } catch (Exception e) {
+            log.warn("[store] Could not update playlist", e);
         }
     }
 
