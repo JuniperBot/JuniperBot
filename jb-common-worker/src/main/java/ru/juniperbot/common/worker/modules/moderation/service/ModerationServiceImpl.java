@@ -38,7 +38,6 @@ import ru.juniperbot.common.persistence.entity.MemberWarning;
 import ru.juniperbot.common.persistence.entity.ModerationAction;
 import ru.juniperbot.common.persistence.entity.ModerationConfig;
 import ru.juniperbot.common.persistence.repository.MemberWarningRepository;
-import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.service.ModerationConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
@@ -66,9 +65,6 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private MemberWarningRepository warningRepository;
-
-    @Autowired
-    private MemberService memberService;
 
     @Autowired
     private MessageService messageService;
@@ -288,9 +284,6 @@ public class ModerationServiceImpl implements ModerationService {
             ModerationActionRequest request = builder.build();
             result.request(request)
                     .punished(performAction(request));
-        } else {
-            notifyUserAction(e -> {
-            }, member, "discord.command.mod.action.message.warn", reason, number);
         }
 
         auditService.log(guildId, AuditActionType.MEMBER_WARN)
@@ -299,6 +292,9 @@ public class ModerationServiceImpl implements ModerationService {
                 .withAttribute(REASON_ATTR, reason)
                 .withAttribute(COUNT_ATTR, number)
                 .save();
+
+        notifyUserAction(e -> {
+        }, member, "discord.command.mod.action.message.warn", reason, number);
 
         warningRepository.save(new MemberWarning(guildId, authorLocal, memberLocal, reason));
         return result.number(number).build();
