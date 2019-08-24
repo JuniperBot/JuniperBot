@@ -31,6 +31,7 @@ import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 
 import java.util.Collections;
+import java.util.Objects;
 
 @DiscordEvent(priority = 0)
 public class VoiceLinkListener extends DiscordEventListener {
@@ -60,6 +61,10 @@ public class VoiceLinkListener extends DiscordEventListener {
         Member member = event.getMember();
         Role roleToAdd = getRole(config, event.getChannelJoined());
         Role roleToRemove = getRole(config, event.getChannelLeft());
+
+        if (Objects.equals(roleToAdd, roleToRemove)) {
+            return;
+        }
         if (roleToAdd != null && roleToRemove != null) {
             guild.modifyMemberRoles(member, Collections.singleton(roleToAdd), Collections.singleton(roleToRemove)).queue();
         } else if (roleToAdd != null) {
