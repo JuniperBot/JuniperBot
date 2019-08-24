@@ -19,9 +19,15 @@ package ru.juniperbot.worker.commands.moderation;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.units.JustNow;
+import org.ocpsoft.prettytime.units.Millisecond;
+import org.ocpsoft.prettytime.units.Second;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.worker.command.model.AbstractCommandAsync;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
+
+import java.util.Date;
 
 public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
 
@@ -31,5 +37,16 @@ public abstract class ModeratorCommandAsync extends AbstractCommandAsync {
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
         return member != null && moderationService.isModerator(member);
+    }
+
+    protected String getMuteDuration(int duration) {
+        Date date = new Date();
+        date.setTime(date.getTime() + (long) (60000 * duration));
+        PrettyTime formatter = new PrettyTime(contextService.getLocale());
+        formatter.removeUnit(JustNow.class);
+        formatter.removeUnit(Millisecond.class);
+        formatter.removeUnit(Second.class);
+        return messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until",
+                formatter.format(date));
     }
 }

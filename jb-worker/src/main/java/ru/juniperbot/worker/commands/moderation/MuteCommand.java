@@ -16,11 +16,14 @@
  */
 package ru.juniperbot.worker.commands.moderation;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.juniperbot.common.model.ModerationActionType;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
@@ -72,6 +75,7 @@ public class MuteCommand extends ModeratorCommandAsync {
             }
         }
         boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
+        String reason = m.group(3);
 
         ModerationActionRequest request = ModerationActionRequest.builder()
                 .type(ModerationActionType.MUTE)
@@ -80,12 +84,30 @@ public class MuteCommand extends ModeratorCommandAsync {
                 .violator(mentioned)
                 .global(global)
                 .duration(duration)
-                .reason(m.group(3))
+                .reason(reason)
                 .build();
 
         boolean muted = moderationService.performAction(request);
-        messageService.onEmbedMessage(event.getChannel(), muted
-                ? "discord.command.mod.mute.done" : "discord.command.mod.mute.already", mentioned.getEffectiveName());
+
+        EmbedBuilder builder = messageService.getBaseEmbed();
+        StringBuilder result = new StringBuilder();
+        if (muted) {
+            result.append(messageService.getMessage("discord.command.mod.mute.done",
+                    mentioned.getEffectiveName()));
+            if (duration != null) {
+                result.append("\n").append(getMuteDuration(duration));
+            }
+            if (StringUtils.isNotEmpty(reason)) {
+                builder.addField(messageService.getMessage("audit.reason"),
+                        CommonUtils.trimTo(reason, MessageEmbed.VALUE_MAX_LENGTH), true);
+            }
+        } else {
+            result.append(messageService.getMessage("discord.command.mod.mute.already",
+                    mentioned.getEffectiveName()));
+        }
+
+        builder.setDescription(result.toString());
+        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
     }
 
     private void help(GuildMessageReceivedEvent event, BotContext context, String globalKeyWord) {

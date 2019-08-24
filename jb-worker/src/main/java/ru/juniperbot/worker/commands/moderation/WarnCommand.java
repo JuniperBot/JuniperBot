@@ -22,16 +22,15 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
-import org.ocpsoft.prettytime.PrettyTime;
-import org.ocpsoft.prettytime.units.JustNow;
-import org.ocpsoft.prettytime.units.Millisecond;
-import org.ocpsoft.prettytime.units.Second;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 import ru.juniperbot.common.worker.modules.moderation.model.WarningResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @DiscordCommand(key = "discord.command.mod.warn.key",
@@ -72,16 +71,11 @@ public class WarnCommand extends ModeratorCommandAsync {
 
             switch (request.getType()) {
                 case MUTE:
-                    Date date = new Date();
-                    date.setTime(date.getTime() + (long) (60000 * request.getDuration()));
-                    PrettyTime formatter = new PrettyTime(contextService.getLocale());
-                    formatter.removeUnit(JustNow.class);
-                    formatter.removeUnit(Millisecond.class);
-                    formatter.removeUnit(Second.class);
-                    argumentBuilder
-                            .append("\n")
-                            .append(messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until",
-                                    formatter.format(date)));
+                    if (request.getDuration() != null) {
+                        argumentBuilder
+                                .append("\n")
+                                .append(getMuteDuration(request.getDuration()));
+                    }
                     break;
                 case CHANGE_ROLES:
                     List<Role> assignedRoles = getRoles(event.getGuild(), request.getAssignRoles());

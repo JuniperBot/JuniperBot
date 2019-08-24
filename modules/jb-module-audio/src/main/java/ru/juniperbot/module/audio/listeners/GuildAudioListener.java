@@ -97,7 +97,7 @@ public class GuildAudioListener extends DiscordEventListener {
             }
 
             if (joinedChannel.equals(targetChannel)
-                    && targetChannel.getMembers().size() < 2
+                    && countListeners(targetChannel) < 2
                     && StringUtils.isNotEmpty(config.getAutoPlay())) {
                 TextChannel channel = null;
                 if (config.getTextChannelId() != null) {
@@ -118,6 +118,16 @@ public class GuildAudioListener extends DiscordEventListener {
                 }
             }
         });
+    }
+
+    private long countListeners(VoiceChannel channel) {
+        if (channel == null) {
+            return 0;
+        }
+        Member self = channel.getGuild().getSelfMember();
+        return channel.getMembers().stream()
+                .filter(e -> !self.equals(e))
+                .count();
     }
 
     private boolean hasPermission(TextChannel channel) {
