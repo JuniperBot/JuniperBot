@@ -215,8 +215,11 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                 contextService.withContext(instance.getGuildId(), () -> messageManager.onQueueEnd(current));
             }
         }
-        // execute instance reset out of current thread
-        taskExecutor.execute(() -> clearInstance(instance, false));
+
+        if (endReason != AudioTrackEndReason.REPLACED) {
+            // execute instance reset out of current thread
+            taskExecutor.execute(() -> clearInstance(instance, false));
+        }
     }
 
     @Override
