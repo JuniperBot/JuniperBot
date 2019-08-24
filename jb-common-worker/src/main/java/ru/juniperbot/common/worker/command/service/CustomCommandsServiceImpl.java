@@ -16,6 +16,7 @@
  */
 package ru.juniperbot.common.worker.command.service;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -106,12 +107,12 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
         return true;
     }
 
-    private boolean changeRoles(GuildMessageReceivedEvent event, CustomCommand command) {
+    private void changeRoles(GuildMessageReceivedEvent event, CustomCommand command) {
         Guild guild = event.getGuild();
         Member self = guild.getSelfMember();
         Member targetMember = event.getMember();
         if (targetMember == null) {
-            return false;
+            return;
         }
 
         if (!self.hasPermission(Permission.MANAGE_ROLES)) {
@@ -119,7 +120,7 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
             String message = messageService.getMessage(messageService.getEnumTitle(Permission.MANAGE_ROLES));
             String changeTitle = messageService.getMessage("custom.roles.change.title", targetMember.getEffectiveName());
             messageService.onError(event.getChannel(), changeTitle, title + "\n\n" + message);
-            return false;
+            return;
         }
         List<Role> currentRoles = targetMember.getRoles();
         List<Role> rolesToAdd = new ArrayList<>();
@@ -140,28 +141,26 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                     .forEach(rolesToRemove::add);
         }
 
+        String changeTitle = messageService.getMessage("custom.roles.change.title", targetMember.getEffectiveName());
+        EmbedBuilder embedBuilder = messageService.getBaseEmbed()
+                .setTitle(changeTitle, null);
         if (CollectionUtils.isEmpty(rolesToAdd) && CollectionUtils.isEmpty(rolesToRemove)) {
-            String changeTitle = messageService.getMessage("custom.roles.change.title", targetMember.getEffectiveName());
-            messageService.onTitledMessage(event.getChannel(), changeTitle, "custom.roles.change.empty");
-            return false;
+            embedBuilder.setDescription(messageService.getMessage("custom.roles.change.empty"));
+            messageService.sendTempMessageSilent(event.getChannel()::sendMessage, embedBuilder.build(), 10);
+            return;
         }
 
         contextService.queue(guild, guild.modifyMemberRoles(targetMember, rolesToAdd, rolesToRemove), e -> {
-            StringBuilder builder = new StringBuilder();
             if (CollectionUtils.isNotEmpty(rolesToAdd)) {
-                builder.append(messageService.getMessage("custom.roles.change.added")).append(" ");
-                builder.append(rolesToAdd.stream().map(Role::getAsMention).collect(Collectors.joining(", ")));
-                builder.append("\n");
+                embedBuilder.addField(messageService.getMessage("custom.roles.change.added"),
+                        rolesToAdd.stream().map(Role::getAsMention).collect(Collectors.joining(", ")), false);
             }
             if (CollectionUtils.isNotEmpty(rolesToRemove)) {
-                builder.append(messageService.getMessage("custom.roles.change.removed")).append(" ");
-                builder.append(rolesToRemove.stream().map(Role::getAsMention).collect(Collectors.joining(", ")));
+                embedBuilder.addField(messageService.getMessage("custom.roles.change.removed"),
+                        rolesToRemove.stream().map(Role::getAsMention).collect(Collectors.joining(", ")), false);
             }
-            String changeTitle = messageService.getMessage("custom.roles.change.title", targetMember.getEffectiveName());
-            messageService.onTitledMessage(event.getChannel(), changeTitle,
-                    builder.toString().trim());
+            messageService.sendTempMessageSilent(event.getChannel()::sendMessage, embedBuilder.build(), 10);
         });
-        return true;
     }
 
     @Override
