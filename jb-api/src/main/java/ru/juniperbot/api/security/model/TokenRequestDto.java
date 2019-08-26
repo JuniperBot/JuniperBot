@@ -16,6 +16,7 @@
  */
 package ru.juniperbot.api.security.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class TokenRequestDto implements Serializable {
 
     private static final long serialVersionUID = 884120014332877213L;
