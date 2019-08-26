@@ -16,6 +16,9 @@
  */
 package ru.juniperbot.api.security.auth;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +47,8 @@ import ru.juniperbot.common.utils.GsonUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -61,6 +66,27 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
 
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new OAuth2AuthenticationDetailsSource();
 
+    private LoadingCache<TokenRequestDto, OAuth2AccessToken> tokenCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<>() {
+                        public OAuth2AccessToken load(TokenRequestDto requestDto) {
+                            OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);
+                            restTemplate.setAccessTokenProvider(tokenProvider);
+                            if (requestDto.getCode() != null) {
+                                AccessTokenRequest tokenRequest = restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
+                                tokenRequest.setCurrentUri(requestDto.getRedirectUri());
+                                tokenRequest.setAuthorizationCode(requestDto.getCode());
+                            }
+                            try {
+                                return restTemplate.getAccessToken();
+                            } catch (OAuth2Exception e) {
+                                throw new BadCredentialsException("Could not obtain access token", e);
+                            }
+                        }
+                    });
+
     protected OAuth2TokenRequestFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
         setAuthenticationManager(new NoopAuthenticationManager());
@@ -71,20 +97,10 @@ public class OAuth2TokenRequestFilter extends AbstractAuthenticationProcessingFi
     @Synchronized
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         TokenRequestDto requestDto = gson.fromJson(request.getReader(), TokenRequestDto.class);
-
-        OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(resource);
-        restTemplate.setAccessTokenProvider(tokenProvider);
-
-        if (requestDto.getCode() != null) {
-            AccessTokenRequest tokenRequest = restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
-            tokenRequest.setCurrentUri(requestDto.getRedirectUri());
-            tokenRequest.setAuthorizationCode(requestDto.getCode());
-        }
-
         OAuth2AccessToken accessToken;
         try {
-            accessToken = restTemplate.getAccessToken();
-        } catch (OAuth2Exception e) {
+            accessToken = tokenCache.get(requestDto);
+        } catch (ExecutionException e) {
             throw new BadCredentialsException("Could not obtain access token", e);
         }
 
