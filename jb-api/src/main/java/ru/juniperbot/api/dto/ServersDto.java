@@ -27,7 +27,5 @@ import java.util.List;
 public class ServersDto implements Serializable {
     private static final long serialVersionUID = -4243311763429092143L;
 
-    private boolean connected;
-
     private List<GuildShortDto> guilds;
 }
