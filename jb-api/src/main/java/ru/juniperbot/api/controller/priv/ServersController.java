@@ -45,7 +45,6 @@ public class ServersController extends BaseRestController {
             GuildDto guild = gatewayService.getGuildInfo(Long.valueOf(e.getId()));
             if (guild != null) {
                 e.setAdded(true);
-                result.setConnected(true);
                 e.setMembers(guild.getOnlineCount());
             }
         });
