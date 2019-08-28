@@ -69,4 +69,6 @@ public interface MessageService {
     String getCountPlural(long count, String code);
 
     void delete(Message message);
+
+    void delete(Message message, long delayMs);
 }

@@ -43,6 +43,7 @@ import java.time.Year;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -227,6 +228,14 @@ public class MessageServiceImpl implements MessageService {
         if (message != null) {
             actionsHolderService.markAsDeleted(message);
             message.delete().queue();
+        }
+    }
+
+    @Override
+    public void delete(Message message, long delayMs) {
+        if (message != null) {
+            actionsHolderService.markAsDeleted(message);
+            message.delete().queueAfter(delayMs, TimeUnit.MILLISECONDS);
         }
     }
 }

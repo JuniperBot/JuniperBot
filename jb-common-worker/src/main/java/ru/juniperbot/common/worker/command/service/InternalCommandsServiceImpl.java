@@ -133,7 +133,7 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
                 counter.inc();
                 if (commandConfig != null && commandConfig.isDeleteSource()
                         && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
-                    messageService.delete(event.getMessage());
+                    messageService.delete(event.getMessage(), 1000);
                 }
             } catch (ValidationException e) {
                 messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
