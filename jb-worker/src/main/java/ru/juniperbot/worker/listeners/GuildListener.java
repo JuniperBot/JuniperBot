@@ -21,7 +21,10 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.persistence.entity.Gulag;
 import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.service.GulagService;
+import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.utils.LocaleUtils;
 import ru.juniperbot.common.worker.command.service.CoolDownService;
 import ru.juniperbot.common.worker.event.DiscordEvent;
@@ -52,8 +55,44 @@ public class GuildListener extends DiscordEventListener {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private GulagService gulagService;
+
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
+        Guild guild = event.getGuild();
+        Member self = guild.getSelfMember();
+
+        TextChannel channel = guild.getDefaultChannel();
+        if (channel != null && !self.hasPermission(channel,
+                Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+            channel = null;
+        }
+
+        if (channel == null) {
+            for (TextChannel textChannel : guild.getTextChannels()) {
+                if (self.hasPermission(textChannel,
+                        Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
+                    channel = textChannel;
+                    break;
+                }
+            }
+        }
+
+        Gulag gulag = gulagService.getGulag(guild);
+        if (gulag != null) {
+            if (channel != null) {
+                EmbedBuilder builder = messageService.getBaseEmbed();
+                builder.setDescription(messageService.getMessage("discord.gulag.message"));
+                builder.addField(messageService.getMessage("discord.gulag.reason"),
+                        CommonUtils.trimTo(gulag.getReason(), MessageEmbed.VALUE_MAX_LENGTH), true);
+                channel.sendMessage(builder.build()).queue(e -> guild.leave().queue(), e -> guild.leave().queue());
+            } else {
+                guild.leave().queue();
+            }
+            return;
+        }
+
         GuildConfig config = entityAccessor.getOrCreate(event.getGuild());
         switch (event.getGuild().getRegion()) {
             case RUSSIA:
@@ -67,7 +106,7 @@ public class GuildListener extends DiscordEventListener {
         }
         configService.save(config);
         contextService.initContext(event.getGuild()); // reinit context with updated locale
-        sendWelcome(event);
+        sendWelcome(channel, event);
     }
 
     @Override
@@ -75,28 +114,10 @@ public class GuildListener extends DiscordEventListener {
         coolDownService.clear(event.getGuild());
     }
 
-    private void sendWelcome(GuildJoinEvent event) {
+    private void sendWelcome(TextChannel channel, GuildJoinEvent event) {
         Guild guild = event.getGuild();
-        Member self = guild.getSelfMember();
         contextService.withContextAsync(guild, () -> {
             MessageEmbed embed = createWelcomeMessage(guild);
-
-            TextChannel channel = guild.getDefaultChannel();
-            if (channel != null && !self.hasPermission(channel,
-                    Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
-                channel = null;
-            }
-
-            if (channel == null) {
-                for (TextChannel textChannel : guild.getTextChannels()) {
-                    if (self.hasPermission(textChannel,
-                            Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
-                        channel = textChannel;
-                        break;
-                    }
-                }
-            }
-
             if (channel != null) {
                 channel.sendMessage(embed).queue();
             } else {

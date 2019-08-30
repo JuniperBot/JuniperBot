@@ -30,4 +30,37 @@
         <sql>UPDATE welcome_message SET restore_nickname = restore_roles</sql>
     </changeSet>
 
+    <changeSet id="7.1-30082019-2" author="caramel">
+        <createTable tableName="gulag">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_gulag"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="snowflake" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="moderator_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_gulag_moderator"
+                             references="user(id)" />
+            </column>
+        </createTable>
+        <createIndex indexName="idx_gulag_snowflake" tableName="gulag" unique="true">
+            <column name="snowflake" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="7.1-30082019-3" author="caramel">
+        <addColumn tableName="gulag">
+            <column name="date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
