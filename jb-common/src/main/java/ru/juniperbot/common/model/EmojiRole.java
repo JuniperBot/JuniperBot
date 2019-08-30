@@ -14,33 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.dto.request;
+package ru.juniperbot.common.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class GuildInfoRequest implements Serializable {
-    private static final long serialVersionUID = 5508207930655357131L;
+public class EmojiRole implements Serializable {
 
-    private long id;
+    private static final long serialVersionUID = -5234636208622000219L;
 
-    private Set<PartType> parts;
+    protected String emoji;
 
-    public enum PartType {
-        TEXT_CHANNELS,
-        VOICE_CHANNELS,
-        ROLES,
-        EMOTES
-    }
-
-    public GuildInfoRequest(long id) {
-        this.id = id;
-    }
+    protected String roleId;
 }
