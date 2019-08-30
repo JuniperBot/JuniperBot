@@ -30,11 +30,13 @@ public class WelcomeDto implements Serializable {
 
     private static final long serialVersionUID = -7504705178352675860L;
 
-    private boolean restoreState;
+    private boolean restoreRoles;
+
+    private boolean restoreNickname;
 
     private Set<String> joinRoles = new HashSet<>();
 
-    private Set<String> restoreRoles = new HashSet<>();
+    private Set<String> rolesToRestore = new HashSet<>();
 
     private boolean joinEnabled;
 

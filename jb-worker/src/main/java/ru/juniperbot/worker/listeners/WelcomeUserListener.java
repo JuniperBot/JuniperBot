@@ -128,18 +128,20 @@ public class WelcomeUserListener extends DiscordEventListener {
         }
 
         LocalMember localMember = memberService.get(event.getMember());
-        if (message.isRestoreState() && localMember != null) {
-            List<Long> rolesToRestore = localMember.getLastKnownRoles();
-            if (CollectionUtils.isNotEmpty(rolesToRestore)) {
-                if (CollectionUtils.isNotEmpty(message.getRestoreRoles())) {
-                    rolesToRestore = rolesToRestore.stream()
-                            .filter(e -> message.getRestoreRoles().contains(e))
-                            .collect(Collectors.toList());
+        if (localMember != null) {
+            if (message.isRestoreRoles()) {
+                List<Long> rolesToRestore = localMember.getLastKnownRoles();
+                if (CollectionUtils.isNotEmpty(rolesToRestore)) {
+                    if (CollectionUtils.isNotEmpty(message.getRolesToRestore())) {
+                        rolesToRestore = rolesToRestore.stream()
+                                .filter(e -> message.getRolesToRestore().contains(e))
+                                .collect(Collectors.toList());
+                    }
+                    roleIdsToAdd.addAll(rolesToRestore);
                 }
-                roleIdsToAdd.addAll(rolesToRestore);
             }
-
-            if (StringUtils.isNotEmpty(localMember.getEffectiveName())
+            if (message.isRestoreNickname()
+                    && StringUtils.isNotEmpty(localMember.getEffectiveName())
                     && guild.getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)
                     && guild.getSelfMember().canInteract(event.getMember())) {
                 guild.modifyNickname(event.getMember(), localMember.getEffectiveName()).queue();

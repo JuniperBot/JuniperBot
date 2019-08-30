@@ -39,12 +39,15 @@ public class WelcomeMessage extends GuildEntity {
     @Column(name = "join_roles", columnDefinition = "json")
     private List<Long> joinRoles;
 
-    @Column(name = "restore_state_enabled")
-    private boolean restoreState;
+    @Column
+    private boolean restoreRoles;
+
+    @Column
+    private boolean restoreNickname;
 
     @Type(type = "jsonb")
-    @Column(name = "restoreRoles", columnDefinition = "json")
-    private List<Long> restoreRoles;
+    @Column(name = "roles_to_restore", columnDefinition = "json")
+    private List<Long> rolesToRestore;
 
     @Column(name = "join_enabled")
     private boolean joinEnabled;
