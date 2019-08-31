@@ -117,7 +117,7 @@ public interface ApiMapperService {
 
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getJoinRoles()))", target = "joinRoles"),
-            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRestoreRoles()))", target = "restoreRoles"),
+            @Mapping(expression = "java(ApiMapperService.toStringSet(source.getRolesToRestore()))", target = "rolesToRestore"),
     })
     WelcomeDto getWelcomeDto(WelcomeMessage source);
 
@@ -129,7 +129,7 @@ public interface ApiMapperService {
             @Mapping(target = "joinDmTemplate", ignore = true),
             @Mapping(target = "leaveTemplate", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getJoinRoles()))", target = "joinRoles"),
-            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRestoreRoles()))", target = "restoreRoles"),
+            @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToRestore()))", target = "rolesToRestore"),
     })
     void updateWelcome(WelcomeDto source, @MappingTarget WelcomeMessage target);
 
@@ -165,6 +165,7 @@ public interface ApiMapperService {
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "commandConfig", ignore = true),
             @Mapping(target = "messageTemplate", ignore = true),
+            @Mapping(target = "reactions", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToAdd()))", target = "rolesToAdd"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToRemove()))", target = "rolesToRemove")
     })

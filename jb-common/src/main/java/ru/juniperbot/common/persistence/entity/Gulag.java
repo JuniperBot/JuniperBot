@@ -14,39 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.dto.config;
+package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.juniperbot.api.dto.MessageTemplateDto;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter
 @Setter
-public class WelcomeDto implements Serializable {
+@Entity
+@Table(name = "gulag")
+public class Gulag extends BaseEntity {
 
-    private static final long serialVersionUID = -7504705178352675860L;
+    private static final long serialVersionUID = -3967389800974743538L;
 
-    private boolean restoreRoles;
+    @Column
+    private long snowflake;
 
-    private boolean restoreNickname;
+    @Column(columnDefinition = "text")
+    @NotNull
+    private String reason;
 
-    private Set<String> joinRoles = new HashSet<>();
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name = "moderator_id")
+    private LocalUser moderator;
 
-    private Set<String> rolesToRestore = new HashSet<>();
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
 
-    private boolean joinEnabled;
-
-    private MessageTemplateDto joinTemplate;
-
-    private boolean joinDmEnabled;
-
-    private MessageTemplateDto joinDmTemplate;
-
-    private boolean leaveEnabled;
-
-    private MessageTemplateDto leaveTemplate;
 }

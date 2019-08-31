@@ -14,21 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.worker.shared.service;
+package ru.juniperbot.common.service;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import ru.juniperbot.common.persistence.entity.Gulag;
 
-import java.util.Set;
+public interface GulagService {
 
-public interface SupportService {
+    boolean send(Member moderator, long showflake, String reason);
 
-    void grantDonators(Set<String> donatorIds);
+    boolean send(Member moderator, Member member, String reason);
 
-    Guild getSupportGuild();
-
-    boolean isModerator(Member member);
-
-    Role getDonatorRole();
+    Gulag getGulag(Guild guild);
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ This file is part of JuniperBot.
+
+ JuniperBot is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ JuniperBot is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="7.1-30082019-1" author="caramel">
+        <renameColumn tableName="welcome_message" oldColumnName="restore_roles" newColumnName="roles_to_restore"/>
+        <renameColumn tableName="welcome_message" oldColumnName="restore_state_enabled" newColumnName="restore_roles"/>
+        <addColumn tableName="welcome_message">
+            <column name="restore_nickname" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <sql>UPDATE welcome_message SET restore_nickname = restore_roles</sql>
+    </changeSet>
+
+    <changeSet id="7.1-30082019-2" author="caramel">
+        <createTable tableName="gulag">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_gulag"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="snowflake" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="moderator_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_gulag_moderator"
+                             references="user(id)" />
+            </column>
+        </createTable>
+        <createIndex indexName="idx_gulag_snowflake" tableName="gulag" unique="true">
+            <column name="snowflake" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="7.1-30082019-3" author="caramel">
+        <addColumn tableName="gulag">
+            <column name="date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7.1-30082019-4" author="caramel">
+        <addColumn tableName="custom_command">
+            <column name="emoji_roles" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7.1-30082019-5" author="caramel">
+        <createTable tableName="command_reaction">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_command_reaction"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="command_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_command_reaction_custom_command"
+                             references="custom_command(id)" />
+            </column>
+        </createTable>
+        <createIndex indexName="idx_command_reaction_message" tableName="command_reaction" unique="true">
+            <column name="message_id" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

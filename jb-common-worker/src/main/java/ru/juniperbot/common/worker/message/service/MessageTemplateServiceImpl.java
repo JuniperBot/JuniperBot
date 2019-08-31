@@ -45,6 +45,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static net.dv8tion.jda.api.EmbedBuilder.URL_PATTERN;
 
@@ -167,32 +168,33 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         return canTalk(channel) ? channel : null;
     }
 
-    private void compileAndSend(@NonNull MessageTemplateCompiler compiler) {
+    private CompletableFuture<Message> compileAndSend(@NonNull MessageTemplateCompiler compiler) {
+        CompletableFuture<Message> future = new CompletableFuture<>();
         MessageTemplate template = compiler.getTemplate();
         Member member = compiler.getMember();
         Guild guild = compiler.getGuild();
         TextChannel fallbackChannel = compiler.getFallbackChannel();
         if ((template == null || StringUtils.isEmpty(template.getChannelId()))
                 && fallbackChannel == null) {
-            return;
+            return future;
         }
 
         if (template != null && DM_CHANNEL.equals(template.getChannelId())) {
             if (!compiler.isDirectAllowed() || member == null) {
-                return;
+                return future;
             }
 
             try {
                 contextService.queue(guild, member.getUser().openPrivateChannel(), channel -> {
                     Message message = compile(compiler);
                     if (message != null) {
-                        messageService.sendMessageSilent(channel::sendMessage, message);
+                        messageService.sendMessageSilentQueue(channel::sendMessage, message, future::complete);
                     }
                 });
             } catch (Exception e) {
                 // fall down, we don't care
             }
-            return;
+            return future;
         }
 
         TextChannel channel = getTargetChannel(compiler);
@@ -200,10 +202,11 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             contextService.withContext(channel.getGuild(), () -> {
                 Message message = compile(compiler);
                 if (message != null) {
-                    messageService.sendMessageSilent(channel::sendMessage, message);
+                    messageService.sendMessageSilentQueue(channel::sendMessage, message, future::complete);
                 }
             });
         }
+        return future;
     }
 
     private boolean canTalk(TextChannel channel) {
@@ -302,8 +305,8 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             }
 
             @Override
-            public void compileAndSend() {
-                MessageTemplateServiceImpl.this.compileAndSend(this);
+            public CompletableFuture<Message> compileAndSend() {
+                return MessageTemplateServiceImpl.this.compileAndSend(this);
             }
 
             @Override

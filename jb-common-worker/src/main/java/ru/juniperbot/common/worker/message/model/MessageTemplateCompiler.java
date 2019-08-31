@@ -25,6 +25,7 @@ import ru.juniperbot.common.persistence.entity.MessageTemplate;
 import ru.juniperbot.common.support.MapPlaceholderResolver;
 
 import java.io.Serializable;
+import java.util.concurrent.CompletableFuture;
 
 @Getter
 public abstract class MessageTemplateCompiler {
@@ -79,7 +80,7 @@ public abstract class MessageTemplateCompiler {
 
     public abstract Message compile();
 
-    public abstract void compileAndSend();
+    public abstract CompletableFuture<Message> compileAndSend();
 
     public abstract String processContent(String content, boolean placeholdersOnly);
 }

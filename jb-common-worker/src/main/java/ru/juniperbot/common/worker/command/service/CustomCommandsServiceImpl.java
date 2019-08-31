@@ -16,23 +16,25 @@
  */
 package ru.juniperbot.common.worker.command.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import ru.juniperbot.common.model.CommandType;
 import ru.juniperbot.common.persistence.entity.CommandConfig;
+import ru.juniperbot.common.persistence.entity.CommandReaction;
 import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
+import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
 import ru.juniperbot.common.persistence.repository.CustomCommandRepository;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.model.MessageTemplateCompiler;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 
 @Order(10)
 @Service
+@Slf4j
 public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
@@ -54,6 +57,12 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
     private CustomCommandRepository commandRepository;
+
+    @Autowired
+    private CommandReactionRepository reactionRepository;
+
+    @Autowired
+    private FeatureSetService featureSetService;
 
     @Override
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
@@ -101,10 +110,44 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                 }
                 break;
             case MESSAGE:
-                templateCompiler.compileAndSend();
+                templateCompiler.compileAndSend().whenComplete(((message, throwable) -> {
+                    if (message != null) {
+                        registerReactions(message, command);
+                    }
+                }));
                 break;
         }
         return true;
+    }
+
+    private void registerReactions(Message message, CustomCommand command) {
+        if (CollectionUtils.isEmpty(command.getEmojiRoles()) || !featureSetService.isAvailable(message.getGuild())) {
+            return;
+        }
+
+        Guild guild = message.getGuild();
+        command.getEmojiRoles().stream()
+                .filter(e -> StringUtils.isNotEmpty(e.getEmoji())
+                        && StringUtils.isNotEmpty(e.getRoleId())
+                        && guild.getRoleById(e.getRoleId()) != null)
+                .forEach(reaction -> {
+                    try {
+                        if (StringUtils.isNumeric(reaction.getEmoji())) {
+                            Emote emote = guild.getEmoteById(reaction.getEmoji());
+                            if (emote != null) {
+                                message.addReaction(emote).queue();
+                            }
+                        } else {
+                            message.addReaction(reaction.getEmoji()).queue();
+                        }
+                    } catch (Exception e) {
+                        log.error("Could not add reaction emote", e);
+                    }
+                });
+        contextService.inTransaction(() -> {
+            commandRepository.findById(command.getId())
+                    .ifPresent(e -> reactionRepository.save(new CommandReaction(message, e)));
+        });
     }
 
     private void changeRoles(GuildMessageReceivedEvent event, CustomCommand command) {

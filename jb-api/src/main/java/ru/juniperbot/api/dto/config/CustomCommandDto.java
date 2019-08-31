@@ -20,11 +20,13 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.juniperbot.api.dto.MessageTemplateDto;
 import ru.juniperbot.common.model.CommandType;
+import ru.juniperbot.common.model.EmojiRole;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -52,4 +54,7 @@ public class CustomCommandDto extends CommandDto {
     private Set<String> rolesToAdd;
 
     private Set<String> rolesToRemove;
+
+    private List<EmojiRole> emojiRoles;
+
 }

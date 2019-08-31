@@ -159,6 +159,7 @@ public class WorkerProperties {
     public static class Support {
         private Long guildId;
         private Long donatorRoleId;
+        private Long moderatorRoleId;
         private Long emergencyChannelId;
         private Map</* roleId*/ String, Set<FeatureSet>> featuredRoles = new HashMap<>();
     }

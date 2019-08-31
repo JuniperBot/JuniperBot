@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.juniperbot.common.model.FeatureSet;
+import ru.juniperbot.common.model.discord.EmoteDto;
 import ru.juniperbot.common.model.discord.RoleDto;
 import ru.juniperbot.common.model.discord.TextChannelDto;
 import ru.juniperbot.common.model.discord.VoiceChannelDto;
@@ -59,5 +60,7 @@ public class GuildInfoDto implements Serializable {
     private List<VoiceChannelDto> voiceChannels;
 
     private Set<FeatureSet> featureSets;
+
+    private List<EmoteDto> emotes;
 
 }

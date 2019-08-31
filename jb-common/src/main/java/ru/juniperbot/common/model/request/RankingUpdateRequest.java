@@ -16,10 +16,8 @@
  */
 package ru.juniperbot.common.model.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import net.dv8tion.jda.api.entities.Member;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -42,4 +40,9 @@ public class RankingUpdateRequest implements Serializable {
     private boolean resetCookies;
 
     private boolean resetVoiceActivity;
+
+    public RankingUpdateRequest(@NonNull Member member) {
+        guildId = member.getGuild().getIdLong();
+        userId = member.getUser().getId();
+    }
 }

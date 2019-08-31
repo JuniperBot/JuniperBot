@@ -14,33 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.dto.request;
+package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.Message;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
-import java.io.Serializable;
-import java.util.Set;
+import javax.persistence.*;
 
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
-public class GuildInfoRequest implements Serializable {
-    private static final long serialVersionUID = 5508207930655357131L;
+@Table(name = "command_reaction")
+public class CommandReaction extends BaseEntity {
 
-    private long id;
+    private static final long serialVersionUID = 8084127080237727010L;
 
-    private Set<PartType> parts;
+    @Column
+    private long messageId;
 
-    public enum PartType {
-        TEXT_CHANNELS,
-        VOICE_CHANNELS,
-        ROLES,
-        EMOTES
-    }
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "command_id")
+    private CustomCommand command;
 
-    public GuildInfoRequest(long id) {
-        this.id = id;
+    public CommandReaction(@NonNull Message message, @NonNull CustomCommand command) {
+        this.messageId = message.getIdLong();
+        this.command = command;
     }
 }

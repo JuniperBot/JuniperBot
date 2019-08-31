@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import ru.juniperbot.common.model.CommandType;
+import ru.juniperbot.common.model.EmojiRole;
 import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 
 import javax.persistence.*;
@@ -63,5 +64,12 @@ public class CustomCommand extends GuildEntity {
     @Type(type = "jsonb")
     @Column(name = "roles_to_remove", columnDefinition = "json")
     private List<Long> rolesToRemove;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    private List<EmojiRole> emojiRoles;
+
+    @OneToMany(mappedBy = "command", cascade = CascadeType.REMOVE)
+    private List<CommandReaction> reactions;
 
 }

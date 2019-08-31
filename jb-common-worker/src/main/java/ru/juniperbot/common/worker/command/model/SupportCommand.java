@@ -14,21 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.worker.shared.service;
+package ru.juniperbot.common.worker.command.model;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.worker.shared.service.SupportService;
 
-import java.util.Set;
+public abstract class SupportCommand extends AbstractCommand {
 
-public interface SupportService {
+    @Autowired
+    protected SupportService supportService;
 
-    void grantDonators(Set<String> donatorIds);
-
-    Guild getSupportGuild();
-
-    boolean isModerator(Member member);
-
-    Role getDonatorRole();
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return member != null && guild != null
+                && guild.equals(supportService.getSupportGuild())
+                && supportService.isModerator(member);
+    }
 }

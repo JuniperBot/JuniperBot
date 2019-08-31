@@ -14,39 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.api.dto.config;
+package ru.juniperbot.common.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.juniperbot.api.dto.MessageTemplateDto;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
-public class WelcomeDto implements Serializable {
+public class EmojiRole implements Serializable {
 
-    private static final long serialVersionUID = -7504705178352675860L;
+    private static final long serialVersionUID = -5234636208622000219L;
 
-    private boolean restoreRoles;
+    protected String emoji;
 
-    private boolean restoreNickname;
-
-    private Set<String> joinRoles = new HashSet<>();
-
-    private Set<String> rolesToRestore = new HashSet<>();
-
-    private boolean joinEnabled;
-
-    private MessageTemplateDto joinTemplate;
-
-    private boolean joinDmEnabled;
-
-    private MessageTemplateDto joinDmTemplate;
-
-    private boolean leaveEnabled;
-
-    private MessageTemplateDto leaveTemplate;
+    protected String roleId;
 }

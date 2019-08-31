@@ -118,6 +118,10 @@ public class GuildDao extends AbstractDao {
         if (parts.contains(VOICE_CHANNELS)) {
             builder.voiceChannels(guildDto.getVoiceChannels());
         }
+
+        if (parts.contains(EMOTES)) {
+            builder.emotes(guildDto.getEmotes());
+        }
         return builder.build();
     }
 }

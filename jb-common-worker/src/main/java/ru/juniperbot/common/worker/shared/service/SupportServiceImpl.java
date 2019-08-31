@@ -16,8 +16,10 @@
  */
 package ru.juniperbot.common.worker.shared.service;
 
+import lombok.NonNull;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,20 @@ public class SupportServiceImpl implements SupportService {
             return null;
         }
         return discordService.getGuildById(guildId);
+    }
+
+    @Override
+    public boolean isModerator(@NonNull Member member) {
+        Long moderatorRoleId = workerProperties.getSupport().getModeratorRoleId();
+        if (moderatorRoleId == null) {
+            return false;
+        }
+        Guild supportGuild = getSupportGuild();
+        if (supportGuild == null || !supportGuild.equals(member.getGuild())) {
+            return false;
+        }
+        Role moderatorRole = supportGuild.getRoleById(moderatorRoleId);
+        return moderatorRole != null && member.getRoles().contains(moderatorRole);
     }
 
     @Override

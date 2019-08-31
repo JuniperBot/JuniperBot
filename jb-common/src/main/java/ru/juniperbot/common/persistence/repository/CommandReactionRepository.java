@@ -14,21 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.worker.shared.service;
+package ru.juniperbot.common.persistence.repository;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.juniperbot.common.persistence.entity.CommandReaction;
 
-import java.util.Set;
+@Repository
+public interface CommandReactionRepository extends JpaRepository<CommandReaction, Long> {
 
-public interface SupportService {
+    CommandReaction findByMessageId(long messageId);
 
-    void grantDonators(Set<String> donatorIds);
-
-    Guild getSupportGuild();
-
-    boolean isModerator(Member member);
-
-    Role getDonatorRole();
+    void deleteByMessageId(long messageId);
 }

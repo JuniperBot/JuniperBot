@@ -26,11 +26,15 @@ import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
+import ru.juniperbot.module.ranking.service.RankingService;
 
 public abstract class RankingCommand extends AbstractCommand {
 
     @Autowired
     protected RankingConfigService rankingConfigService;
+
+    @Autowired
+    protected RankingService rankingService;
 
     protected abstract boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
 

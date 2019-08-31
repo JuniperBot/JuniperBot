@@ -102,7 +102,7 @@ public class RankingServiceImpl implements RankingService {
                 coolDowns.put(memberKey, DUMMY);
 
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-                if (newLevel < 1000 && level != newLevel) {
+                if (newLevel <= RankingUtils.MAX_LEVEL && level != newLevel) {
                     if (config.isAnnouncementEnabled()) {
                         // it is lazy and out of current session
                         MessageTemplate template = config.getAnnounceTemplate() != null
