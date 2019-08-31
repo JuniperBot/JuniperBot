@@ -30,6 +30,7 @@ import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 
 import javax.annotation.Nonnull;
 
@@ -39,12 +40,17 @@ public class CommandReactionListener extends DiscordEventListener {
     @Autowired
     private CommandReactionRepository reactionRepository;
 
+    @Autowired
+    private FeatureSetService featureSetService;
+
     @Override
     public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {
         Guild guild = event.getGuild();
         Member self = guild.getSelfMember();
 
-        if (event.getMember().getUser().isBot() || !self.hasPermission(Permission.MANAGE_ROLES)) {
+        if (event.getMember().getUser().isBot()
+                || !self.hasPermission(Permission.MANAGE_ROLES)
+                || !featureSetService.isAvailable(guild)) {
             return;
         }
 

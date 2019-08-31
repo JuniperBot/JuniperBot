@@ -34,6 +34,7 @@ import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
 import ru.juniperbot.common.persistence.repository.CustomCommandRepository;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.model.MessageTemplateCompiler;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
@@ -59,6 +60,9 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
     private CommandReactionRepository reactionRepository;
+
+    @Autowired
+    private FeatureSetService featureSetService;
 
     @Override
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
@@ -117,9 +121,10 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
     }
 
     private void registerReactions(Message message, CustomCommand command) {
-        if (CollectionUtils.isEmpty(command.getEmojiRoles())) {
+        if (CollectionUtils.isEmpty(command.getEmojiRoles()) || !featureSetService.isAvailable(message.getGuild())) {
             return;
         }
+
         Guild guild = message.getGuild();
         command.getEmojiRoles().stream()
                 .filter(e -> StringUtils.isNotEmpty(e.getEmoji())
