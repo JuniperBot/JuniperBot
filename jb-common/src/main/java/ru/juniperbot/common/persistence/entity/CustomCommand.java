@@ -69,4 +69,7 @@ public class CustomCommand extends GuildEntity {
     @Column(columnDefinition = "json")
     private List<EmojiRole> emojiRoles;
 
+    @OneToMany(mappedBy = "command", cascade = CascadeType.REMOVE)
+    private List<CommandReaction> reactions;
+
 }

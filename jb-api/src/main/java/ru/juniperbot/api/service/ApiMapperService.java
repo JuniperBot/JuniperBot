@@ -165,6 +165,7 @@ public interface ApiMapperService {
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "commandConfig", ignore = true),
             @Mapping(target = "messageTemplate", ignore = true),
+            @Mapping(target = "reactions", ignore = true),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToAdd()))", target = "rolesToAdd"),
             @Mapping(expression = "java(ApiMapperService.toLongList(source.getRolesToRemove()))", target = "rolesToRemove")
     })

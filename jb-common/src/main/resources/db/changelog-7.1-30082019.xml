@@ -69,4 +69,26 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7.1-30082019-5" author="caramel">
+        <createTable tableName="command_reaction">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_command_reaction"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="command_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_command_reaction_custom_command"
+                             references="custom_command(id)" />
+            </column>
+        </createTable>
+        <createIndex indexName="idx_command_reaction_message" tableName="command_reaction" unique="true">
+            <column name="message_id" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
