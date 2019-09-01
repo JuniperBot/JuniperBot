@@ -35,7 +35,7 @@ public final class DiscordUtils {
 
     private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
-    private static final Pattern EMOTE_PATTERN = Pattern.compile(":([^:]*?)(~\\d+)?:");
+    private static final Pattern EMOTE_PATTERN = Pattern.compile(":([a-zA-Z0-9_]+)(~\\d+)?:");
 
     private static final Permission[] CHANNEL_WRITE_PERMISSIONS = new Permission[]{
             Permission.MESSAGE_READ,
