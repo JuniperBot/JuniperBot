@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Getter
@@ -48,6 +49,8 @@ public class PlaybackInstance {
     private String playlistUuid;
 
     private Long activeTime;
+
+    private AtomicBoolean stopped = new AtomicBoolean();
 
     public PlaybackInstance(long guildId, IPlayer player) {
         this.guildId = guildId;
@@ -98,9 +101,9 @@ public class PlaybackInstance {
         return false;
     }
 
-    public synchronized void stop() {
+    public synchronized boolean stop() {
         player.stopTrack();
-        reset();
+        return stopped.compareAndSet(false, true);
     }
 
     public synchronized TrackRequest removeByIndex(int index) {
