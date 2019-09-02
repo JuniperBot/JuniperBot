@@ -17,22 +17,26 @@
 package ru.juniperbot.common.worker.event.service;
 
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
+import org.springframework.jmx.export.MBeanExportOperations;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.intercept.EventFilterFactory;
 import ru.juniperbot.common.worker.event.intercept.FilterChain;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 
+import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,6 +48,8 @@ public class ContextEventManagerImpl implements JbEventManager {
 
     private final Map<Class<?>, EventFilterFactory<?>> filterFactoryMap = new ConcurrentHashMap<>();
 
+    private final Map<Integer, ThreadPoolTaskExecutor> shardExecutors = new ConcurrentHashMap<>();
+
     @Autowired
     private WorkerProperties workerProperties;
 
@@ -51,14 +57,13 @@ public class ContextEventManagerImpl implements JbEventManager {
     private ContextService contextService;
 
     @Autowired
-    @Qualifier("eventManagerExecutor")
-    private TaskExecutor taskExecutor;
+    private MBeanExportOperations mBeanExportOperations;
 
     @Override
     public void handle(GenericEvent event) {
         if (workerProperties.getEvents().isAsyncExecution()) {
             try {
-                taskExecutor.execute(() -> handleEvent(event));
+                getTaskExecutor(event.getJDA()).execute(() -> handleEvent(event));
             } catch (TaskRejectedException e) {
                 log.debug("Event rejected: {}", event);
             }
@@ -154,6 +159,25 @@ public class ContextEventManagerImpl implements JbEventManager {
             this.listeners.addAll(listenerSet);
             this.listeners.sort(this::compareListeners);
         }
+    }
+
+    private TaskExecutor getTaskExecutor(JDA shard) {
+        return shardExecutors.computeIfAbsent(shard.getShardInfo().getShardId(), shardId -> {
+            String name = String.format("%s Event-Executor", shard.getShardInfo());
+            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(workerProperties.getEvents().getCorePoolSize());
+            executor.setMaxPoolSize(workerProperties.getEvents().getMaxPoolSize());
+            executor.setBeanName(name);
+            executor.setThreadNamePrefix(name);
+            executor.initialize();
+            mBeanExportOperations.registerManagedResource(new ThreadPoolTaskExecutorMBean(name, executor));
+            return executor;
+        });
+    }
+
+    @PreDestroy
+    public void destroy() {
+        this.shardExecutors.values().forEach(ThreadPoolTaskExecutor::shutdown);
     }
 
     @Override

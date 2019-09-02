@@ -140,9 +140,4 @@ public class JmxJDAMBean implements JmxNamedResource {
     public String getJmxName() {
         return jda.getShardInfo().toString();
     }
-
-    @Override
-    public String[] getJmxPath() {
-        return new String[]{"JDA"};
-    }
 }

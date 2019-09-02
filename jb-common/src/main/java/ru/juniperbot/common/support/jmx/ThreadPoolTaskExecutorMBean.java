@@ -118,9 +118,4 @@ public class ThreadPoolTaskExecutorMBean implements JmxNamedResource {
     public String getJmxName() {
         return objectName;
     }
-
-    @Override
-    public String[] getJmxPath() {
-        return new String[]{};
-    }
 }

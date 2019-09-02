@@ -18,11 +18,9 @@ package ru.juniperbot.common.worker.command.service;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -123,29 +121,23 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         BotContext context = getContext(event.getChannel());
         context.setConfig(guildConfig);
 
-        statisticsService.doWithTimer(getTimer(event.getJDA(), command), () -> {
-            try {
-                log.debug("Invoke command {} for userId={}, guildId={}",
-                        command.getClass().getSimpleName(),
-                        event.getAuthor() != null ? event.getAuthor().getId() : null,
-                        event.getGuild() != null ? event.getGuild().getId() : null);
-                command.doCommand(event, context, content);
-                counter.inc();
-                if (commandConfig != null && commandConfig.isDeleteSource()
-                        && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
-                    messageService.delete(event.getMessage(), 1000);
-                }
-            } catch (ValidationException e) {
-                messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
-            } catch (DiscordException e) {
-                messageService.onError(event.getChannel(),
-                        messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
-                log.error("Command {} execution error", key, e);
-            } finally {
-                executions.mark();
-                registry.incrementCommand(command);
+        try {
+            command.doCommand(event, context, content);
+            counter.inc();
+            if (commandConfig != null && commandConfig.isDeleteSource()
+                    && event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE)) {
+                messageService.delete(event.getMessage(), 1000);
             }
-        });
+        } catch (ValidationException e) {
+            messageService.onEmbedMessage(event.getChannel(), e.getMessage(), e.getArgs());
+        } catch (DiscordException e) {
+            messageService.onError(event.getChannel(),
+                    messageService.hasMessage(e.getMessage()) ? e.getMessage() : "discord.global.error");
+            log.error("Command {} execution error", key, e);
+        } finally {
+            executions.mark();
+            registry.incrementCommand(command);
+        }
         return true;
     }
 
@@ -181,14 +173,6 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         }
 
         return member != null && isRestricted(config, member);
-    }
-
-    private Timer getTimer(JDA jda, Command command) {
-        int shard = -1;
-        if (jda != null && jda.getShardInfo() != null) {
-            shard = jda.getShardInfo().getShardId();
-        }
-        return statisticsService.getTimer(String.format("commands/shard.%d/%s", shard, command.getKey()));
     }
 
     private BotContext getContext(MessageChannel channel) {

@@ -20,5 +20,7 @@ public interface JmxNamedResource {
 
     String getJmxName();
 
-    String[] getJmxPath();
+    default String[] getJmxPath() {
+        return new String[]{};
+    }
 }
