@@ -53,6 +53,7 @@ public class MBeanConfiguration {
         exporter.setAutodetect(true);
         exporter.setNamingStrategy(namingStrategy());
         exporter.setAssembler(infoAssembler());
+        exporter.setEnsureUniqueRuntimeObjectNames(false);
         return exporter;
     }
 }
