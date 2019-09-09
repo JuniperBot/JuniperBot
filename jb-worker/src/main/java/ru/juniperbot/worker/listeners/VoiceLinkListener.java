@@ -90,11 +90,13 @@ public class VoiceLinkListener extends DiscordEventListener {
         if (channel == null) {
             return null;
         }
+        Guild guild = channel.getGuild();
         return config.getVoiceLinks()
                 .stream()
                 .filter(e -> channel.getId().equals(e.getChannelId()))
                 .findFirst()
-                .map(e -> channel.getGuild().getRoleById(e.getRoleId()))
+                .map(e -> guild.getRoleById(e.getRoleId()))
+                .filter(e -> guild.getSelfMember().canInteract(e))
                 .orElse(null);
     }
 

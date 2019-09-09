@@ -126,11 +126,7 @@ public abstract class AbstractCommand implements Command {
     @Override
     public DiscordCommand getAnnotation() {
         if (annotation == null) {
-            synchronized (this) {
-                if (annotation == null) {
-                    annotation = getClass().getDeclaredAnnotation(DiscordCommand.class);
-                }
-            }
+            annotation = getClass().getDeclaredAnnotation(DiscordCommand.class);
         }
         return annotation;
     }

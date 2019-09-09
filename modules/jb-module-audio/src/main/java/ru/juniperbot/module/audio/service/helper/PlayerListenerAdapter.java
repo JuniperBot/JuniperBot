@@ -48,7 +48,7 @@ public abstract class PlayerListenerAdapter implements AudioEventListener, IPlay
         return instance;
     }
 
-    protected void clearInstance(PlaybackInstance instance) {
+    protected void unregisterInstance(PlaybackInstance instance) {
         IPlayer player = instance.getPlayer();
         player.removeListener(this);
         instancesByPlayer.remove(player);

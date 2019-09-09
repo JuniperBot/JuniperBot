@@ -41,9 +41,6 @@ public final class RankingUtils {
     }
 
     public static RankingInfo calculateInfo(Ranking ranking) {
-        if (ranking == null) {
-            return null;
-        }
         RankingInfo info = new RankingInfo(ranking.getMember());
         info.setTotalExp(ranking.getExp());
         info.setLevel(getLevelFromExp(ranking.getExp()));

@@ -68,6 +68,6 @@ public class GulagServiceImpl implements GulagService {
     @Transactional(readOnly = true)
     public Gulag getGulag(@NonNull Guild guild) {
         Gulag gulag = repository.findBySnowflake(guild.getOwnerIdLong());
-        return guild != null ? gulag : repository.findBySnowflake(guild.getIdLong());
+        return gulag != null ? gulag : repository.findBySnowflake(guild.getIdLong());
     }
 }

@@ -149,21 +149,12 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     }
 
     private void clearInstance(PlaybackInstance instance, boolean notify) {
-        if (stopInstance(instance, notify)) {
-            messageManager.clear(instance.getGuildId());
-            instances.remove(instance.getGuildId());
-            clearInstance(instance);
-        }
-    }
-
-    private boolean stopInstance(PlaybackInstance instance, boolean notify) {
-        if (instance == null) {
-            return false;
+        if (instance == null || !instance.stop()) {
+            return;
         }
         if (notify) {
             notifyCurrentEnd(instance, AudioTrackEndReason.STOPPED);
         }
-        instance.stop();
         if (featureSetService.isAvailable(instance.getGuildId())) {
             musicConfigService.updateVolume(instance.getGuildId(), instance.getPlayer().getVolume());
         }
@@ -171,7 +162,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
         if (guild != null) {
             lavaAudioService.closeConnection(guild);
         }
-        return true;
+
+        messageManager.clear(instance.getGuildId());
+        instances.remove(instance.getGuildId());
+        unregisterInstance(instance);
     }
 
     private void notifyCurrentEnd(PlaybackInstance instance, AudioTrackEndReason endReason) {
@@ -565,7 +559,7 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
             if (e.getCurrent() != null) {
                 e.getCurrent().setEndReason(EndReason.SHUTDOWN);
             }
-            stopInstance(e, true);
+            clearInstance(e, true);
         });
         lavaAudioService.shutdown();
     }
@@ -591,7 +585,6 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                     }
                 }
                 toKill.add(v);
-                stopInstance(v, true);
             }
         });
         for (PlaybackInstance instance : toKill) {

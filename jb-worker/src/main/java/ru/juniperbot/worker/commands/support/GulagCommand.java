@@ -89,11 +89,13 @@ public class GulagCommand extends SupportCommand {
 
         if (targetMember != null) {
             targetMember.ban(1, reason).queueAfter(30, TimeUnit.SECONDS);
+        } if (targetUser != null) {
+            event.getGuild().ban(targetUser, 1, reason).queue();
         }
 
-        if (targetUser != null) {
-            final User finalUser = targetUser;
-            targetUser.getMutualGuilds()
+        final User finalUser = targetUser;
+        if (finalUser != null) {
+            discordService.getShardManager().getGuildCache()
                     .stream()
                     .filter(e -> e.getOwner() != null && finalUser.equals(e.getOwner().getUser()))
                     .forEach(e -> e.leave().queue());

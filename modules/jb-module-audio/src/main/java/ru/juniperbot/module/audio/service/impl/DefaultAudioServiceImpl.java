@@ -120,12 +120,12 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
     @Override
     public void closeConnection(Guild guild) {
         if (lavaLink != null) {
-            // use destroy here for guild instead of simple disconnect bacause
-            lavaLink.getLink(guild).destroy();
-            /*if (guild.getSelfMember().getVoiceState() instanceof GuildVoiceStateImpl) {
-                GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) guild.getSelfMember().getVoiceState();
-                voiceState.setConnectedChannel(null); // force clear connected channel
-            }*/
+            Link link = lavaLink.getExistingLink(guild);
+            if (link != null
+                    && link.getState() != Link.State.DESTROYED
+                    && link.getState() != Link.State.DESTROYING) {
+                link.destroy();
+            }
         } else {
             guild.getAudioManager().closeAudioConnection();
         }
