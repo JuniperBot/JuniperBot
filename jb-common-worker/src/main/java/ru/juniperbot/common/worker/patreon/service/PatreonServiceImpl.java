@@ -114,7 +114,10 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             Map<String, PatreonUser> patreonById = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getPatreonId, e -> e));
             Map<String, PatreonUser> patreonByUserId = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getUserId, e -> e));
 
-            patreonUsers.forEach(e -> e.setActive(false));
+            patreonUsers.forEach(e -> {
+                e.setActive(false);
+                e.setFeatureSets(new HashSet<>());
+            });
 
             Set<String> donators = new HashSet<>();
 
