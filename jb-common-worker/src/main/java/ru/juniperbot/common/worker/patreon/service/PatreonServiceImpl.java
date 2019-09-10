@@ -165,7 +165,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             repository.saveAll(patreonUsers);
             repository.flush();
             supportService.grantDonators(donators);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Could not update Patreon Pledges", e);
             emergencyService.error("Could not update Patreon Pledges", e);
         }
