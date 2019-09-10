@@ -140,18 +140,25 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
                 if (patreon == null) {
                     patreon = new PatreonUser();
+                    patreon.setPatreonId(patron.getId());
                     patreonUsers.add(patreon);
+                    patreonById.put(patron.getId(), patreon);
                 }
 
-                patreon.setPatreonId(patron.getId());
                 if (discordUserId != null) {
                     patreon.setUserId(discordUserId);
+                    patreonByUserId.put(discordUserId, patreon);
                 }
-                patreon.setActive(member.isActiveAndPaid());
-                patreon.setFeatureSets(getFeatureSets(member));
 
-                if (member.isActiveAndPaid() && discordUserId != null) {
-                    donators.add(discordUserId);
+                if (member.isActiveAndPaid()) {
+                    patreon.setActive(true);
+                    if (patreon.getFeatureSets() == null) {
+                        patreon.setFeatureSets(new HashSet<>());
+                    }
+                    patreon.getFeatureSets().addAll(getFeatureSets(member));
+                    if (discordUserId != null) {
+                        donators.add(discordUserId);
+                    }
                 }
             }
 
