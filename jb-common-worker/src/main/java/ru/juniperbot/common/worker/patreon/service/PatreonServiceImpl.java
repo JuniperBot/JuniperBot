@@ -22,7 +22,6 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
@@ -50,8 +49,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @FeatureProvider(priority = 3)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
-
-    private static final DateTime CHARGE_RAISE_DATE = new DateTime(2019, 8, 2, 0, 0, 0, 0);
 
     private final Object $lock = new Object[0];
 
@@ -116,7 +113,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
             patreonUsers.forEach(e -> {
                 e.setActive(false);
-                e.setFeatureSets(new HashSet<>());
+                e.setFeatures(null);
             });
 
             Set<String> donators = new HashSet<>();
@@ -155,10 +152,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
                 if (member.isActiveAndPaid()) {
                     patreon.setActive(true);
-                    if (patreon.getFeatureSets() == null) {
-                        patreon.setFeatureSets(new HashSet<>());
-                    }
-                    patreon.getFeatureSets().addAll(getFeatureSets(member));
+                    patreon.appendFeatureSets(getFeatureSets(member));
                     if (discordUserId != null) {
                         donators.add(discordUserId);
                     }
@@ -324,11 +318,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         Set<FeatureSet> pledgeSets = new HashSet<>();
         if (member.isActiveAndPaid()) {
             Integer cents = member.getCurrentlyEntitledAmountCents();
-            if (member.getCurrentlyEntitledAmountCents() != null) {
-                DateTime chargeDate = member.getLastChargeDate() != null ? new DateTime(member.getLastChargeDate()) : null;
-                if (cents >= 200 || cents >= 100 && chargeDate != null && chargeDate.isBefore(CHARGE_RAISE_DATE)) {
-                    pledgeSets.add(FeatureSet.BONUS);
-                }
+            if (cents != null && cents >= 200) {
+                pledgeSets.add(FeatureSet.BONUS);
             }
         }
         return pledgeSets;
