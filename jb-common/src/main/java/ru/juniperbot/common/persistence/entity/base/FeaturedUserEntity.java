@@ -24,6 +24,7 @@ import ru.juniperbot.common.utils.CommonUtils;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -43,5 +44,12 @@ public class FeaturedUserEntity extends UserEntity {
     @Transient
     public void setFeatureSets(Set<FeatureSet> featureSets) {
         this.features = CommonUtils.enumsString(featureSets);
+    }
+
+    @Transient
+    public void appendFeatureSets(Set<FeatureSet> featureSets) {
+        Set<FeatureSet> result = new HashSet<>(getFeatureSets());
+        result.addAll(featureSets);
+        setFeatureSets(result);
     }
 }

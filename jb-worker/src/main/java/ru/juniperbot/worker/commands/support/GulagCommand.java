@@ -89,7 +89,7 @@ public class GulagCommand extends SupportCommand {
 
         if (targetMember != null) {
             targetMember.ban(1, reason).queueAfter(30, TimeUnit.SECONDS);
-        } if (targetUser != null) {
+        } else if (targetUser != null) {
             event.getGuild().ban(targetUser, 1, reason).queue();
         }
 

@@ -22,7 +22,6 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
@@ -50,8 +49,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @FeatureProvider(priority = 3)
 public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements PatreonService {
-
-    private static final DateTime CHARGE_RAISE_DATE = new DateTime(2019, 8, 2, 0, 0, 0, 0);
 
     private final Object $lock = new Object[0];
 
@@ -114,7 +111,10 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             Map<String, PatreonUser> patreonById = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getPatreonId, e -> e));
             Map<String, PatreonUser> patreonByUserId = patreonUsers.stream().collect(Collectors.toMap(PatreonUser::getUserId, e -> e));
 
-            patreonUsers.forEach(e -> e.setActive(false));
+            patreonUsers.forEach(e -> {
+                e.setActive(false);
+                e.setFeatures(null);
+            });
 
             Set<String> donators = new HashSet<>();
 
@@ -140,18 +140,22 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
 
                 if (patreon == null) {
                     patreon = new PatreonUser();
+                    patreon.setPatreonId(patron.getId());
                     patreonUsers.add(patreon);
+                    patreonById.put(patron.getId(), patreon);
                 }
 
-                patreon.setPatreonId(patron.getId());
                 if (discordUserId != null) {
                     patreon.setUserId(discordUserId);
+                    patreonByUserId.put(discordUserId, patreon);
                 }
-                patreon.setActive(member.isActiveAndPaid());
-                patreon.setFeatureSets(getFeatureSets(member));
 
-                if (member.isActiveAndPaid() && discordUserId != null) {
-                    donators.add(discordUserId);
+                if (member.isActiveAndPaid()) {
+                    patreon.setActive(true);
+                    patreon.appendFeatureSets(getFeatureSets(member));
+                    if (discordUserId != null) {
+                        donators.add(discordUserId);
+                    }
                 }
             }
 
@@ -161,7 +165,7 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
             repository.saveAll(patreonUsers);
             repository.flush();
             supportService.grantDonators(donators);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Could not update Patreon Pledges", e);
             emergencyService.error("Could not update Patreon Pledges", e);
         }
@@ -314,11 +318,8 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
         Set<FeatureSet> pledgeSets = new HashSet<>();
         if (member.isActiveAndPaid()) {
             Integer cents = member.getCurrentlyEntitledAmountCents();
-            if (member.getCurrentlyEntitledAmountCents() != null) {
-                DateTime chargeDate = member.getLastChargeDate() != null ? new DateTime(member.getLastChargeDate()) : null;
-                if (cents >= 200 || cents >= 100 && chargeDate != null && chargeDate.isBefore(CHARGE_RAISE_DATE)) {
-                    pledgeSets.add(FeatureSet.BONUS);
-                }
+            if (cents != null && cents >= 200) {
+                pledgeSets.add(FeatureSet.BONUS);
             }
         }
         return pledgeSets;
