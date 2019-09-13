@@ -108,6 +108,7 @@ subprojects {
         romeVersion                        = '1.11.1'
         jsonApiConverter                   = '0.9'
         prometheusVersion                  = '0.6.0'
+        jasyptVersion                      = '1.9.3'
 
         //@formatter:on
     }

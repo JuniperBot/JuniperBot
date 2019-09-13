@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.lang3.StringUtils;
+import org.jasypt.encryption.StringEncryptor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.iv.StringFixedIvGenerator;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -63,7 +66,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageCreate(Message message) {
-        if (!isEnabled(message.getGuild())) {
+        if (isDisabled(message.getGuild())) {
             return;
         }
         MessageHistory messageHistory = createHistory(message);
@@ -73,27 +76,28 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageUpdate(Message message) {
-        if (!isEnabled(message.getGuild())) {
+        if (isDisabled(message.getGuild())) {
             return;
         }
-        MessageHistory history = historyRepository.findByChannelIdAndMessageId(message.getTextChannel().getId(), message.getId());
+        MessageHistory history = historyRepository.findByMessageId(message.getId());
         if (history == null) {
             history = createHistory(message);
             historyRepository.save(history);
             return;
         }
-        String oldContent = history.getMessage();
+        TextChannel channel = message.getTextChannel();
+        String oldContent = decrypt(channel, history);
         String newContent = getContent(message);
         if (Objects.equals(oldContent, newContent)) {
             return;
         }
-        history.setMessage(newContent);
+        history.setMessage(encrypt(channel, message.getId(), newContent));
         history.setUpdateDate(new Date());
         historyRepository.save(history);
 
         auditService.log(message.getGuild(), AuditActionType.MESSAGE_EDIT)
                 .withUser(message.getMember())
-                .withChannel(message.getTextChannel())
+                .withChannel(channel)
                 .withAttribute(MESSAGE_ID, message.getId())
                 .withAttribute(OLD_CONTENT, oldContent)
                 .withAttribute(NEW_CONTENT, newContent)
@@ -103,25 +107,26 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void onMessageDelete(TextChannel channel, String messageId) {
-        if (!isEnabled(channel.getGuild())) {
+        Guild guild = channel.getGuild();
+        if (isDisabled(guild)) {
             return;
         }
-        MessageHistory history = historyRepository.findByChannelIdAndMessageId(channel.getId(), messageId);
+        MessageHistory history = historyRepository.findByMessageId(messageId);
         if (history == null) {
             return;
         }
         historyRepository.delete(history);
 
-        AuditActionBuilder builder = auditService.log(channel.getGuild(), AuditActionType.MESSAGE_DELETE)
+        AuditActionBuilder builder = auditService.log(guild, AuditActionType.MESSAGE_DELETE)
                 .withChannel(channel)
                 .withAttribute(MESSAGE_ID, messageId)
-                .withAttribute(OLD_CONTENT, history.getMessage());
+                .withAttribute(OLD_CONTENT, decrypt(channel, history));
 
-        Member member = channel.getGuild().getMemberById(history.getUserId());
+        Member member = guild.getMemberById(history.getUserId());
         if (member != null) {
             builder.withUser(member);
         } else {
-            LocalMember localMember = memberService.get(history.getGuildId(), history.getUserId());
+            LocalMember localMember = memberService.get(guild.getIdLong(), history.getUserId());
             if (localMember != null) {
                 builder.withUser(localMember);
             }
@@ -141,20 +146,18 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepository.deleteByCreateDateBefore(DateTime.now().minusDays(durationDays).toDate());
     }
 
-    private boolean isEnabled(Guild guild) {
+    private boolean isDisabled(Guild guild) {
         if (!workerProperties.getAudit().isHistoryEnabled()) {
-            return false;
+            return true;
         }
         AuditConfig config = auditConfigService.get(guild);
-        return config != null && config.isEnabled();
+        return config == null || !config.isEnabled();
     }
 
-    private static MessageHistory createHistory(Message message) {
+    private MessageHistory createHistory(Message message) {
         MessageHistory messageHistory = new MessageHistory();
-        messageHistory.setGuildId(message.getGuild().getIdLong());
         messageHistory.setUserId(message.getAuthor().getId());
-        messageHistory.setChannelId(message.getTextChannel().getId());
-        messageHistory.setMessage(getContent(message));
+        messageHistory.setMessage(encrypt(message.getTextChannel(), message.getId(), getContent(message)));
         messageHistory.setMessageId(message.getId());
         messageHistory.setCreateDate(new Date());
         messageHistory.setUpdateDate(messageHistory.getCreateDate());
@@ -177,5 +180,25 @@ public class HistoryServiceImpl implements HistoryService {
             builder.append(attachmentsPart);
         }
         return builder.toString();
+    }
+
+    private String encrypt(TextChannel channel, String iv, String content) {
+        return workerProperties.getAudit().isHistoryEncryption()
+                ? getEncryptor(channel, iv).encrypt(content)
+                : content;
+    }
+
+    private String decrypt(TextChannel channel, MessageHistory history) {
+        return workerProperties.getAudit().isHistoryEncryption()
+                ? getEncryptor(channel, history.getMessageId()).decrypt(history.getMessage())
+                : history.getMessage();
+    }
+
+    private StringEncryptor getEncryptor(TextChannel channel, String iv) {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setAlgorithm("PBEWithHMACSHA512AndAES_256");
+        encryptor.setPassword(String.format("%s:%s", channel.getGuild().getId(), channel.getId()));
+        encryptor.setIvGenerator(new StringFixedIvGenerator(iv));
+        return encryptor;
     }
 }

@@ -28,6 +28,9 @@ dependencies {
     api "io.prometheus:simpleclient:${prometheusVersion}"
     api "io.prometheus:simpleclient_common:${prometheusVersion}"
     api "io.prometheus:simpleclient_dropwizard:${prometheusVersion}"
+    api "org.jasypt:jasypt:${jasyptVersion}"
 
     implementation "org.goldrenard:jb:${programJbVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
 }

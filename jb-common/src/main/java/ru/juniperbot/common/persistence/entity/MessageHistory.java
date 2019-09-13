@@ -18,7 +18,7 @@ package ru.juniperbot.common.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.juniperbot.common.persistence.entity.base.MemberMessageEntity;
+import ru.juniperbot.common.persistence.entity.base.BaseEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,8 +28,16 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "message_history")
-public class MessageHistory extends MemberMessageEntity {
+public class MessageHistory extends BaseEntity {
     private static final long serialVersionUID = -1459894653981742651L;
+
+    @Column(columnDefinition = "text")
+    private String message;
+
+    @Setter
+    @Getter
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "create_date")
     @Temporal(TemporalType.TIMESTAMP)
