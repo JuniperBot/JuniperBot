@@ -35,6 +35,7 @@ import ru.juniperbot.api.model.AtomFeed;
 import ru.juniperbot.api.subscriptions.integrations.VkSubscriptionService;
 import ru.juniperbot.api.subscriptions.integrations.YouTubeSubscriptionService;
 import ru.juniperbot.api.utils.FeedUtils;
+import ru.juniperbot.api.utils.IdentityRateLimiter;
 import ru.juniperbot.common.model.exception.AccessDeniedException;
 import ru.juniperbot.common.model.request.PatreonRequest;
 import ru.juniperbot.common.persistence.entity.VkConnection;
@@ -50,6 +51,10 @@ import java.util.Objects;
 public class CallbackController extends BasePublicRestController {
 
     private final Gson gson = GsonUtils.create();
+
+    private final IdentityRateLimiter<String> vkRateLimiter = new IdentityRateLimiter<>(5.0 / 60.0); // Five VK group events per minute
+
+    private final IdentityRateLimiter<String> youTubeRateLimiter = new IdentityRateLimiter<>(1.0 / 60.0); // One YT channel video per minute
 
     private final static Map<String, Type> CALLBACK_TYPES = Map.of(
             CallbackMessageType.WALL_POST_NEW.getValue(),
@@ -92,7 +97,9 @@ public class CallbackController extends BasePublicRestController {
                 case CONFIRMATION:
                     return vkSubscriptionService.confirm(connection, message);
                 case WALL_POST_NEW:
-                    vkSubscriptionService.post(connection, message);
+                    if (vkRateLimiter.tryAcquire(token)) {
+                        vkSubscriptionService.post(connection, message);
+                    }
                     break;
             }
         }
@@ -122,8 +129,10 @@ public class CallbackController extends BasePublicRestController {
                 log.warn("No videoId found in YouTube callback");
                 return;
             }
-            log.info("Notify YouTube Video[channelId={}, videoId={}]", channelId, videoId);
-            youTubeService.notifyVideo(channelId, videoId);
+            if (youTubeRateLimiter.tryAcquire(channelId)) {
+                log.info("Notify YouTube Video[channelId={}, videoId={}]", channelId, videoId);
+                youTubeService.notifyVideo(channelId, videoId);
+            }
         });
     }
 
