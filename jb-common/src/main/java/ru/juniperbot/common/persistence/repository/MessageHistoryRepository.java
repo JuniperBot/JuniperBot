@@ -16,17 +16,17 @@
  */
 package ru.juniperbot.common.persistence.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import ru.juniperbot.common.persistence.entity.MessageHistory;
-import ru.juniperbot.common.persistence.repository.base.MemberMessageRepository;
 
 import java.util.Date;
 
 @Repository
-public interface MessageHistoryRepository extends MemberMessageRepository<MessageHistory> {
+public interface MessageHistoryRepository extends JpaRepository<MessageHistory, Long> {
 
-    MessageHistory findByChannelIdAndMessageId(String channelId, String messageId);
+    MessageHistory findByMessageId(String messageId);
 
     @Modifying
     void deleteByCreateDateBefore(Date expiryDate);

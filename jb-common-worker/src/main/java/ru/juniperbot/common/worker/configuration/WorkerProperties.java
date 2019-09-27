@@ -91,6 +91,7 @@ public class WorkerProperties {
         private int keepMonths = 1;
         private boolean historyEnabled = true;
         private int historyDays = 7;
+        private boolean historyEncryption = true;
     }
 
     @Getter

@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +126,13 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
                     && link.getState() != Link.State.DESTROYED
                     && link.getState() != Link.State.DESTROYING) {
                 link.destroy();
+
+                // Sometimes JDA thinks that bot is connected to channel,
+                // we should manually clear this state to let Lavalink connect to it again
+                if (guild.getSelfMember().getVoiceState() instanceof GuildVoiceStateImpl) {
+                    GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) guild.getSelfMember().getVoiceState();
+                    voiceState.setConnectedChannel(null);
+                }
             }
         } else {
             guild.getAudioManager().closeAudioConnection();
