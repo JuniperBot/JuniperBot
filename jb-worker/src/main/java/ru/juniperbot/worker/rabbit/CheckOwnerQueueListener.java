@@ -34,29 +34,34 @@ import ru.juniperbot.common.model.request.CheckOwnerRequest;
 public class CheckOwnerQueueListener extends BaseQueueListener {
 
     @RabbitListener(queues = RabbitConfiguration.QUEUE_CHECK_OWNER_REQUEST)
-    public boolean getWebhook(CheckOwnerRequest request) {
-        Guild guild = null;
-        switch (request.getType()) {
-            case TEXT:
-                TextChannel textChannel = discordService.getTextChannelById(request.getChannelId());
-                if (textChannel != null) {
-                    guild = textChannel.getGuild();
-                }
-                break;
-            case VOICE:
-                VoiceChannel voiceChannel = discordService.getVoiceChannelById(request.getChannelId());
-                if (voiceChannel != null) {
-                    guild = voiceChannel.getGuild();
-                }
-                break;
-        }
-        if (guild == null) {
-            return true;
-        }
-        Member member = guild.getMemberById(request.getUserId());
-        if (member == null) {
+    public boolean isAdministrator(CheckOwnerRequest request) {
+        try {
+            Guild guild = null;
+            switch (request.getType()) {
+                case TEXT:
+                    TextChannel textChannel = discordService.getTextChannelById(request.getChannelId());
+                    if (textChannel != null) {
+                        guild = textChannel.getGuild();
+                    }
+                    break;
+                case VOICE:
+                    VoiceChannel voiceChannel = discordService.getVoiceChannelById(request.getChannelId());
+                    if (voiceChannel != null) {
+                        guild = voiceChannel.getGuild();
+                    }
+                    break;
+            }
+            if (guild == null) {
+                return true;
+            }
+            Member member = guild.getMemberById(request.getUserId());
+            if (member == null) {
+                return false;
+            }
+            return member.isOwner() || member.hasPermission(Permission.ADMINISTRATOR);
+        } catch (Throwable e) {
+            log.error("Could not detect administrator state", e);
             return false;
         }
-        return member.isOwner() || member.hasPermission(Permission.ADMINISTRATOR);
     }
 }

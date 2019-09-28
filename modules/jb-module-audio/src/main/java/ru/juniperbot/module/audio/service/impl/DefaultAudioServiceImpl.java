@@ -73,28 +73,29 @@ public class DefaultAudioServiceImpl implements LavaAudioService {
 
     @Override
     public void configure(DiscordService discordService, DefaultShardManagerBuilder builder) {
-        if (getConfiguration().isEnabled()) {
-            lavaLink = new JdaLavalink(
-                    discordService.getUserId(),
-                    workerProperties.getDiscord().getShardsTotal(),
-                    discordService::getShardById
-            );
-            builder.setVoiceDispatchInterceptor(lavaLink.getVoiceInterceptor());
-            builder.addEventListeners(lavaLink);
-            if (CollectionUtils.isNotEmpty(getConfiguration().getNodes())) {
-                getConfiguration().getNodes().forEach(e -> {
-                    try {
-                        lavaLink.addNode(e.getName(), new URI(e.getUrl()), e.getPassword());
-                    } catch (URISyntaxException e1) {
-                        log.warn("Could not add node {}", e, e1);
-                    }
-                });
-            }
+        if (!getConfiguration().isEnabled()) {
+            return;
+        }
+        lavaLink = new JdaLavalink(
+                discordService.getUserId(),
+                workerProperties.getDiscord().getShardsTotal(),
+                discordService::getShardById
+        );
+        builder.setVoiceDispatchInterceptor(lavaLink.getVoiceInterceptor());
+        builder.addEventListeners(lavaLink);
+        if (CollectionUtils.isNotEmpty(getConfiguration().getNodes())) {
+            getConfiguration().getNodes().forEach(e -> {
+                try {
+                    lavaLink.addNode(e.getName(), new URI(e.getUrl()), e.getPassword());
+                } catch (URISyntaxException e1) {
+                    log.warn("Could not add node {}", e, e1);
+                }
+            });
+        }
 
-            var discovery = getConfiguration().getDiscovery();
-            if (discovery != null && discovery.isEnabled() && StringUtils.isNotEmpty(discovery.getServiceName())) {
-                scheduler.scheduleWithFixedDelay(this::lookUpDiscovery, 60000);
-            }
+        var discovery = getConfiguration().getDiscovery();
+        if (discovery != null && discovery.isEnabled() && StringUtils.isNotEmpty(discovery.getServiceName())) {
+            scheduler.scheduleWithFixedDelay(this::lookUpDiscovery, 60000);
         }
     }
 
