@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import ru.juniperbot.api.common.ApiRequestLoggingFilter;
 import ru.juniperbot.api.common.AtomFeedArgumentResolver;
 import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.support.ModuleMessageSourceImpl;
@@ -59,5 +60,19 @@ public class JuniperApiApplication implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new AtomFeedArgumentResolver());
+    }
+
+    @Bean
+    public ApiRequestLoggingFilter requestLoggingFilter() {
+        ApiRequestLoggingFilter filter = new ApiRequestLoggingFilter();
+        filter.setBeforeMessagePrefix("Before Request ");
+        filter.setAfterMessagePrefix("After Request ");
+        filter.setBeforeMessageSuffix("");
+        filter.setAfterMessageSuffix("");
+        filter.setMaxPayloadLength(10000);
+        filter.setIncludeClientInfo(true);
+        filter.setIncludeQueryString(true);
+        filter.setIncludePayload(true);
+        return filter;
     }
 }

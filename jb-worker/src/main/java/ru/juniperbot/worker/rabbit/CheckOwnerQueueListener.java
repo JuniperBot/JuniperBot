@@ -34,7 +34,7 @@ import ru.juniperbot.common.model.request.CheckOwnerRequest;
 public class CheckOwnerQueueListener extends BaseQueueListener {
 
     @RabbitListener(queues = RabbitConfiguration.QUEUE_CHECK_OWNER_REQUEST)
-    public boolean getWebhook(CheckOwnerRequest request) {
+    public boolean isAdministrator(CheckOwnerRequest request) {
         Guild guild = null;
         switch (request.getType()) {
             case TEXT:
