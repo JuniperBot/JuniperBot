@@ -65,8 +65,10 @@ public class JuniperApiApplication implements WebMvcConfigurer {
     @Bean
     public ApiRequestLoggingFilter requestLoggingFilter() {
         ApiRequestLoggingFilter filter = new ApiRequestLoggingFilter();
-        filter.setBeforeMessagePrefix("Request ");
+        filter.setBeforeMessagePrefix("Before Request ");
+        filter.setAfterMessagePrefix("After Request ");
         filter.setBeforeMessageSuffix("");
+        filter.setAfterMessageSuffix("");
         filter.setMaxPayloadLength(10000);
         filter.setIncludeClientInfo(true);
         filter.setIncludeQueryString(true);

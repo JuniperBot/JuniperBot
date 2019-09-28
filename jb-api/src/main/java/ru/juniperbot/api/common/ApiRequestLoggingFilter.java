@@ -34,14 +34,15 @@ public class ApiRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @Override
     protected void afterRequest(HttpServletRequest request, String message) {
-        // do nothing
+        logger.info(message);
     }
 
     @Override
     protected String createMessage(HttpServletRequest request, String prefix, String suffix) {
         StringBuilder msg = new StringBuilder()
                 .append(prefix)
-                .append("[")
+                .append(request.getMethod())
+                .append(" [")
                 .append(request.getRequestURI());
 
         if (isIncludeQueryString()) {
