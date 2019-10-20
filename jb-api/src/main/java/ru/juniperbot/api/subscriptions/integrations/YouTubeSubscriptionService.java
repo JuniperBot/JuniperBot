@@ -28,4 +28,6 @@ public interface YouTubeSubscriptionService extends SubscriptionService<YouTubeC
     void subscribe(YouTubeChannel channel);
 
     void resubscribeAll();
+
+    void prolongChannel(String channelId);
 }

@@ -189,7 +189,6 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
     }
 
     @Override
-    @Transactional
     public void subscribe(YouTubeChannel channel) {
         LocalDate now = LocalDate.now();
         LocalDate expiredAt = channel.getExpiresAt() != null
@@ -216,8 +215,16 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new IllegalStateException("Could not subscribe to " + channel.getChannelId());
         }
-        channel.setExpiresAt(DateTime.now().plusDays(7).toDate());
-        channelRepository.save(channel);
+    }
+
+    @Override
+    @Transactional
+    public void prolongChannel(String channelId) {
+        YouTubeChannel channel = channelRepository.findByChannelId(channelId);
+        if (channel != null) {
+            channel.setExpiresAt(DateTime.now().plusDays(7).toDate());
+            channelRepository.save(channel);
+        }
     }
 
     @Override
@@ -248,7 +255,7 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
      */
     @Override
     @Scheduled(cron = "0 0 0 * * ?")
-    @Transactional
+    @Transactional(readOnly = true)
     public synchronized void resubscribeAll() {
         log.info("Starting YouTube resubscription.");
 
@@ -275,7 +282,7 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
                 return;
             }
             try {
-                configService.inTransaction(() -> subscribe(connection));
+                subscribe(connection);
                 successful.incrementAndGet();
             } catch (Exception e) {
                 log.warn("Could not resubscribe channelId={}", channels, e);

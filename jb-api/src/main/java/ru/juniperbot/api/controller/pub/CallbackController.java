@@ -138,10 +138,14 @@ public class CallbackController extends BasePublicRestController {
 
     @RequestMapping(value = "/youtube/callback/publish", method = RequestMethod.GET)
     public String youTubeCallbackChallenge(@RequestParam("hub.verify_token") String secret,
-                                           @RequestParam("hub.challenge") String challenge) {
+                                           @RequestParam("hub.challenge") String challenge,
+                                           @RequestParam(name = "channel", required = false) String channelId) {
         if (!Objects.equals(apiProperties.getYouTube().getPubSubSecret(), secret)) {
             log.warn("YouTube callback challenge denied, wrong secret");
             throw new AccessDeniedException();
+        }
+        if (channelId != null) {
+            youTubeService.prolongChannel(channelId);
         }
         log.info("YouTube callback challenge accepted");
         return challenge;
