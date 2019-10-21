@@ -43,6 +43,7 @@ allprojects {
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://dl.bintray.com/goldrenard/maven" }
+        maven { url "http://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
         maven { url "https://oss.jfrog.org/artifactory/libs-release"}
         maven { url "http://nexus.bippo.co.id/nexus/content/repositories/soluvas-public-thirdparty/" } // net.reduls.sanmoku artifact
         maven { url "$rootProject.projectDir/local" }
@@ -109,6 +110,7 @@ subprojects {
         jsonApiConverter                   = '0.9'
         prometheusVersion                  = '0.6.0'
         jasyptVersion                      = '1.9.3'
+        jasperReportsVersion               = '6.10.0'
 
         //@formatter:on
     }
