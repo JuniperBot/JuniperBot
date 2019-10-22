@@ -65,7 +65,7 @@ public class UserInfoCommand extends MentionableCommand {
     private MemberBioRepository bioRepository;
 
     public UserInfoCommand() {
-        super(true);
+        super(true, true);
     }
 
     @Override
@@ -73,10 +73,6 @@ public class UserInfoCommand extends MentionableCommand {
         DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
-
-        if (reference.getLocalMember() == null) {
-            return fail(event);
-        }
 
         LocalMember localMember = reference.getLocalMember();
         LocalUser localUser = reference.getLocalUser();
@@ -128,11 +124,6 @@ public class UserInfoCommand extends MentionableCommand {
         }
         messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
         return true;
-    }
-
-    @Override
-    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
-        fail(event);
     }
 
     private StringBuilder getName(StringBuilder commonBuilder, LocalUser user, LocalMember member) {

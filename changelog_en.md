@@ -10,7 +10,7 @@
  - **[Ranking]** Fixed "Ranking is not available for this member"
  - Following commands are now supporting ID as well as mention:
    - `юзер/user`
-   -
+   - `аватар/avatar`
  - Some small fixes and improvements.
 
 ## Version 7.2

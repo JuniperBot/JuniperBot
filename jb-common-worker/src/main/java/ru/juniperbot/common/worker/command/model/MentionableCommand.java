@@ -34,8 +34,11 @@ public abstract class MentionableCommand extends AbstractCommand {
 
     private boolean authorAllowed;
 
-    protected MentionableCommand(boolean authorAllowed) {
+    private boolean membersOnly;
+
+    protected MentionableCommand(boolean authorAllowed, boolean membersOnly) {
         this.authorAllowed = authorAllowed;
+        this.membersOnly = membersOnly;
     }
 
     @Autowired
@@ -89,10 +92,17 @@ public abstract class MentionableCommand extends AbstractCommand {
         } else {
             reference.setLocalMember(memberService.get(event.getGuild().getIdLong(), id));
         }
+
+        if (membersOnly && reference.getLocalMember() == null && reference.getMember() == null) {
+            showHelp(event, context);
+            return false;
+        }
         return doCommand(reference, event, context, content);
     }
 
     protected abstract boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content);
 
-    protected abstract void showHelp(GuildMessageReceivedEvent event, BotContext context);
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        fail(event);
+    }
 }

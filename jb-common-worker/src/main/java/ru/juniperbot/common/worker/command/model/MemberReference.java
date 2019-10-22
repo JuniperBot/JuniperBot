@@ -20,4 +20,30 @@ public class MemberReference {
     private User user;
 
     private LocalUser localUser;
+
+    public String getEffectiveName() {
+        if (member != null) {
+            return member.getEffectiveName();
+        }
+        if (user != null) {
+            return user.getName();
+        }
+        if (localMember != null) {
+            return localMember.getEffectiveName();
+        }
+        if (localUser != null) {
+            return localUser.getName();
+        }
+        return null;
+    }
+
+    public String getEffectiveAvatarUrl() {
+        if (user != null) {
+            return user.getEffectiveAvatarUrl();
+        }
+        if (localUser != null) {
+            return localUser.getAvatarUrl();
+        }
+        return null;
+    }
 }
