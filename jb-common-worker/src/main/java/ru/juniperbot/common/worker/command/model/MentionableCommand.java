@@ -99,7 +99,7 @@ public abstract class MentionableCommand extends AbstractCommand {
             showHelp(event, context);
             return false;
         }
-        return doCommand(reference, event, context, content);
+        return doCommand(reference, event, context, content.trim());
     }
 
     protected abstract boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException;
