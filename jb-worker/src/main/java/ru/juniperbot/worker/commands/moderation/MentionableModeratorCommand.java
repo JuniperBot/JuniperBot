@@ -25,6 +25,7 @@ import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
 import org.ocpsoft.prettytime.units.Second;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.service.ModerationConfigService;
 import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.command.model.MentionableCommand;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
@@ -36,6 +37,9 @@ public abstract class MentionableModeratorCommand extends MentionableCommand {
 
     @Autowired
     protected ModerationService moderationService;
+
+    @Autowired
+    protected ModerationConfigService moderationConfigService;
 
     protected MentionableModeratorCommand(boolean authorAllowed, boolean membersOnly) {
         super(authorAllowed, membersOnly);
