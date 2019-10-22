@@ -20,11 +20,16 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.units.JustNow;
+import org.ocpsoft.prettytime.units.Millisecond;
+import org.ocpsoft.prettytime.units.Second;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.command.model.MentionableCommand;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 
+import java.util.Date;
 import java.util.Objects;
 
 public abstract class MentionableModeratorCommand extends MentionableCommand {
@@ -49,5 +54,16 @@ public abstract class MentionableModeratorCommand extends MentionableCommand {
             return false;
         }
         return true;
+    }
+
+    protected String getMuteDuration(int duration) {
+        Date date = new Date();
+        date.setTime(date.getTime() + (long) (60000 * duration));
+        PrettyTime formatter = new PrettyTime(contextService.getLocale());
+        formatter.removeUnit(JustNow.class);
+        formatter.removeUnit(Millisecond.class);
+        formatter.removeUnit(Second.class);
+        return messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until",
+                formatter.format(date));
     }
 }

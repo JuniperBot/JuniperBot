@@ -13,7 +13,10 @@
    - `аватар/avatar`
    - `бан/ban`
    - `кик/kick`
+   - `мьют/mute`
+   - `размьют/unmute`
    - `очистить/clear`
+   - `цвет/color`
  - Some small fixes and improvements.
 
 ## Version 7.2
