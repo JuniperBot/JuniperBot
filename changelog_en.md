@@ -12,6 +12,7 @@
    - `юзер/user`
    - `аватар/avatar`
    - `бан/ban`
+   - `кик/kick`
  - Some small fixes and improvements.
 
 ## Version 7.2

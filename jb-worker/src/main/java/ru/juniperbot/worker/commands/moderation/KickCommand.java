@@ -22,31 +22,32 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
-
-import java.util.Objects;
 
 @DiscordCommand(key = "discord.command.mod.kick.key",
         description = "discord.command.mod.kick.desc",
         group = "discord.command.group.moderation",
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.KICK_MEMBERS},
         priority = 20)
-public class KickCommand extends ModeratorCommand {
+public class KickCommand extends MentionableModeratorCommand {
+
+    protected KickCommand() {
+        super(false, true);
+    }
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member mentioned = getMentioned(event);
-        if (mentioned == null) {
-            String kickCommand = messageService.getMessageByLocale("discord.command.mod.kick.key",
-                    context.getCommandLocale());
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.kick.help",
-                    context.getConfig().getPrefix(), kickCommand);
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        Member violator = reference.getMember();
+        if (violator == null) {
+            showHelp(event, context);
             return false;
         }
-        if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
-            return fail(event); // do not allow kick members or yourself
+        if (!checkTarget(reference, event)) {
+            return false;
         }
-        if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
+
+        if (!event.getGuild().getSelfMember().canInteract(violator)) {
             messageService.onError(event.getChannel(), "discord.command.mod.kick.position");
             return false;
         }
@@ -54,13 +55,17 @@ public class KickCommand extends ModeratorCommand {
         ModerationActionRequest request = ModerationActionRequest.builder()
                 .type(ModerationActionType.KICK)
                 .moderator(event.getMember())
-                .violator(mentioned)
-                .reason(removeMention(query))
+                .violator(violator)
+                .reason(query)
                 .build();
 
-        if (moderationService.performAction(request)) {
-            return ok(event);
-        }
-        return fail(event);
+        return moderationService.performAction(request) ? ok(event) : fail(event);
+    }
+
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        String kickCommand = messageService.getMessageByLocale("discord.command.mod.kick.key",
+                context.getCommandLocale());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.kick.help",
+                context.getConfig().getPrefix(), kickCommand);
     }
 }
