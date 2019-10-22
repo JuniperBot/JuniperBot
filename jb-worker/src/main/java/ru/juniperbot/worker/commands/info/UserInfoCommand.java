@@ -42,6 +42,7 @@ import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 import ru.juniperbot.module.ranking.commands.RankCommand;
+import ru.juniperbot.module.ranking.service.RankingService;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -54,6 +55,9 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
     @Autowired
     private RankingConfigService rankingConfigService;
+
+    @Autowired
+    private RankingService rankingService;
 
     @Autowired
     private RankCommand rankCommand;
@@ -104,10 +108,8 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
         if (!user.isBot()) {
             if (rankingConfigService.isEnabled(member.getGuild().getIdLong())) {
-                RankingInfo info = rankingConfigService.getRankingInfo(member);
-                if (info != null) {
-                    rankCommand.addFields(builder, info, member.getGuild());
-                }
+                RankingInfo info = rankingService.getRankingInfo(member);
+                rankCommand.addFields(builder, info, member.getGuild());
             }
             MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), user.getId());
             String bio = memberBio != null ? memberBio.getBio() : null;

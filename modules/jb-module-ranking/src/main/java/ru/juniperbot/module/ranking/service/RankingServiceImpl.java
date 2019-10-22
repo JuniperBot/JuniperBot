@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.model.RankingReward;
 import ru.juniperbot.common.persistence.entity.*;
 import ru.juniperbot.common.persistence.repository.CookieRepository;
@@ -238,6 +239,15 @@ public class RankingServiceImpl implements RankingService {
             rankingRepository.save(ranking);
         }
         return ranking;
+    }
+
+    @Override
+    @Transactional
+    public RankingInfo getRankingInfo(Member member) {
+        Ranking ranking = getRanking(member);
+        RankingInfo rankingInfo = RankingUtils.calculateInfo(ranking);
+        rankingInfo.setRank(rankingRepository.getRank(member.getGuild().getIdLong(), rankingInfo.getTotalExp()));
+        return rankingInfo;
     }
 
     private boolean isIgnoredChannel(RankingConfig config, TextChannel channel) {

@@ -18,6 +18,7 @@ package ru.juniperbot.module.ranking.service;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import ru.juniperbot.common.model.RankingInfo;
 
 public interface RankingService {
 
@@ -30,4 +31,6 @@ public interface RankingService {
     void addVoiceActivity(Member member, long duration);
 
     void updateRewards(Member member);
+
+    RankingInfo getRankingInfo(Member member);
 }

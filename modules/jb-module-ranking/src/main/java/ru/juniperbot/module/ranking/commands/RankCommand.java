@@ -17,7 +17,6 @@
 package ru.juniperbot.module.ranking.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -41,44 +40,18 @@ public class RankCommand extends RankingCommand {
         if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
             member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
         }
-        RankingInfo info = rankingConfigService.getRankingInfo(member);
-        if (info == null) {
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, messageService.getMessage(
-                    "discord.command.rank.unavailable"));
-            return false;
+        if (member == null) {
+            return true;
         }
+        RankingInfo info = rankingService.getRankingInfo(member);
+        EmbedBuilder builder = messageService.getBaseEmbed(true);
+        addFields(builder, info, member.getGuild());
 
-        if (message.getGuild().getSelfMember().hasPermission(message.getChannel(), Permission.MESSAGE_EMBED_LINKS)) {
-            EmbedBuilder builder = messageService.getBaseEmbed(true);
-            addFields(builder, info, member.getGuild());
-
-            long desiredPage = (info.getRank() / 50) + 1;
-            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
-                    desiredPage, member.getUser().getId());
-            builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
-        } else {
-            String response;
-            if (message.getMember().equals(member)) {
-                response = messageService.getMessage("discord.command.rank.info.message.self",
-                        member.getAsMention(),
-                        info.getRank(),
-                        info.getLevel(),
-                        info.getRemainingExp(),
-                        info.getLevelExp(),
-                        info.getTotalExp());
-            } else {
-                response = messageService.getMessage("discord.command.rank.info.message.member",
-                        message.getMember().getAsMention(),
-                        member.getAsMention(),
-                        info.getRank(),
-                        info.getLevel(),
-                        info.getRemainingExp(),
-                        info.getLevelExp(),
-                        info.getTotalExp());
-            }
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, response);
-        }
+        long desiredPage = (info.getRank() / 50) + 1;
+        String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
+                desiredPage, member.getUser().getId());
+        builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
+        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
         return true;
     }
 

@@ -2,6 +2,12 @@
 
 ## Version 7.3
  - Command `юзер/user` now contains last online date;
+ - Added new message template variables:
+   - `{server.owner}`
+   - `{member.level}`
+   - `{member.voiceTime}`
+   - `{member.cookies}`
+ - **[Ranking]** Fixed "Ranking is not available for this member"
  - Some small fixes and improvements.
 
 ## Version 7.2
