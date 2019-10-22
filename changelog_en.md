@@ -11,6 +11,7 @@
  - Following commands are now supporting ID as well as mention:
    - `юзер/user`
    - `аватар/avatar`
+   - `бан/ban`
  - Some small fixes and improvements.
 
 ## Version 7.2

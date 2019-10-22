@@ -170,22 +170,32 @@ public class ModerationServiceImpl implements ModerationService {
         Guild guild = request.getGuild();
         Member self = guild.getSelfMember();
         if (request.getModerator() != null) {
-            lastActionCache.put(DiscordUtils.getMemberKey(request.getViolator()),
-                    request.getModerator().getUser().getId());
+            String memberKey = request.getViolator() != null
+                    ? DiscordUtils.getMemberKey(request.getViolator())
+                    : DiscordUtils.getMemberKey(guild, request.getViolatorId());
+            lastActionCache.put(memberKey, request.getModerator().getUser().getId());
         }
         switch (request.getType()) {
             case MUTE:
                 // to prevent circular injection. Yeah bad practice but still we need this
                 return applicationContext.getBean(MuteService.class).mute(request);
             case BAN:
-                if (!self.hasPermission(Permission.BAN_MEMBERS) || !self.canInteract(request.getViolator())) {
+                if (!self.hasPermission(Permission.BAN_MEMBERS)) {
                     return false;
                 }
-                notifyUserAction(e -> {
-                    int delDays = request.getDuration() != null ? request.getDuration() : 0;
-                    e.getGuild().ban(e, delDays, request.getReason()).queue();
-                }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
-                return true;
+                final int delDays = request.getDuration() != null ? request.getDuration() : 0;
+                if (request.getViolator() != null) {
+                    if (self.canInteract(request.getViolator())) {
+                        notifyUserAction(e -> {
+                            e.getGuild().ban(e, delDays, request.getReason()).queue();
+                        }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
+                        return true;
+                    }
+                } else if (request.getViolatorId() != null) {
+                    guild.ban(request.getViolatorId(), delDays, request.getReason()).queue();
+                    return true;
+                }
+                return false;
             case KICK:
                 if (!self.hasPermission(Permission.KICK_MEMBERS) || !self.canInteract(request.getViolator())) {
                     return false;

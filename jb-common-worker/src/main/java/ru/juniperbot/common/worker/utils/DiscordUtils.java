@@ -251,6 +251,10 @@ public final class DiscordUtils {
     }
 
     public static String getMemberKey(@NonNull Guild guild, @NonNull User user) {
-        return String.format("%s:%s", guild.getId(), user.getId());
+        return getMemberKey(guild, user.getId());
+    }
+
+    public static String getMemberKey(@NonNull Guild guild, @NonNull String userId) {
+        return String.format("%s:%s", guild.getId(), userId);
     }
 }
