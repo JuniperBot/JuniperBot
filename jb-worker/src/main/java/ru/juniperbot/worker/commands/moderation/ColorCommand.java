@@ -45,7 +45,6 @@ public class ColorCommand extends MentionableModeratorCommand {
 
     @Override
     protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
-
         boolean moderator = moderationService.isModerator(event.getMember());
         Member member = moderator ? reference.getMember() : event.getMember();
         if (member == null) {
