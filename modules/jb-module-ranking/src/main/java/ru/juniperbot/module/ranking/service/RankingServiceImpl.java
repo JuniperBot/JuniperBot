@@ -241,12 +241,30 @@ public class RankingServiceImpl implements RankingService {
         return ranking;
     }
 
+    private Ranking getRanking(LocalMember member) {
+        Ranking ranking = configService.getRanking(member);
+        if (ranking == null) {
+            ranking = new Ranking();
+            ranking.setMember(member);
+            rankingRepository.save(ranking);
+        }
+        return ranking;
+    }
+
     @Override
     @Transactional
     public RankingInfo getRankingInfo(Member member) {
         Ranking ranking = getRanking(member);
         RankingInfo rankingInfo = RankingUtils.calculateInfo(ranking);
         rankingInfo.setRank(rankingRepository.getRank(member.getGuild().getIdLong(), rankingInfo.getTotalExp()));
+        return rankingInfo;
+    }
+
+    @Override
+    public RankingInfo getRankingInfo(LocalMember member) {
+        Ranking ranking = getRanking(member);
+        RankingInfo rankingInfo = RankingUtils.calculateInfo(ranking);
+        rankingInfo.setRank(rankingRepository.getRank(member.getGuildId(), rankingInfo.getTotalExp()));
         return rankingInfo;
     }
 

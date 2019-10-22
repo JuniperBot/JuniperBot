@@ -23,6 +23,8 @@ public interface UserService {
 
     LocalUser get(User user);
 
+    LocalUser getById(String userId);
+
     LocalUser save(LocalUser user);
 
     boolean isApplicable(User user);

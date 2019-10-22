@@ -25,7 +25,7 @@ import ru.juniperbot.common.model.exception.DiscordException;
 
 public interface Command {
 
-    boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) throws DiscordException;
+    boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException;
 
     boolean isAvailable(User user, Member member, Guild guild);
 

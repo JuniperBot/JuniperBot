@@ -18,10 +18,7 @@ package ru.juniperbot.worker.commands.info;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,14 +29,16 @@ import org.joda.time.format.DateTimeFormatter;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.persistence.entity.MemberBio;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
 import ru.juniperbot.common.service.RankingConfigService;
-import ru.juniperbot.common.service.UserService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 import ru.juniperbot.module.ranking.commands.RankCommand;
 import ru.juniperbot.module.ranking.service.RankingService;
@@ -51,7 +50,7 @@ import java.util.Objects;
         description = "discord.command.user.desc",
         group = "discord.command.group.info",
         priority = 5)
-public class UserInfoCommand extends AbstractInfoCommand {
+public class UserInfoCommand extends MentionableCommand {
 
     @Autowired
     private RankingConfigService rankingConfigService;
@@ -65,71 +64,78 @@ public class UserInfoCommand extends AbstractInfoCommand {
     @Autowired
     private MemberBioRepository bioRepository;
 
-    @Autowired
-    private UserService userService;
+    public UserInfoCommand() {
+        super(true);
+    }
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
         DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
-        User author = message.getAuthor();
-        User user = author;
-        if (!message.getMessage().getMentionedUsers().isEmpty()) {
-            user = message.getMessage().getMentionedUsers().get(0);
+
+        if (reference.getLocalMember() == null) {
+            return fail(event);
         }
-        if (!message.getGuild().isMember(user)) {
-            return fail(message);
-        }
-        Member member = message.getGuild().getMember(user);
+
+        LocalMember localMember = reference.getLocalMember();
+        LocalUser localUser = reference.getLocalUser();
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(messageService.getMessage("discord.command.user.title", member.getEffectiveName()));
-        builder.setThumbnail(user.getEffectiveAvatarUrl());
-        builder.setFooter(messageService.getMessage("discord.command.info.identifier", user.getId()), null);
+        builder.setTitle(messageService.getMessage("discord.command.user.title", localMember.getEffectiveName()));
+        builder.setThumbnail(localUser.getAvatarUrl());
+        builder.setFooter(messageService.getMessage("discord.command.info.identifier", reference.getId()), null);
 
         StringBuilder commonBuilder = new StringBuilder();
-        getName(commonBuilder, user, member);
+        getName(commonBuilder, localUser, localMember);
 
-        getOnlineStatus(commonBuilder, member);
-        if (CollectionUtils.isNotEmpty(member.getActivities())) {
-            getActivities(commonBuilder, member);
-        }
-        if (member.getOnlineStatus() == OnlineStatus.OFFLINE || member.getOnlineStatus() == OnlineStatus.INVISIBLE) {
-            LocalUser localUser = userService.get(user);
-            if (localUser != null && localUser.getLastOnline() != null) {
-                getLastOnlineAt(commonBuilder, localUser, formatter);
+        if (reference.getMember() != null) {
+            Member member = reference.getMember();
+            getOnlineStatus(commonBuilder, member);
+            if (CollectionUtils.isNotEmpty(member.getActivities())) {
+                getActivities(commonBuilder, member);
             }
+            if (member.getOnlineStatus() == OnlineStatus.OFFLINE || member.getOnlineStatus() == OnlineStatus.INVISIBLE) {
+                if (localUser.getLastOnline() != null) {
+                    getLastOnlineAt(commonBuilder, localUser, formatter);
+                }
+            }
+            getJoinedAt(commonBuilder, member, formatter);
+            getCreatedAt(commonBuilder, member.getUser(), formatter);
         }
-        getJoinedAt(commonBuilder, member, formatter);
-        getCreatedAt(commonBuilder, user, formatter);
 
         builder.addField(messageService.getMessage("discord.command.user.common"), commonBuilder.toString(), false);
 
-        if (!user.isBot()) {
-            if (rankingConfigService.isEnabled(member.getGuild().getIdLong())) {
-                RankingInfo info = rankingService.getRankingInfo(member);
-                rankCommand.addFields(builder, info, member.getGuild());
-            }
-            MemberBio memberBio = bioRepository.findByGuildIdAndUserId(member.getGuild().getIdLong(), user.getId());
-            String bio = memberBio != null ? memberBio.getBio() : null;
-            if (StringUtils.isEmpty(bio)
-                    && Objects.equals(author, user)
-                    && !commandsService.isRestricted(BioCommand.KEY, message.getChannel(), message.getMember())) {
-                String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
-                        context.getCommandLocale());
-                bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
-                        bioCommand);
-            }
-            if (StringUtils.isNotEmpty(bio)) {
-                builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
-            }
+        Guild guild = event.getGuild();
+
+        if (rankingConfigService.isEnabled(guild.getIdLong())) {
+            RankingInfo info = rankingService.getRankingInfo(localMember);
+            rankCommand.addFields(builder, info, guild);
         }
-        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+
+        MemberBio memberBio = bioRepository.findByGuildIdAndUserId(guild.getIdLong(), reference.getId());
+        String bio = memberBio != null ? memberBio.getBio() : null;
+        if (StringUtils.isEmpty(bio)
+                && Objects.equals(event.getAuthor(), reference.getUser())
+                && !commandsService.isRestricted(BioCommand.KEY, event.getChannel(), event.getMember())) {
+            String bioCommand = messageService.getMessageByLocale("discord.command.bio.key",
+                    context.getCommandLocale());
+            bio = messageService.getMessage("discord.command.user.bio.none", context.getConfig().getPrefix(),
+                    bioCommand);
+        }
+        if (StringUtils.isNotEmpty(bio)) {
+            builder.setDescription(CommonUtils.trimTo(bio, MessageEmbed.TEXT_MAX_LENGTH));
+        }
+        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
         return true;
     }
 
-    private StringBuilder getName(StringBuilder commonBuilder, User user, Member member) {
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        fail(event);
+    }
+
+    private StringBuilder getName(StringBuilder commonBuilder, LocalUser user, LocalMember member) {
         String userName = DiscordUtils.formatUser(user);
         if (!Objects.equals(user.getName(), member.getEffectiveName())) {
             userName += String.format(" (%s)", member.getEffectiveName());

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -188,6 +189,10 @@ public final class DiscordUtils {
     }
 
     public static String formatUser(User user) {
+        return String.format("%s#%s", user.getName(), user.getDiscriminator());
+    }
+
+    public static String formatUser(LocalUser user) {
         return String.format("%s#%s", user.getName(), user.getDiscriminator());
     }
 

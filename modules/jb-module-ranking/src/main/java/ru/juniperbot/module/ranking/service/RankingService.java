@@ -19,6 +19,7 @@ package ru.juniperbot.module.ranking.service;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 
 public interface RankingService {
 
@@ -33,4 +34,6 @@ public interface RankingService {
     void updateRewards(Member member);
 
     RankingInfo getRankingInfo(Member member);
+
+    RankingInfo getRankingInfo(LocalMember member);
 }

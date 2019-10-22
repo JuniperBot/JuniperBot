@@ -38,6 +38,8 @@ public interface DiscordService {
 
     User getUserById(long userId);
 
+    User getUserById(String userId);
+
     TextChannel getTextChannelById(long channelId);
 
     TextChannel getTextChannelById(String channelId);
