@@ -21,6 +21,8 @@ public class MemberReference {
 
     private LocalUser localUser;
 
+    private boolean authorSelected;
+
     public String getEffectiveName() {
         if (member != null) {
             return member.getEffectiveName();

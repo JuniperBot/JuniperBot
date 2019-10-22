@@ -41,7 +41,7 @@ public class BanCommand extends MentionableModeratorCommand {
 
     private final static Pattern BAN_PATTERN = Pattern.compile("([0-9]*)\\s*(.*)");
 
-    protected BanCommand() {
+    public BanCommand() {
         super(false, false);
     }
 

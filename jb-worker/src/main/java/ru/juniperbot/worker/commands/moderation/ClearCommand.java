@@ -30,6 +30,7 @@ import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
 
 import java.util.List;
@@ -50,7 +51,7 @@ import java.util.stream.Stream;
                 Permission.MESSAGE_HISTORY
         }
 )
-public class ClearCommand extends ModeratorCommandAsync {
+public class ClearCommand extends MentionableModeratorCommand {
 
     private static final int MAX_MESSAGES = 1000;
 
@@ -59,30 +60,32 @@ public class ClearCommand extends ModeratorCommandAsync {
     @Autowired
     private ActionsHolderService actionsHolderService;
 
+    public ClearCommand() {
+        super(true, false);
+    }
+
     @Override
-    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
-        TextChannel channel = event.getChannel();
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
+        Member member = reference.getMember();
 
-        int number = getCount(query);
-        Member mentioned = getMentioned(event);
+        boolean includeInvocation = reference.isAuthorSelected() || (member != null && member.equals(event.getMember()));
+        int number = getCount(query) + (includeInvocation ? 1 : 0);
 
-        boolean includeInvocation = mentioned == null || mentioned.equals(event.getMember());
-        if (includeInvocation) {
-            number = number + 1; // delete command invocation too
-        }
-        final int finalNumber = number;
+        String userId = reference.isAuthorSelected() ? null : reference.getId();
 
         DateTime limit = new DateTime()
                 .minusWeeks(2)
                 .minusHours(1);
 
+        TextChannel channel = event.getChannel();
         channel.sendTyping().queue(r -> channel.getIterableHistory()
-                .takeAsync(finalNumber)
+                .takeAsync(number)
                 .thenApplyAsync(e -> {
                     Stream<Message> stream = e.stream()
                             .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
-                    if (mentioned != null) {
-                        stream = stream.filter(m -> Objects.equals(m.getMember(), mentioned));
+                    if (StringUtils.isNotEmpty(userId)) {
+                        stream = stream.filter(m -> m.getMember() != null
+                                && Objects.equals(m.getMember().getUser().getId(), userId));
                     }
                     List<Message> messageList = stream.collect(Collectors.toList());
                     messageList.forEach(actionsHolderService::markAsDeleted);
@@ -104,6 +107,7 @@ public class ClearCommand extends ModeratorCommandAsync {
                     String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
                     messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", finalCount, pluralMessages);
                 })));
+        return true;
     }
 
     private int getCount(String queue) throws DiscordException {

@@ -32,7 +32,7 @@ import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequ
         priority = 20)
 public class KickCommand extends MentionableModeratorCommand {
 
-    protected KickCommand() {
+    public KickCommand() {
         super(false, true);
     }
 

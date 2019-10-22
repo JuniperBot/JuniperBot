@@ -13,6 +13,7 @@
    - `аватар/avatar`
    - `бан/ban`
    - `кик/kick`
+   - `очистить/clear`
  - Some small fixes and improvements.
 
 ## Version 7.2

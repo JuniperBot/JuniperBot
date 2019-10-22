@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.service.UserService;
 import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 public abstract class MentionableCommand extends AbstractCommand {
 
-    private static final Pattern MESSAGE_PATTERN = Pattern.compile("^(<@!?([0-9]*)>|([0-9]*))(.*)");
+    private static final Pattern MESSAGE_PATTERN = Pattern.compile("^(<@!?([0-9]{17,20})>|([0-9]{17,20})|)(.*)");
 
     private boolean authorAllowed;
 
@@ -51,7 +52,7 @@ public abstract class MentionableCommand extends AbstractCommand {
     protected DiscordEntityAccessor entityAccessor;
 
     @Override
-    public final boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String content) {
+    public final boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException {
         if (!authorAllowed && StringUtils.isEmpty(content)) {
             showHelp(event, context);
             return false;
@@ -76,6 +77,7 @@ public abstract class MentionableCommand extends AbstractCommand {
             id = event.getAuthor().getId();
             reference.setUser(event.getAuthor());
             reference.setMember(event.getMember());
+            reference.setAuthorSelected(true);
         } else {
             reference.setUser(discordService.getUserById(id));
             reference.setMember(event.getGuild().getMemberById(id));
@@ -100,7 +102,7 @@ public abstract class MentionableCommand extends AbstractCommand {
         return doCommand(reference, event, context, content);
     }
 
-    protected abstract boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content);
+    protected abstract boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException;
 
     protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
         fail(event);
