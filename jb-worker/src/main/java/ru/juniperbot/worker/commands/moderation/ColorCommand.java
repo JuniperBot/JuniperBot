@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,21 +35,21 @@ import java.util.regex.Pattern;
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES},
         priority = 5)
-public class ColorCommand extends ModeratorCommandAsync {
+public class ColorCommand extends MentionableModeratorCommand {
 
     private static final Pattern COLOR_PATTERN = Pattern.compile("([0-9a-fA-F]{6})$");
 
-    @Override
-    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member self = event.getGuild().getSelfMember();
-        Member member = event.getMember();
+    protected ColorCommand() {
+        super(true, true);
+    }
 
-        boolean moderator = moderationService.isModerator(member);
-        if (moderator) {
-            Member mentioned = getMentioned(event);
-            if (mentioned != null) {
-                member = mentioned;
-            }
+    @Override
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+
+        boolean moderator = moderationService.isModerator(event.getMember());
+        Member member = moderator ? reference.getMember() : event.getMember();
+        if (member == null) {
+            return fail(event);
         }
 
         String removeKeyWord = messageService.getMessage("discord.command.mod.color.remove");
@@ -58,7 +59,7 @@ public class ColorCommand extends ModeratorCommandAsync {
             } else {
                 fail(event);
             }
-            return;
+            return false;
         }
 
         Matcher matcher = COLOR_PATTERN.matcher(query);
@@ -72,20 +73,22 @@ public class ColorCommand extends ModeratorCommandAsync {
                         context.getConfig().getPrefix(), colorCommand);
             }
             messageService.onEmbedMessage(event.getChannel(), message);
-            return;
+            return false;
         }
 
+        Member self = event.getGuild().getSelfMember();
         Role conflicting = member.getRoles().stream()
                 .filter(e -> e.getColor() != null && !self.canInteract(e))
                 .findAny().orElse(null);
         if (conflicting != null) {
             messageService.onError(event.getChannel(), null, "discord.command.mod.color.conflict", conflicting.getName());
-            return;
+            return false;
         }
 
         if (moderationService.setColor(member, matcher.group(1))) {
             ok(event);
         }
+        return true;
     }
 
     @Override
