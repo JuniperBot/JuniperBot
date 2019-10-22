@@ -16,6 +16,7 @@
  */
 package ru.juniperbot.worker.commands.support;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -25,61 +26,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.service.GulagService;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
-import ru.juniperbot.common.worker.command.model.SupportCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
+import ru.juniperbot.common.worker.shared.service.SupportService;
 
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @DiscordCommand(key = "discord.command.gulag.key",
         description = "discord.command.gulag.desc",
         group = "discord.command.group.utility",
         hidden = true,
         priority = 0)
-public class GulagCommand extends SupportCommand {
+public class GulagCommand extends MentionableCommand {
 
-    private static final Pattern PATTERN = Pattern.compile("^([0-9]+)\\s+(.+)$");
+    @Autowired
+    protected SupportService supportService;
 
     @Autowired
     private GulagService gulagService;
 
+    public GulagCommand() {
+        super(false, false);
+    }
+
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String content) {
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content) {
         TextChannel channel = event.getChannel();
-        Long showflake = null;
-        String reason = null;
-        User targetUser = null;
-        Member targetMember = getMentioned(event);
-        if (targetMember != null) {
-            showflake = targetMember.getIdLong();
-            targetUser = targetMember.getUser();
-            reason = removeMention(content);
-        } else {
-            Matcher matcher = PATTERN.matcher(content);
-            if (matcher.find()) {
-                showflake = Long.valueOf(matcher.group(1));
-                targetUser = discordService.getUserById(showflake);
-                targetMember = event.getGuild().getMemberById(showflake);
-                reason = matcher.group(2);
-            }
-        }
-        if (showflake == null || StringUtils.isBlank(reason)) {
-            return showHelp(channel, context);
+
+        if (StringUtils.isBlank(content)) {
+            showHelp(event, context);
+            return false;
         }
 
+        Member targetMember = reference.getMember();
         if (targetMember != null && supportService.isModerator(targetMember)) {
             return fail(event);
         }
 
+        User targetUser = reference.getUser();
         if (targetUser != null && discordService.isSuperUser(targetUser)) {
             return fail(event);
         }
 
-        String targetName = targetUser != null
-                ? String.format("%s#%s (%s)", targetUser.getName(), targetUser.getDiscriminator(), showflake)
-                : String.valueOf(showflake);
+        String id = reference.getId();
 
-        boolean success = gulagService.send(event.getMember(), showflake, reason);
+        String targetName = targetUser != null
+                ? String.format("%s#%s (%s)", targetUser.getName(), targetUser.getDiscriminator(), id)
+                : id;
+
+        boolean success = gulagService.send(event.getMember(), Long.valueOf(reference.getId()), content);
         if (!success) {
             messageService.onEmbedMessage(channel, "discord.command.gulag.exists", targetName);
             return false;
@@ -88,26 +83,32 @@ public class GulagCommand extends SupportCommand {
         messageService.onEmbedMessage(channel, "discord.command.gulag.success", targetName);
 
         if (targetMember != null) {
-            targetMember.ban(1, reason).queueAfter(30, TimeUnit.SECONDS);
+            targetMember.ban(1, content).queueAfter(30, TimeUnit.SECONDS);
         } else if (targetUser != null) {
-            event.getGuild().ban(targetUser, 1, reason).queue();
+            event.getGuild().ban(targetUser, 1, content).queue();
         }
 
-        final User finalUser = targetUser;
-        if (finalUser != null) {
+        if (targetUser != null) {
             discordService.getShardManager().getGuildCache()
                     .stream()
-                    .filter(e -> e.getOwner() != null && finalUser.equals(e.getOwner().getUser()))
+                    .filter(e -> e.getOwner() != null && targetUser.equals(e.getOwner().getUser()))
                     .forEach(e -> e.leave().queue());
         }
         return true;
     }
 
-    private boolean showHelp(TextChannel channel, BotContext context) {
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return member != null && guild != null
+                && guild.equals(supportService.getSupportGuild())
+                && supportService.isModerator(member);
+    }
+
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
         String command = messageService.getMessageByLocale("discord.command.gulag.key",
                 context.getCommandLocale());
-        messageService.onEmbedMessage(channel, "discord.command.gulag.help",
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.gulag.help",
                 context.getConfig().getPrefix(), command);
-        return false;
     }
 }
