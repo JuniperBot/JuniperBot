@@ -17,6 +17,7 @@
 package ru.juniperbot.worker.commands.info;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -28,11 +29,14 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.persistence.entity.MemberBio;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
 import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.service.UserService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
@@ -56,6 +60,9 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
     @Autowired
     private MemberBioRepository bioRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
@@ -83,6 +90,12 @@ public class UserInfoCommand extends AbstractInfoCommand {
         getOnlineStatus(commonBuilder, member);
         if (CollectionUtils.isNotEmpty(member.getActivities())) {
             getActivities(commonBuilder, member);
+        }
+        if (member.getOnlineStatus() == OnlineStatus.OFFLINE || member.getOnlineStatus() == OnlineStatus.INVISIBLE) {
+            LocalUser localUser = userService.get(user);
+            if (localUser != null && localUser.getLastOnline() != null) {
+                getLastOnlineAt(commonBuilder, localUser, formatter);
+            }
         }
         getJoinedAt(commonBuilder, member, formatter);
         getCreatedAt(commonBuilder, user, formatter);
@@ -128,6 +141,13 @@ public class UserInfoCommand extends AbstractInfoCommand {
 
     private StringBuilder getJoinedAt(StringBuilder commonBuilder, Member member, DateTimeFormatter formatter) {
         return appendEntry(commonBuilder, "discord.command.user.joinedAt", member.getTimeJoined().toEpochSecond(), formatter);
+    }
+
+    private StringBuilder getLastOnlineAt(StringBuilder commonBuilder, LocalUser user, DateTimeFormatter formatter) {
+        String lastOnlineString = new PrettyTime(contextService.getLocale()).format(user.getLastOnline());
+        String dateTime = formatter.print(new DateTime(user.getLastOnline()));
+        return appendEntry(commonBuilder, "discord.command.user.lastOnlineAt",
+                String.format("%s (%s)", dateTime, lastOnlineString));
     }
 
     private StringBuilder getOnlineStatus(StringBuilder commonBuilder, Member member) {

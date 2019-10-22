@@ -40,4 +40,10 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="7.3-13092019-2" author="caramel">
+        <addColumn tableName="user">
+            <column name="last_online_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

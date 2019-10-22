@@ -99,10 +99,9 @@ public class RankCommand extends RankingCommand {
             builder.addField(messageService.getMessage("discord.command.rank.info.cookies.title"),
                     String.format("%d \uD83C\uDF6A", info.getCookies()), true);
         }
-        builder.addField(messageService.getMessage("discord.command.rank.info.voiceActivity.title"),
-                CommonUtils.formatDuration(info.getVoiceActivity()), true);
-        if (config.isCookieEnabled()) {
-            builder.addBlankField(true);
+        if (info.getVoiceActivity() > 0) {
+            builder.addField(messageService.getMessage("discord.command.rank.info.voiceActivity.title"),
+                    CommonUtils.formatDuration(info.getVoiceActivity()), true);
         }
     }
 }

@@ -1,5 +1,9 @@
 # JuniperBot Changelog:
 
+## Version 7.3
+ - Command `юзер/user` now contains last online date;
+ - Some small fixes and improvements.
+
 ## Version 7.2
  - Fix broken SoundCloud playback;
  - Some small fixes and improvements.
