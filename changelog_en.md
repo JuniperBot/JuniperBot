@@ -2,7 +2,8 @@
 
 ## Version 7.3
  - Command `юзер/user` now contains last online date;
- - Added new message template variables:
+ - **[web]** Message templates in panel mode now supports message outside of panel;
+ - **[web]** Added new message template variables:
    - `{server.owner}`
    - `{member.level}`
    - `{member.voiceTime}`

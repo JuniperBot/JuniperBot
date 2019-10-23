@@ -46,4 +46,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7.3-13092019-3" author="caramel">
+        <addColumn tableName="message_template">
+            <column name="embed_content" type="TEXT"/>
+        </addColumn>
+        <sql>UPDATE message_template SET embed_content = content, content = '' WHERE type = 'EMBED';</sql>
+    </changeSet>
+
 </databaseChangeLog>

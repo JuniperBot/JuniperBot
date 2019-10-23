@@ -69,19 +69,18 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
     public Message compile(@NonNull MessageTemplateCompiler compiler) {
         try {
-            String content = getContent(compiler);
 
             MessageTemplatePlaceholderResolver resolver = getPropertyResolver(compiler);
+            String content = processContent(getContent(compiler), resolver, compiler, Message.MAX_CONTENT_LENGTH, false);
+            MessageBuilder messageBuilder = new MessageBuilder();
+            messageBuilder.setContent(content);
+            if (compiler.getTemplate() != null) {
+                messageBuilder.setTTS(compiler.getTemplate().isTts());
+            }
 
             if (compiler.getTemplate() == null || compiler.getTemplate().getType() == MessageTemplateType.TEXT) {
-                content = processContent(content, resolver, compiler, Message.MAX_CONTENT_LENGTH, false);
                 if (StringUtils.isBlank(content)) {
                     return null;
-                }
-                MessageBuilder messageBuilder = new MessageBuilder();
-                messageBuilder.setContent(content);
-                if (compiler.getTemplate() != null) {
-                    messageBuilder.setTTS(compiler.getTemplate().isTts());
                 }
                 return messageBuilder.build();
             }
@@ -89,7 +88,7 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
             MessageTemplate template = compiler.getTemplate();
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setDescription(processContent(content, resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false));
+            embedBuilder.setDescription(processContent(getEmbedContent(compiler), resolver, compiler, MessageEmbed.TEXT_MAX_LENGTH, false));
             embedBuilder.setThumbnail(processUrl(template.getThumbnailUrl(), resolver, compiler));
             embedBuilder.setImage(processUrl(template.getImageUrl(), resolver, compiler));
             if (StringUtils.isNotEmpty(template.getColor())) {
@@ -136,10 +135,9 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
                 }
             }
 
-            if (embedBuilder.isEmpty()) {
+            if (messageBuilder.isEmpty() && embedBuilder.isEmpty()) {
                 return null;
             }
-            MessageBuilder messageBuilder = new MessageBuilder();
             messageBuilder.setEmbed(embedBuilder.build());
             return messageBuilder.build();
         } catch (IllegalArgumentException e) {
@@ -220,6 +218,36 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         if (StringUtils.isNotEmpty(content)) {
             return content;
         }
+
+        if (template != null && template.getType() == MessageTemplateType.EMBED) {
+            // do not return fallback content for embed
+            return null;
+        }
+
+        if (StringUtils.isEmpty(compiler.getFallbackContent())) {
+            return null;
+        }
+
+        if (compiler.getGuild() != null) {
+            return contextService.withContext(compiler.getGuild(),
+                    () -> messageService.getMessage(compiler.getFallbackContent()));
+        }
+        return messageService.getMessage(compiler.getFallbackContent());
+    }
+
+    private String getEmbedContent(@NonNull MessageTemplateCompiler compiler) {
+        MessageTemplate template = compiler.getTemplate();
+        String content = template != null ? template.getContent() : null;
+        String embedContent = template != null ? template.getEmbedContent() : null;
+        if (StringUtils.isNotEmpty(embedContent)) {
+            return embedContent;
+        }
+
+        if (StringUtils.isNotEmpty(content)) {
+            // in case we have something in our content, do not fallback to default content
+            return null;
+        }
+
         if (StringUtils.isEmpty(compiler.getFallbackContent())) {
             return null;
         }
