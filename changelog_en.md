@@ -3,6 +3,7 @@
 ## Version 7.3
  - Command `юзер/user` now contains last online date;
  - **[web]** Message templates in panel mode now supports message outside of panel;
+ - **[web]** Alias custom command now ignores the prefix in its content;
  - **[web]** Added new message template variables:
    - `{server.owner}`
    - `{member.level}`
