@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateOwnerEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.entity.Gulag;
@@ -107,6 +108,17 @@ public class GuildListener extends DiscordEventListener {
         configService.save(config);
         contextService.initContext(event.getGuild()); // reinit context with updated locale
         sendWelcome(channel, event);
+    }
+
+    @Override
+    public void onGuildUpdateOwner(GuildUpdateOwnerEvent event) {
+        if (event.getNewOwner() == null) {
+            return;
+        }
+        Gulag gulag = gulagService.getGulag(event.getNewOwner().getUser());
+        if (gulag != null) {
+            event.getGuild().leave().queue();
+        }
     }
 
     @Override
