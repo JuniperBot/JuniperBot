@@ -14,6 +14,8 @@
  */
 package ru.juniperbot.worker.listeners;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -50,6 +52,7 @@ import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
 import javax.annotation.Nonnull;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,11 @@ public class MemberListener extends DiscordEventListener {
 
     @Autowired
     private ActionsHolderService actionsHolderService;
+
+    private final Cache<String, OnlineStatus> statusCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(7)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build();
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
@@ -222,10 +230,16 @@ public class MemberListener extends DiscordEventListener {
             return;
         }
 
-        contextService.inTransaction(() -> {
-            LocalUser user = entityAccessor.getOrCreate(event.getUser());
-            user.setLastOnline(new Date());
-            userService.save(user);
-        });
+        try {
+            // this event is executed multiple times for each mutual guild, we want this only once at least per minute
+            statusCache.get(event.getUser().getId(), () -> {
+                LocalUser user = entityAccessor.getOrCreate(event.getUser());
+                user.setLastOnline(new Date());
+                userService.save(user);
+                return newStatus;
+            });
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

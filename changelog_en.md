@@ -22,6 +22,7 @@
    - `очистить/clear`
    - `цвет/color`
  - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`
+ - Updated status icons for `юзер/user` and platform icons for `steam` commands
  - Some small fixes and improvements.
 
 ## Version 7.2

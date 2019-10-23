@@ -150,6 +150,10 @@ public class UserInfoCommand extends MentionableCommand {
     }
 
     private StringBuilder getOnlineStatus(StringBuilder commonBuilder, Member member) {
+        if (member.getActivities().stream().anyMatch(e -> e.getType() == Activity.ActivityType.STREAMING)) {
+            return appendEntry(commonBuilder, "discord.command.user.status",
+                    messageService.getMessage("discord.command.user.status.streaming"));
+        }
         return appendEntry(commonBuilder, "discord.command.user.status",
                 messageService.getEnumTitle(member.getOnlineStatus()));
     }
@@ -158,10 +162,11 @@ public class UserInfoCommand extends MentionableCommand {
         Iterator<Activity> iterable = member.getActivities().iterator();
         while (iterable.hasNext()) {
             Activity activity = iterable.next();
-            appendEntry(commonBuilder, activity.getType(), activity.getName());
-            if (iterable.hasNext()) {
-                commonBuilder.append("\n");
+            String activityText = activity.getName();
+            if (activity.getUrl() != null) {
+                activityText = CommonUtils.makeLink(activityText, activity.getUrl());
             }
+            appendEntry(commonBuilder, activity.getType(), activityText);
         }
         return commonBuilder;
     }
