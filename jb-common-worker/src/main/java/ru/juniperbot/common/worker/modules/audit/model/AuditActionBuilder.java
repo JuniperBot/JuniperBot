@@ -29,11 +29,14 @@ import ru.juniperbot.common.persistence.entity.base.NamedReference;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AuditActionBuilder {
 
     @Getter(AccessLevel.NONE)
     protected final AuditAction action;
+
+    protected Map<String, byte[]> attachments = new HashMap<>();
 
     protected AuditActionBuilder(long guildId, AuditActionType actionType) {
         this.action = new AuditAction(guildId);
@@ -89,6 +92,11 @@ public abstract class AuditActionBuilder {
 
     public AuditActionBuilder withAttribute(String key, Object value) {
         this.action.getAttributes().put(key, value);
+        return this;
+    }
+
+    public AuditActionBuilder withAttachment(String key, byte[] data) {
+        this.attachments.put(key, data);
         return this;
     }
 

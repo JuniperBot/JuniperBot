@@ -58,8 +58,7 @@ public class AuditServiceImpl
     private Map<AuditActionType, AuditForwardProvider> forwardProviders;
 
     @Override
-    @Transactional
-    public AuditAction save(AuditAction action) {
+    public AuditAction save(AuditAction action, Map<String, byte[]> attachments) {
         AuditConfig config = configService.getByGuildId(action.getGuildId());
         if (config != null && config.isEnabled()) {
             if (featureSetService.isAvailable(action.getGuildId())) {
@@ -68,7 +67,7 @@ public class AuditServiceImpl
             if (MapUtils.isNotEmpty(forwardProviders)) {
                 AuditForwardProvider forwardProvider = forwardProviders.get(action.getActionType());
                 if (forwardProvider != null) {
-                    forwardProvider.send(config, action);
+                    forwardProvider.send(config, action, attachments);
                 }
             }
         }
@@ -95,7 +94,7 @@ public class AuditServiceImpl
             @Override
             @Transactional
             public AuditAction save() {
-                return AuditServiceImpl.this.save(this.action);
+                return AuditServiceImpl.this.save(this.action, attachments);
             }
         };
     }

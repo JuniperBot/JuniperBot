@@ -22,6 +22,7 @@
    - `размьют/unmute`
    - `очистить/clear`
    - `цвет/color`
+ - **[audit]** New audit action type "Messages has been cleared" which logs usage of command `очистить/clear` as well as keeps deleted content in audit channel;
  - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`;
  - Updated status icons for `юзер/user` and platform icons for `steam` commands;
  - Duration texts for mute commands has been fixed;

@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class DiscordUtils {
 
@@ -256,5 +257,23 @@ public final class DiscordUtils {
 
     public static String getMemberKey(@NonNull Guild guild, @NonNull String userId) {
         return String.format("%s:%s", guild.getId(), userId);
+    }
+
+    public static String getContent(Message message) {
+        StringBuilder builder = new StringBuilder(message
+                .getContentStripped()
+                .replaceAll("\u0000", ""));
+        String attachmentsPart = message.getAttachments().stream()
+                .map(Message.Attachment::getUrl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(",\n"));
+        if (StringUtils.isNotEmpty(attachmentsPart)) {
+            if (builder.length() > 0) {
+                builder.append("\n");
+            }
+            builder.append("---");
+            builder.append(attachmentsPart);
+        }
+        return builder.toString();
     }
 }
