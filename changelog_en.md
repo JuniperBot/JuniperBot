@@ -8,7 +8,7 @@
    - `{member.level}`
    - `{member.voiceTime}`
    - `{member.cookies}`
- - **[Ranking]** Fixed "Ranking is not available for this member"
+ - **[Ranking]** Fixed "Ranking is not available for this member";
  - Following commands are now supporting ID as well as mention:
    - `юзер/user`
    - `аватар/avatar`
@@ -21,8 +21,9 @@
    - `размьют/unmute`
    - `очистить/clear`
    - `цвет/color`
- - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`
- - Updated status icons for `юзер/user` and platform icons for `steam` commands
+ - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`;
+ - Updated status icons for `юзер/user` and platform icons for `steam` commands;
+ - Duration texts for mute commands has been fixed;
  - Some small fixes and improvements.
 
 ## Version 7.2
