@@ -39,8 +39,17 @@ public class BonusCommand extends AbstractCommand {
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
-        if (patreonService.tryBoost(message.getAuthor().getIdLong(), message.getGuild().getIdLong())) {
-            messageService.onEmbedMessage(message.getChannel(), "discord.command.bonus.applied");
+        if ("-".equals(content)) {
+            if (patreonService.removeBoost(message.getAuthor().getIdLong(), message.getGuild().getIdLong())) {
+                messageService.onEmbedMessage(message.getChannel(), "discord.command.bonus.disabled");
+            } else {
+                messageService.onEmbedMessage(message.getChannel(), "discord.command.bonus.not-applied");
+            }
+        } else if (patreonService.tryBoost(message.getAuthor().getIdLong(), message.getGuild().getIdLong())) {
+            String bonusCommand = messageService.getMessageByLocale("discord.command.bonus.key",
+                    context.getCommandLocale());
+            messageService.onEmbedMessage(message.getChannel(), "discord.command.bonus.applied",
+                    context.getConfig().getPrefix(), bonusCommand);
         }
         return true;
     }

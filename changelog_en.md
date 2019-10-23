@@ -21,6 +21,7 @@
    - `размьют/unmute`
    - `очистить/clear`
    - `цвет/color`
+ - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`
  - Some small fixes and improvements.
 
 ## Version 7.2
