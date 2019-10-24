@@ -26,6 +26,7 @@
  - Command `бонус/bonus` now supports its disabling using minus sign: `!bonus -`;
  - Updated status icons for `юзер/user` and platform icons for `steam` commands;
  - Duration texts for mute commands has been fixed;
+ - Fixed `повтор/repeat` command;
  - Some small fixes and improvements.
 
 ## Version 7.2

@@ -37,10 +37,11 @@ public class RepeatCommand extends AudioCommand {
 
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
-        RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content);
+        RepeatMode mode = messageService.getEnumeration(RepeatMode.class, content, context.getCommandLocale());
         if (mode == null) {
             messageManager.onMessage(message.getChannel(), "discord.command.audio.repeat.help",
-                    Stream.of(RepeatMode.values()).map(messageService::getEnumTitle).collect(Collectors.joining("|")));
+                    Stream.of(RepeatMode.values()).map(e -> messageService.getEnumTitle(e, context.getCommandLocale()))
+                            .collect(Collectors.joining("|")));
             return false;
         }
         PlaybackInstance instance = playerService.get(message.getGuild());
@@ -49,6 +50,7 @@ public class RepeatCommand extends AudioCommand {
         if (instance.getCurrent() != null) {
             messageManager.updateMessage(instance.getCurrent());
         }
-        return ok(message, "discord.command.audio.repeat", messageService.getEnumTitle(mode));
+        return ok(message, "discord.command.audio.repeat", messageService.getEnumTitle(mode,
+                context.getCommandLocale()));
     }
 }

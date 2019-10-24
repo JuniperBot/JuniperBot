@@ -33,6 +33,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.configuration.CommonProperties;
+import ru.juniperbot.common.utils.LocaleUtils;
 import ru.juniperbot.common.utils.PluralUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
@@ -40,20 +41,20 @@ import ru.juniperbot.common.worker.utils.DiscordUtils;
 
 import java.awt.*;
 import java.time.Year;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private Map<Class<?>, Map<String, Enum<?>>> enumCache = new ConcurrentHashMap<>();
+    private Map</* enum class */Class<?>, Map</* locale */Locale, Map</* value */String, Enum<?>>>> enumCache = new ConcurrentHashMap<>();
 
     @Autowired
     private CommonProperties commonProperties;
@@ -203,18 +204,35 @@ public class MessageServiceImpl implements MessageService {
 
     @SuppressWarnings("unchecked")
     @Override
+    public <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title, String locale) {
+        initCache(clazz);
+        Locale targetLocale = contextService.getLocale(locale);
+        if (targetLocale == null) {
+            targetLocale = contextService.getLocale();
+        }
+        Map<String, Enum<?>> localizations = enumCache.get(clazz).get(targetLocale);
+        if (localizations == null) {
+            return null;
+        }
+        return (T) localizations.get(title.toLowerCase());
+    }
+
+    @Override
     public <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title) {
-        Map<String, Enum<?>> cache = enumCache.computeIfAbsent(clazz, e ->
-                Stream.of(clazz.getEnumConstants()).collect(Collectors.toMap(k -> getEnumTitle(k).toLowerCase(), v -> v)));
-        return (T) cache.get(title.toLowerCase());
+        return getEnumeration(clazz, title, null);
     }
 
     @Override
     public String getEnumTitle(Enum<?> value) {
+        return getEnumTitle(value, null);
+    }
+
+    @Override
+    public String getEnumTitle(Enum<?> value, String locale) {
         if (value == null) {
             return null;
         }
-        return getMessage(value.getClass().getName() + "." + value.name());
+        return getMessageByLocale(value.getClass().getName() + "." + value.name(), locale);
     }
 
     @Override
@@ -237,5 +255,19 @@ public class MessageServiceImpl implements MessageService {
             actionsHolderService.markAsDeleted(message);
             message.delete().queueAfter(delayMs, TimeUnit.MILLISECONDS);
         }
+    }
+
+    private void initCache(Class<?> clazz) {
+        enumCache.computeIfAbsent(clazz, e -> {
+            Map<Locale, Map<String, Enum<?>>> locales = new HashMap<>();
+            Stream.of(clazz.getEnumConstants()).forEach(c ->{
+                Enum<?> entry = (Enum<?>)c;
+                for (var locale : LocaleUtils.SUPPORTED_LOCALES.entrySet()) {
+                    Map<String, Enum<?>> localizations = locales.computeIfAbsent(locale.getValue(), v -> new HashMap<>());
+                    localizations.put(getEnumTitle(entry, locale.getKey()).toLowerCase(), entry);
+                }
+            });
+            return locales;
+        });
     }
 }
