@@ -260,8 +260,8 @@ public class MessageServiceImpl implements MessageService {
     private void initCache(Class<?> clazz) {
         enumCache.computeIfAbsent(clazz, e -> {
             Map<Locale, Map<String, Enum<?>>> locales = new HashMap<>();
-            Stream.of(clazz.getEnumConstants()).forEach(c ->{
-                Enum<?> entry = (Enum<?>)c;
+            Stream.of(clazz.getEnumConstants()).forEach(c -> {
+                Enum<?> entry = (Enum<?>) c;
                 for (var locale : LocaleUtils.SUPPORTED_LOCALES.entrySet()) {
                     Map<String, Enum<?>> localizations = locales.computeIfAbsent(locale.getValue(), v -> new HashMap<>());
                     localizations.put(getEnumTitle(entry, locale.getKey()).toLowerCase(), entry);
