@@ -1,6 +1,10 @@
 # JuniperBot Changelog:
 
 ## Version 7.3
+ - **[music]**
+   - SoundCloud fixes (again...);
+   - Yandex.Music track, playlists and albums playback has been implemented;
+   - Music search will now use Yandex.Music instead or YouTube;
  - Command `юзер/user` now contains last online date;
  - **[web]** Message templates in panel mode now supports message outside of panel;
  - **[web]** Alias custom command now ignores the prefix in its content;
