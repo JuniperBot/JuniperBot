@@ -24,6 +24,7 @@ import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
@@ -65,6 +66,7 @@ public class JbAudioPlayerManagerImpl extends DefaultAudioPlayerManager implemen
         registerSourceManager(new VimeoAudioSourceManager());
         registerSourceManager(new TwitchStreamAudioSourceManager());
         registerSourceManager(new BeamAudioSourceManager());
+        registerSourceManager(new YandexMusicAudioSourceManager());
         if (CollectionUtils.isNotEmpty(audioSourceManagers)) {
             audioSourceManagers.forEach(this::registerSourceManager);
         }
