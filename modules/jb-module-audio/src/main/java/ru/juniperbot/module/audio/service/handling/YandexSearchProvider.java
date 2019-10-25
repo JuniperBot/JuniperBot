@@ -21,14 +21,20 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.module.audio.service.AudioSearchProvider;
 
 import javax.annotation.PostConstruct;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Map;
 
 import static ru.juniperbot.common.utils.CommonUtils.HTTP_TIMEOUT_DURATION;
@@ -40,22 +46,23 @@ public class YandexSearchProvider implements AudioSearchProvider {
     private static final String BASE_URI = "https://api.music.yandex.net/";
     private static final String TRACK_URL_FORMAT = "https://music.yandex.ru/album/%s/track/%s";
 
+    @Autowired
+    private WorkerProperties workerProperties;
+
     private RestTemplate restTemplate;
 
     @PostConstruct
     private void init() {
-        this.restTemplate = new RestTemplateBuilder()
-                .rootUri(BASE_URI)
-                .setConnectTimeout(HTTP_TIMEOUT_DURATION)
-                .setReadTimeout(HTTP_TIMEOUT_DURATION)
-                .uriTemplateHandler(new DefaultUriBuilderFactory(BASE_URI))
-                .additionalInterceptors((request, body, execution) -> {
-                    HttpHeaders headers = request.getHeaders();
-                    headers.add("User-Agent", "Yandex-Music-API");
-                    headers.add("X-Yandex-Music-Client", "WindowsPhone/3.20");
-                    return execution.execute(request, body);
-                })
-                .build();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout((int) HTTP_TIMEOUT_DURATION.toMillis());
+        requestFactory.setReadTimeout((int) HTTP_TIMEOUT_DURATION.toMillis());
+
+        var yandexProxy = workerProperties.getAudio().getYandexProxy();
+        if (StringUtils.isNotEmpty(yandexProxy.getHost())) {
+            requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(yandexProxy.getHost(), yandexProxy.getPort())));
+        }
+
+        this.restTemplate = new RestTemplate(requestFactory);
     }
 
     @Override
@@ -65,7 +72,19 @@ public class YandexSearchProvider implements AudioSearchProvider {
         }
         String response = null;
         try {
-            response = restTemplate.getForObject("search?type=track&page=0&text={text}", String.class, Map.of("text", value));
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            headers.add("User-Agent", "Yandex-Music-API");
+            headers.add("X-Yandex-Music-Client", "WindowsPhone/3.20");
+
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    BASE_URI+ "search?type=track&page=0&text={text}",
+                    HttpMethod.GET, entity, String.class, Map.of("text", value));
+            if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+                return null;
+            }
+
+            response = responseEntity.getBody();
             if (response == null) {
                 return null;
             }
