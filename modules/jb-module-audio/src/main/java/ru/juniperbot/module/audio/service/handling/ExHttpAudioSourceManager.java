@@ -23,6 +23,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.juniperbot.common.persistence.entity.HttpWhitelist;
 import ru.juniperbot.common.persistence.repository.HttpWhitelistRepository;
@@ -33,6 +34,7 @@ import java.net.URISyntaxException;
 import java.util.Set;
 
 @Component
+@Order(10)
 public class ExHttpAudioSourceManager extends HttpAudioSourceManager {
 
     @Autowired
