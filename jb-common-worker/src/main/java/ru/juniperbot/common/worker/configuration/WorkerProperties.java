@@ -100,6 +100,7 @@ public class WorkerProperties {
     public static class Audio {
 
         private String resamplingQuality = "MEDIUM";
+        private String searchProvider = "youTube";
         private int frameBufferDuration = 2000;
         private int itemLoaderThreadPoolSize = 500;
         private int panelRefreshInterval = 5000;

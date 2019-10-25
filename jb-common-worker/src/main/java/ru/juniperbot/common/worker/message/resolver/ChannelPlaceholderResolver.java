@@ -19,31 +19,34 @@ package ru.juniperbot.common.worker.message.resolver;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.springframework.context.ApplicationContext;
-import ru.juniperbot.common.worker.message.resolver.node.FunctionalNodePlaceholderResolver;
+import ru.juniperbot.common.worker.message.resolver.node.AccessorsNodePlaceholderResolver;
 import ru.juniperbot.common.worker.message.resolver.node.SingletonNodePlaceholderResolver;
-import ru.juniperbot.common.worker.shared.support.TriFunction;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class ChannelPlaceholderResolver extends FunctionalNodePlaceholderResolver<TextChannel> {
-
-    private final static Map<String, TriFunction<TextChannel, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
-            "id", (t, l, c) -> t.getId(),
-            "name", (t, l, c) -> t.getName(),
-            "mention", (t, l, c) -> t.getAsMention(),
-            "topic", (t, l, c) -> t.getTopic() != null ? t.getTopic() : "",
-            "position", (t, l, c) -> t.getPosition() + 1,
-            "createdAt", (t, l, c) -> DateTimePlaceholderResolver.of(t.getTimeCreated(), l, t.getGuild(), c)
-    );
+public class ChannelPlaceholderResolver extends AccessorsNodePlaceholderResolver<TextChannel> {
 
     private final TextChannel channel;
 
     public ChannelPlaceholderResolver(@NonNull TextChannel channel,
                                       @NonNull Locale locale,
                                       @NonNull ApplicationContext applicationContext) {
-        super(ACCESSORS, locale, applicationContext);
+        super(locale, applicationContext);
         this.channel = channel;
+    }
+
+    @Override
+    protected Map<String, Supplier<?>> createAccessors() {
+        return Map.of(
+                "id", channel::getId,
+                "name", channel::getName,
+                "mention", channel::getAsMention,
+                "topic", () -> channel.getTopic() != null ? channel.getTopic() : "",
+                "position", () -> channel.getPosition() + 1,
+                "createdAt", () -> DateTimePlaceholderResolver.of(channel.getTimeCreated(), locale, channel.getGuild(), context)
+        );
     }
 
     @Override

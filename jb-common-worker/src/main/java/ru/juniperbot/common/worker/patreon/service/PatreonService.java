@@ -26,4 +26,6 @@ public interface PatreonService extends FeatureSetProvider {
     void update();
 
     boolean tryBoost(long userId, long guildId);
+
+    boolean removeBoost(long userId, long guildId);
 }

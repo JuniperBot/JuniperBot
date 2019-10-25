@@ -19,7 +19,9 @@ package ru.juniperbot.common.worker.modules.audit.provider;
 import ru.juniperbot.common.persistence.entity.AuditAction;
 import ru.juniperbot.common.persistence.entity.AuditConfig;
 
+import java.util.Map;
+
 public interface AuditForwardProvider {
 
-    void send(AuditConfig config, AuditAction action);
+    void send(AuditConfig config, AuditAction action, Map<String, byte[]> attachments);
 }

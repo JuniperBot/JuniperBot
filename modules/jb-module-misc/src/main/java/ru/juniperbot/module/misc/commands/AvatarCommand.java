@@ -17,38 +17,39 @@
 package ru.juniperbot.module.misc.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
 
 @DiscordCommand(key = "discord.command.avatar.key",
         description = "discord.command.avatar.desc",
         group = "discord.command.group.utility",
         priority = 21)
-public class AvatarCommand extends AbstractCommand {
+public class AvatarCommand extends MentionableCommand {
+
+    public AvatarCommand() {
+        super(true, true);
+    }
 
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
-        User user = message.getAuthor();
-        String name = user.getName();
-        if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedMembers())) {
-            Member member = getMentioned(message);
-            user = member.getUser();
-            name = member.getEffectiveName();
-        }
-        if (StringUtils.isEmpty(user.getAvatarUrl())) {
-            messageService.onEmbedMessage(message.getChannel(), "discord.command.avatar.none");
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        String avatarUrl = reference.getEffectiveAvatarUrl();
+
+        if (StringUtils.isEmpty(avatarUrl)) {
+            messageService.onEmbedMessage(event.getChannel(), "discord.command.avatar.none");
             return false;
         }
+        String name = reference.getEffectiveName();
+
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setDescription(messageService.getMessage("discord.command.avatar.text", name));
-        builder.setImage(user.getAvatarUrl() + "?size=512");
-        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+        if (StringUtils.isNotEmpty(name)) {
+            builder.setDescription(messageService.getMessage("discord.command.avatar.text", name));
+        }
+        builder.setImage(avatarUrl + "?size=512");
+        messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
         return true;
     }
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
 
 @DiscordCommand(key = "discord.command.mod.unmute.key",
@@ -29,20 +30,25 @@ import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
         group = "discord.command.group.moderation",
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
         priority = 35)
-public class UnMuteCommand extends ModeratorCommandAsync {
+public class UnMuteCommand extends MentionableModeratorCommand {
 
     @Autowired
     private MuteService muteService;
 
+    protected UnMuteCommand() {
+        super(false, true);
+    }
+
     @Override
-    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member mentioned = getMentioned(event);
-        if (mentioned == null) {
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        Member violator = reference.getMember();
+        if (violator == null) {
             messageService.onError(event.getChannel(), "discord.command.mod.unmute.mention");
-            return;
+            return false;
         }
-        boolean unmuted = muteService.unmute(event.getMember(), event.getChannel(), mentioned);
+        boolean unmuted = muteService.unmute(event.getMember(), event.getChannel(), violator);
         messageService.onEmbedMessage(event.getChannel(), unmuted
-                ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", mentioned.getEffectiveName());
+                ? "discord.command.mod.unmute.done" : "discord.command.mod.unmute.already", violator.getEffectiveName());
+        return true;
     }
 }

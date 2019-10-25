@@ -73,18 +73,6 @@ public class RankingConfigServiceImpl
         return repository.isEnabled(guildId);
     }
 
-    @Transactional
-    @Override
-    public RankingInfo getRankingInfo(Member member) {
-        Ranking ranking = getRanking(member);
-        if (ranking == null) {
-            return null;
-        }
-        RankingInfo rankingInfo = RankingUtils.calculateInfo(ranking);
-        rankingInfo.setRank(rankingRepository.getRank(member.getGuild().getIdLong(), rankingInfo.getTotalExp()));
-        return rankingInfo;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public long countRankings(long guildId) {

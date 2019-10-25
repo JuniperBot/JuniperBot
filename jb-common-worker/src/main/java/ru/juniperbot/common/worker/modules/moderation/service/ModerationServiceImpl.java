@@ -170,22 +170,32 @@ public class ModerationServiceImpl implements ModerationService {
         Guild guild = request.getGuild();
         Member self = guild.getSelfMember();
         if (request.getModerator() != null) {
-            lastActionCache.put(DiscordUtils.getMemberKey(request.getViolator()),
-                    request.getModerator().getUser().getId());
+            String memberKey = request.getViolator() != null
+                    ? DiscordUtils.getMemberKey(request.getViolator())
+                    : DiscordUtils.getMemberKey(guild, request.getViolatorId());
+            lastActionCache.put(memberKey, request.getModerator().getUser().getId());
         }
         switch (request.getType()) {
             case MUTE:
                 // to prevent circular injection. Yeah bad practice but still we need this
                 return applicationContext.getBean(MuteService.class).mute(request);
             case BAN:
-                if (!self.hasPermission(Permission.BAN_MEMBERS) || !self.canInteract(request.getViolator())) {
+                if (!self.hasPermission(Permission.BAN_MEMBERS)) {
                     return false;
                 }
-                notifyUserAction(e -> {
-                    int delDays = request.getDuration() != null ? request.getDuration() : 0;
-                    e.getGuild().ban(e, delDays, request.getReason()).queue();
-                }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
-                return true;
+                final int delDays = request.getDuration() != null ? request.getDuration() : 0;
+                if (request.getViolator() != null) {
+                    if (self.canInteract(request.getViolator())) {
+                        notifyUserAction(e -> {
+                            e.getGuild().ban(e, delDays, request.getReason()).queue();
+                        }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
+                        return true;
+                    }
+                } else if (request.getViolatorId() != null) {
+                    guild.ban(request.getViolatorId(), delDays, request.getReason()).queue();
+                    return true;
+                }
+                return false;
             case KICK:
                 if (!self.hasPermission(Permission.KICK_MEMBERS) || !self.canInteract(request.getViolator())) {
                     return false;
@@ -236,13 +246,12 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public WarningResult warn(Member author, Member member, String reason) {
+    public WarningResult warn(Member author, Member member, LocalMember memberLocal, String reason) {
         var result = WarningResult.builder();
 
-        long guildId = member.getGuild().getIdLong();
-        ModerationConfig moderationConfig = moderationConfigService.getOrCreate(member.getGuild().getIdLong());
+        long guildId = author.getGuild().getIdLong();
+        ModerationConfig moderationConfig = moderationConfigService.getOrCreate(guildId);
         LocalMember authorLocal = entityAccessor.getOrCreate(author);
-        LocalMember memberLocal = entityAccessor.getOrCreate(member);
 
         long number = warningRepository.countActiveByViolator(guildId, memberLocal) + 1;
 
@@ -256,34 +265,35 @@ public class ModerationServiceImpl implements ModerationService {
             number = 1;
         }
 
-        final long finalNumber = number;
-        ModerationAction action = moderationConfig.getActions().stream()
-                .filter(e -> e.getCount() == finalNumber)
-                .findFirst()
-                .orElse(null);
+        if (member != null) {
+            final long finalNumber = number;
+            ModerationAction action = moderationConfig.getActions().stream()
+                    .filter(e -> e.getCount() == finalNumber)
+                    .findFirst()
+                    .orElse(null);
 
-        if (action != null) {
-            var builder = ModerationActionRequest.builder()
-                    .type(action.getType())
-                    .moderator(author)
-                    .violator(member)
-                    .reason(messageService.getMessage("discord.command.mod.warn.exceeded", number));
+            if (action != null) {
+                var builder = ModerationActionRequest.builder()
+                        .type(action.getType())
+                        .moderator(author)
+                        .violator(member)
+                        .reason(messageService.getMessage("discord.command.mod.warn.exceeded", number));
 
-            switch (action.getType()) {
-                case MUTE:
-                    builder.duration(action.getDuration())
-                            .global(true);
-                    break;
-                case CHANGE_ROLES:
-                    builder.assignRoles(action.getAssignRoles())
-                            .revokeRoles(action.getRevokeRoles());
-                    break;
+                switch (action.getType()) {
+                    case MUTE:
+                        builder.duration(action.getDuration()).global(true);
+                        break;
+                    case CHANGE_ROLES:
+                        builder.assignRoles(action.getAssignRoles())
+                                .revokeRoles(action.getRevokeRoles());
+                        break;
 
+                }
+
+                ModerationActionRequest request = builder.build();
+                result.request(request)
+                        .punished(performAction(request));
             }
-
-            ModerationActionRequest request = builder.build();
-            result.request(request)
-                    .punished(performAction(request));
         }
 
         auditService.log(guildId, AuditActionType.MEMBER_WARN)
@@ -293,8 +303,10 @@ public class ModerationServiceImpl implements ModerationService {
                 .withAttribute(COUNT_ATTR, number)
                 .save();
 
-        notifyUserAction(e -> {
-        }, member, "discord.command.mod.action.message.warn", reason, number);
+        if (member != null) {
+            notifyUserAction(e -> {
+            }, member, "discord.command.mod.action.message.warn", reason, number);
+        }
 
         warningRepository.save(new MemberWarning(guildId, authorLocal, memberLocal, reason));
         return result.number(number).build();
@@ -302,9 +314,8 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public List<MemberWarning> getWarnings(Member member) {
-        LocalMember localMember = entityAccessor.getOrCreate(member);
-        return warningRepository.findActiveByViolator(member.getGuild().getIdLong(), localMember);
+    public List<MemberWarning> getWarnings(LocalMember member) {
+        return warningRepository.findActiveByViolator(member.getGuildId(), member);
     }
 
     @Override

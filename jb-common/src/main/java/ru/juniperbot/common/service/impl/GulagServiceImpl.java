@@ -19,6 +19,7 @@ package ru.juniperbot.common.service.impl;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,5 +70,11 @@ public class GulagServiceImpl implements GulagService {
     public Gulag getGulag(@NonNull Guild guild) {
         Gulag gulag = repository.findBySnowflake(guild.getOwnerIdLong());
         return gulag != null ? gulag : repository.findBySnowflake(guild.getIdLong());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Gulag getGulag(@NonNull User user) {
+        return repository.findBySnowflake(user.getIdLong());
     }
 }

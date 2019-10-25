@@ -14,26 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.ranking.service;
+package ru.juniperbot.api.dto.request;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.common.model.RankingInfo;
-import ru.juniperbot.common.persistence.entity.LocalMember;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface RankingService {
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.io.Serializable;
 
-    String COOKIE_EMOTE = "\uD83C\uDF6A";
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class RankingInfoRequest implements Serializable {
 
-    void onMessage(GuildMessageReceivedEvent event);
+    private static final long serialVersionUID = 6290150311334591917L;
 
-    void giveCookie(Member senderMember, Member recipientMember);
+    public static final int MAX_PAGE = 100;
 
-    void addVoiceActivity(Member member, long duration);
+    @Min(0)
+    private int page;
 
-    void updateRewards(Member member);
+    @Min(1)
+    @Max(MAX_PAGE)
+    private int size;
 
-    RankingInfo getRankingInfo(Member member);
-
-    RankingInfo getRankingInfo(LocalMember member);
+    private String search;
 }

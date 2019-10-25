@@ -26,10 +26,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.MemberWarning;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
+import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 
 import java.util.List;
 
@@ -37,19 +42,23 @@ import java.util.List;
         description = "discord.command.mod.warns.desc",
         group = {"discord.command.group.moderation", "discord.command.group.utility"},
         priority = 15)
-public class WarnsCommand extends ModeratorCommandAsync {
+public class WarnsCommand extends MentionableCommand {
+
+    @Autowired
+    private ModerationService moderationService;
+
+    public WarnsCommand() {
+        super(true, true);
+    }
 
     @Override
-    public void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member member = getMentioned(event);
-        if (member == null) {
-            member = event.getMember();
-        }
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        LocalMember member = reference.getLocalMember();
 
         List<MemberWarning> warningList = moderationService.getWarnings(member);
         if (warningList.isEmpty()) {
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.warns.empty");
-            return;
+            return false;
         }
         if (warningList.size() > 20) {
             warningList = warningList.subList(0, 20);
@@ -81,6 +90,7 @@ public class WarnsCommand extends ModeratorCommandAsync {
             builder.addField(title, reason, true);
         }
         messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
+        return true;
     }
 
     @Override

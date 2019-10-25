@@ -26,9 +26,9 @@ import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,32 +37,33 @@ import java.util.regex.Pattern;
         group = "discord.command.group.moderation",
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.VOICE_MUTE_OTHERS},
         priority = 30)
-public class MuteCommand extends ModeratorCommandAsync {
+public class MuteCommand extends MentionableModeratorCommand {
 
     private static final String COMMAND_PATTERN = "^(\\d+\\s*)?(%s\\s*)?(.*)$";
 
+    protected MuteCommand() {
+        super(false, true);
+    }
+
     @Override
-    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member mentioned = getMentioned(event);
-        if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
-            fail(event);
-            return; // do not allow to mute moderators
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        Member violator = reference.getMember();
+        if (violator == null) {
+            return fail(event);
+        }
+        if (!checkTarget(reference, event)) {
+            return false;
         }
 
         String globalKeyWord = messageService.getMessageByLocale("discord.command.mod.mute.key.everywhere",
                 context.getCommandLocale());
 
-        if (mentioned == null) {
-            help(event, context, globalKeyWord);
-            return;
-        }
-
         Matcher m = Pattern
                 .compile(String.format(COMMAND_PATTERN, Pattern.quote(globalKeyWord)))
-                .matcher(removeMention(query));
+                .matcher(query);
         if (!m.find()) {
-            help(event, context, globalKeyWord);
-            return;
+            showHelp(event, context);
+            return false;
         }
 
         Integer duration = null;
@@ -70,8 +71,8 @@ public class MuteCommand extends ModeratorCommandAsync {
             try {
                 duration = Integer.parseInt(m.group(1).trim());
             } catch (NumberFormatException e) {
-                help(event, context, globalKeyWord);
-                return;
+                showHelp(event, context);
+                return false;
             }
         }
         boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
@@ -81,7 +82,7 @@ public class MuteCommand extends ModeratorCommandAsync {
                 .type(ModerationActionType.MUTE)
                 .moderator(event.getMember())
                 .channel(event.getChannel())
-                .violator(mentioned)
+                .violator(violator)
                 .global(global)
                 .duration(duration)
                 .reason(reason)
@@ -93,7 +94,7 @@ public class MuteCommand extends ModeratorCommandAsync {
         StringBuilder result = new StringBuilder();
         if (muted) {
             result.append(messageService.getMessage("discord.command.mod.mute.done",
-                    mentioned.getEffectiveName()));
+                    violator.getEffectiveName()));
             if (duration != null) {
                 result.append("\n").append(getMuteDuration(duration));
             }
@@ -103,14 +104,18 @@ public class MuteCommand extends ModeratorCommandAsync {
             }
         } else {
             result.append(messageService.getMessage("discord.command.mod.mute.already",
-                    mentioned.getEffectiveName()));
+                    violator.getEffectiveName()));
         }
 
         builder.setDescription(result.toString());
         messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
+        return true;
     }
 
-    private void help(GuildMessageReceivedEvent event, BotContext context, String globalKeyWord) {
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        String globalKeyWord = messageService.getMessageByLocale("discord.command.mod.mute.key.everywhere",
+                context.getCommandLocale());
         String muteCommand = messageService.getMessageByLocale("discord.command.mod.mute.key",
                 context.getCommandLocale());
         messageService.onEmbedMessage(event.getChannel(),

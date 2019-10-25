@@ -14,6 +14,9 @@
  */
 package ru.juniperbot.worker.listeners;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -29,11 +32,14 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameE
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.model.AuditActionType;
 import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.service.MemberService;
+import ru.juniperbot.common.service.UserService;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
@@ -43,7 +49,10 @@ import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
 
+import javax.annotation.Nonnull;
+import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -54,6 +63,9 @@ public class MemberListener extends DiscordEventListener {
     private MemberService memberService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private MuteService muteService;
 
     @Autowired
@@ -61,6 +73,11 @@ public class MemberListener extends DiscordEventListener {
 
     @Autowired
     private ActionsHolderService actionsHolderService;
+
+    private final Cache<String, OnlineStatus> statusCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(7)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build();
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
@@ -198,6 +215,31 @@ public class MemberListener extends DiscordEventListener {
                     .withUser(event.getMember())
                     .withChannel(event.getChannelLeft())
                     .save();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {
+        OnlineStatus newStatus = event.getNewOnlineStatus();
+        OnlineStatus oldStatus = event.getOldOnlineStatus();
+        if (event.getUser().isBot()
+                || oldStatus == OnlineStatus.OFFLINE
+                || oldStatus == OnlineStatus.INVISIBLE
+                || (newStatus != OnlineStatus.OFFLINE && newStatus != OnlineStatus.INVISIBLE)) {
+            return;
+        }
+
+        try {
+            // this event is executed multiple times for each mutual guild, we want this only once at least per minute
+            statusCache.get(event.getUser().getId(), () -> {
+                LocalUser user = entityAccessor.getOrCreate(event.getUser());
+                user.setLastOnline(new Date());
+                userService.save(user);
+                return newStatus;
+            });
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 }

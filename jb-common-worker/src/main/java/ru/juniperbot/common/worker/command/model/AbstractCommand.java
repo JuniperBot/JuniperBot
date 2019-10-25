@@ -20,8 +20,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import ru.juniperbot.common.configuration.CommonProperties;
@@ -34,13 +32,7 @@ import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public abstract class AbstractCommand implements Command {
-
-    private static final Pattern MENTION_PATTERN = Pattern.compile("<@!?[0-9]+>\\s*(.*)");
 
     @Autowired
     protected DiscordService discordService;
@@ -97,30 +89,6 @@ public abstract class AbstractCommand implements Command {
     protected boolean fail(GuildMessageReceivedEvent message, String messageCode, Object... args) {
         commandsService.resultEmotion(message, "❌", messageCode, args);
         return false;
-    }
-
-    protected Member getMentioned(GuildMessageReceivedEvent event) {
-        if (event.getGuild() == null || CollectionUtils.isEmpty(event.getMessage().getMentionedMembers())) {
-            return null;
-        }
-        List<Member> mentioned = event.getMessage().getMentionedMembers();
-        return mentioned.get(mentioned.size() - 1);
-    }
-
-    protected String removeMention(String input) {
-        if (StringUtils.isEmpty(input)) {
-            return input;
-        }
-        String[] lines = input.split("\\r?\\n");
-        boolean foundFirst = false;
-        for (int i = 0; i < lines.length; i++) {
-            Matcher matcher = MENTION_PATTERN.matcher(lines[i]);
-            if (!foundFirst && matcher.find()) {
-                foundFirst = true;
-                lines[i] = matcher.group(1).trim();
-            }
-        }
-        return StringUtils.join(lines, "\n").trim();
     }
 
     @Override

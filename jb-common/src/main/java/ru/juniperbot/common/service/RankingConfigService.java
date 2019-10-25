@@ -29,8 +29,6 @@ public interface RankingConfigService extends DomainService<RankingConfig> {
 
     boolean isEnabled(long guildId);
 
-    RankingInfo getRankingInfo(Member member);
-
     long countRankings(long guildId);
 
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);

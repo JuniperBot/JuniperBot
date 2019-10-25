@@ -196,6 +196,25 @@ public class PatreonServiceImpl extends BaseOwnerFeatureSetProvider implements P
     }
 
     @Override
+    @Transactional
+    @Synchronized("$boostLock")
+    public boolean removeBoost(long userId, long guildId) {
+        PatreonUser user = repository.findByUserId(String.valueOf(userId));
+        if (user == null
+                || user.getBoostedGuildId() == null
+                || CollectionUtils.isEmpty(user.getFeatureSets())) {
+            return false;
+        }
+        Set<Long> boostedUsers = this.boostedGuilds.get(user.getBoostedGuildId());
+        if (boostedUsers != null) {
+            boostedUsers.remove(userId);
+        }
+        user.setBoostedGuildId(null);
+        repository.save(user);
+        return true;
+    }
+
+    @Override
     public Set<FeatureSet> getByUser(long userId) {
         return featureSets.getOrDefault(userId, Set.of());
     }

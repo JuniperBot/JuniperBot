@@ -64,7 +64,11 @@ public interface MessageService {
 
     <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title);
 
+    <T extends Enum<T>> T getEnumeration(Class<T> clazz, String title, String locale);
+
     String getEnumTitle(Enum<?> clazz);
+
+    String getEnumTitle(Enum<?> clazz, String locale);
 
     String getCountPlural(long count, String code);
 

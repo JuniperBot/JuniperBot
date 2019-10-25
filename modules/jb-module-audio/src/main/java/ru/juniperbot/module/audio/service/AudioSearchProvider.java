@@ -14,26 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.ranking.service;
+package ru.juniperbot.module.audio.service;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import ru.juniperbot.common.model.RankingInfo;
-import ru.juniperbot.common.persistence.entity.LocalMember;
+public interface AudioSearchProvider {
 
-public interface RankingService {
+    String searchTrack(String value);
 
-    String COOKIE_EMOTE = "\uD83C\uDF6A";
+    String getProviderName();
 
-    void onMessage(GuildMessageReceivedEvent event);
-
-    void giveCookie(Member senderMember, Member recipientMember);
-
-    void addVoiceActivity(Member member, long duration);
-
-    void updateRewards(Member member);
-
-    RankingInfo getRankingInfo(Member member);
-
-    RankingInfo getRankingInfo(LocalMember member);
 }

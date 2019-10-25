@@ -18,6 +18,7 @@ package ru.juniperbot.common.model.request;
 
 import lombok.*;
 import net.dv8tion.jda.api.entities.Member;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -44,5 +45,10 @@ public class RankingUpdateRequest implements Serializable {
     public RankingUpdateRequest(@NonNull Member member) {
         guildId = member.getGuild().getIdLong();
         userId = member.getUser().getId();
+    }
+
+    public RankingUpdateRequest(@NonNull LocalMember member) {
+        guildId = member.getGuildId();
+        userId = member.getUser().getUserId();
     }
 }

@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.iv.StringFixedIvGenerator;
@@ -38,10 +37,10 @@ import ru.juniperbot.common.service.AuditConfigService;
 import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
+import ru.juniperbot.common.worker.utils.DiscordUtils;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.juniperbot.common.worker.modules.audit.provider.MessageEditAuditForwardProvider.*;
 
@@ -87,7 +86,7 @@ public class HistoryServiceImpl implements HistoryService {
         }
         TextChannel channel = message.getTextChannel();
         String oldContent = decrypt(channel, history);
-        String newContent = getContent(message);
+        String newContent = DiscordUtils.getContent(message);
         if (Objects.equals(oldContent, newContent)) {
             return;
         }
@@ -157,29 +156,11 @@ public class HistoryServiceImpl implements HistoryService {
     private MessageHistory createHistory(Message message) {
         MessageHistory messageHistory = new MessageHistory();
         messageHistory.setUserId(message.getAuthor().getId());
-        messageHistory.setMessage(encrypt(message.getTextChannel(), message.getId(), getContent(message)));
+        messageHistory.setMessage(encrypt(message.getTextChannel(), message.getId(), DiscordUtils.getContent(message)));
         messageHistory.setMessageId(message.getId());
         messageHistory.setCreateDate(new Date());
         messageHistory.setUpdateDate(messageHistory.getCreateDate());
         return messageHistory;
-    }
-
-    private static String getContent(Message message) {
-        StringBuilder builder = new StringBuilder(message
-                .getContentStripped()
-                .replaceAll("\u0000", ""));
-        String attachmentsPart = message.getAttachments().stream()
-                .map(Message.Attachment::getUrl)
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining(",\n"));
-        if (StringUtils.isNotEmpty(attachmentsPart)) {
-            if (builder.length() > 0) {
-                builder.append("\n");
-            }
-            builder.append("---");
-            builder.append(attachmentsPart);
-        }
-        return builder.toString();
     }
 
     private String encrypt(TextChannel channel, String iv, String content) {

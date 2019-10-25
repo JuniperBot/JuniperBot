@@ -19,35 +19,61 @@ package ru.juniperbot.common.worker.message.resolver;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.context.ApplicationContext;
-import ru.juniperbot.common.worker.message.resolver.node.FunctionalNodePlaceholderResolver;
+import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.persistence.entity.Ranking;
+import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.utils.RankingUtils;
+import ru.juniperbot.common.worker.message.resolver.node.AccessorsNodePlaceholderResolver;
 import ru.juniperbot.common.worker.message.resolver.node.SingletonNodePlaceholderResolver;
 import ru.juniperbot.common.worker.message.service.MessageService;
-import ru.juniperbot.common.worker.shared.support.TriFunction;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class MemberPlaceholderResolver extends FunctionalNodePlaceholderResolver<Member> {
-
-    private final static Map<String, TriFunction<Member, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
-            "id", (m, l, c) -> m.getUser().getId(),
-            "mention", (m, l, c) -> m.getAsMention(),
-            "nickname", (m, l, c) -> m.getEffectiveName(),
-            "name", (m, l, c) -> m.getUser().getName(),
-            "discriminator", (m, l, c) -> m.getUser().getDiscriminator(),
-            "joinedAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getTimeJoined(), l, m.getGuild(), c),
-            "createdAt", (m, l, c) -> DateTimePlaceholderResolver.of(m.getUser().getTimeCreated(), l, m.getGuild(), c),
-            "status", (m, l, c) -> c.getBean(MessageService.class).getEnumTitle(m.getOnlineStatus()),
-            "avatarUrl", (m, l, c) -> m.getUser().getEffectiveAvatarUrl()
-    );
+public class MemberPlaceholderResolver extends AccessorsNodePlaceholderResolver<Member> {
 
     private final Member member;
+
+    private volatile RankingInfo rankingInfo;
 
     public MemberPlaceholderResolver(@NonNull Member member,
                                      @NonNull Locale locale,
                                      @NonNull ApplicationContext applicationContext) {
-        super(ACCESSORS, locale, applicationContext);
+
+        super(locale, applicationContext);
         this.member = member;
+    }
+
+    @Override
+    protected Map<String, Supplier<?>> createAccessors() {
+        return Map.ofEntries(
+                Map.entry("id", () -> member.getUser().getId()),
+                Map.entry("mention", member::getAsMention),
+                Map.entry("nickname", member::getEffectiveName),
+                Map.entry("name", () -> member.getUser().getName()),
+                Map.entry("discriminator", () -> member.getUser().getDiscriminator()),
+                Map.entry("joinedAt", () -> DateTimePlaceholderResolver.of(member.getTimeJoined(), locale, member.getGuild(), context)),
+                Map.entry("createdAt", () -> DateTimePlaceholderResolver.of(member.getUser().getTimeCreated(), locale, member.getGuild(), context)),
+                Map.entry("status", () -> context.getBean(MessageService.class).getEnumTitle(member.getOnlineStatus())),
+                Map.entry("avatarUrl", () -> member.getUser().getEffectiveAvatarUrl()),
+                Map.entry("level", () -> getRankingInfo().getLevel()),
+                Map.entry("cookies", () -> getRankingInfo().getCookies()),
+                Map.entry("voiceTime", () -> CommonUtils.formatDuration(getRankingInfo().getVoiceActivity())));
+    }
+
+    private RankingInfo getRankingInfo() {
+        if (rankingInfo != null) {
+            return rankingInfo;
+        }
+        synchronized (this) {
+            if (rankingInfo == null) {
+                Ranking ranking = context.getBean(RankingConfigService.class).getRanking(member);
+                rankingInfo = ranking != null ? RankingUtils.calculateInfo(ranking) : new RankingInfo();
+            }
+        }
+        return rankingInfo;
     }
 
     @Override
@@ -58,6 +84,12 @@ public class MemberPlaceholderResolver extends FunctionalNodePlaceholderResolver
     @Override
     public Object getValue() {
         return member.getAsMention();
+    }
+
+    public static MemberPlaceholderResolver of(@NonNull Member member,
+                                               @NonNull Locale locale,
+                                               @NonNull ApplicationContext context) {
+        return new MemberPlaceholderResolver(member, locale, context);
     }
 
     public static SingletonNodePlaceholderResolver of(@NonNull Member member,

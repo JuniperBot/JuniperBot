@@ -109,13 +109,13 @@ public class SteamCommand extends AbstractCommand {
     private MessageEmbed.Field getPlatforms(SteamAppPlatforms platforms) {
         StringBuilder builder = new StringBuilder();
         if (platforms.isWindows()) {
-            builder.append("<:windows:404365879242129408> ");
+            builder.append("<:windows:636568315354939392> ");
         }
         if (platforms.isLinux()) {
-            builder.append("<:steam_os:404365878621372417> ");
+            builder.append("<:steamos:636568315111800847> ");
         }
         if (platforms.isMac()) {
-            builder.append("<:mac:404365878373908481> ");
+            builder.append("<:macos:636568314965131267> ");
         }
         return new MessageEmbed.Field(messageService.getMessage("discord.command.steam.platforms"),
                 builder.toString(), true);

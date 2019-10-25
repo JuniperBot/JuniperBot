@@ -14,22 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.worker.commands.moderation;
+package ru.juniperbot.module.audio.service.handling;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.juniperbot.common.worker.command.model.AbstractCommand;
-import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
+import org.springframework.stereotype.Component;
+import ru.juniperbot.common.service.YouTubeService;
+import ru.juniperbot.module.audio.service.AudioSearchProvider;
 
-public abstract class ModeratorCommand extends AbstractCommand {
+@Slf4j
+@Component
+public class YouTubeSearchProvider implements AudioSearchProvider {
 
     @Autowired
-    protected ModerationService moderationService;
+    private YouTubeService youTubeService;
 
     @Override
-    public boolean isAvailable(User user, Member member, Guild guild) {
-        return member != null && moderationService.isModerator(member);
+    public String searchTrack(String value) {
+        String result = youTubeService.searchForUrl(value);
+        return result != null ? result : "ytsearch:" + value;
+    }
+
+    @Override
+    public String getProviderName() {
+        return "youTube";
     }
 }

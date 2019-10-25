@@ -24,12 +24,14 @@ import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class DiscordUtils {
 
@@ -191,6 +193,10 @@ public final class DiscordUtils {
         return String.format("%s#%s", user.getName(), user.getDiscriminator());
     }
 
+    public static String formatUser(LocalUser user) {
+        return String.format("%s#%s", user.getName(), user.getDiscriminator());
+    }
+
     public static String getUrl(String url) {
         if (StringUtils.isEmpty(url) || url.length() > MessageEmbed.URL_MAX_LENGTH) {
             return null;
@@ -246,6 +252,28 @@ public final class DiscordUtils {
     }
 
     public static String getMemberKey(@NonNull Guild guild, @NonNull User user) {
-        return String.format("%s:%s", guild.getId(), user.getId());
+        return getMemberKey(guild, user.getId());
+    }
+
+    public static String getMemberKey(@NonNull Guild guild, @NonNull String userId) {
+        return String.format("%s:%s", guild.getId(), userId);
+    }
+
+    public static String getContent(Message message) {
+        StringBuilder builder = new StringBuilder(message
+                .getContentStripped()
+                .replaceAll("\u0000", ""));
+        String attachmentsPart = message.getAttachments().stream()
+                .map(Message.Attachment::getUrl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(",\n"));
+        if (StringUtils.isNotEmpty(attachmentsPart)) {
+            if (builder.length() > 0) {
+                builder.append("\n");
+            }
+            builder.append("---");
+            builder.append(attachmentsPart);
+        }
+        return builder.toString();
     }
 }

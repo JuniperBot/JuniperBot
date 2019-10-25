@@ -45,10 +45,12 @@ import ru.juniperbot.common.persistence.entity.MusicConfig;
 import ru.juniperbot.common.service.MusicConfigService;
 import ru.juniperbot.common.service.YouTubeService;
 import ru.juniperbot.common.support.ModuleListener;
+import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 import ru.juniperbot.module.audio.model.*;
+import ru.juniperbot.module.audio.service.AudioSearchProvider;
 import ru.juniperbot.module.audio.service.LavaAudioService;
 import ru.juniperbot.module.audio.service.PlayerService;
 import ru.juniperbot.module.audio.service.StoredPlaylistService;
@@ -98,6 +100,12 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
 
     @Autowired
     private TaskExecutor taskExecutor;
+
+    @Autowired
+    private WorkerProperties workerProperties;
+
+    @Autowired
+    private List<AudioSearchProvider> searchProviders;
 
     private final Map<Long, PlaybackInstance> instances = new ConcurrentHashMap<>();
 
@@ -246,8 +254,10 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
     public void loadAndPlay(final TextChannel channel, final Member requestedBy, String trackUrl) {
         final Long timeCode;
         if (!ResourceUtils.isUrl(trackUrl)) {
-            String result = youTubeService.searchForUrl(trackUrl);
-            trackUrl = result != null ? result : "ytsearch:" + trackUrl;
+            String result = search(trackUrl);
+            if (result != null) {
+                trackUrl = result;
+            }
             timeCode = null;
         } else {
             timeCode = youTubeService.extractTimecode(trackUrl);
@@ -600,6 +610,28 @@ public class PlayerServiceImpl extends PlayerListenerAdapter implements PlayerSe
                     link.destroy();
                 }
             });
+        }
+    }
+
+    private String search(String value) {
+        String providerName = workerProperties.getAudio().getSearchProvider();
+        if (providerName == null) {
+            return null;
+        }
+        AudioSearchProvider provider = searchProviders.stream()
+                .filter(e -> providerName.equalsIgnoreCase(e.getProviderName()))
+                .findFirst()
+                .orElse(null);
+
+        if (provider == null) {
+            return null;
+        }
+
+        try {
+            return provider.searchTrack(value);
+        } catch (Exception e) {
+            log.warn("Failed to search with provider [{}]", provider.getProviderName(), e);
+            return null;
         }
     }
 

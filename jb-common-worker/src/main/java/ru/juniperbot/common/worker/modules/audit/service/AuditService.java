@@ -21,13 +21,15 @@ import ru.juniperbot.common.model.AuditActionType;
 import ru.juniperbot.common.persistence.entity.AuditAction;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 
+import java.util.Map;
+
 public interface AuditService {
 
     void runCleanUp();
 
     void runCleanUp(int durationMonths);
 
-    AuditAction save(AuditAction action);
+    AuditAction save(AuditAction action, Map<String, byte[]> attachments);
 
     AuditActionBuilder log(long guildId, AuditActionType type);
 
