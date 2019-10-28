@@ -47,6 +47,9 @@ public class RankingConfig extends GuildEntity {
     @Column(name = "reset_on_leave")
     private boolean resetOnLeave;
 
+    @Column(precision = 3, scale = 2)
+    private double textExpMultiplier = 1.0d;
+
     @Column(name = "banned_roles", columnDefinition = "text[]")
     @Type(type = "string-array")
     private String[] bannedRoles;

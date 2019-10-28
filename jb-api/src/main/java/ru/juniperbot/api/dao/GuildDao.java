@@ -28,7 +28,9 @@ import ru.juniperbot.api.security.utils.SecurityUtils;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.entity.LocalUser;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.service.MemberService;
+import ru.juniperbot.common.service.RankingConfigService;
 
 import java.util.List;
 import java.util.Set;
@@ -41,6 +43,9 @@ public class GuildDao extends AbstractDao {
 
     @Autowired
     private DiscordTokenServices tokenServices;
+
+    @Autowired
+    private RankingConfigService rankingConfigService;
 
     @Autowired
     private MemberService memberService;
@@ -92,6 +97,11 @@ public class GuildDao extends AbstractDao {
         }
 
         builder.featureSets(guildDto.getFeatureSets());
+
+        if (parts.contains(RANKING_CONFIG)) {
+            RankingConfig rankingConfig = rankingConfigService.getByGuildId(config.getGuildId());
+            builder.rankingTextExpMultiplier(rankingConfig != null ? rankingConfig.getTextExpMultiplier() : 1.0d);
+        }
 
         if (!guildDto.isAvailable()) {
             return builder.build();

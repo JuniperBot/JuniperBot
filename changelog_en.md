@@ -1,5 +1,9 @@
 # JuniperBot Changelog:
 
+## Version 7.4
+ - **[Ranking]** Ranking system improvements:
+   - **[Patreon]** Exp multiplier in range 50% - 500%
+
 ## Version 7.3
  - **[music]**
    - SoundCloud fixes (again...);

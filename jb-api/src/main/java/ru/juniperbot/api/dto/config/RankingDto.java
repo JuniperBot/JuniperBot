@@ -22,6 +22,8 @@ import ru.juniperbot.api.dto.MessageTemplateDto;
 import ru.juniperbot.common.model.RankingReward;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +49,10 @@ public class RankingDto implements Serializable {
     private Set<String> ignoredChannels;
 
     private Set<String> ignoredVoiceChannels;
+
+    @Min(50)
+    @Max(500)
+    private int textExpMultiplier = 100;
 
     private boolean cookieEnabled;
 }

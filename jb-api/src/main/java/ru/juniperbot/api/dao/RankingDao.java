@@ -16,11 +16,14 @@
  */
 package ru.juniperbot.api.dao;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.api.dto.config.RankingDto;
 import ru.juniperbot.api.service.ApiMapperService;
+import ru.juniperbot.common.model.FeatureSet;
+import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.utils.RankingUtils;
@@ -54,6 +57,11 @@ public class RankingDao extends AbstractDao {
         config.setCookieEnabled(dto.isCookieEnabled());
 
         config.setAnnounceTemplate(templateDao.updateOrCreate(dto.getAnnounceTemplate(), config.getAnnounceTemplate()));
+
+        GuildDto guildDto = gatewayService.getGuildInfo(guildId);
+        if (guildDto != null && CollectionUtils.containsAny(guildDto.getFeatureSets(), FeatureSet.BONUS)) {
+            config.setTextExpMultiplier(dto.getTextExpMultiplier() / 100.0d);
+        }
 
         if (dto.getRewards() != null) {
             config.setRewards(dto.getRewards().stream()

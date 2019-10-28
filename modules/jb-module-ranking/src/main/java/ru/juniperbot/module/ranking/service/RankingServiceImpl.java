@@ -98,7 +98,8 @@ public class RankingServiceImpl implements RankingService {
             contextService.withContextAsync(guild, () -> {
                 Ranking ranking = getRanking(event.getMember());
                 int level = RankingUtils.getLevelFromExp(ranking.getExp());
-                ranking.setExp(ranking.getExp() + RandomUtils.nextLong(15, 25));
+                ranking.setExp(ranking.getExp() + Math.round(RandomUtils.nextLong(15, 25)
+                        * config.getTextExpMultiplier()));
                 rankingRepository.save(ranking);
                 coolDowns.put(memberKey, DUMMY);
 
