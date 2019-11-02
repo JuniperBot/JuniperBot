@@ -100,10 +100,12 @@ public class WorkerProperties {
     public static class Audio {
 
         private String resamplingQuality = "MEDIUM";
+        private String searchProvider = "youTube";
         private int frameBufferDuration = 2000;
         private int itemLoaderThreadPoolSize = 500;
         private int panelRefreshInterval = 5000;
         private Lavalink lavalink = new Lavalink();
+        private YandexProxy yandexProxy = new YandexProxy();
 
         @Getter
         @Setter
@@ -131,6 +133,15 @@ public class WorkerProperties {
                 private String url;
                 private String password;
             }
+        }
+
+        @Getter
+        @Setter
+        @ToString
+        public static class YandexProxy {
+
+            private String host;
+            private int port;
         }
     }
 

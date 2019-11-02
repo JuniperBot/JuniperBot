@@ -58,6 +58,9 @@ public class MessageTemplate extends BaseEntity {
     @Column(columnDefinition = "text")
     private String content;
 
+    @Column(columnDefinition = "text")
+    private String embedContent;
+
     @Column(name = "channel_id")
     private String channelId;
 

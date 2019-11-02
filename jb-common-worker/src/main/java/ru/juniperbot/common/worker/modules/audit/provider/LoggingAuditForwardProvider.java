@@ -20,7 +20,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import ru.juniperbot.common.worker.modules.audit.service.AuditService;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 
 import java.time.Instant;
+import java.util.Map;
 
 public abstract class LoggingAuditForwardProvider implements AuditForwardProvider {
 
@@ -54,7 +57,7 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
 
     @Override
     @Transactional
-    public void send(AuditConfig config, AuditAction action) {
+    public void send(AuditConfig config, AuditAction action, Map<String, byte[]> attachments) {
         Class<?> clazz = this.getClass();
         if (config.getForwardChannelId() == null
                 || !config.isForwardEnabled()
@@ -71,9 +74,9 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
         if (guild == null) {
             return;
         }
+        Member self = guild.getSelfMember();
         TextChannel channel = guild.getTextChannelById(config.getForwardChannelId());
-        if (channel == null || !guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE,
-                Permission.MESSAGE_EMBED_LINKS)) {
+        if (channel == null || !self.hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS)) {
             return;
         }
 
@@ -89,7 +92,13 @@ public abstract class LoggingAuditForwardProvider implements AuditForwardProvide
                 messageBuilder.setEmbed(embedBuilder.build());
             }
             if (!messageBuilder.isEmpty()) {
-                channel.sendMessage(messageBuilder.build()).queue();
+                MessageAction messageAction = channel.sendMessage(messageBuilder.build());
+                if (attachments != null && self.hasPermission(channel, Permission.MESSAGE_ATTACH_FILES)) {
+                    for (Map.Entry<String, byte[]> entry : attachments.entrySet()) {
+                        messageAction.addFile(entry.getValue(), entry.getKey());
+                    }
+                }
+                messageAction.queue();
             }
         });
     }

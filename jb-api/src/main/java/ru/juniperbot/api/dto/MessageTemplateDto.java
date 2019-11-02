@@ -46,6 +46,9 @@ public class MessageTemplateDto implements Serializable {
     @Size(max = 1800)
     private String content;
 
+    @Size(max = 1800)
+    private String embedContent;
+
     @DiscordEntity(value = ChannelType.TEXT, allowDm = true)
     private String channelId;
 

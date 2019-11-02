@@ -17,18 +17,27 @@
 package ru.juniperbot.worker.commands.moderation;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 
 @DiscordCommand(key = "discord.command.mod.slow.key",
         description = "discord.command.mod.slow.desc",
         group = "discord.command.group.moderation",
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_MANAGE},
         priority = 40)
-public class SlowModeCommand extends ModeratorCommand {
+public class SlowModeCommand extends AbstractCommand {
+
+    @Autowired
+    protected ModerationService moderationService;
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String query) {
@@ -58,6 +67,11 @@ public class SlowModeCommand extends ModeratorCommand {
             }
         }));
         return true;
+    }
+
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return member != null && moderationService.isModerator(member);
     }
 
     private boolean showHelp(TextChannel channel, BotContext context) {

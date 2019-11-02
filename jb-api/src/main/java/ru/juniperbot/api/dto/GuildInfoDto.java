@@ -63,4 +63,6 @@ public class GuildInfoDto implements Serializable {
 
     private List<EmoteDto> emotes;
 
+    private double rankingTextExpMultiplier;
+
 }

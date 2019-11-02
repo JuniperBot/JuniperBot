@@ -37,7 +37,8 @@ public class GuildInfoRequest implements Serializable {
         TEXT_CHANNELS,
         VOICE_CHANNELS,
         ROLES,
-        EMOTES
+        EMOTES,
+        RANKING_CONFIG,
     }
 
     public GuildInfoRequest(long id) {

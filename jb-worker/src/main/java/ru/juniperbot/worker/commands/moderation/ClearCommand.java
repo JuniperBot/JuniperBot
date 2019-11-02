@@ -18,19 +18,24 @@ package ru.juniperbot.worker.commands.moderation;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.model.AuditActionType;
 import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
+import ru.juniperbot.common.worker.modules.audit.service.AuditService;
+import ru.juniperbot.common.worker.utils.DiscordUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +43,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static ru.juniperbot.common.worker.modules.audit.provider.MessagesClearAuditForwardProvider.MESSAGE_COUNT;
 
 @Slf4j
 @DiscordCommand(key = "discord.command.mod.clear.key",
@@ -50,7 +57,7 @@ import java.util.stream.Stream;
                 Permission.MESSAGE_HISTORY
         }
 )
-public class ClearCommand extends ModeratorCommandAsync {
+public class ClearCommand extends MentionableModeratorCommand {
 
     private static final int MAX_MESSAGES = 1000;
 
@@ -59,33 +66,53 @@ public class ClearCommand extends ModeratorCommandAsync {
     @Autowired
     private ActionsHolderService actionsHolderService;
 
+    @Autowired
+    private AuditService auditService;
+
+    public ClearCommand() {
+        super(true, false);
+    }
+
     @Override
-    protected void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
-        TextChannel channel = event.getChannel();
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) throws DiscordException {
+        Member member = reference.getMember();
+        String moderatorId = event.getMember().getId();
+        String executionMessageId = event.getMessageId();
 
-        int number = getCount(query);
-        Member mentioned = getMentioned(event);
+        boolean includeInvocation = reference.isAuthorSelected() || (member != null && member.equals(event.getMember()));
+        int number = getCount(query) + (includeInvocation ? 1 : 0);
 
-        boolean includeInvocation = mentioned == null || mentioned.equals(event.getMember());
-        if (includeInvocation) {
-            number = number + 1; // delete command invocation too
-        }
-        final int finalNumber = number;
+        String userId = reference.isAuthorSelected() ? null : reference.getId();
 
         DateTime limit = new DateTime()
                 .minusWeeks(2)
                 .minusHours(1);
 
+        TextChannel channel = event.getChannel();
+
+        boolean canAttach = channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ATTACH_FILES);
+        StringBuilder history = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormat.mediumDateTime()
+                .withLocale(contextService.getLocale())
+                .withZone(context.getTimeZone());
+
         channel.sendTyping().queue(r -> channel.getIterableHistory()
-                .takeAsync(finalNumber)
+                .takeAsync(number)
                 .thenApplyAsync(e -> {
                     Stream<Message> stream = e.stream()
-                            .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
-                    if (mentioned != null) {
-                        stream = stream.filter(m -> Objects.equals(m.getMember(), mentioned));
+                            .filter(m -> m.getType() == MessageType.DEFAULT
+                                    && CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
+                    if (StringUtils.isNotEmpty(userId)) {
+                        stream = stream.filter(m -> m.getMember() != null
+                                && Objects.equals(m.getMember().getUser().getId(), userId));
                     }
                     List<Message> messageList = stream.collect(Collectors.toList());
-                    messageList.forEach(actionsHolderService::markAsDeleted);
+                    messageList.forEach(m -> {
+                        actionsHolderService.markAsDeleted(m);
+                        if (canAttach && !executionMessageId.equals(m.getId())) {
+                            appendHistory(history, formatter, m);
+                        }
+                    });
                     channel.purgeMessages(messageList);
                     return messageList.size();
                 }).exceptionally(e -> {
@@ -101,9 +128,20 @@ public class ClearCommand extends ModeratorCommandAsync {
                         messageService.onEmbedMessage(event.getChannel(), "discord.mod.clear.absent");
                         return;
                     }
+
+                    AuditActionBuilder builder = auditService.log(channel.getGuild(), AuditActionType.MESSAGES_CLEAR)
+                            .withChannel(channel)
+                            .withUser(channel.getGuild().getMemberById(moderatorId))
+                            .withAttribute(MESSAGE_COUNT, finalCount);
+                    if (canAttach && history.length() > 0) {
+                        builder.withAttachment(channel.getId() + ".log", history.toString().getBytes());
+                    }
+                    builder.save();
+
                     String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
                     messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", finalCount, pluralMessages);
                 })));
+        return true;
     }
 
     private int getCount(String queue) throws DiscordException {
@@ -120,5 +158,45 @@ public class ClearCommand extends ModeratorCommandAsync {
             }
         }
         return Math.min(result, MAX_MESSAGES);
+    }
+
+    private void appendHistory(StringBuilder history, DateTimeFormatter formatter, Message message) {
+        if (history.length() > 0) {
+            history.append("\n\n");
+        }
+
+        Member member = message.getMember();
+        User user = message.getAuthor();
+
+        history.append("[")
+                .append(formatter.print(CommonUtils.getDate(message.getTimeCreated())))
+                .append("] ");
+        if (member == null || member.getNickname() == null) {
+            history.append(message.getAuthor().getAsTag());
+        } else {
+            history.append(member.getEffectiveName())
+                    .append(" (")
+                    .append(member.getUser().getAsTag())
+                    .append(")");
+        }
+        if (user.isBot()) {
+            history.append(" [BOT]");
+        }
+        history.append(":");
+
+        String content = DiscordUtils.getContent(message);
+        if (StringUtils.isNotEmpty(content)) {
+            history.append("\n").append(content);
+        }
+
+        int i = 0;
+        for (MessageEmbed embed : message.getEmbeds()) {
+            history.append("\n[embed")
+                    .append(++i)
+                    .append("]");
+            if (StringUtils.isNotEmpty(embed.getDescription())) {
+                history.append("\n").append(embed.getDescription());
+            }
+        }
     }
 }

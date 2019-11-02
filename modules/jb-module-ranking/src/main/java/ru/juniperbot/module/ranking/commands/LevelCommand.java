@@ -24,65 +24,88 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.model.exception.DiscordException;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.utils.RankingUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
+import ru.juniperbot.module.ranking.service.RankingService;
 
 @DiscordCommand(key = "discord.command.level.key",
         description = "discord.command.level.desc",
         group = "discord.command.group.ranking",
         permissions = {Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS},
         priority = 245)
-public class LevelCommand extends RankingCommand {
+public class LevelCommand extends MentionableCommand {
 
     @Autowired
     private ModerationService moderationService;
 
+    @Autowired
+    private RankingConfigService rankingConfigService;
+
+    @Autowired
+    private RankingService rankingService;
+
+    protected LevelCommand() {
+        super(false, true);
+    }
+
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent event, BotContext context, String content) {
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException {
         TextChannel channel = event.getChannel();
-        Member mentioned = getMentioned(event);
-        if (mentioned == null) {
-            return showHelp(channel, context);
+        LocalMember localMember = reference.getLocalMember();
+        if (localMember == null) {
+            showHelp(event, context);
+            return false;
         }
-        String input = removeMention(content);
-        if (!StringUtils.isNumeric(input)) {
-            return showHelp(channel, context);
+        if (!StringUtils.isNumeric(content)) {
+            showHelp(event, context);
+            return false;
         }
 
         int level;
         try {
-            level = Integer.parseInt(input);
+            level = Integer.parseInt(content);
         } catch (NumberFormatException e) {
-            return showHelp(channel, context);
+            showHelp(event, context);
+            return false;
         }
         if (level < 0 || level > RankingUtils.MAX_LEVEL) {
-            return showHelp(channel, context);
+            showHelp(event, context);
+            return false;
         }
-        RankingUpdateRequest request = new RankingUpdateRequest(mentioned);
+        RankingUpdateRequest request = new RankingUpdateRequest(localMember);
         request.setLevel(level);
         contextService.queue(event.getGuild(), channel.sendTyping(), e -> {
             rankingConfigService.update(request);
-            rankingService.updateRewards(mentioned);
+            Member member = reference.getMember();
+            if (member != null) {
+                rankingService.updateRewards(reference.getMember());
+            }
             messageService.onTempEmbedMessage(channel, 10, "discord.command.level.success",
-                    mentioned.getAsMention(), level);
+                    String.format("**%s**", member != null ? member.getAsMention() : localMember.getEffectiveName()), level);
         });
         return true;
     }
 
-    private boolean showHelp(TextChannel channel, BotContext context) {
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
         String levelCommand = messageService.getMessageByLocale("discord.command.level.key",
                 context.getCommandLocale());
-        messageService.onEmbedMessage(channel, "discord.command.level.help",
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.level.help",
                 RankingUtils.MAX_LEVEL, context.getConfig().getPrefix(), levelCommand);
-        return false;
     }
 
     @Override
     public boolean isAvailable(User user, Member member, Guild guild) {
-        return super.isAvailable(user, member, guild)
+        return guild != null
+                && rankingConfigService.isEnabled(guild.getIdLong())
                 && moderationService.isModerator(member);
     }
 }

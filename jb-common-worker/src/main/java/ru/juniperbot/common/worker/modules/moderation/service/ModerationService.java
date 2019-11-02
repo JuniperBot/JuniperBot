@@ -19,6 +19,7 @@ package ru.juniperbot.common.worker.modules.moderation.service;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.MemberWarning;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 import ru.juniperbot.common.worker.modules.moderation.model.WarningResult;
@@ -35,9 +36,9 @@ public interface ModerationService {
 
     boolean performAction(ModerationActionRequest request);
 
-    WarningResult warn(Member author, Member member, String reason);
+    WarningResult warn(Member author, Member member, LocalMember localMember, String reason);
 
-    List<MemberWarning> getWarnings(Member member);
+    List<MemberWarning> getWarnings(LocalMember member);
 
     void removeWarn(MemberWarning warning);
 

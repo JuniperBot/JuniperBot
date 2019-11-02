@@ -18,6 +18,7 @@ package ru.juniperbot.common.service;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import ru.juniperbot.common.persistence.entity.Gulag;
 
 public interface GulagService {
@@ -27,4 +28,6 @@ public interface GulagService {
     boolean send(Member moderator, Member member, String reason);
 
     Gulag getGulag(Guild guild);
+
+    Gulag getGulag(User user);
 }

@@ -153,7 +153,7 @@ public class DiscordEntityAccessorImpl implements DiscordEntityAccessor {
                 }
             }
             if (shouldSave) {
-                userService.save(localUser);
+                localUser = userService.save(localUser);
             }
         } catch (ObjectOptimisticLockingFailureException e) {
             // it's ok to ignore optlock here, anyway it will be updated later
@@ -168,6 +168,10 @@ public class DiscordEntityAccessorImpl implements DiscordEntityAccessor {
                 shouldSave = true;
             }
             if (member != null) {
+                if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
+                    localMember.setEffectiveName(member.getEffectiveName());
+                    shouldSave = true;
+                }
                 updateIfRequired(member.getUser(), localMember.getUser());
             }
             if (shouldSave) {

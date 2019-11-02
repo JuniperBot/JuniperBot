@@ -16,31 +16,44 @@
  */
 package ru.juniperbot.common.worker.message.resolver.node;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
-import ru.juniperbot.common.worker.shared.support.TriFunction;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
-@AllArgsConstructor
-public abstract class FunctionalNodePlaceholderResolver<T> extends AbstractNodePlaceholderResolver {
-
-    @NonNull
-    private final Map<String, TriFunction<T, Locale, ApplicationContext, ?>> accessors;
+@RequiredArgsConstructor
+public abstract class AccessorsNodePlaceholderResolver<T> extends AbstractNodePlaceholderResolver {
 
     @NonNull
     protected final Locale locale;
 
     @NonNull
-    protected final ApplicationContext applicationContext;
+    protected final ApplicationContext context;
+
+    private Map<String, Supplier<?>> accessors;
 
     protected abstract T getObject();
 
     @Override
     public Object getChild(String name) {
-        TriFunction<T, Locale, ApplicationContext, ?> function = accessors.get(name);
-        return function != null ? function.apply(getObject(), locale, applicationContext) : null;
+        Supplier<?> function = getAccessors().get(name);
+        return function != null ? function.get() : null;
     }
+
+    private Map<String, Supplier<?>> getAccessors() {
+        if (accessors != null) {
+            return accessors;
+        }
+        synchronized (this) {
+            if (accessors == null) {
+                accessors = createAccessors();
+            }
+        }
+        return accessors;
+    }
+
+    protected abstract Map<String, Supplier<?>> createAccessors();
 }

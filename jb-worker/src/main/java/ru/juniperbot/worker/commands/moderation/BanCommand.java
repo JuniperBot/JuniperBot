@@ -17,15 +17,14 @@
 package ru.juniperbot.worker.commands.moderation;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,54 +37,64 @@ import java.util.regex.Pattern;
                 Permission.BAN_MEMBERS
         },
         priority = 25)
-public class BanCommand extends ModeratorCommand {
+public class BanCommand extends MentionableModeratorCommand {
 
     private final static Pattern BAN_PATTERN = Pattern.compile("([0-9]*)\\s*(.*)");
 
+    public BanCommand() {
+        super(false, false);
+    }
+
     @Override
-    public boolean doCommand(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member mentioned = getMentioned(event);
-        if (mentioned != null) {
-            if (moderationService.isModerator(mentioned) || Objects.equals(mentioned, event.getMember())) {
-                return fail(event); // do not allow ban members or yourself
-            }
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        if (!checkTarget(reference, event)) {
+            return false;
+        }
 
-            if (!event.getGuild().getSelfMember().canInteract(mentioned)) {
-                messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
-                return false;
-            }
+        if (reference.getMember() != null && !event.getGuild().getSelfMember().canInteract(reference.getMember())) {
+            messageService.onError(event.getChannel(), "discord.command.mod.ban.position");
+            return false;
+        }
 
-            var builder = ModerationActionRequest.builder()
-                    .type(ModerationActionType.BAN)
-                    .moderator(event.getMember())
-                    .violator(mentioned);
+        var builder = ModerationActionRequest.builder()
+                .type(ModerationActionType.BAN)
+                .moderator(event.getMember());
 
-            query = removeMention(query);
-            boolean perform = StringUtils.isEmpty(query);
-            if (!perform) {
-                Matcher matcher = BAN_PATTERN.matcher(query);
-                if (matcher.find()) {
-                    int delDays = 0;
-                    if (StringUtils.isNotEmpty(matcher.group(1))) {
-                        delDays = Integer.parseInt(matcher.group(1));
-                    }
+        if (reference.getMember() != null) {
+            builder.violator(reference.getMember());
+        } else {
+            builder.violatorId(reference.getId());
+        }
 
-                    builder.reason(matcher.group(2));
-                    if (delDays <= 7) {
-                        builder.duration(delDays);
-                        perform = true;
-                    }
+        boolean perform = StringUtils.isEmpty(query);
+        if (!perform) {
+            Matcher matcher = BAN_PATTERN.matcher(query);
+            if (matcher.find()) {
+                int delDays = 0;
+                if (StringUtils.isNotEmpty(matcher.group(1))) {
+                    delDays = Integer.parseInt(matcher.group(1));
+                }
+
+                builder.reason(matcher.group(2));
+                if (delDays <= 7) {
+                    builder.duration(delDays);
+                    perform = true;
                 }
             }
-            if (perform) {
-                moderationService.performAction(builder.build());
-                return ok(event);
-            }
         }
+        if (perform) {
+            moderationService.performAction(builder.build());
+            return ok(event);
+        }
+        showHelp(event, context);
+        return false;
+    }
+
+    @Override
+    public void showHelp(GuildMessageReceivedEvent event, BotContext context) {
         String banCommand = messageService.getMessageByLocale("discord.command.mod.ban.key",
                 context.getCommandLocale());
         messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.ban.help",
                 context.getConfig().getPrefix(), banCommand);
-        return false;
     }
 }

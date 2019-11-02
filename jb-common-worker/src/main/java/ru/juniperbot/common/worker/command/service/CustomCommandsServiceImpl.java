@@ -103,6 +103,12 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
         switch (command.getType()) {
             case ALIAS:
                 String commandContent = templateCompiler.processContent(command.getContent(), true);
+                if (StringUtils.isEmpty(commandContent)) {
+                    return true;
+                }
+                if (commandContent.startsWith(config.getPrefix())) {
+                    commandContent = commandContent.substring(config.getPrefix().length());
+                }
                 String[] args = commandContent.split("\\s+");
                 if (args.length > 0) {
                     commandContent = commandContent.substring(args[0].length()).trim();

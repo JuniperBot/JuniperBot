@@ -16,12 +16,15 @@
  */
 package ru.juniperbot.worker.commands.moderation;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.MemberWarning;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,24 +33,25 @@ import java.util.Objects;
         description = "discord.command.mod.removeWarm.desc",
         group = "discord.command.group.moderation",
         priority = 10)
-public class RemoveWarnCommand extends ModeratorCommandAsync {
+public class RemoveWarnCommand extends MentionableModeratorCommand {
+
+    @Autowired
+    private ModerationService moderationService;
+
+    public RemoveWarnCommand() {
+        super(false, true);
+    }
 
     @Override
-    public void doCommandAsync(GuildMessageReceivedEvent event, BotContext context, String query) {
-        Member mentioned = getMentioned(event);
-        query = removeMention(query);
-        if (mentioned == null || !StringUtils.isNumeric(query)) {
-            String warnsCommand = messageService.getMessageByLocale("discord.command.mod.warns.key",
-                    context.getCommandLocale());
-            String removeWarmCommand = messageService.getMessageByLocale("discord.command.mod.removeWarm.key",
-                    context.getCommandLocale());
-            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.help",
-                    context.getConfig().getPrefix(), warnsCommand, removeWarmCommand);
-            return;
+    public boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String query) {
+        LocalMember localMember = reference.getLocalMember();
+        if (!StringUtils.isNumeric(query)) {
+            showHelp(event, context);
+            return false;
         }
-        if (Objects.equals(mentioned, event.getMember())) {
+        if (event.getMember() != null && Objects.equals(localMember.getUser().getUserId(), event.getMember().getUser().getId())) {
             fail(event); // do not allow remove warns from yourself
-            return;
+            return false;
         }
 
         int index;
@@ -55,16 +59,27 @@ public class RemoveWarnCommand extends ModeratorCommandAsync {
             index = Integer.parseInt(query) - 1;
         } catch (NumberFormatException e) {
             fail(event);
-            return;
+            return false;
         }
 
-        List<MemberWarning> warningList = moderationService.getWarnings(mentioned);
+        List<MemberWarning> warningList = moderationService.getWarnings(localMember);
         if (index < 0 || warningList.size() <= index) {
             messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.empty", index + 1);
-            return;
+            return false;
         }
         MemberWarning warning = warningList.get(index);
         moderationService.removeWarn(warning);
         ok(event);
+        return true;
+    }
+
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        String warnsCommand = messageService.getMessageByLocale("discord.command.mod.warns.key",
+                context.getCommandLocale());
+        String removeWarmCommand = messageService.getMessageByLocale("discord.command.mod.removeWarm.key",
+                context.getCommandLocale());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.removeWarm.help",
+                context.getConfig().getPrefix(), warnsCommand, removeWarmCommand);
     }
 }

@@ -20,10 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.juniperbot.common.persistence.entity.base.FeaturedUserEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -40,6 +38,10 @@ public class LocalUser extends FeaturedUserEntity {
 
     @Column(name = "avatar_url")
     private String avatarUrl;
+
+    @Column(name = "last_online_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastOnline;
 
     @Transient
     public String getAsMention() {

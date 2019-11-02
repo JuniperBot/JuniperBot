@@ -33,7 +33,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public LocalUser get(User user) {
-        return repository.findByUserId(user.getId());
+        return getById(user.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalUser getById(String userId) {
+        return repository.findByUserId(userId);
     }
 
     @Override

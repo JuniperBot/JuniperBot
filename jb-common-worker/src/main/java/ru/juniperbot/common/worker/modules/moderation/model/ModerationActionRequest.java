@@ -35,8 +35,9 @@ public class ModerationActionRequest implements Serializable {
     @NonNull
     private ModerationActionType type;
 
-    @NonNull
     private Member violator;
+
+    private String violatorId;
 
     @Builder.Default
     private boolean auditLogging = true;

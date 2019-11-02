@@ -222,7 +222,7 @@ public class YouTubeSubscriptionServiceImpl extends BaseSubscriptionService<YouT
     public void prolongChannel(String channelId) {
         YouTubeChannel channel = channelRepository.findByChannelId(channelId);
         if (channel != null) {
-            channel.setExpiresAt(DateTime.now().plusDays(7).toDate());
+            channel.setExpiresAt(DateTime.now().plusDays(4).toDate());
             channelRepository.save(channel);
         }
     }

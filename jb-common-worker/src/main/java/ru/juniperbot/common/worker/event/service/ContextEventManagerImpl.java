@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.jmx.export.MBeanExportOperations;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
@@ -90,8 +91,17 @@ public class ContextEventManagerImpl implements JbEventManager {
         for (EventListener listener : listeners) {
             try {
                 listener.onEvent(event);
+            } catch (ObjectOptimisticLockingFailureException e) {
+                log.warn("[{}] optimistic lock happened for {}#{} while handling {}",
+                        listener.getClass().getSimpleName(),
+                        e.getPersistentClassName(),
+                        e.getIdentifier(),
+                        event);
             } catch (Throwable throwable) {
-                log.error("One of the EventListeners had an uncaught exception", throwable);
+                log.error("[{}] had an uncaught exception for handling {}",
+                        listener.getClass().getSimpleName(),
+                        event,
+                        throwable);
             }
         }
     }

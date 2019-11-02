@@ -19,34 +19,38 @@ package ru.juniperbot.common.worker.message.resolver;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.context.ApplicationContext;
-import ru.juniperbot.common.worker.message.resolver.node.FunctionalNodePlaceholderResolver;
+import ru.juniperbot.common.worker.message.resolver.node.AccessorsNodePlaceholderResolver;
 import ru.juniperbot.common.worker.message.resolver.node.SingletonNodePlaceholderResolver;
 import ru.juniperbot.common.worker.message.service.MessageService;
-import ru.juniperbot.common.worker.shared.support.TriFunction;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class GuildPlaceholderResolver extends FunctionalNodePlaceholderResolver<Guild> {
-
-    private final static Map<String, TriFunction<Guild, Locale, ApplicationContext, ?>> ACCESSORS = Map.of(
-            "id", (g, l, c) -> g.getId(),
-            "name", (g, l, c) -> g.getName(),
-            "iconUrl", (g, l, c) -> g.getIconUrl(),
-            "region", (g, l, c) -> c.getBean(MessageService.class).getEnumTitle(g.getRegion()),
-            "afkTimeout", (g, l, c) -> g.getAfkTimeout().getSeconds() / 60,
-            "afkChannel", (g, l, c) -> g.getAfkChannel() != null ? g.getAfkChannel().getName() : "",
-            "memberCount", (g, l, c) -> g.getMembers().size(),
-            "createdAt", (g, l, c) -> DateTimePlaceholderResolver.of(g.getTimeCreated(), l, g, c)
-    );
+public class GuildPlaceholderResolver extends AccessorsNodePlaceholderResolver<Guild> {
 
     private final Guild guild;
 
     public GuildPlaceholderResolver(@NonNull Guild guild,
                                     @NonNull Locale locale,
                                     @NonNull ApplicationContext applicationContext) {
-        super(ACCESSORS, locale, applicationContext);
+        super(locale, applicationContext);
         this.guild = guild;
+    }
+
+    @Override
+    protected Map<String, Supplier<?>> createAccessors() {
+        return Map.of(
+                "id", guild::getId,
+                "name", guild::getName,
+                "iconUrl", guild::getIconUrl,
+                "region", () -> context.getBean(MessageService.class).getEnumTitle(guild.getRegion()),
+                "afkTimeout", () -> guild.getAfkTimeout().getSeconds() / 60,
+                "afkChannel", () -> guild.getAfkChannel() != null ? guild.getAfkChannel().getName() : "",
+                "memberCount", () -> guild.getMembers().size(),
+                "createdAt", () -> DateTimePlaceholderResolver.of(guild.getTimeCreated(), locale, guild, context),
+                "owner", () -> MemberPlaceholderResolver.of(guild.getOwner(), locale, context)
+        );
     }
 
     @Override
