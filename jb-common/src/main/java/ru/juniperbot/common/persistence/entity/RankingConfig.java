@@ -37,6 +37,9 @@ public class RankingConfig extends GuildEntity {
     @Column
     private boolean enabled;
 
+    @Column
+    private boolean voiceEnabled;
+
     @Column(name = "announcement_enabled")
     private boolean announcementEnabled;
 
@@ -49,6 +52,9 @@ public class RankingConfig extends GuildEntity {
 
     @Column(precision = 3, scale = 2)
     private double textExpMultiplier = 1.0d;
+
+    @Column(precision = 3, scale = 2)
+    private double voiceExpMultiplier = 1.0d;
 
     @Column(name = "banned_roles", columnDefinition = "text[]")
     @Type(type = "string-array")

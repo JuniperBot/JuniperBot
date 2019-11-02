@@ -18,6 +18,7 @@ package ru.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -38,9 +39,11 @@ import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.utils.RankingUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
+import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
+import ru.juniperbot.module.ranking.utils.VoiceActivityTracker;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +77,9 @@ public class RankingServiceImpl implements RankingService {
     @Autowired
     private RankingConfigService configService;
 
+    @Autowired
+    private FeatureSetService featureSetService;
+
     private static Object DUMMY = new Object();
 
     private Cache<String, Object> coolDowns = CacheBuilder.newBuilder()
@@ -85,18 +91,20 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public void onMessage(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
+        Member member = event.getMember();
         RankingConfig config = configService.get(guild);
         if (config == null
+                || member == null
                 || !config.isEnabled()
-                || !memberService.isApplicable(event.getMember())
-                || configService.isBanned(config, event.getMember())) {
+                || !memberService.isApplicable(member)
+                || configService.isBanned(config, member)) {
             return;
         }
 
         String memberKey = String.format("%s_%s", guild.getId(), event.getAuthor().getId());
         if (coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())) {
             contextService.withContextAsync(guild, () -> {
-                Ranking ranking = getRanking(event.getMember());
+                Ranking ranking = getRanking(member);
                 int level = RankingUtils.getLevelFromExp(ranking.getExp());
                 ranking.setExp(ranking.getExp() + Math.round(RandomUtils.nextLong(15, 25)
                         * config.getTextExpMultiplier()));
@@ -105,21 +113,7 @@ public class RankingServiceImpl implements RankingService {
 
                 int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
                 if (newLevel <= RankingUtils.MAX_LEVEL && level != newLevel) {
-                    if (config.isAnnouncementEnabled()) {
-                        // it is lazy and out of current session
-                        MessageTemplate template = config.getAnnounceTemplate() != null
-                                ? templateService.getById(config.getAnnounceTemplate().getId()) : null;
-                        templateService
-                                .createMessage(template)
-                                .withFallbackContent("discord.command.rank.levelup")
-                                .withGuild(guild)
-                                .withMember(event.getMember())
-                                .withFallbackChannel(event.getChannel())
-                                .withDirectAllowed(true)
-                                .withVariable("level", newLevel)
-                                .compileAndSend();
-                    }
-                    updateRewards(config, event.getMember(), ranking);
+                    performLevelUp(config, ranking, member, event.getChannel(), newLevel);
                 }
             });
         }
@@ -134,7 +128,7 @@ public class RankingServiceImpl implements RankingService {
                     if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
                         Member recipientMember = guild.getMember(user);
                         if (recipientMember != null && memberService.isApplicable(recipientMember)) {
-                            LocalMember sender = entityAccessor.getOrCreate(event.getMember());
+                            LocalMember sender = entityAccessor.getOrCreate(member);
                             LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
                             giveCookie(sender, recipient, checkDate);
                         }
@@ -160,13 +154,31 @@ public class RankingServiceImpl implements RankingService {
 
     @Override
     @Transactional
-    public void addVoiceActivity(Member member, long duration) {
-        if (!memberService.isApplicable(member) || !configService.isEnabled(member.getGuild().getIdLong())) {
+    public void addVoiceActivity(Member member, VoiceActivityTracker.MemberState state) {
+        if (!memberService.isApplicable(member)) {
             return;
         }
+        RankingConfig config = configService.get(member.getGuild());
+        if (config == null || !config.isEnabled()) {
+            return;
+        }
+
         Ranking ranking = getRanking(member);
-        ranking.setVoiceActivity(ranking.getVoiceActivity() + duration);
-        rankingRepository.save(ranking);
+        ranking.setVoiceActivity(ranking.getVoiceActivity() + state.getActivityTime().get());
+
+        if (config.isVoiceEnabled() && featureSetService.isAvailable(member.getGuild())) {
+            int oldLevel = RankingUtils.getLevelFromExp(ranking.getExp());
+            long gainedExp = Math.round(15 * state.getPoints().get() * config.getVoiceExpMultiplier());
+            ranking.setExp(ranking.getExp() + gainedExp);
+            int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
+            rankingRepository.save(ranking);
+            // notify after save
+            if (oldLevel < newLevel) {
+                performLevelUp(config, ranking, member, null, newLevel);
+            }
+        } else {
+            rankingRepository.save(ranking);
+        }
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
@@ -220,6 +232,28 @@ public class RankingServiceImpl implements RankingService {
         Set<Role> rolesToAdd = getRoles(member, rewardsToAdd);
         Set<Role> rolesToRemove = getRoles(member, rewardsToRemove);
         member.getGuild().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
+    }
+
+    private void performLevelUp(@NonNull RankingConfig config,
+                                @NonNull Ranking ranking,
+                                @NonNull Member member,
+                                TextChannel defaultChannel,
+                                int newLevel) {
+        if (config.isAnnouncementEnabled()) {
+            // it is lazy and out of current session
+            MessageTemplate template = config.getAnnounceTemplate() != null
+                    ? templateService.getById(config.getAnnounceTemplate().getId()) : null;
+            templateService
+                    .createMessage(template)
+                    .withFallbackContent("discord.command.rank.levelup")
+                    .withGuild(member.getGuild())
+                    .withMember(member)
+                    .withFallbackChannel(defaultChannel)
+                    .withDirectAllowed(true)
+                    .withVariable("level", newLevel)
+                    .compileAndSend();
+        }
+        updateRewards(config, member, ranking);
     }
 
     private Set<Role> getRoles(Member member, List<RankingReward> rewards) {

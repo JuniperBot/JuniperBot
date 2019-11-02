@@ -35,6 +35,8 @@ public class RankingDto implements Serializable {
 
     private boolean enabled;
 
+    private boolean voiceEnabled;
+
     private boolean announcementEnabled;
 
     @Valid
@@ -53,6 +55,10 @@ public class RankingDto implements Serializable {
     @Min(50)
     @Max(500)
     private int textExpMultiplier = 100;
+
+    @Min(50)
+    @Max(500)
+    private int voiceExpMultiplier = 100;
 
     private boolean cookieEnabled;
 }

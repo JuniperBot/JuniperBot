@@ -110,7 +110,8 @@ public interface ApiMapperService {
     @Mappings({
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredChannels()))", target = "ignoredChannels"),
             @Mapping(expression = "java(ApiMapperService.toStringSet(source.getIgnoredVoiceChannels()))", target = "ignoredVoiceChannels"),
-            @Mapping(expression = "java((int)(source.getTextExpMultiplier() * 100.0d))", target = "textExpMultiplier")
+            @Mapping(expression = "java((int)(source.getTextExpMultiplier() * 100.0d))", target = "textExpMultiplier"),
+            @Mapping(expression = "java((int)(source.getVoiceExpMultiplier() * 100.0d))", target = "voiceExpMultiplier")
     })
     RankingDto getRankingDto(RankingConfig source);
 

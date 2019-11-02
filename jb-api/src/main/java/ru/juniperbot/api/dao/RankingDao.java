@@ -61,6 +61,8 @@ public class RankingDao extends AbstractDao {
         GuildDto guildDto = gatewayService.getGuildInfo(guildId);
         if (guildDto != null && CollectionUtils.containsAny(guildDto.getFeatureSets(), FeatureSet.BONUS)) {
             config.setTextExpMultiplier(dto.getTextExpMultiplier() / 100.0d);
+            config.setVoiceExpMultiplier(dto.getVoiceExpMultiplier() / 100.0d);
+            config.setVoiceEnabled(dto.isVoiceEnabled());
         }
 
         if (dto.getRewards() != null) {
