@@ -78,12 +78,12 @@ public class UserInfoCommand extends MentionableCommand {
         LocalUser localUser = reference.getLocalUser();
 
         EmbedBuilder builder = messageService.getBaseEmbed();
-        builder.setTitle(messageService.getMessage("discord.command.user.title", localMember.getEffectiveName()));
-        builder.setThumbnail(localUser.getAvatarUrl());
+        builder.setTitle(messageService.getMessage("discord.command.user.title", reference.getEffectiveName()));
+        builder.setThumbnail(reference.getEffectiveAvatarUrl());
         builder.setFooter(messageService.getMessage("discord.command.info.identifier", reference.getId()), null);
 
         StringBuilder commonBuilder = new StringBuilder();
-        getName(commonBuilder, localUser, localMember);
+        getName(commonBuilder, reference);
 
         if (reference.getMember() != null) {
             Member member = reference.getMember();
@@ -92,7 +92,7 @@ public class UserInfoCommand extends MentionableCommand {
                 getActivities(commonBuilder, member);
             }
             if (member.getOnlineStatus() == OnlineStatus.OFFLINE || member.getOnlineStatus() == OnlineStatus.INVISIBLE) {
-                if (localUser.getLastOnline() != null) {
+                if (localUser != null && localUser.getLastOnline() != null) {
                     getLastOnlineAt(commonBuilder, localUser, formatter);
                 }
             }
@@ -104,7 +104,7 @@ public class UserInfoCommand extends MentionableCommand {
 
         Guild guild = event.getGuild();
 
-        if (rankingConfigService.isEnabled(guild.getIdLong())) {
+        if (localMember != null && rankingConfigService.isEnabled(guild.getIdLong())) {
             RankingInfo info = rankingService.getRankingInfo(localMember);
             rankCommand.addFields(builder, info, guild);
         }
@@ -126,10 +126,23 @@ public class UserInfoCommand extends MentionableCommand {
         return true;
     }
 
-    private StringBuilder getName(StringBuilder commonBuilder, LocalUser user, LocalMember member) {
-        String userName = DiscordUtils.formatUser(user);
-        if (!Objects.equals(user.getName(), member.getEffectiveName())) {
-            userName += String.format(" (%s)", member.getEffectiveName());
+    private StringBuilder getName(StringBuilder commonBuilder, MemberReference reference) {
+        String userName;
+        if (reference.getUser() != null) {
+            userName = DiscordUtils.formatUser(reference.getUser());
+        } else if (reference.getLocalUser() != null) {
+            userName = DiscordUtils.formatUser(reference.getLocalUser());
+        } else {
+            return commonBuilder;
+        }
+        if (reference.getUser() != null && reference.getMember() != null) {
+            if (!Objects.equals(reference.getUser().getName(), reference.getMember().getEffectiveName())) {
+                userName += String.format(" (%s)", reference.getMember().getEffectiveName());
+            }
+        } else if (reference.getLocalUser() != null && reference.getLocalMember() != null) {
+            if (!Objects.equals(reference.getLocalUser().getName(), reference.getLocalMember().getEffectiveName())) {
+                userName += String.format(" (%s)", reference.getLocalMember().getEffectiveName());
+            }
         }
         return appendEntry(commonBuilder, "discord.command.user.username", userName);
     }

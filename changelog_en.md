@@ -7,6 +7,8 @@
    - Command `ранг/rank` now uses image cards;
  - **[music]** Music improvements:
    - **[Patreon]** Playback progress bar;
+ - Fixed `очистить/clear` didn't cleared system messages;
+ - Fixed `юзер/user` didn't worked for bots;
  - Some small fixes and improvements.
 
 ## Version 7.3

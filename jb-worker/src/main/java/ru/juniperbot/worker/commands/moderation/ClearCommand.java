@@ -100,8 +100,7 @@ public class ClearCommand extends MentionableModeratorCommand {
                 .takeAsync(number)
                 .thenApplyAsync(e -> {
                     Stream<Message> stream = e.stream()
-                            .filter(m -> m.getType() == MessageType.DEFAULT
-                                    && CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
+                            .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
                     if (StringUtils.isNotEmpty(userId)) {
                         stream = stream.filter(m -> m.getMember() != null
                                 && Objects.equals(m.getMember().getUser().getId(), userId));
