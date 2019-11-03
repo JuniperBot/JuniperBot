@@ -5,6 +5,8 @@
    - **[Patreon]** Exp multiplier in range 50% - 500%
    - **[Patreon]** Voice experience gaining (with multiplier support too);
    - Command `ранг/rank` now uses image cards;
+ - **[music]** Music improvements:
+   - **[Patreon]** Playback progress bar;
  - Some small fixes and improvements.
 
 ## Version 7.3

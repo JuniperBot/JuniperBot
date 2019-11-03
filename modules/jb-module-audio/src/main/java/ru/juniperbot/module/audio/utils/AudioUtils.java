@@ -21,17 +21,18 @@ import ru.juniperbot.common.persistence.entity.Playlist;
 import ru.juniperbot.common.persistence.entity.PlaylistItem;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
+import ru.juniperbot.module.audio.model.ProgressEmoji;
 
 import java.util.Objects;
 
-public class PlaylistUtils {
+public class AudioUtils {
 
-    private PlaylistUtils() {
+    private AudioUtils() {
         // private
     }
 
-    public static PlaylistItem find(Playlist playlist, AudioTrackInfo info) {
-        info = getNormalized(info);
+    public static PlaylistItem findPlaylist(Playlist playlist, AudioTrackInfo info) {
+        info = normalizeInfo(info);
         for (PlaylistItem item : playlist.getItems()) {
             if (item != null &&
                     Objects.equals(item.getTitle(), info.title) &&
@@ -45,7 +46,7 @@ public class PlaylistUtils {
         return null;
     }
 
-    public static AudioTrackInfo getNormalized(AudioTrackInfo info) {
+    public static AudioTrackInfo normalizeInfo(AudioTrackInfo info) {
         if (info == null) {
             return null;
         }
@@ -57,5 +58,16 @@ public class PlaylistUtils {
                 info.isStream,
                 CommonUtils.trimTo(DiscordUtils.getUrl(info.uri), 1000),
                 info.metadata);
+    }
+
+    public static String getProgressString(int progress) {
+        StringBuilder builder = new StringBuilder(ProgressEmoji.START_SEGMENT.getEmoji(progress));
+        progress = progress - 10;
+        for (int i = 0; i < 8; i++) {
+            builder.append(ProgressEmoji.INTERMEDIATE_SEGMENT.getEmoji(progress));
+            progress = progress - 10;
+        }
+        builder.append(ProgressEmoji.END_SEGMENT.getEmoji(progress));
+        return builder.toString();
     }
 }

@@ -39,7 +39,7 @@ import ru.juniperbot.module.audio.model.TrackData;
 import ru.juniperbot.module.audio.model.TrackRequest;
 import ru.juniperbot.module.audio.service.StoredPlaylistService;
 import ru.juniperbot.module.audio.service.handling.JbAudioPlayerManager;
-import ru.juniperbot.module.audio.utils.PlaylistUtils;
+import ru.juniperbot.module.audio.utils.AudioUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -122,7 +122,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
     }
 
     private PlaylistItem createItem(AudioTrack track, LocalMember member) {
-        AudioTrackInfo info = PlaylistUtils.getNormalized(track.getInfo());
+        AudioTrackInfo info = AudioUtils.normalizeInfo(track.getInfo());
         PlaylistItem playlistItem = new PlaylistItem(member);
         playlistItem.setType(track.getClass().getSimpleName());
         playlistItem.setTitle(info.title);
@@ -144,7 +144,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
             List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
             List<PlaylistItem> newItems = new ArrayList<>(playlist.getItems().size());
             instance.getPlaylist().forEach(e -> {
-                PlaylistItem item = PlaylistUtils.find(playlist, e.getTrack().getInfo());
+                PlaylistItem item = AudioUtils.findPlaylist(playlist, e.getTrack().getInfo());
                 if (item == null) {
                     LocalMember member = entityAccessor.getOrCreate(e.getMember());
                     item = createItem(e.getTrack(), member);
@@ -172,7 +172,7 @@ public class StoredPlaylistServiceImpl implements StoredPlaylistService {
         try {
             List<PlaylistItem> toRemove = new ArrayList<>(playlist.getItems());
             List<PlaylistItem> existentItems = tracks.stream()
-                    .map(e -> PlaylistUtils.find(playlist, e.getInfo()))
+                    .map(e -> AudioUtils.findPlaylist(playlist, e.getInfo()))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             toRemove.removeAll(existentItems);
