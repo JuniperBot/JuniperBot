@@ -3,6 +3,9 @@
 ## Version 7.4
  - **[Ranking]** Ranking system improvements:
    - **[Patreon]** Exp multiplier in range 50% - 500%
+   - **[Patreon]** Voice experience gaining (with multiplier support too);
+   - Command `ранг/rank` now uses image cards;
+ - Some small fixes and improvements.
 
 ## Version 7.3
  - **[music]**
