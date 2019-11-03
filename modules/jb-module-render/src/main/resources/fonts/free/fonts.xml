@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+	<fontFamily name="Free Serif">
+		<normal>fonts/free/FreeSerif.ttf</normal>
+		<exportFonts/>
+	</fontFamily>
+
+</fontFamilies>

@@ -18,5 +18,6 @@ description = 'JuniperBot Module: Ranking'
 
 dependencies {
     implementation project(':jb-common-worker')
+    implementation project(':modules:jb-module-render')
     implementation "org.jsoup:jsoup:${jsoupVersion}"
 }

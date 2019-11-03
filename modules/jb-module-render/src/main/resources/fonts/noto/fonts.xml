@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+	<fontFamily name="Noto CJK JP">
+		<normal><![CDATA[fonts/noto/NotoSansCJKjp-Regular.otf]]></normal>
+		<exportFonts/>
+	</fontFamily>
+</fontFamilies>

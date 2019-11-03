@@ -29,7 +29,6 @@ dependencies {
     api "io.prometheus:simpleclient_common:${prometheusVersion}"
     api "io.prometheus:simpleclient_dropwizard:${prometheusVersion}"
     api "org.jasypt:jasypt:${jasyptVersion}"
-    api "net.sf.jasperreports:jasperreports:${jasperReportsVersion}"
 
     implementation "org.goldrenard:jb:${programJbVersion}"
 
