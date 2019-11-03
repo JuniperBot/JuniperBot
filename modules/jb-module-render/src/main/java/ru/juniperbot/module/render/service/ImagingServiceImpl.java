@@ -66,8 +66,8 @@ public class ImagingServiceImpl implements ImagingService {
         BufferedImage result = new BufferedImage(AVATAR_SIZE, AVATAR_SIZE, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = result.createGraphics();
         if (avatar.getWidth() != AVATAR_SIZE || avatar.getHeight() != AVATAR_SIZE) {
-            Image scaled = avatar.getScaledInstance(AVATAR_SIZE, AVATAR_SIZE, Image.SCALE_SMOOTH);
-            g2d.drawImage(scaled, 0, 0, null);
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.drawImage(avatar, 0, 0, AVATAR_SIZE, AVATAR_SIZE, null);
         } else {
             g2d.drawImage(avatar, 0, 0, null);
         }
