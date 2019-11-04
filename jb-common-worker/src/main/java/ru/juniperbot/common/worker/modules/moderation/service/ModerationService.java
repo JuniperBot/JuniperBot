@@ -36,7 +36,7 @@ public interface ModerationService {
 
     boolean performAction(ModerationActionRequest request);
 
-    WarningResult warn(Member author, Member member, LocalMember localMember, String reason);
+    WarningResult warn(Member author, Member member, LocalMember localMember, Long duration, String reason);
 
     List<MemberWarning> getWarnings(LocalMember member);
 

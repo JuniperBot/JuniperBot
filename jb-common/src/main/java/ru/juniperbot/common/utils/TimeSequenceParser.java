@@ -17,7 +17,13 @@
 package ru.juniperbot.common.utils;
 
 import lombok.Getter;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,7 +73,16 @@ public class TimeSequenceParser {
 
     private final static Pattern PART_PATTERN = Pattern.compile("(\\d+)\\s+([a-zA-Zа-яА-Я]+)");
 
-    public Long parse(String string) {
+    private static final Pattern SHORT_SEQ_PATTERN = Pattern.compile("^" +
+            "((\\d+)(y|year|years|г|год|года|лет))?" +
+            "((\\d+)(mo|mos|month|months|мес|месяц|месяца|месяцев))?" +
+            "((\\d+)(w|week|weeks|н|нед|неделя|недели|недель|неделю]))?" +
+            "((\\d+)(d|day|days|д|день|дня|дней))?" +
+            "((\\d+)(h|hour|hours|ч|час|часа|часов))?" +
+            "((\\d+)(min|mins|minute|minutes|мин|минута|минуту|минуты|минут))?" +
+            "((\\d+)(s|sec|secs|second|seconds|с|c|сек|секунда|секунду|секунды|секунд))?$");
+
+    public static Long parseFull(String string) {
         Matcher m = PART_PATTERN.matcher(string);
 
         Map<FieldType, Integer> values = new HashMap<>();
@@ -94,5 +109,30 @@ public class TimeSequenceParser {
         calendar.setTime(currentDate);
         values.forEach((type, units) -> calendar.add(type.type, units));
         return values.isEmpty() ? null : calendar.getTimeInMillis() - currentDate.getTime();
+    }
+
+    /**
+     * Parses duration string
+     * @param value String to parse
+     * @return Amount of duration in milliseconds
+     */
+    public static long parseShort(@NonNull String value) {
+        Matcher matcher = SHORT_SEQ_PATTERN.matcher(value.toLowerCase()); // for some reason case-insensitive regex is not working for Cyrillic
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Incorrect period/duration: " + value);
+        }
+        LocalDateTime offsetDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.YEARS, matcher.group(2));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.MONTHS, matcher.group(5));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.WEEKS, matcher.group(8));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.DAYS, matcher.group(11));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.HOURS, matcher.group(14));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.MINUTES, matcher.group(17));
+        offsetDateTime = addUnit(offsetDateTime, ChronoUnit.SECONDS, matcher.group(20));
+        return offsetDateTime.toEpochSecond(ZoneOffset.UTC) * 1000;
+    }
+
+    private static <T extends Temporal> T addUnit(T instant, ChronoUnit unit, String amount) {
+        return StringUtils.isNumeric(amount) ? unit.addTo(instant, Long.parseLong(amount)) : instant;
     }
 }

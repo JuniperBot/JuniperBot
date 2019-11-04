@@ -28,8 +28,11 @@ import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.model.AuditActionType;
@@ -41,6 +44,7 @@ import ru.juniperbot.common.persistence.repository.MemberWarningRepository;
 import ru.juniperbot.common.service.ModerationConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
+import ru.juniperbot.common.worker.jobs.UnWarnJob;
 import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
@@ -86,6 +90,9 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private DiscordEntityAccessor entityAccessor;
+
+    @Autowired
+    private SchedulerFactoryBean schedulerFactoryBean;
 
     private Cache<String, String> lastActionCache = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
@@ -246,7 +253,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public WarningResult warn(Member author, Member member, LocalMember memberLocal, String reason) {
+    public WarningResult warn(Member author, Member member, LocalMember memberLocal, Long duration, String reason) {
         var result = WarningResult.builder();
 
         long guildId = author.getGuild().getIdLong();
@@ -308,7 +315,15 @@ public class ModerationServiceImpl implements ModerationService {
             }, member, "discord.command.mod.action.message.warn", reason, number);
         }
 
-        warningRepository.save(new MemberWarning(guildId, authorLocal, memberLocal, reason));
+        MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
+        DateTime now = DateTime.now();
+        Date endDate = duration != null ? now.plus(duration).toDate() : null;
+        warning.setDate(now.toDate());
+        warning.setEndDate(endDate);
+        warningRepository.save(warning);
+        if (endDate != null) {
+            scheduleUnWarn(warning, endDate);
+        }
         return result.number(number).build();
     }
 
@@ -322,6 +337,7 @@ public class ModerationServiceImpl implements ModerationService {
     @Transactional
     public void removeWarn(@NonNull MemberWarning warning) {
         warningRepository.delete(warning);
+        removeUnWarnSchedule(warning);
     }
 
     @Override
@@ -374,6 +390,32 @@ public class ModerationServiceImpl implements ModerationService {
             });
         } catch (Exception e) {
             consumer.accept(member);
+        }
+    }
+
+    private void scheduleUnWarn(MemberWarning warning, Date expireDate) {
+        try {
+            Trigger trigger = TriggerBuilder
+                    .newTrigger()
+                    .startAt(expireDate)
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                    .build();
+            JobDetail job = UnWarnJob.createDetails(warning);
+            schedulerFactoryBean.getScheduler().scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void removeUnWarnSchedule(MemberWarning warning) {
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        try {
+            JobKey key = UnWarnJob.getKey(warning);
+            if (scheduler.checkExists(key)) {
+                scheduler.deleteJob(key);
+            }
+        } catch (SchedulerException e) {
+            // fall down, we don't care
         }
     }
 }

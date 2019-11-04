@@ -20,11 +20,14 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.service.GatewayService;
+import ru.juniperbot.common.utils.TimeSequenceParser;
 import ru.juniperbot.common.worker.command.service.InternalCommandsService;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
@@ -97,5 +100,18 @@ public abstract class AbstractCommand implements Command {
             annotation = getClass().getDeclaredAnnotation(DiscordCommand.class);
         }
         return annotation;
+    }
+
+    protected Pair<String, Long> probeDuration(String input) {
+        if (StringUtils.isBlank(input)) {
+            return Pair.of(input, null);
+        }
+        String value = input.trim();
+        String[] parts = value.split("\\s+");
+        try {
+            return Pair.of(value.substring(parts[0].length()), TimeSequenceParser.parseShort(parts[0]));
+        } catch (Exception e) {
+            return Pair.of(input, null);
+        }
     }
 }

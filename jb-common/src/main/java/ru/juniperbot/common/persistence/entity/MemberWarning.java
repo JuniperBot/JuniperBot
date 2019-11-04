@@ -53,6 +53,10 @@ public class MemberWarning extends GuildEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDate;
+
     public MemberWarning(long guildId, LocalMember moderator, LocalMember violator, String reason) {
         this.guildId = guildId;
         this.moderator = moderator;

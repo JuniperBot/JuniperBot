@@ -42,4 +42,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7.4-28102019-3" author="caramel">
+        <addColumn tableName="member_warning">
+            <column name="end_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
