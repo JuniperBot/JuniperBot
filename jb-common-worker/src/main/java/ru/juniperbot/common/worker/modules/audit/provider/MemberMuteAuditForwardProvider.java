@@ -20,9 +20,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import ru.juniperbot.common.model.AuditActionType;
 import ru.juniperbot.common.persistence.entity.AuditAction;
-import ru.juniperbot.common.utils.PrettyTimeUtils;
-
-import java.util.Date;
 
 @ForwardProvider(AuditActionType.MEMBER_MUTE)
 public class MemberMuteAuditForwardProvider extends ModerationAuditForwardProvider {
@@ -40,17 +37,12 @@ public class MemberMuteAuditForwardProvider extends ModerationAuditForwardProvid
         addModeratorField(action, embedBuilder);
         addChannelField(action, embedBuilder);
         addReasonField(action, embedBuilder);
+        addExpirationField(action, embedBuilder);
 
         Integer duration = action.getAttribute(DURATION_ATTR, Integer.class);
         if (duration != null) {
             embedBuilder.addField(messageService.getMessage("audit.member.mute.duration.title"),
                     String.valueOf(duration), true);
-        }
-
-        Long durationMs = action.getAttribute(DURATION_MS_ATTR, Long.class);
-        if (durationMs != null) {
-            String result = PrettyTimeUtils.formatDuration(new Date(durationMs), contextService.getLocale());
-            embedBuilder.addField(messageService.getMessage("audit.member.mute.durationms.title"), result, true);
         }
 
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);

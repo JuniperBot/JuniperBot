@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -36,6 +35,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.model.AuditActionType;
+import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.service.MemberService;
@@ -46,6 +46,7 @@ import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 import ru.juniperbot.common.worker.modules.audit.provider.ModerationAuditForwardProvider;
 import ru.juniperbot.common.worker.modules.audit.provider.NicknameChangeAuditForwardProvider;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
+import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 import ru.juniperbot.common.worker.modules.moderation.service.MuteService;
 
@@ -55,6 +56,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static ru.juniperbot.common.worker.modules.audit.provider.ModerationAuditForwardProvider.DURATION_MS_ATTR;
 
 @DiscordEvent(priority = 0)
 public class MemberListener extends DiscordEventListener {
@@ -111,6 +114,10 @@ public class MemberListener extends DiscordEventListener {
                             if (moderatorUser != null && moderatorUser.equals(guild.getSelfMember().getUser())) {
                                 moderatorUser = null;
                             }
+                            ModerationActionRequest lastAction = moderationService.getLastAction(guild, event.getUser());
+                            if (lastAction != null && lastAction.getType() != ModerationActionType.BAN) {
+                                lastAction = null; // not a ban
+                            }
 
                             AuditActionBuilder builder = getAuditService().log(guild, AuditActionType.MEMBER_BAN)
                                     .withTargetUser(event.getUser())
@@ -120,19 +127,26 @@ public class MemberListener extends DiscordEventListener {
                                 builder.withUser(moderator);
                             } else if (moderatorUser != null) {
                                 builder.withUser(moderatorUser);
-                            } else {
-                                Member lastModerator = moderationService.getLastActionModerator(guild, event.getUser());
-                                builder.withUser(lastModerator);
+                            } else if (lastAction != null && lastAction.getModeratorId() != null) {
+                                builder.withUser(guild.getMemberById(lastAction.getModeratorId()));
+                            }
+                            if (lastAction != null) {
+                                builder.withAttribute(DURATION_MS_ATTR, lastAction.getDuration());
                             }
                             builder.save();
                         });
             } else {
-                Member lastModerator = moderationService.getLastActionModerator(guild, event.getUser());
-                getAuditService().log(guild, AuditActionType.MEMBER_BAN)
-                        .withUser(lastModerator)
+                AuditActionBuilder builder = getAuditService().log(guild, AuditActionType.MEMBER_BAN)
                         .withTargetUser(event.getUser())
-                        .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason())
-                        .save();
+                        .withAttribute(ModerationAuditForwardProvider.REASON_ATTR, e.getReason());
+                ModerationActionRequest lastAction = moderationService.getLastAction(guild, event.getUser());
+                if (lastAction != null && lastAction.getType() == ModerationActionType.BAN) {
+                    if (lastAction.getModeratorId() != null) {
+                        builder.withUser(guild.getMemberById(lastAction.getModeratorId()));
+                    }
+                    builder.withAttribute(DURATION_MS_ATTR, lastAction.getDuration());
+                }
+                builder.save();
             }
         });
     }
@@ -149,6 +163,7 @@ public class MemberListener extends DiscordEventListener {
         } else {
             actionBuilder.withTargetUser(event.getUser());
         }
+        moderationService.removeUnBanSchedule(event.getGuild().getId(), event.getUser().getId());
         actionBuilder.save();
     }
 

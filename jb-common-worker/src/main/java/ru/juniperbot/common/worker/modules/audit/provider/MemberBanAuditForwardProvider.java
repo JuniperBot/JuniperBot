@@ -34,6 +34,7 @@ public class MemberBanAuditForwardProvider extends ModerationAuditForwardProvide
 
         addModeratorField(action, embedBuilder);
         addReasonField(action, embedBuilder);
+        addExpirationField(action, embedBuilder);
 
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);
     }

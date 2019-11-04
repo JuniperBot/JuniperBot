@@ -562,8 +562,8 @@ public class AudioMessageManager {
         boolean closeDuration = false;
         if (bonusActive && instance.getPlayer().getPlayingTrack() != null) {
             if (!track.getInfo().isStream) {
-                double progress = (double)instance.getPosition() / (double)track.getDuration();
-                builder.append(AudioUtils.getProgressString((int)(progress * 100))).append(" ");
+                double progress = (double) instance.getPosition() / (double) track.getDuration();
+                builder.append(AudioUtils.getProgressString((int) (progress * 100))).append(" ");
             }
             builder.append("`").append(CommonUtils.formatDuration(instance.getPosition()));
             closeDuration = true;

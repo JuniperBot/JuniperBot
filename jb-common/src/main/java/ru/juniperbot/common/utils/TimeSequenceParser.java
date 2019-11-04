@@ -113,6 +113,7 @@ public class TimeSequenceParser {
 
     /**
      * Parses duration string
+     *
      * @param value String to parse
      * @return Amount of duration in milliseconds
      */

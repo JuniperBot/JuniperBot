@@ -42,7 +42,7 @@ public interface ModerationService {
 
     void removeWarn(MemberWarning warning);
 
-    Member getLastActionModerator(Member violator);
+    ModerationActionRequest getLastAction(Guild guild, User violator);
 
-    Member getLastActionModerator(Guild guild, User violator);
+    void removeUnBanSchedule(String guildId, String userId);
 }
