@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Minutes;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -126,7 +125,7 @@ public class MuteServiceImpl implements MuteService {
                 .withTargetUser(request.getViolator())
                 .withChannel(request.isGlobal() ? null : request.getChannel())
                 .withAttribute(REASON_ATTR, request.getReason())
-                .withAttribute(DURATION_ATTR, request.getDuration())
+                .withAttribute(DURATION_MS_ATTR, request.getDuration())
                 .withAttribute(GLOBAL_ATTR, request.isGlobal()) : null;
 
         Consumer<Object> schedule = g -> {
@@ -305,7 +304,7 @@ public class MuteServiceImpl implements MuteService {
             JobDetail job = UnMuteJob.createDetails(request.isGlobal(), request.getChannel(), request.getViolator());
             Trigger trigger = TriggerBuilder
                     .newTrigger()
-                    .startAt(DateTime.now().plusMinutes(request.getDuration()).toDate())
+                    .startAt(DateTime.now().plus(request.getDuration()).toDate())
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule())
                     .build();
             schedulerFactoryBean.getScheduler().scheduleJob(job, trigger);
@@ -342,7 +341,7 @@ public class MuteServiceImpl implements MuteService {
         state.setGuildId(request.getViolator().getGuild().getIdLong());
         DateTime dateTime = DateTime.now();
         if (request.getDuration() != null) {
-            dateTime = dateTime.plusMinutes(request.getDuration());
+            dateTime = dateTime.plus(request.getDuration());
         } else {
             dateTime = dateTime.plusYears(100);
         }
@@ -366,7 +365,7 @@ public class MuteServiceImpl implements MuteService {
             return false;
         }
 
-        Integer duration = expire != null ? Minutes.minutesBetween(expire, now).getMinutes() : null;
+        Long duration = expire != null ? expire.getMillis() - now.getMillis() : null;
         ModerationActionRequest request = ModerationActionRequest.builder()
                 .type(ModerationActionType.MUTE)
                 .channel(textChannel)

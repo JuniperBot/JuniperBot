@@ -30,6 +30,8 @@ public abstract class ModerationAuditForwardProvider extends LoggingAuditForward
 
     public static final String DURATION_ATTR = "duration";
 
+    public static final String DURATION_MS_ATTR = "duration_ms";
+
     protected void addModeratorField(AuditAction action, EmbedBuilder embedBuilder) {
         if (action.getUser() != null) {
             embedBuilder.addField(messageService.getMessage("audit.moderator.title"),

@@ -109,7 +109,7 @@ public abstract class AbstractCommand implements Command {
         String value = input.trim();
         String[] parts = value.split("\\s+");
         try {
-            return Pair.of(value.substring(parts[0].length()), TimeSequenceParser.parseShort(parts[0]));
+            return Pair.of(value.substring(parts[0].length()).trim(), TimeSequenceParser.parseShort(parts[0]));
         } catch (Exception e) {
             return Pair.of(input, null);
         }

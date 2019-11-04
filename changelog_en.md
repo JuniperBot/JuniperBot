@@ -9,7 +9,9 @@
    - **[Patreon]** Playback progress bar;
  - Fixed `очистить/clear` didn't cleared system messages;
  - Fixed `юзер/user` didn't worked for bots;
- - Warning duration support for command `пред/warn`;
+ - **[Moderation]** Moderation system improvements:
+   - Warning duration support for command `пред/warn`;
+   - Units support for warn/mute durations (year, months, weeks, days, hours, minutes, seconds);
  - Some small fixes and improvements.
 
 ## Version 7.3

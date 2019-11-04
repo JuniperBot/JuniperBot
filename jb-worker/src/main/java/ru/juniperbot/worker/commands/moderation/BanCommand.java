@@ -77,7 +77,7 @@ public class BanCommand extends MentionableModeratorCommand {
 
                 builder.reason(matcher.group(2));
                 if (delDays <= 7) {
-                    builder.duration(delDays);
+                    builder.delDays(delDays);
                     perform = true;
                 }
             }

@@ -57,8 +57,8 @@ public abstract class MentionableModeratorCommand extends MentionableCommand {
         return true;
     }
 
-    protected String getMuteDuration(int duration) {
-        String result = PrettyTimeUtils.formatDuration(new Date(60000 * duration), contextService.getLocale());
+    protected String getMuteDuration(long duration) {
+        String result = PrettyTimeUtils.formatDuration(new Date(duration), contextService.getLocale());
         return messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until", result);
     }
 }

@@ -50,7 +50,9 @@ public class ModerationActionRequest implements Serializable {
 
     private boolean global;
 
-    private Integer duration;
+    private Integer delDays;
+
+    private Long duration;
 
     private boolean stateless;
 

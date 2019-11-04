@@ -190,7 +190,7 @@ public class ModerationServiceImpl implements ModerationService {
                 if (!self.hasPermission(Permission.BAN_MEMBERS)) {
                     return false;
                 }
-                final int delDays = request.getDuration() != null ? request.getDuration() : 0;
+                final int delDays = request.getDelDays() != null ? request.getDelDays() : 0;
                 if (request.getViolator() != null) {
                     if (self.canInteract(request.getViolator())) {
                         notifyUserAction(e -> {
@@ -288,7 +288,10 @@ public class ModerationServiceImpl implements ModerationService {
 
                 switch (action.getType()) {
                     case MUTE:
-                        builder.duration(action.getDuration()).global(true);
+                        builder.global(true);
+                        if (action.getDuration() > 0) {
+                            builder.duration(action.getDuration() * 60000L);
+                        }
                         break;
                     case CHANGE_ROLES:
                         builder.assignRoles(action.getAssignRoles())
