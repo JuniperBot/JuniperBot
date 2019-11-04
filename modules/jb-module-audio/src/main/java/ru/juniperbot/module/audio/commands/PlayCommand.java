@@ -48,6 +48,11 @@ public class PlayCommand extends AudioCommand {
             query = message.getMessage().getAttachments().get(0).getUrl();
         }
 
+        if (StringUtils.isBlank(query)) {
+            showHelp(message, context);
+            return true;
+        }
+
         List<String> results = (List<String>) context.getAttribute(ATTR_SEARCH_RESULTS);
         if (StringUtils.isNumeric(query) && CollectionUtils.isNotEmpty(results)) {
             int index = Integer.parseInt(query) - 1;
@@ -83,5 +88,14 @@ public class PlayCommand extends AudioCommand {
     @Override
     protected boolean isActiveOnly() {
         return false;
+    }
+
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        String helpCommand = messageService.getMessageByLocale("discord.command.help.key",
+                context.getCommandLocale());
+        String musicGroup = messageService.getMessageByLocale("discord.command.group.music",
+                context.getCommandLocale());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.play.help",
+                context.getConfig().getPrefix(), helpCommand, musicGroup);
     }
 }
