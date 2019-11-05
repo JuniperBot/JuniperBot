@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.module.ranking.utils.VoiceActivityTracker;
 
 public interface RankingService {
 
@@ -29,7 +30,7 @@ public interface RankingService {
 
     void giveCookie(Member senderMember, Member recipientMember);
 
-    void addVoiceActivity(Member member, long duration);
+    void addVoiceActivity(Member member, VoiceActivityTracker.MemberState state);
 
     void updateRewards(Member member);
 

@@ -22,6 +22,7 @@ import ru.juniperbot.module.audio.AudioConfiguration;
 import ru.juniperbot.module.mafia.MafiaConfiguration;
 import ru.juniperbot.module.misc.MiscConfiguration;
 import ru.juniperbot.module.ranking.RankingConfiguration;
+import ru.juniperbot.module.render.RenderConfiguration;
 import ru.juniperbot.module.wikifur.WikiFurConfiguration;
 
 @Import({
@@ -29,7 +30,8 @@ import ru.juniperbot.module.wikifur.WikiFurConfiguration;
         WikiFurConfiguration.class,
         MiscConfiguration.class,
         RankingConfiguration.class,
-        MafiaConfiguration.class
+        MafiaConfiguration.class,
+        RenderConfiguration.class
 })
 @Configuration
 public class ModulesConfiguration {

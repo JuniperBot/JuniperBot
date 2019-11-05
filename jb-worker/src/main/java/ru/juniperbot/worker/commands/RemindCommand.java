@@ -27,7 +27,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.utils.TimeSequenceParser;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
@@ -49,13 +48,8 @@ public class RemindCommand extends AbstractCommand {
 
     private static final String RELATIVE_PATTERN_FORMAT = "^\\s*%s\\s+(\\d+\\s+[a-zA-Zа-яА-Я]+(?:\\s+\\d+\\s+[a-zA-Zа-яА-Я]+)*)\\s+(.*)$";
 
-    private static final TimeSequenceParser SEQUENCE_PARSER = new TimeSequenceParser();
-
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
-
-    @Autowired
-    private ConfigService configService;
 
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
@@ -75,7 +69,7 @@ public class RemindCommand extends AbstractCommand {
             String keyWord = messageService.getMessage("discord.command.remind.keyWord");
             m = Pattern.compile(String.format(RELATIVE_PATTERN_FORMAT, keyWord)).matcher(content);
             if (m.find()) {
-                Long millis = SEQUENCE_PARSER.parse(m.group(1));
+                Long millis = TimeSequenceParser.parseFull(m.group(1));
                 reminder = m.group(2);
                 if (millis != null && StringUtils.isNotEmpty(reminder)) {
                     date = DateTime.now().plus(millis);

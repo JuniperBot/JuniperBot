@@ -36,13 +36,13 @@ public interface ModerationService {
 
     boolean performAction(ModerationActionRequest request);
 
-    WarningResult warn(Member author, Member member, LocalMember localMember, String reason);
+    WarningResult warn(Member author, Member member, LocalMember localMember, Long duration, String reason);
 
     List<MemberWarning> getWarnings(LocalMember member);
 
     void removeWarn(MemberWarning warning);
 
-    Member getLastActionModerator(Member violator);
+    ModerationActionRequest getLastAction(Guild guild, User violator);
 
-    Member getLastActionModerator(Guild guild, User violator);
+    void removeUnBanSchedule(String guildId, String userId);
 }

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ranking-card" pageWidth="900" pageHeight="200" columnWidth="900" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8acaa693-649a-48da-845d-992da9f3b4c6">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<variable name="PROGRESS" class="java.lang.Integer">
+		<variableExpression><![CDATA[(int)$P{REPORT_PARAMETERS_MAP}.get( "percent" )]]></variableExpression>
+	</variable>
+	<variable name="VOICE_ACTIVITY" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "voiceActivity" ) != null ? " <style fontName='Symbola'>🎤</style> " + $P{REPORT_PARAMETERS_MAP}.get( "voiceActivity" ) : ""]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="200" splitType="Stretch">
+			<image onErrorType="Blank">
+				<reportElement key="background" x="0" y="0" width="900" height="200" uuid="9b76bd9a-d1c3-4c6f-b0ba-bc2e84b7a712">
+					<property name="com.jaspersoft.studio.element.name" value="Background"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "backgroundImage" )]]></imageExpression>
+			</image>
+			<rectangle>
+				<reportElement x="0" y="0" width="900" height="200" forecolor="rgba(0, 0, 0, 0.19607843)" backcolor="rgba(0, 0, 0, 0.39215687)" uuid="51aa5305-0460-49f7-9718-8df3045c8074">
+					<property name="com.jaspersoft.studio.element.name" value="ShadowLayer"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineColor="rgba(0, 0, 0, 0.0)"/>
+				</graphicElement>
+			</rectangle>
+			<image>
+				<reportElement key="avatar" x="20" y="20" width="160" height="160" uuid="0497f877-7b43-4929-96b7-15df6f7043fd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.element.name" value="Avatar"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "avatarImage" )]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="200" y="20" width="680" height="60" forecolor="#FFFFFF" uuid="37cdb745-6f42-4a33-9d3c-8e712df95ef1">
+					<property name="com.jaspersoft.studio.element.name" value="Member Name"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="Roboto-Light" size="43"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "name" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="95" width="670" height="40" forecolor="#FFFFFF" uuid="64ee4d70-595e-405a-afaf-cab76406e3b8">
+					<property name="com.jaspersoft.studio.element.name" value="Progress-Text"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="styled">
+					<font fontName="Roboto-Light" size="26"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<style isBold='true'>" + $P{REPORT_PARAMETERS_MAP}.get( "remainingExp" ) + "</style> / " + $P{REPORT_PARAMETERS_MAP}.get( "levelExp" ) + " EXP"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="57" width="670" height="85" forecolor="#FFFFFF" uuid="cac0591f-71b6-4503-b115-f0db227a93f1">
+					<property name="com.jaspersoft.studio.element.name" value="Rank-Text"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" markup="styled">
+					<font fontName="Roboto-Light" size="20"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "levelText" ) + " <style fontName='Roboto' size='52'>" + $P{REPORT_PARAMETERS_MAP}.get( "level" ) + "</style> " + $P{REPORT_PARAMETERS_MAP}.get( "rankText" ) + " <style fontName='Roboto' size='52'>#" + $P{REPORT_PARAMETERS_MAP}.get( "rank" ) + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="20" width="670" height="82" forecolor="#FFFFFF" uuid="500cbd08-955a-436e-b09c-0955330fcf09">
+					<property name="com.jaspersoft.studio.element.name" value="Parts-Text"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="styled">
+					<font fontName="Roboto-Light" size="26"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<style fontName='Symbola'>🍪</style> " + $P{REPORT_PARAMETERS_MAP}.get( "cookies" ) + $V{VOICE_ACTIVITY}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="680" height="40" forecolor="#000000" backcolor="rgba(255, 255, 255, 0.15686275)" uuid="2a4170e5-a9a1-454e-a5d5-12d5dc3b9474">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Background"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="40" height="40" forecolor="#000000" backcolor="#F39C12" uuid="8190a149-04b8-4983-8d9e-6fce4b8c29de">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-1"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 0 && $V{PROGRESS} <= 7]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="60" height="40" forecolor="#000000" backcolor="#F39C12" uuid="8ea73e61-f1aa-40ff-9715-7748fd5c40d3">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-2"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 7 && $V{PROGRESS} <= 10]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="80" height="40" forecolor="#000000" backcolor="#F39C12" uuid="2f93f99d-8125-42bd-8dcd-ae74a94f9477">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-3"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 10 && $V{PROGRESS} <= 13]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="100" height="40" forecolor="#000000" backcolor="#F39C12" uuid="cf51e4b0-6986-4852-a190-fd923871e6dd">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-4"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 13 && $V{PROGRESS} <= 16]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="120" height="40" forecolor="#000000" backcolor="#F39C12" uuid="54a88a20-c708-4588-ae83-609ce7db8acb">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-5"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 16 && $V{PROGRESS} <= 19]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="140" height="40" forecolor="#000000" backcolor="#F39C12" uuid="6777f472-07af-402c-90bd-911889154017">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-6"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 19 && $V{PROGRESS} <= 22]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="160" height="40" forecolor="#000000" backcolor="#F39C12" uuid="ba4168b9-5ad1-478a-8518-17969382c522">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-7"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 22 && $V{PROGRESS} <= 25]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="180" height="40" forecolor="#000000" backcolor="#F39C12" uuid="e5309f34-3c1a-4706-aa91-6a085d5f5476">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-8"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 25 && $V{PROGRESS} <= 28]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="200" height="40" forecolor="#000000" backcolor="#F39C12" uuid="2e54c2ec-1740-41d0-922c-773d21a9c4cd">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-9"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 28 && $V{PROGRESS} <= 30]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="220" height="40" forecolor="#000000" backcolor="#F39C12" uuid="535e3246-89d5-4a8b-953a-0982f8b4d454">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-10"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 30 && $V{PROGRESS} <= 33]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="240" height="40" forecolor="#000000" backcolor="#F39C12" uuid="13e1124f-dda1-4af4-b1f3-768affa9dbb2">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-11"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 33 && $V{PROGRESS} <= 36]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="260" height="40" forecolor="#000000" backcolor="#F39C12" uuid="c4d2dcaf-d119-4a7e-874e-87873122ba7d">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-12"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 36 && $V{PROGRESS} <= 39]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="280" height="40" forecolor="#000000" backcolor="#F39C12" uuid="25e4578b-a9b6-49e4-b09b-f768dcc300ee">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-13"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 39 && $V{PROGRESS} <= 42]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="300" height="40" forecolor="#000000" backcolor="#F39C12" uuid="55e2535e-2270-4d3f-97f3-5bed4a2283cb">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-14"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 42 && $V{PROGRESS} <= 45]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="320" height="40" forecolor="#000000" backcolor="#F39C12" uuid="7d0b0583-5157-4b5e-8ad0-a035e79b4327">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-15"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 45 && $V{PROGRESS} <= 48]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="340" height="40" forecolor="#000000" backcolor="#F39C12" uuid="8f6d1b20-33cd-4f77-a756-b0c02668a890">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-16"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 48 && $V{PROGRESS} <= 50]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="360" height="40" forecolor="#000000" backcolor="#F39C12" uuid="f9e9a5c0-59ab-4c3f-b70d-2cc79dd037a7">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-17"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 50 && $V{PROGRESS} <= 53]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="380" height="40" forecolor="#000000" backcolor="#F39C12" uuid="9ae87fbc-8439-4db0-91b8-9f1dace9f9dd">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-18"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 53 && $V{PROGRESS} <= 56]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="400" height="40" forecolor="#000000" backcolor="#F39C12" uuid="d1981230-b9f8-4ee7-914e-0201d876afa4">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-19"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 56 && $V{PROGRESS} <= 59]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="420" height="40" forecolor="#000000" backcolor="#F39C12" uuid="1f0ea7c9-59e4-4a1f-a0d1-8372b7a28ace">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-20"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 59 && $V{PROGRESS} <= 62]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="440" height="40" forecolor="#000000" backcolor="#F39C12" uuid="16472b2e-7592-4a13-b076-c2ab49393b87">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-21"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 62 && $V{PROGRESS} <= 65]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="460" height="40" forecolor="#000000" backcolor="#F39C12" uuid="c64ebdbd-c3ed-423c-abed-0f162b893e26">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-22"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 65 && $V{PROGRESS} <= 68]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="480" height="40" forecolor="#000000" backcolor="#F39C12" uuid="9b1bb5a4-95bf-4c75-bd04-88aa6fefc841">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-23"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 68 && $V{PROGRESS} <= 70]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="500" height="40" forecolor="#000000" backcolor="#F39C12" uuid="c7137b1b-280d-40e6-bead-0b9912e89206">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-24"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 70 && $V{PROGRESS} <= 73]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="520" height="40" forecolor="#000000" backcolor="#F39C12" uuid="5ddd0ad5-de54-49e7-8ac7-c571d01e7751">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-25"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 73 && $V{PROGRESS} <= 76]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="540" height="40" forecolor="#000000" backcolor="#F39C12" uuid="1517b8e6-93cf-4780-8b94-67ef4f531bc5">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-26"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 76 && $V{PROGRESS} <= 79]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="560" height="40" forecolor="#000000" backcolor="#F39C12" uuid="678d419c-729f-4b05-9429-3b4590fbdb69">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-27"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 79 && $V{PROGRESS} <= 82]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="580" height="40" forecolor="#000000" backcolor="#F39C12" uuid="a0d1149f-6a9f-4bbb-a281-601ffca08844">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-28"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 82 && $V{PROGRESS} <= 85]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="600" height="40" forecolor="#000000" backcolor="#F39C12" uuid="a0624e22-c390-428a-b767-7bed4b35ca38">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-29"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 85 && $V{PROGRESS} <= 88]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="620" height="40" forecolor="#000000" backcolor="#F39C12" uuid="1ce839aa-8f0d-4335-92d8-cbf5a1f1065c">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-30"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 88 && $V{PROGRESS} <= 91]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="640" height="40" forecolor="#000000" backcolor="#F39C12" uuid="44660ada-f7c2-4a61-9612-861c2eaa7d76">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-31"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 91 && $V{PROGRESS} <= 94]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement x="200" y="138" width="660" height="40" forecolor="#000000" backcolor="#F39C12" uuid="0756a8de-5c8f-405a-b321-438ef99c28a2">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-32"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 94 && $V{PROGRESS} <= 97]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="20">
+				<reportElement key="" x="200" y="140" width="680" height="40" forecolor="#000000" backcolor="#F39C12" uuid="8d5d9bd8-f5e5-4dc9-8d5e-0c98ee8f3e15">
+					<property name="com.jaspersoft.studio.element.name" value="Level-Progress-33"/>
+					<printWhenExpression><![CDATA[$V{PROGRESS} > 97]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</detail>
+</jasperReport>

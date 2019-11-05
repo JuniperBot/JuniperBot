@@ -1,5 +1,21 @@
 # JuniperBot Changelog:
 
+## Version 7.4
+ - **[Ranking]** Ranking system improvements:
+   - **[Patreon]** Exp multiplier in range 50% - 500%
+   - **[Patreon]** Voice experience gaining (with multiplier support too);
+   - Command `ранг/rank` now uses image cards;
+ - **[music]** Music improvements:
+   - **[Patreon]** Playback progress bar;
+   - `плей/play` commands with no arguments will return help message;
+ - Fixed `очистить/clear` didn't cleared system messages;
+ - Fixed `юзер/user` didn't worked for bots;
+ - **[Moderation]** Moderation system improvements:
+   - Warning duration support for command `пред/warn`;
+   - Units support for warn/mute durations (year, months, weeks, days, hours, minutes, seconds);
+   - Temporal bans support;
+ - Some small fixes and improvements.
+
 ## Version 7.3
  - **[music]**
    - SoundCloud fixes (again...);

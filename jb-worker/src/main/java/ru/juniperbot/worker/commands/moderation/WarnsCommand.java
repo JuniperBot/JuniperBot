@@ -66,7 +66,6 @@ public class WarnsCommand extends MentionableCommand {
 
         EmbedBuilder builder = messageService.getBaseEmbed();
         builder.setTitle(messageService.getMessage("discord.command.mod.warns.message.title", member.getEffectiveName()));
-        final String noReasonMessage = messageService.getMessage("discord.command.mod.warns.noReason");
 
         DateTimeFormatter formatter = DateTimeFormat
                 .shortDateTime()
@@ -80,14 +79,23 @@ public class WarnsCommand extends MentionableCommand {
                     formatter.print(new DateTime(warning.getDate())),
                     CommonUtils.getUTCOffset(context.getTimeZone()),
                     warning.getModerator().getEffectiveName());
-            String reason = warning.getReason();
-            if (StringUtils.isEmpty(reason)) {
-                reason = noReasonMessage;
+            StringBuilder detailsBuilder = new StringBuilder();
+            if (StringUtils.isNotEmpty(warning.getReason())) {
+                detailsBuilder.append(messageService.getMessage("discord.command.mod.warns.reason",
+                        warning.getReason()));
             }
-            if ((length += title.length() + reason.length()) > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
+            if (warning.getEndDate() != null) {
+                if (detailsBuilder.length() > 0) {
+                    detailsBuilder.append("\n");
+                }
+                detailsBuilder.append(messageService.getMessage("discord.command.mod.warns.until",
+                        formatter.print(new DateTime(warning.getEndDate())),
+                        CommonUtils.getUTCOffset(context.getTimeZone())));
+            }
+            if ((length += title.length() + detailsBuilder.length()) > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
                 break;
             }
-            builder.addField(title, reason, true);
+            builder.addField(title, detailsBuilder.toString(), false);
         }
         messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
         return true;

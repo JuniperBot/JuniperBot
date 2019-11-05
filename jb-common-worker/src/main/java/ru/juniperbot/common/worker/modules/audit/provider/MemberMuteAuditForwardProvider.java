@@ -37,6 +37,7 @@ public class MemberMuteAuditForwardProvider extends ModerationAuditForwardProvid
         addModeratorField(action, embedBuilder);
         addChannelField(action, embedBuilder);
         addReasonField(action, embedBuilder);
+        addExpirationField(action, embedBuilder);
 
         Integer duration = action.getAttribute(DURATION_ATTR, Integer.class);
         if (duration != null) {

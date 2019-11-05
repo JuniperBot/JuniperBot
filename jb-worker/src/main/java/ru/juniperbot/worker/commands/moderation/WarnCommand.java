@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
@@ -53,8 +54,9 @@ public class WarnCommand extends MentionableModeratorCommand {
             return false;
         }
 
+        Pair<String, Long> probe = probeDuration(query);
         List<Role> currentRoles = violator != null ? new ArrayList<>(violator.getRoles()) : null;
-        WarningResult result = moderationService.warn(event.getMember(), violator, localMember, query);
+        WarningResult result = moderationService.warn(event.getMember(), violator, localMember, probe.getValue(), probe.getKey());
 
         StringBuilder argumentBuilder = new StringBuilder();
 

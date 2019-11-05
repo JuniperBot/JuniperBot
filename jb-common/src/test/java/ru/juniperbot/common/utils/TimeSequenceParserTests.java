@@ -21,14 +21,34 @@ import org.junit.Test;
 
 public class TimeSequenceParserTests {
 
-    private TimeSequenceParser parser = new TimeSequenceParser();
-
     @Test
     public void test() {
-        Assert.assertEquals((Long) 1012L, parser.parse("1 секунду 12 миллисекунд"));
-        Assert.assertEquals((Long) 120012L, parser.parse("2 минуты 12 миллисекунд"));
-        Assert.assertNull(parser.parse("2 минуты 8299 миллисекунд"));
-        Assert.assertNull(parser.parse("9 миллисекунд 2 минуты"));
-        Assert.assertEquals((Long) 82L, parser.parse("82 миллисекунд"));
+        Assert.assertEquals((Long) 1012L, TimeSequenceParser.parseFull("1 секунду 12 миллисекунд"));
+        Assert.assertEquals((Long) 120012L, TimeSequenceParser.parseFull("2 минуты 12 миллисекунд"));
+        Assert.assertNull(TimeSequenceParser.parseFull("2 минуты 8299 миллисекунд"));
+        Assert.assertNull(TimeSequenceParser.parseFull("9 миллисекунд 2 минуты"));
+        Assert.assertEquals((Long) 82L, TimeSequenceParser.parseFull("82 миллисекунд"));
+
+        Assert.assertEquals(31536000000L, TimeSequenceParser.parseShort("1y")); // expects normal (non-leap) year
+        Assert.assertEquals(2678400000L, TimeSequenceParser.parseShort("1mos")); // expects 31 day
+        Assert.assertEquals(604800000L, TimeSequenceParser.parseShort("1w"));
+        Assert.assertEquals(86400000L, TimeSequenceParser.parseShort("1d"));
+        Assert.assertEquals(3600000L, TimeSequenceParser.parseShort("1h"));
+        Assert.assertEquals(60000L, TimeSequenceParser.parseShort("1min"));
+        Assert.assertEquals(1000L, TimeSequenceParser.parseShort("1s"));
+        Assert.assertEquals(61000L, TimeSequenceParser.parseShort("1min1s"));
+        Assert.assertEquals(61000L, TimeSequenceParser.parseShort("1MIN1S"));
+        Assert.assertEquals(60000L, TimeSequenceParser.parseShort("60s"));
+
+        Assert.assertEquals(31536000000L, TimeSequenceParser.parseShort("1г")); // expects normal (non-leap) year
+        Assert.assertEquals(2678400000L, TimeSequenceParser.parseShort("1мес")); // expects 31 day
+        Assert.assertEquals(604800000L, TimeSequenceParser.parseShort("1н"));
+        Assert.assertEquals(86400000L, TimeSequenceParser.parseShort("1д"));
+        Assert.assertEquals(3600000L, TimeSequenceParser.parseShort("1ч"));
+        Assert.assertEquals(60000L, TimeSequenceParser.parseShort("1мин"));
+        Assert.assertEquals(1000L, TimeSequenceParser.parseShort("1с"));
+        Assert.assertEquals(61000L, TimeSequenceParser.parseShort("1мин1с"));
+        Assert.assertEquals(61000L, TimeSequenceParser.parseShort("1МИН1С"));
+        Assert.assertEquals(60000L, TimeSequenceParser.parseShort("60с"));
     }
 }

@@ -16,16 +16,30 @@
  */
 package ru.juniperbot.module.ranking.commands;
 
+import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.module.render.model.ReportType;
+import ru.juniperbot.module.render.service.ImagingService;
+import ru.juniperbot.module.render.service.JasperReportsService;
+import ru.juniperbot.module.render.utils.ImageUtils;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @DiscordCommand(
         key = "discord.command.rank.key",
@@ -34,24 +48,80 @@ import ru.juniperbot.common.worker.command.model.DiscordCommand;
         priority = 202)
 public class RankCommand extends RankingCommand {
 
+    @Autowired
+    private JasperReportsService reportsService;
+
+    @Autowired
+    private ImagingService imagingService;
+
+    @Setter
+    private boolean cardEnabled = true;
+
     @Override
     protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
-        Member member = message.getMember();
-        if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
-            member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
-        }
-        if (member == null) {
-            return true;
-        }
-        RankingInfo info = rankingService.getRankingInfo(member);
-        EmbedBuilder builder = messageService.getBaseEmbed(true);
-        addFields(builder, info, member.getGuild());
+        contextService.queue(message.getGuild(), message.getChannel().sendTyping(), e -> {
+            Member member = message.getMember();
+            if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
+                member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
+            }
+            if (member == null) {
+                return;
+            }
+            RankingInfo info = rankingService.getRankingInfo(member);
 
-        long desiredPage = (info.getRank() / 50) + 1;
-        String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
-                desiredPage, member.getUser().getId());
-        builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
-        messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+            Member self = message.getGuild().getSelfMember();
+            if (cardEnabled
+                    && self.hasPermission(message.getChannel(), Permission.MESSAGE_ATTACH_FILES)
+                    && sendCard(message.getChannel(), member, info)) {
+                return;
+            }
+
+            EmbedBuilder builder = messageService.getBaseEmbed(true);
+            addFields(builder, info, member.getGuild());
+
+            long desiredPage = (info.getRank() / 50) + 1;
+            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
+                    desiredPage, member.getUser().getId());
+            builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
+            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+        });
+        return true;
+    }
+
+    private boolean sendCard(TextChannel channel, Member member, RankingInfo info) {
+        Map<String, Object> templateMap = new HashMap<>();
+        templateMap.put("name", ""); // it fails on font fallback so we have to render it on our own
+        templateMap.put("avatarImage", imagingService.getAvatarWithStatus(member));
+        templateMap.put("backgroundImage", imagingService.getResourceImage("ranking-card-background.png"));
+        templateMap.put("percent", info.getPct());
+        templateMap.put("remainingExp", info.getRemainingExp());
+        templateMap.put("levelExp", info.getLevelExp());
+        templateMap.put("totalExp", info.getTotalExp());
+        templateMap.put("level", info.getLevel());
+        templateMap.put("rank", info.getRank());
+        templateMap.put("cookies", info.getCookies());
+        if (info.getVoiceActivity() > 0) {
+            templateMap.put("voiceActivity", CommonUtils.formatDuration(info.getVoiceActivity()));
+        }
+        templateMap.put("rankText", messageService.getMessage("discord.command.rank.info.rank.short.title"));
+        templateMap.put("levelText", messageService.getMessage("discord.command.rank.info.lvl.short.title"));
+
+        BufferedImage cardImage = reportsService.generateImage(ReportType.RANKING_CARD, templateMap);
+        if (cardImage == null) {
+            return false;
+        }
+
+        Graphics2D g2d = cardImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        List<Font> fontVariants = reportsService.loadFontVariants(Font.PLAIN, 40, "Roboto Light");
+        g2d.drawString(ImageUtils.createFallbackString(member.getEffectiveName(), fontVariants).getIterator(), 200, 63);
+        g2d.dispose();
+
+        byte[] cardBytes = ImageUtils.getImageBytes(cardImage, "png");
+        if (cardBytes == null) {
+            return false;
+        }
+        channel.sendFile(cardBytes, "ranking-card.png").queue();
         return true;
     }
 

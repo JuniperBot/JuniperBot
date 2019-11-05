@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
@@ -39,7 +40,7 @@ import java.util.regex.Pattern;
         priority = 30)
 public class MuteCommand extends MentionableModeratorCommand {
 
-    private static final String COMMAND_PATTERN = "^(\\d+\\s*)?(%s\\s*)?(.*)$";
+    private static final String COMMAND_PATTERN = "^(%s\\s*)?(.*)$";
 
     protected MuteCommand() {
         super(false, true);
@@ -58,6 +59,9 @@ public class MuteCommand extends MentionableModeratorCommand {
         String globalKeyWord = messageService.getMessageByLocale("discord.command.mod.mute.key.everywhere",
                 context.getCommandLocale());
 
+        Pair<String, Long> probe = probeDuration(query);
+        query = probe.getKey();
+
         Matcher m = Pattern
                 .compile(String.format(COMMAND_PATTERN, Pattern.quote(globalKeyWord)))
                 .matcher(query);
@@ -66,17 +70,8 @@ public class MuteCommand extends MentionableModeratorCommand {
             return false;
         }
 
-        Integer duration = null;
-        if (StringUtils.isNotBlank(m.group(1))) {
-            try {
-                duration = Integer.parseInt(m.group(1).trim());
-            } catch (NumberFormatException e) {
-                showHelp(event, context);
-                return false;
-            }
-        }
-        boolean global = m.group(2) != null && globalKeyWord.equals(m.group(2).trim());
-        String reason = m.group(3);
+        boolean global = m.group(1) != null && globalKeyWord.equals(m.group(1).trim());
+        String reason = m.group(2);
 
         ModerationActionRequest request = ModerationActionRequest.builder()
                 .type(ModerationActionType.MUTE)
@@ -84,7 +79,7 @@ public class MuteCommand extends MentionableModeratorCommand {
                 .channel(event.getChannel())
                 .violator(violator)
                 .global(global)
-                .duration(duration)
+                .duration(probe.getValue())
                 .reason(reason)
                 .build();
 
@@ -95,8 +90,8 @@ public class MuteCommand extends MentionableModeratorCommand {
         if (muted) {
             result.append(messageService.getMessage("discord.command.mod.mute.done",
                     violator.getEffectiveName()));
-            if (duration != null) {
-                result.append("\n").append(getMuteDuration(duration));
+            if (probe.getValue() != null) {
+                result.append("\n").append(getMuteDuration(probe.getValue()));
             }
             if (StringUtils.isNotEmpty(reason)) {
                 builder.addField(messageService.getMessage("audit.reason"),

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+	<fontFamily name="DejaVu Sans">
+		<normal>fonts/dejavu/DejaVuSans.ttf</normal>
+		<bold>fonts/dejavu/DejaVuSans-Bold.ttf</bold>
+		<italic>fonts/dejavu/DejaVuSans-Oblique.ttf</italic>
+		<boldItalic>fonts/dejavu/DejaVuSans-BoldOblique.ttf</boldItalic>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Sans', Arial, Helvetica, sans-serif</export>
+		</exportFonts>
+
+	</fontFamily>
+
+	<fontFamily name="DejaVu Serif">
+		<normal>fonts/dejavu/DejaVuSerif.ttf</normal>
+		<bold>fonts/dejavu/DejaVuSerif-Bold.ttf</bold>
+		<italic>fonts/dejavu/DejaVuSerif-Italic.ttf</italic>
+		<boldItalic>fonts/dejavu/DejaVuSerif-BoldItalic.ttf</boldItalic>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Serif', 'Times New Roman', Times, serif</export>
+		</exportFonts>
+	</fontFamily>
+
+	<fontFamily name="DejaVu Sans Mono">
+		<normal>fonts/dejavu/DejaVuSansMono.ttf</normal>
+		<bold>fonts/dejavu/DejaVuSansMono-Bold.ttf</bold>
+		<italic>fonts/dejavu/DejaVuSansMono-Oblique.ttf</italic>
+		<boldItalic>fonts/dejavu/DejaVuSansMono-BoldOblique.ttf</boldItalic>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Sans Mono', 'Courier New', Courier, monospace</export>
+		</exportFonts>
+	</fontFamily>
+
+	<fontFamily name="SansSerif">
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Sans', Arial, Helvetica, sans-serif</export>
+		</exportFonts>
+	</fontFamily>
+	<fontFamily name="Serif">
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Serif', 'Times New Roman', Times, serif</export>
+		</exportFonts>
+	</fontFamily>
+	<fontFamily name="Monospaced">
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'DejaVu Sans Mono', 'Courier New', Courier, monospace</export>
+		</exportFonts>
+	</fontFamily>
+
+</fontFamilies>

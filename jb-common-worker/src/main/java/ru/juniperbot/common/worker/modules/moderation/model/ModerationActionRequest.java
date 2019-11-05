@@ -22,9 +22,11 @@ import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.joda.time.DateTime;
 import ru.juniperbot.common.model.ModerationActionType;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -39,10 +41,12 @@ public class ModerationActionRequest implements Serializable {
 
     private String violatorId;
 
+    private Member moderator;
+
+    private String moderatorId;
+
     @Builder.Default
     private boolean auditLogging = true;
-
-    private Member moderator;
 
     private String reason;
 
@@ -50,7 +54,9 @@ public class ModerationActionRequest implements Serializable {
 
     private boolean global;
 
-    private Integer duration;
+    private Integer delDays;
+
+    private Long duration;
 
     private boolean stateless;
 
@@ -69,5 +75,25 @@ public class ModerationActionRequest implements Serializable {
             return channel.getGuild();
         }
         return null;
+    }
+
+    public static class ModerationActionRequestBuilder {
+
+        public ModerationActionRequestBuilder moderator(Member moderator) {
+            ModerationActionRequestBuilder.this.moderator = moderator;
+            ModerationActionRequestBuilder.this.moderatorId = moderator != null ? moderator.getId() : null;
+            return this;
+        }
+
+        public ModerationActionRequestBuilder violator(Member violator) {
+            ModerationActionRequestBuilder.this.violator = violator;
+            ModerationActionRequestBuilder.this.violatorId = violator != null ? violator.getId() : null;
+            return this;
+        }
+    }
+
+    public Date getDurationDate() {
+        DateTime now = DateTime.now();
+        return duration != null ? now.plus(duration).toDate() : null;
     }
 }

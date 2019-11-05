@@ -18,7 +18,6 @@ package ru.juniperbot.api.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.juniperbot.api.common.aspect.GuildId;
 import ru.juniperbot.api.controller.base.BasePublicRestController;
 import ru.juniperbot.api.dao.GuildDao;
 import ru.juniperbot.api.dto.GuildInfoDto;
@@ -31,10 +30,10 @@ public class GuildInfoPublicController extends BasePublicRestController {
     @Autowired
     private GuildDao guildDao;
 
-    @RequestMapping(value = "/guild/{guildId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/guild", method = RequestMethod.POST)
     @ResponseBody
-    public GuildInfoDto getGuild(@GuildId(validate = false) @PathVariable long guildId) {
-        GuildInfoDto dto = guildDao.getGuild(new GuildInfoRequest(guildId));
+    public GuildInfoDto getGuild(@RequestBody GuildInfoRequest request) {
+        GuildInfoDto dto = guildDao.getGuild(request);
         if (dto == null) {
             throw new NotFoundException();
         }

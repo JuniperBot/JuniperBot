@@ -39,4 +39,8 @@ public interface MemberWarningRepository extends GuildRepository<MemberWarning> 
     @Query("UPDATE MemberWarning e SET e.active = false WHERE e.active = true AND e.guildId = :guildId AND e.violator = :violator")
     int flushWarnings(@Param("guildId") long guildId, @Param("violator") LocalMember violator);
 
+    @Modifying
+    @Query("UPDATE MemberWarning e SET e.active = false WHERE e.id = :warningId")
+    int flushWarning(@Param("warningId") long warningId);
+
 }

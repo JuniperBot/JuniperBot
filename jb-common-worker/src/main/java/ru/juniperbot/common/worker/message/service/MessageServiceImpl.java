@@ -161,7 +161,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessageByLocale(String key, String locale, Object... args) {
-        return getMessageByLocale(key, contextService.getLocale(locale), args);
+        return getMessageByLocale(key, StringUtils.isNotEmpty(locale)
+                ? contextService.getLocale(locale) : contextService.getLocale(), args);
     }
 
     @Override

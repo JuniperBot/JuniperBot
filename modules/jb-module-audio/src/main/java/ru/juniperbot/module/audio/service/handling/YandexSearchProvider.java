@@ -78,7 +78,7 @@ public class YandexSearchProvider implements AudioSearchProvider {
             headers.add("X-Yandex-Music-Client", "WindowsPhone/3.20");
 
             ResponseEntity<String> responseEntity = restTemplate.exchange(
-                    BASE_URI+ "search?type=track&page=0&text={text}",
+                    BASE_URI + "search?type=track&page=0&text={text}",
                     HttpMethod.GET, entity, String.class, Map.of("text", value));
             if (!responseEntity.getStatusCode().is2xxSuccessful()) {
                 return null;

@@ -27,7 +27,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.AuditActionType;
 import ru.juniperbot.common.model.exception.DiscordException;
-import ru.juniperbot.common.model.exception.ValidationException;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
@@ -39,7 +38,6 @@ import ru.juniperbot.common.worker.utils.DiscordUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,7 +78,17 @@ public class ClearCommand extends MentionableModeratorCommand {
         String executionMessageId = event.getMessageId();
 
         boolean includeInvocation = reference.isAuthorSelected() || (member != null && member.equals(event.getMember()));
-        int number = getCount(query) + (includeInvocation ? 1 : 0);
+
+        if (StringUtils.isBlank(query) || !StringUtils.isNumeric(query)) {
+            showHelp(event, context);
+            return false;
+        }
+        int number = Integer.parseInt(query);
+        if (number == 0 || number > MAX_MESSAGES) {
+            showHelp(event, context);
+            return false;
+        }
+        final int finalNumber = number + (includeInvocation ? 1 : 0);
 
         String userId = reference.isAuthorSelected() ? null : reference.getId();
 
@@ -97,11 +105,10 @@ public class ClearCommand extends MentionableModeratorCommand {
                 .withZone(context.getTimeZone());
 
         channel.sendTyping().queue(r -> channel.getIterableHistory()
-                .takeAsync(number)
+                .takeAsync(finalNumber)
                 .thenApplyAsync(e -> {
                     Stream<Message> stream = e.stream()
-                            .filter(m -> m.getType() == MessageType.DEFAULT
-                                    && CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
+                            .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
                     if (StringUtils.isNotEmpty(userId)) {
                         stream = stream.filter(m -> m.getMember() != null
                                 && Objects.equals(m.getMember().getUser().getId(), userId));
@@ -125,7 +132,7 @@ public class ClearCommand extends MentionableModeratorCommand {
                         finalCount--;
                     }
                     if (finalCount <= 0) {
-                        messageService.onEmbedMessage(event.getChannel(), "discord.mod.clear.absent");
+                        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.clear.absent");
                         return;
                     }
 
@@ -139,25 +146,17 @@ public class ClearCommand extends MentionableModeratorCommand {
                     builder.save();
 
                     String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
-                    messageService.onTempMessage(channel, 5, "discord.mod.clear.deleted", finalCount, pluralMessages);
+                    messageService.onTempMessage(channel, 5, "discord.command.mod.clear.deleted", finalCount, pluralMessages);
                 })));
         return true;
     }
 
-    private int getCount(String queue) throws DiscordException {
-        int result = 10;
-        if (StringUtils.isNotBlank(queue)) {
-            Matcher matcher = COUNT_PATTERN.matcher(queue.trim());
-            if (!matcher.find()) {
-                throw new ValidationException("discord.mode.clear.help");
-            }
-            try {
-                result = Integer.parseInt(matcher.group(1));
-            } catch (NumberFormatException e) {
-                result = MAX_MESSAGES;
-            }
-        }
-        return Math.min(result, MAX_MESSAGES);
+    @Override
+    protected void showHelp(GuildMessageReceivedEvent event, BotContext context) {
+        String clearCommand = messageService.getMessageByLocale("discord.command.mod.clear.key",
+                context.getCommandLocale());
+        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.clear.help",
+                context.getConfig().getPrefix(), clearCommand);
     }
 
     private void appendHistory(StringBuilder history, DateTimeFormatter formatter, Message message) {

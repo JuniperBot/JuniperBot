@@ -51,6 +51,7 @@ import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 import ru.juniperbot.module.audio.model.*;
+import ru.juniperbot.module.audio.utils.AudioUtils;
 import ru.juniperbot.module.audio.utils.MessageController;
 
 import java.awt.*;
@@ -487,10 +488,17 @@ public class AudioMessageManager {
             }
         }
 
-        builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
-                durationText, true);
-        builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
-                getMemberName(request, false), true);
+        if (request.getTrack().getInfo().isStream || !refreshable) {
+            builder.addField(messageService.getMessage("discord.command.audio.panel.duration"),
+                    durationText, true);
+            builder.addField(messageService.getMessage("discord.command.audio.panel.requestedBy"),
+                    getMemberName(request, false), true);
+        } else {
+            String requestedBy = String.format("%s: %s",
+                    messageService.getMessage("discord.command.audio.panel.requestedBy"),
+                    getMemberName(request, false));
+            builder.addField(requestedBy, durationText, true);
+        }
 
         if (request.getEndReason() == null) {
             IPlayer player = instance.getPlayer();
@@ -550,17 +558,28 @@ public class AudioMessageManager {
 
     private String getTextProgress(PlaybackInstance instance, AudioTrack track, boolean bonusActive) {
         StringBuilder builder = new StringBuilder();
+
+        boolean closeDuration = false;
         if (bonusActive && instance.getPlayer().getPlayingTrack() != null) {
-            builder.append(CommonUtils.formatDuration(instance.getPosition()));
+            if (!track.getInfo().isStream) {
+                double progress = (double) instance.getPosition() / (double) track.getDuration();
+                builder.append(AudioUtils.getProgressString((int) (progress * 100))).append(" ");
+            }
+            builder.append("`").append(CommonUtils.formatDuration(instance.getPosition()));
+            closeDuration = true;
         }
         if (!track.getInfo().isStream) {
             if (track.getDuration() >= 0) {
                 if (bonusActive && builder.length() > 0) {
-                    builder.append("/");
+                    builder.append(" / ");
                 }
                 builder.append(CommonUtils.formatDuration(track.getDuration()));
             }
-        } else {
+        }
+        if (closeDuration) {
+            builder.append("`");
+        }
+        if (track.getInfo().isStream) {
             builder.append(String.format(bonusActive ? " (%s)" : "%s",
                     messageService.getMessage("discord.command.audio.panel.stream")));
         }

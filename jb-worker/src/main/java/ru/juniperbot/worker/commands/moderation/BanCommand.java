@@ -19,6 +19,7 @@ package ru.juniperbot.worker.commands.moderation;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import ru.juniperbot.common.model.ModerationActionType;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
@@ -68,7 +69,9 @@ public class BanCommand extends MentionableModeratorCommand {
 
         boolean perform = StringUtils.isEmpty(query);
         if (!perform) {
-            Matcher matcher = BAN_PATTERN.matcher(query);
+            Pair<String, Long> durationProbe = probeDuration(query);
+            builder.duration(durationProbe.getValue());
+            Matcher matcher = BAN_PATTERN.matcher(durationProbe.getKey());
             if (matcher.find()) {
                 int delDays = 0;
                 if (StringUtils.isNotEmpty(matcher.group(1))) {
@@ -77,7 +80,7 @@ public class BanCommand extends MentionableModeratorCommand {
 
                 builder.reason(matcher.group(2));
                 if (delDays <= 7) {
-                    builder.duration(delDays);
+                    builder.delDays(delDays);
                     perform = true;
                 }
             }

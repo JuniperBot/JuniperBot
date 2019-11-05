@@ -1,4 +1,4 @@
-FROM openjdk:11.0.4-jre-slim-buster
+FROM openjdk:11.0.5-jre-stretch
 MAINTAINER Caramel <goldrenard@gmail.com>
 RUN mkdir -p /JuniperBot/logs /JuniperBot/temp
 WORKDIR /JuniperBot

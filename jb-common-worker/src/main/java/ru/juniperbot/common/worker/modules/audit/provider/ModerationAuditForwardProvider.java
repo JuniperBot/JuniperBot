@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.lang3.StringUtils;
 import ru.juniperbot.common.persistence.entity.AuditAction;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.utils.PrettyTimeUtils;
+
+import java.util.Date;
 
 public abstract class ModerationAuditForwardProvider extends LoggingAuditForwardProvider {
 
@@ -29,6 +32,8 @@ public abstract class ModerationAuditForwardProvider extends LoggingAuditForward
     public static final String GLOBAL_ATTR = "global";
 
     public static final String DURATION_ATTR = "duration";
+
+    public static final String DURATION_MS_ATTR = "duration_ms";
 
     protected void addModeratorField(AuditAction action, EmbedBuilder embedBuilder) {
         if (action.getUser() != null) {
@@ -42,6 +47,14 @@ public abstract class ModerationAuditForwardProvider extends LoggingAuditForward
         if (StringUtils.isNotEmpty(reason)) {
             embedBuilder.addField(messageService.getMessage("audit.reason"),
                     CommonUtils.trimTo(reason, MessageEmbed.TEXT_MAX_LENGTH), true);
+        }
+    }
+
+    protected void addExpirationField(AuditAction action, EmbedBuilder embedBuilder) {
+        Long durationMs = action.getAttribute(DURATION_MS_ATTR, Long.class);
+        if (durationMs != null) {
+            String result = PrettyTimeUtils.formatDuration(new Date(durationMs), contextService.getLocale());
+            embedBuilder.addField(messageService.getMessage("audit.member.mute.durationms.title"), result, true);
         }
     }
 }
