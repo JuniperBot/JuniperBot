@@ -97,10 +97,10 @@ subprojects {
         jmxRemoteLegacy                    = '1.0-b01-ea'
 
         // Integration Properties
-        jdaVersion                         = '4.0.0_53'
+        jdaVersion                         = '4.0.0_56'
         discordWebhookVersion              = '0.1.7'
-        lavaplayerVersion                  = '1.3.22'
-        lavalinkVersion                    = '4.16'
+        lavaplayerVersion                  = '1.3.23'
+        lavalinkVersion                    = '4.17'
         googleApiServicesYoutubeVersion    = 'v3-rev205-1.25.0'
         jwbfVersion                        = '4.0.0-SNAPSHOT'
         wikitextVersion                    = '3.1.6'

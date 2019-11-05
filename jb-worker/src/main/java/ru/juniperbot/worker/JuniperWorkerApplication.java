@@ -40,6 +40,13 @@ public class JuniperWorkerApplication {
     }
 
     @Bean
+    public ModuleMessageSourceImpl jdaMessages() {
+        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
+        source.setBasename("jda-jbmessages");
+        return source;
+    }
+
+    @Bean
     public ModuleMessageSourceImpl moderationMessages() {
         ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
         source.setBasename("moderation-jbmessages");
