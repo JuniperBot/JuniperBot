@@ -18,7 +18,6 @@ package ru.juniperbot.common.utils;
 
 import org.ocpsoft.prettytime.Duration;
 import org.ocpsoft.prettytime.PrettyTime;
-import org.ocpsoft.prettytime.TimeUnit;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
 
@@ -37,56 +36,6 @@ public class PrettyTimeUtils {
         formatter.removeUnit(JustNow.class);
         formatter.removeUnit(Millisecond.class);
         List<Duration> durations = formatter.calculatePreciseDuration(date);
-        if (durations.isEmpty()) {
-            return null;
-        }
-        if (Locale.US.equals(locale)) {
-            return formatter.format(durations);
-        }
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < durations.size(); i++) {
-            Duration duration = durations.get(i);
-            if (i == 0) {
-                result.append(formatter.format(duration));
-            } else {
-                result.append(formatter.format(decorateDuration(duration)));
-            }
-            result.append(" ");
-        }
-        return result.toString().trim();
-    }
-
-    private static Duration decorateDuration(Duration duration) {
-        return new Duration() {
-            @Override
-            public long getQuantity() {
-                return duration.getQuantity();
-            }
-
-            @Override
-            public long getQuantityRounded(int i) {
-                return duration.getQuantityRounded(i);
-            }
-
-            @Override
-            public TimeUnit getUnit() {
-                return duration.getUnit();
-            }
-
-            @Override
-            public long getDelta() {
-                return duration.getDelta();
-            }
-
-            @Override
-            public boolean isInPast() {
-                return false;
-            }
-
-            @Override
-            public boolean isInFuture() {
-                return false;
-            }
-        };
+        return formatter.format(durations);
     }
 }
