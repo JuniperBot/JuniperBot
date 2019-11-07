@@ -1,5 +1,9 @@
 # JuniperBot Changelog:
 
+## Version 7.5
+ - **[Audio]** Fixed name changing logging;
+ - Some small fixes and improvements.
+
 ## Version 7.4
  - **[Ranking]** Ranking system improvements:
    - **[Patreon]** Exp multiplier in range 50% - 500%
