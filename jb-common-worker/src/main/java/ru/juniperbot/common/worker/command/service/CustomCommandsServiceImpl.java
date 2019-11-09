@@ -88,6 +88,10 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
             content = DiscordUtils.maskPublicMentions(content);
         }
 
+        if (workerProperties.getCommands().isInvokeLogging()) {
+            log.info("Invoke custom command [id={}]: {}", command.getId(), content);
+        }
+
         if (command.getType() == CommandType.CHANGE_ROLES) {
             contextService.queue(guild, event.getChannel().sendTyping(), e -> changeRoles(event, command));
             return true;
