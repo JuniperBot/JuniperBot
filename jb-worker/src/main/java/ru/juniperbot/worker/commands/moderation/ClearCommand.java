@@ -109,7 +109,7 @@ public class ClearCommand extends MentionableModeratorCommand {
         channel.sendTyping().queue(r -> {
             channel.getIterableHistory()
                     .takeWhileAsync(e -> {
-                        if (CommonUtils.getDate(e.getTimeCreated()).isBefore(limit) || ids.size() >= finalNumber) {
+                        if (CommonUtils.getDate(e.getTimeCreated()).isBefore(limit)) {
                             return false;
                         }
                         if (StringUtils.isEmpty(userId)
@@ -119,7 +119,7 @@ public class ClearCommand extends MentionableModeratorCommand {
                                 appendHistory(history, formatter, e);
                             }
                         }
-                        return true;
+                        return ids.size() < finalNumber;
                     })
                     .exceptionally(e -> {
                         log.error("Clear failed", e);

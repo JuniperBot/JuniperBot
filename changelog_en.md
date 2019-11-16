@@ -9,6 +9,7 @@
  - Fixed nickname restore on member rejoin;
  - Fixed duration texts for mute commands, again;
  - Fixed audit warning action not contained warning expiration if specified;
+ - Fixed command `очистить/clear` usage with @mentioned member;
  - Some small fixes and improvements.
 
 ## Version 7.4
