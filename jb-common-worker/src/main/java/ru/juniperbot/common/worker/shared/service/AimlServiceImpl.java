@@ -18,8 +18,6 @@ package ru.juniperbot.common.worker.shared.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -35,7 +33,6 @@ import org.goldrenard.jb.core.Chat;
 import org.goldrenard.jb.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.worker.command.service.CommandHandler;
@@ -49,12 +46,9 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Order
-@Service
+//@Service
+@Deprecated
 public class AimlServiceImpl implements AimlService, CommandHandler {
-
-    @Getter
-    @Setter
-    private boolean enabled = true;
 
     private final Map<String, Bot> bots = new ConcurrentHashMap<>();
 
@@ -102,11 +96,8 @@ public class AimlServiceImpl implements AimlService, CommandHandler {
 
     @Override
     public boolean handleMessage(GuildMessageReceivedEvent event) {
-        if (!enabled
-                || !workerProperties.getAiml().isEnabled()
-                || StringUtils.isEmpty(workerProperties.getAiml().getBrainsPath())
-                || event.getAuthor() == null
-                || event.getGuild() == null) {
+        if (!workerProperties.getAiml().isEnabled()
+                || StringUtils.isEmpty(workerProperties.getAiml().getBrainsPath())) {
             return false;
         }
 

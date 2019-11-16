@@ -21,10 +21,6 @@ import org.goldrenard.jb.core.Chat;
 
 public interface AimlService {
 
-    boolean isEnabled();
-
-    void setEnabled(boolean enabled);
-
     Chat getSession(String botName, User user);
 
     void clear();

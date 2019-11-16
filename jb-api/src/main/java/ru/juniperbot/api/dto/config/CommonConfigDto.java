@@ -54,7 +54,7 @@ public class CommonConfigDto implements Serializable {
 
     private boolean privateHelp;
 
-    private boolean assistantEnabled;
+    //private boolean assistantEnabled;
 
     private List<InVoiceLink> voiceLinks;
 }
