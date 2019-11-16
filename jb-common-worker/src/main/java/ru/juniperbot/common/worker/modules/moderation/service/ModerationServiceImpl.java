@@ -43,6 +43,7 @@ import ru.juniperbot.common.persistence.entity.ModerationConfig;
 import ru.juniperbot.common.persistence.repository.MemberWarningRepository;
 import ru.juniperbot.common.service.ModerationConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
+import ru.juniperbot.common.utils.PrettyTimeUtils;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.jobs.UnBanJob;
 import ru.juniperbot.common.worker.jobs.UnWarnJob;
@@ -197,7 +198,8 @@ public class ModerationServiceImpl implements ModerationService {
                         notifyUserAction(e -> {
                             e.getGuild().ban(e, delDays, request.getReason()).queue(e2 ->
                                     scheduleUnBan(guildId, request.getViolatorId(), request.getDurationDate()));
-                        }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason());
+                        }, request.getViolator(), "discord.command.mod.action.message.ban", request.getReason(),
+                                request.getDuration());
                         return true;
                     }
                 } else if (request.getViolatorId() != null) {
@@ -220,7 +222,7 @@ public class ModerationServiceImpl implements ModerationService {
                     actionBuilder.save();
                     actionsHolderService.setLeaveNotified(e.getGuild().getIdLong(), e.getUser().getIdLong());
                     e.getGuild().kick(e, request.getReason()).queue();
-                }, request.getViolator(), "discord.command.mod.action.message.kick", request.getReason());
+                }, request.getViolator(), "discord.command.mod.action.message.kick", request.getReason(), null);
                 return true;
 
             case CHANGE_ROLES:
@@ -319,7 +321,7 @@ public class ModerationServiceImpl implements ModerationService {
 
         if (member != null) {
             notifyUserAction(e -> {
-            }, member, "discord.command.mod.action.message.warn", reason, number);
+            }, member, "discord.command.mod.action.message.warn", reason, duration, number);
         }
 
         MemberWarning warning = new MemberWarning(guildId, authorLocal, memberLocal, reason);
@@ -352,7 +354,7 @@ public class ModerationServiceImpl implements ModerationService {
         return lastActionCache.getIfPresent(DiscordUtils.getMemberKey(guild, violator));
     }
 
-    private void notifyUserAction(Consumer<Member> consumer, Member member, String code, String reason, Object... objects) {
+    private void notifyUserAction(Consumer<Member> consumer, Member member, String code, String reason, Long duration, Object... objects) {
         if (StringUtils.isEmpty(reason)) {
             code += ".noReason";
         }
@@ -368,7 +370,11 @@ public class ModerationServiceImpl implements ModerationService {
             if (StringUtils.isNotEmpty(reason)) {
                 args = ArrayUtils.add(args, reason);
             }
-            String message = messageService.getMessage(finalCode, args);
+            StringBuilder builder = new StringBuilder(messageService.getMessage(finalCode, args));
+            if (duration != null) {
+                builder.append("\n\n").append(messageService.getMessage(code + ".duration",
+                        PrettyTimeUtils.formatDuration(duration, contextService.getLocale())));
+            }
 
             JDA jda = member.getGuild().getJDA();
             long guildId = member.getGuild().getIdLong();
@@ -376,7 +382,7 @@ public class ModerationServiceImpl implements ModerationService {
 
             member.getUser().openPrivateChannel().queue(e -> {
                 contextService.withContext(guildId, () -> {
-                    e.sendMessage(message).queue(t -> {
+                    e.sendMessage(builder.toString()).queue(t -> {
                         Guild guild = jda.getGuildById(guildId);
                         consumer.accept(guild != null ? guild.getMemberById(userId) : null);
                     }, t -> {

@@ -29,10 +29,10 @@ public class PrettyTimeUtils {
         // private
     }
 
-    public static String formatDuration(Date date, Locale locale) {
+    public static String formatDuration(long duration, Locale locale) {
         PrettyTime formatter = new PrettyTime(new Date(0), locale);
         formatter.removeUnit(JustNow.class);
         formatter.removeUnit(Millisecond.class);
-        return formatter.format(date);
+        return formatter.format(new Date(duration));
     }
 }
