@@ -1,7 +1,7 @@
 # JuniperBot Changelog:
 
 ## Version 7.5
- - **[Audio]** Fixed name changing logging;
+ - **[Audit]** Fixed name changing logging;
  - **[Ranking]** Ranking system improvements:
    - Command `ранг/rank` now works with user IDs;
    - Ranking card will not show cookies if they weren't enabled;
