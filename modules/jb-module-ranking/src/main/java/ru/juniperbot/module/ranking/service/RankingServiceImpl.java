@@ -166,7 +166,9 @@ public class RankingServiceImpl implements RankingService {
         Ranking ranking = getRanking(member);
         ranking.setVoiceActivity(ranking.getVoiceActivity() + state.getActivityTime().get());
 
-        if (config.isVoiceEnabled() && featureSetService.isAvailable(member.getGuild())) {
+        if (config.isVoiceEnabled()
+                && featureSetService.isAvailable(member.getGuild())
+                && !configService.isBanned(config, member)) {
             int oldLevel = RankingUtils.getLevelFromExp(ranking.getExp());
             long gainedExp = Math.round(15 * state.getPoints().get() * config.getVoiceExpMultiplier());
             ranking.setExp(ranking.getExp() + gainedExp);
