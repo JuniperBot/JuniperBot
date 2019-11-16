@@ -16,13 +16,11 @@
  */
 package ru.juniperbot.common.utils;
 
-import org.ocpsoft.prettytime.Duration;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class PrettyTimeUtils {
@@ -35,7 +33,6 @@ public class PrettyTimeUtils {
         PrettyTime formatter = new PrettyTime(new Date(0), locale);
         formatter.removeUnit(JustNow.class);
         formatter.removeUnit(Millisecond.class);
-        List<Duration> durations = formatter.calculatePreciseDuration(date);
-        return formatter.format(durations);
+        return formatter.format(date);
     }
 }

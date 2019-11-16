@@ -3,6 +3,7 @@
 ## Version 7.5
  - **[Audio]** Fixed name changing logging;
  - Command `ранг/rank` now works with user IDs;
+ - Duration texts for mute commands has been fixed, again;
  - Some small fixes and improvements.
 
 ## Version 7.4
