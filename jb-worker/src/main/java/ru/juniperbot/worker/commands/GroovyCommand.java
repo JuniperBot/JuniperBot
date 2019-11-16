@@ -17,11 +17,19 @@
 package ru.juniperbot.worker.commands;
 
 import groovy.lang.GroovyShell;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.scheduling.TaskScheduler;
+import ru.juniperbot.common.configuration.CommonConfiguration;
+import ru.juniperbot.common.support.jmx.JmxNamedResource;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
@@ -31,8 +39,10 @@ import ru.juniperbot.worker.service.GroovyService;
 
 import java.awt.*;
 
+@Slf4j
 @DiscordCommand(key = "discord.command.groovy.key", description = "discord.command.groovy.desc", priority = 4, hidden = true)
-public class GroovyCommand extends AbstractCommand {
+@ManagedResource
+public class GroovyCommand extends AbstractCommand implements JmxNamedResource {
 
     @Autowired
     private DiscordService discordService;
@@ -40,9 +50,15 @@ public class GroovyCommand extends AbstractCommand {
     @Autowired
     private GroovyService groovyService;
 
+    @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
+    protected TaskScheduler scheduler;
+
+    private boolean enabled;
+
     @Override
     public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String query) {
-        if (!discordService.isSuperUser(message.getAuthor()) || StringUtils.isEmpty(query)) {
+        if (!enabled || !discordService.isSuperUser(message.getAuthor()) || StringUtils.isEmpty(query)) {
             return false;
         }
         message.getChannel().sendTyping().queue();
@@ -74,5 +90,32 @@ public class GroovyCommand extends AbstractCommand {
         shell.setProperty("member", event.getMember());
         shell.setProperty("author", event.getAuthor());
         return shell;
+    }
+
+    @Override
+    public String getJmxName() {
+        return this.getClass().getSimpleName();
+    }
+
+    @ManagedOperation(description = "Enables Groovy shell for this instance for specified amount of time (ms)")
+    public synchronized void setEnabled(boolean enabled, long duration) {
+        if (!enabled && !this.enabled || enabled && this.enabled) {
+            log.warn("Groovy Shell already in this state!");
+            return;
+        }
+
+        if (!enabled) {
+            this.enabled = false;
+            log.warn("Groovy Shell disabled!");
+            return;
+        }
+        this.enabled = true;
+        log.warn("Groovy Shell command enabled for {} ms!", duration);
+        scheduler.schedule(() -> {
+            if (this.enabled) {
+                this.enabled = false;
+                log.warn("Groovy Shell disabled by timeout", duration);
+            }
+        }, DateTime.now().plus(duration).toDate());
     }
 }
