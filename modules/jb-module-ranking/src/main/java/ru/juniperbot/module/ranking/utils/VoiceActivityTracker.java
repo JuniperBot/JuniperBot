@@ -19,13 +19,16 @@ package ru.juniperbot.module.ranking.utils;
 import com.google.common.util.concurrent.AtomicDouble;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
+import ru.juniperbot.common.service.RankingConfigService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+@RequiredArgsConstructor
 public class VoiceActivityTracker {
 
     @Getter
@@ -38,6 +41,10 @@ public class VoiceActivityTracker {
     }
 
     private final Map<Long, MemberState> states = new ConcurrentHashMap<>();
+
+    private final RankingConfigService configService;
+
+    private final long guildId;
 
     /**
      * Starts voice activity recording for member
@@ -83,11 +90,16 @@ public class VoiceActivityTracker {
     private void accumulate() {
         long now = System.currentTimeMillis();
         long speakingMembers = states.entrySet().stream().filter(e -> !e.getValue().isFrozen()).count();
+        Integer maxVoiceMembers = configService.getMaxVoiceMembers(guildId);
+        if (maxVoiceMembers != null) {
+            speakingMembers = Math.min(speakingMembers, maxVoiceMembers);
+        }
+        final long count = speakingMembers;
         states.forEach((userId, state) -> {
-            if (!state.isFrozen() && speakingMembers > 1) {
+            if (!state.isFrozen() && count > 1) {
                 long duration = now - state.lastAccumulated;
                 state.activityTime.addAndGet(duration);
-                state.points.addAndGet((duration / 60000.0f) * speakingMembers * 0.4f);
+                state.points.addAndGet((duration / 60000.0f) * count * 0.4f);
             }
             state.lastAccumulated = now;
         });

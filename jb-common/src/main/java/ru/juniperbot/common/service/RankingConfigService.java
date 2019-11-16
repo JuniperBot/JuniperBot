@@ -31,6 +31,8 @@ public interface RankingConfigService extends DomainService<RankingConfig> {
 
     long countRankings(long guildId);
 
+    Integer getMaxVoiceMembers(long guildId);
+
     Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable);
 
     void update(RankingUpdateRequest request);

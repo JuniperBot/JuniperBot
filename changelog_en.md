@@ -6,6 +6,7 @@
    - Command `ранг/rank` now works with user IDs;
    - Ranking card will not show cookies if they weren't enabled;
    - Fixed issue when members gained EXP using voice even if they had EXP ignoring role;
+   - Added an option to set maximum member count in voice channel increasing voice EXP;
  - DM notifications about bans and warnings now contains their expiration dates;
  - "Assistant" was disabled as unnecessary and unwilling to support it;
  - New command `вычислить/math` for mathematical expressions evaluation;

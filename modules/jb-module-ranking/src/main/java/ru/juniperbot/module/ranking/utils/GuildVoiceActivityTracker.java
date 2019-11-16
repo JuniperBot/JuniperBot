@@ -19,20 +19,27 @@ package ru.juniperbot.module.ranking.utils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import ru.juniperbot.common.service.RankingConfigService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@RequiredArgsConstructor
 public class GuildVoiceActivityTracker {
 
     private Cache</* Channel Id */Long, VoiceActivityTracker> trackers = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
             .expireAfterAccess(10, TimeUnit.DAYS)
             .build();
+
+    private final RankingConfigService configService;
+
+    private final long guildId;
 
     /**
      * Starts voice activity recording for member
@@ -43,7 +50,8 @@ public class GuildVoiceActivityTracker {
      */
     public synchronized void add(@NonNull VoiceChannel channel, @NonNull Member member, boolean frozen) {
         try {
-            VoiceActivityTracker tracker = trackers.get(channel.getIdLong(), VoiceActivityTracker::new);
+            VoiceActivityTracker tracker = trackers.get(channel.getIdLong(),
+                    () -> new VoiceActivityTracker(configService, guildId));
             tracker.add(member, frozen);
         } catch (ExecutionException e) {
             log.warn("Can't start record for channel [{}] with member [{}]", channel, member, e);

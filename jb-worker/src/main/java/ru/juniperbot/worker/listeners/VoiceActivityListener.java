@@ -93,7 +93,8 @@ public class VoiceActivityListener extends DiscordEventListener {
 
     private void startRecord(VoiceChannel channel, Member member) {
         try {
-            GuildVoiceActivityTracker tracker = trackers.get(channel.getGuild().getIdLong(), GuildVoiceActivityTracker::new);
+            GuildVoiceActivityTracker tracker = trackers.get(channel.getGuild().getIdLong(),
+                    () -> new GuildVoiceActivityTracker(rankingConfigService, channel.getGuild().getIdLong()));
             tracker.add(channel, member, isFrozen(member));
         } catch (ExecutionException e) {
             log.warn("Can't start record for guild [{}] with member [{}]", channel.getGuild(), member, e);

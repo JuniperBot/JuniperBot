@@ -79,6 +79,12 @@ public class RankingConfigServiceImpl
         return rankingRepository.countByGuildId(guildId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getMaxVoiceMembers(long guildId) {
+        return repository.findMaxVoiceMembersByGuildId(guildId);
+    }
+
     @Transactional
     @Override
     public Page<RankingInfo> getRankingInfos(long guildId, String search, Pageable pageable) {

@@ -60,5 +60,8 @@ public class RankingDto implements Serializable {
     @Max(500)
     private int voiceExpMultiplier = 100;
 
+    @Min(2)
+    private Integer maxVoiceMembers;
+
     private boolean cookieEnabled;
 }

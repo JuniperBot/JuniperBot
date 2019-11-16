@@ -29,4 +29,10 @@
         </sql>
     </changeSet>
 
+    <changeSet id="7.5-16112019-2" author="caramel">
+        <addColumn tableName="ranking_config">
+            <column name="max_voice_members" type="INTEGER" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
