@@ -17,10 +17,10 @@
 
 Here is short review that this fluffy foxy can do:
 
-* ⚙️ **Common:** You can change prefix, command and interface language, configure some moderation behaviour. English and Russian languages are supported for both dashboard and bot itself!
+* ⚙ **Common:** You can change prefix, command and interface language, configure some moderation behaviour. English and Russian languages are supported for both dashboard and bot itself!
 * 🎵 **Music:** You can play music from most common sources like YouTube, SoundCloud, BandCamp, Vimeo, Twitch.tv and even some radiostations. You can configure behaviour like restrict music controlling to specified DJ-Roles, configure playback limitations and more!
 * 📚 **Audit:** You can keep history of member actions like moderation, message delete/edit, member joining/leaving and more. You can review them in dashboard or even in separate logging channel on your server!
-* 📢 **Subscriptions:** You can configure subscriptions to your own Vkontakte community or any Twitch.tv and YouTube channels. Here is JuniperFoxx Instagram subscription too. Yip!
+* 📢 **Subscriptions:** You can configure subscriptions to your own Vkontakte community or any Twitch.tv and YouTube channels.
 * 🏆 **Member Ranking:** You can give your members some rewards for their activity on the server!
 * 👋 **Welcome messages:** You can configure member welcome messages, assign starting roles, restore old roles and nickname if member returns after leaving and more.
 * 💬 **Commands behaviour:** You can configure each command behaviour - cooldown, roles and channels for which commands would work

@@ -16,7 +16,6 @@
  */
 package ru.juniperbot.common.service;
 
-import ru.juniperbot.common.model.InstagramProfile;
 import ru.juniperbot.common.model.command.CommandInfo;
 import ru.juniperbot.common.model.discord.GuildDto;
 import ru.juniperbot.common.model.discord.WebhookDto;
@@ -47,8 +46,6 @@ public interface GatewayService {
     boolean sendPatreonUpdate(PatreonRequest request);
 
     boolean isChannelOwner(CheckOwnerRequest request);
-
-    InstagramProfile getInstagramProfile();
 
     void evictCache(String cacheName, long guildId);
 }

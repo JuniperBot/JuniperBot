@@ -30,7 +30,6 @@ import ru.juniperbot.common.persistence.entity.YouTubeConnection;
 import ru.juniperbot.common.persistence.repository.TwitchConnectionRepository;
 import ru.juniperbot.common.persistence.repository.VkConnectionRepository;
 import ru.juniperbot.common.persistence.repository.YouTubeConnectionRepository;
-import ru.juniperbot.common.service.JuniPostService;
 
 import java.util.*;
 
@@ -44,9 +43,6 @@ public class SubscriptionDao extends AbstractDao {
     private TwitchConnectionRepository twitchConnectionRepository;
 
     @Autowired
-    private JuniPostService juniPostService;
-
-    @Autowired
     private YouTubeConnectionRepository youTubeConnectionRepository;
 
     private Map<Class<?>, SubscriptionHandler<?>> handlersByClass = new HashMap<>();
@@ -56,12 +52,6 @@ public class SubscriptionDao extends AbstractDao {
     @Transactional
     public List<SubscriptionDto> getSubscriptions(long guildId) {
         List<SubscriptionDto> result = new ArrayList<>();
-
-        // This thing is totally broken now since Instagram requires full authentication even for looking at someone's page
-        /*SubscriptionDto dto = getSubscription(juniPostService.getOrCreate(guildId));
-        if (dto != null) {
-            result.add(dto);
-        }*/
 
         List<VkConnection> vkConnections = vkConnectionRepository.findAllByGuildId(guildId);
         vkConnections.stream().map(this::getSubscription).filter(Objects::nonNull).forEach(result::add);

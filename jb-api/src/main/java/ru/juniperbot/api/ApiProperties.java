@@ -37,8 +37,6 @@ public class ApiProperties {
 
     private Blur blur = new Blur();
 
-    private Instagram instagram = new Instagram();
-
     private Twitch twitch = new Twitch();
 
     private YouTube youTube = new YouTube();
@@ -71,15 +69,6 @@ public class ApiProperties {
         private boolean useOpenCV = true;
         private int radius = 201;
         private String cachePath;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class Instagram {
-        private String pollUserName = "juniperfoxx";
-        private long ttl = 30000;
-        private long updateInterval = 30000;
     }
 
     @Getter
