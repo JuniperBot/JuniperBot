@@ -6,8 +6,9 @@
    - Command `ранг/rank` now works with user IDs;
    - Ranking card will not show cookies if they weren't enabled;
    - Fixed issue when members gained EXP using voice even if they had EXP ignoring role;
- - Duration texts for mute commands has been fixed, again;
- - Audit warning action now contains warning expiration if specified;
+ - Fixed nickname restore on member rejoin;
+ - Fixed duration texts for mute commands, again;
+ - Fixed audit warning action not contained warning expiration if specified;
  - Some small fixes and improvements.
 
 ## Version 7.4
