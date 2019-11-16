@@ -30,8 +30,13 @@ public class ActionsHolderServiceImpl implements ActionsHolderService {
 
     @Override
     public void markAsDeleted(Message message) {
+        markAsDeleted(message.getChannel().getId(), message.getId());
+    }
+
+    @Override
+    public void markAsDeleted(String channelId, String messageId) {
         messageDeleted.cleanUp();
-        messageDeleted.put(geMessageKey(message.getChannel().getId(), message.getId()), true);
+        messageDeleted.put(geMessageKey(channelId, messageId), true);
     }
 
     @Override

@@ -36,11 +36,11 @@ import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.common.worker.modules.audit.service.AuditService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.juniperbot.common.worker.modules.audit.provider.MessagesClearAuditForwardProvider.MESSAGE_COUNT;
 
@@ -104,50 +104,54 @@ public class ClearCommand extends MentionableModeratorCommand {
                 .withLocale(contextService.getLocale())
                 .withZone(context.getTimeZone());
 
-        channel.sendTyping().queue(r -> channel.getIterableHistory()
-                .takeAsync(finalNumber)
-                .thenApplyAsync(e -> {
-                    Stream<Message> stream = e.stream()
-                            .filter(m -> CommonUtils.getDate(m.getTimeCreated()).isAfter(limit));
-                    if (StringUtils.isNotEmpty(userId)) {
-                        stream = stream.filter(m -> m.getMember() != null
-                                && Objects.equals(m.getMember().getUser().getId(), userId));
-                    }
-                    List<Message> messageList = stream.collect(Collectors.toList());
-                    messageList.forEach(m -> {
-                        actionsHolderService.markAsDeleted(m);
-                        if (canAttach && !executionMessageId.equals(m.getId())) {
-                            appendHistory(history, formatter, m);
+        Set<String> ids = ConcurrentHashMap.newKeySet();
+
+        channel.sendTyping().queue(r -> {
+            channel.getIterableHistory()
+                    .takeWhileAsync(e -> {
+                        if (CommonUtils.getDate(e.getTimeCreated()).isBefore(limit) || ids.size() >= finalNumber) {
+                            return false;
                         }
-                    });
-                    channel.purgeMessages(messageList);
-                    return messageList.size();
-                }).exceptionally(e -> {
-                    log.error("Clear failed", e);
-                    fail(event);
-                    return null;
-                }).whenCompleteAsync((count, e) -> contextService.withContext(context.getConfig().getGuildId(), () -> {
-                    int finalCount = count;
-                    if (includeInvocation) {
-                        finalCount--;
-                    }
-                    if (finalCount <= 0) {
-                        messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.clear.absent");
-                        return;
-                    }
+                        if (StringUtils.isEmpty(userId)
+                                || e.getMember() != null && Objects.equals(e.getMember().getId(), userId)) {
+                            ids.add(e.getId());
+                            if (canAttach && !executionMessageId.equals(e.getId())) {
+                                appendHistory(history, formatter, e);
+                            }
+                        }
+                        return true;
+                    })
+                    .exceptionally(e -> {
+                        log.error("Clear failed", e);
+                        fail(event);
+                        return null;
+                    })
+                    .whenCompleteAsync((messages, t) -> contextService.withContext(context.getConfig().getGuildId(), () -> {
+                        int finalCount = ids.size();
+                        if (includeInvocation) {
+                            finalCount--;
+                        }
+                        if (finalCount <= 0) {
+                            messageService.onEmbedMessage(event.getChannel(), "discord.command.mod.clear.absent");
+                            return;
+                        }
 
-                    AuditActionBuilder builder = auditService.log(channel.getGuild(), AuditActionType.MESSAGES_CLEAR)
-                            .withChannel(channel)
-                            .withUser(channel.getGuild().getMemberById(moderatorId))
-                            .withAttribute(MESSAGE_COUNT, finalCount);
-                    if (canAttach && history.length() > 0) {
-                        builder.withAttachment(channel.getId() + ".log", history.toString().getBytes());
-                    }
-                    builder.save();
+                        ids.forEach(e -> actionsHolderService.markAsDeleted(channel.getId(), e));
+                        channel.purgeMessagesById(new ArrayList<>(ids));
 
-                    String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
-                    messageService.onTempMessage(channel, 5, "discord.command.mod.clear.deleted", finalCount, pluralMessages);
-                })));
+                        AuditActionBuilder builder = auditService.log(channel.getGuild(), AuditActionType.MESSAGES_CLEAR)
+                                .withChannel(channel)
+                                .withUser(channel.getGuild().getMemberById(moderatorId))
+                                .withAttribute(MESSAGE_COUNT, finalCount);
+                        if (canAttach && history.length() > 0) {
+                            builder.withAttachment(channel.getId() + ".log", history.toString().getBytes());
+                        }
+                        builder.save();
+
+                        String pluralMessages = messageService.getCountPlural(finalCount, "discord.plurals.message");
+                        messageService.onTempMessage(channel, 5, "discord.command.mod.clear.deleted", finalCount, pluralMessages);
+                    }));
+        });
         return true;
     }
 

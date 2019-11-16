@@ -22,6 +22,8 @@ public interface ActionsHolderService {
 
     void markAsDeleted(Message message);
 
+    void markAsDeleted(String channelId, String messageId);
+
     boolean isOwnDeleted(String channelId, String messageId);
 
     void setLeaveNotified(long guildId, long userId);
