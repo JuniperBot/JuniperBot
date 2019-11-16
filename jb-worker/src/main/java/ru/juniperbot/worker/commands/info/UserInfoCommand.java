@@ -32,6 +32,7 @@ import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.LocalUser;
 import ru.juniperbot.common.persistence.entity.MemberBio;
+import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.persistence.repository.MemberBioRepository;
 import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
@@ -104,9 +105,12 @@ public class UserInfoCommand extends MentionableCommand {
 
         Guild guild = event.getGuild();
 
-        if (localMember != null && rankingConfigService.isEnabled(guild.getIdLong())) {
-            RankingInfo info = rankingService.getRankingInfo(localMember);
-            rankCommand.addFields(builder, info, guild);
+        if (localMember != null) {
+            RankingConfig config = rankingConfigService.get(event.getGuild());
+            if (config != null && config.isEnabled()) {
+                RankingInfo info = rankingService.getRankingInfo(localMember);
+                rankCommand.addFields(builder, config, info, guild);
+            }
         }
 
         MemberBio memberBio = bioRepository.findByGuildIdAndUserId(guild.getIdLong(), reference.getId());

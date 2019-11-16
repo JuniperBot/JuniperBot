@@ -2,7 +2,9 @@
 
 ## Version 7.5
  - **[Audio]** Fixed name changing logging;
- - Command `ранг/rank` now works with user IDs;
+ - **[Ranking]** Ranking system improvements:
+   - Command `ранг/rank` now works with user IDs;
+   - Ranking card will not show cookies if they weren't enabled;
  - Duration texts for mute commands has been fixed, again;
  - Some small fixes and improvements.
 

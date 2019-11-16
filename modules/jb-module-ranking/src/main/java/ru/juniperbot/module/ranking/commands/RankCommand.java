@@ -78,16 +78,17 @@ public class RankCommand extends MentionableCommand {
         contextService.queue(event.getGuild(), event.getChannel().sendTyping(), e -> {
             LocalMember member = reference.getLocalMember();
             RankingInfo info = rankingService.getRankingInfo(member);
+            RankingConfig config = rankingConfigService.get(event.getGuild());
 
             Member self = event.getGuild().getSelfMember();
             if (cardEnabled
                     && self.hasPermission(event.getChannel(), Permission.MESSAGE_ATTACH_FILES)
-                    && sendCard(event.getChannel(), reference, info)) {
+                    && sendCard(event.getChannel(), reference, config, info)) {
                 return;
             }
 
             EmbedBuilder builder = messageService.getBaseEmbed(true);
-            addFields(builder, info, event.getGuild());
+            addFields(builder, config, info, event.getGuild());
 
             long desiredPage = (info.getRank() / 50) + 1;
             String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", event.getGuild().getId(),
@@ -103,7 +104,7 @@ public class RankCommand extends MentionableCommand {
         return guild != null && rankingConfigService.isEnabled(guild.getIdLong());
     }
 
-    private boolean sendCard(TextChannel channel, MemberReference reference, RankingInfo info) {
+    private boolean sendCard(TextChannel channel, MemberReference reference, RankingConfig config, RankingInfo info) {
         Map<String, Object> templateMap = new HashMap<>();
         templateMap.put("name", ""); // it fails on font fallback so we have to render it on our own
         templateMap.put("avatarImage", reference.getMember() != null
@@ -116,7 +117,9 @@ public class RankCommand extends MentionableCommand {
         templateMap.put("totalExp", info.getTotalExp());
         templateMap.put("level", info.getLevel());
         templateMap.put("rank", info.getRank());
-        templateMap.put("cookies", info.getCookies());
+        if (config != null && config.isCookieEnabled()) {
+            templateMap.put("cookies", info.getCookies());
+        }
         if (info.getVoiceActivity() > 0) {
             templateMap.put("voiceActivity", CommonUtils.formatDuration(info.getVoiceActivity()));
         }
@@ -142,11 +145,7 @@ public class RankCommand extends MentionableCommand {
         return true;
     }
 
-    public void addFields(EmbedBuilder builder, RankingInfo info, Guild guild) {
-        RankingConfig config = rankingConfigService.get(guild);
-        if (config == null) {
-            return;
-        }
+    public void addFields(EmbedBuilder builder, RankingConfig config, RankingInfo info, Guild guild) {
         long totalMembers = rankingConfigService.countRankings(guild.getIdLong());
         builder.addField(messageService.getMessage("discord.command.rank.info.rank.title"),
                 String.format("# %d/%d", info.getRank(), totalMembers), true);

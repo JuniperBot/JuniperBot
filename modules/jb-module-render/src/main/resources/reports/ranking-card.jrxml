@@ -8,6 +8,9 @@
 	<variable name="VOICE_ACTIVITY" class="java.lang.String">
 		<variableExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "voiceActivity" ) != null ? " <style fontName='Symbola'>🎤</style> " + $P{REPORT_PARAMETERS_MAP}.get( "voiceActivity" ) : ""]]></variableExpression>
 	</variable>
+	<variable name="COOKIES_COUNT" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "cookies" ) != null ? "<style fontName='Symbola'>🍪</style> " + $P{REPORT_PARAMETERS_MAP}.get( "cookies" ) : ""]]></variableExpression>
+	</variable>
 	<detail>
 		<band height="200" splitType="Stretch">
 			<image onErrorType="Blank">
@@ -65,7 +68,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="styled">
 					<font fontName="Roboto-Light" size="26"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style fontName='Symbola'>🍪</style> " + $P{REPORT_PARAMETERS_MAP}.get( "cookies" ) + $V{VOICE_ACTIVITY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{COOKIES_COUNT} + $V{VOICE_ACTIVITY}]]></textFieldExpression>
 			</textField>
 			<rectangle radius="20">
 				<reportElement x="200" y="138" width="680" height="40" forecolor="#000000" backcolor="rgba(255, 255, 255, 0.15686275)" uuid="2a4170e5-a9a1-454e-a5d5-12d5dc3b9474">
