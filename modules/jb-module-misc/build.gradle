@@ -18,4 +18,5 @@ description = 'JuniperBot Module: Misc'
 
 dependencies {
     implementation project(':jb-common-worker')
+    implementation "com.udojava:EvalEx:${evalExVersion}"
 }

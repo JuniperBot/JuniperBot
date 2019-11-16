@@ -111,6 +111,7 @@ subprojects {
         prometheusVersion                  = '0.6.0'
         jasyptVersion                      = '1.9.3'
         jasperReportsVersion               = '6.10.0'
+        evalExVersion                      = '2.4'
 
         //@formatter:on
     }
