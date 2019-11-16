@@ -62,6 +62,7 @@ import java.util.stream.Collectors;
 
 import static ru.juniperbot.common.worker.modules.audit.provider.MemberWarnAuditForwardProvider.COUNT_ATTR;
 import static ru.juniperbot.common.worker.modules.audit.provider.MemberWarnAuditForwardProvider.REASON_ATTR;
+import static ru.juniperbot.common.worker.modules.audit.provider.ModerationAuditForwardProvider.DURATION_MS_ATTR;
 
 @Service
 public class ModerationServiceImpl implements ModerationService {
@@ -313,6 +314,7 @@ public class ModerationServiceImpl implements ModerationService {
                 .withTargetUser(memberLocal)
                 .withAttribute(REASON_ATTR, reason)
                 .withAttribute(COUNT_ATTR, number)
+                .withAttribute(DURATION_MS_ATTR, duration)
                 .save();
 
         if (member != null) {

@@ -44,6 +44,7 @@ public class MemberWarnAuditForwardProvider extends ModerationAuditForwardProvid
         }
 
         addReasonField(action, embedBuilder);
+        addExpirationField(action, embedBuilder);
 
         embedBuilder.setFooter(messageService.getMessage("audit.member.id", action.getTargetUser().getId()), null);
     }

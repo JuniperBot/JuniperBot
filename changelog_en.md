@@ -6,6 +6,7 @@
    - Command `ранг/rank` now works with user IDs;
    - Ranking card will not show cookies if they weren't enabled;
  - Duration texts for mute commands has been fixed, again;
+ - Audit warning action now contains warning expiration if specified;
  - Some small fixes and improvements.
 
 ## Version 7.4
