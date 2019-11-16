@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 
 public final class DiscordUtils {
 
+    private static final String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+
     private static final Pattern MEMBER_MENTION_PATTERN = Pattern.compile("@(.*?)#([0-9]{4})");
 
     private static final Pattern EMOTE_PATTERN = Pattern.compile(":([a-zA-Z0-9_]+)(~\\d+)?:");
@@ -275,5 +277,9 @@ public final class DiscordUtils {
             builder.append(attachmentsPart);
         }
         return builder.toString();
+    }
+
+    public static String getDefaultAvatarUrl(@NonNull String discriminator) {
+        return String.format(DEFAULT_AVATAR_URL, String.valueOf(Short.valueOf(discriminator) % 5));
     }
 }

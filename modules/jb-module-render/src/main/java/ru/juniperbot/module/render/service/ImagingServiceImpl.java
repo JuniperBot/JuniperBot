@@ -19,10 +19,15 @@ package ru.juniperbot.module.render.service;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.LocalUser;
+import ru.juniperbot.common.worker.utils.DiscordUtils;
 import ru.juniperbot.module.render.utils.ImageUtils;
 
 import javax.imageio.ImageIO;
@@ -48,8 +53,23 @@ public class ImagingServiceImpl implements ImagingService {
 
     @Override
     public BufferedImage getAvatar(User user) {
-        // TODO implement some filesystem cache storage?
-        try (BufferedInputStream in = new BufferedInputStream(new URL(user.getEffectiveAvatarUrl() + "?v=256").openStream())) {
+        return downloadAvatar(user.getEffectiveAvatarUrl());
+    }
+
+    @Override
+    public BufferedImage getAvatar(LocalUser user) {
+        String avatarUrl = user.getAvatarUrl();
+        if (StringUtils.isEmpty(avatarUrl)) {
+            avatarUrl = DiscordUtils.getDefaultAvatarUrl(user.getDiscriminator());
+        }
+        return downloadAvatar(avatarUrl);
+    }
+
+    private BufferedImage downloadAvatar(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+        try (BufferedInputStream in = new BufferedInputStream(new URL(url + "?v=256").openStream())) {
             return ImageIO.read(in);
         } catch (IOException e) {
             return null;
@@ -59,6 +79,18 @@ public class ImagingServiceImpl implements ImagingService {
     @Override
     public BufferedImage getAvatarWithStatus(Member member) {
         BufferedImage avatar = getAvatar(member.getUser());
+        BufferedImage statusLayer = getStatusLayer(member, null);
+        return getAvatarWithStatus(avatar, statusLayer);
+    }
+
+    @Override
+    public BufferedImage getAvatarWithStatus(LocalMember member) {
+        BufferedImage avatar = getAvatar(member.getUser());
+        BufferedImage statusLayer = getStatusLayer(null, OnlineStatus.OFFLINE);
+        return getAvatarWithStatus(avatar, statusLayer);
+    }
+
+    private BufferedImage getAvatarWithStatus(BufferedImage avatar, BufferedImage statusLayer) {
         if (avatar == null) {
             return null;
         }
@@ -81,7 +113,6 @@ public class ImagingServiceImpl implements ImagingService {
             g2d.setComposite(defaultComposite);
         }
 
-        BufferedImage statusLayer = getStatusLayer(member);
         if (statusLayer != null) {
             g2d.drawImage(statusLayer, 0, 0, null);
         }
@@ -90,11 +121,17 @@ public class ImagingServiceImpl implements ImagingService {
         return result;
     }
 
-    private BufferedImage getStatusLayer(Member member) {
-        if (member.getActivities().stream().anyMatch(e -> e.getType() == Activity.ActivityType.STREAMING)) {
-            return getResourceImage("avatar-status-streaming.png");
+    private BufferedImage getStatusLayer(Member member, OnlineStatus status) {
+        if (member == null && status == null) {
+            return null;
         }
-        return getResourceImage(String.format("avatar-status-%s.png", member.getOnlineStatus().getKey()));
+        if (member != null) {
+            if (member.getActivities().stream().anyMatch(e -> e.getType() == Activity.ActivityType.STREAMING)) {
+                return getResourceImage("avatar-status-streaming.png");
+            }
+            status = member.getOnlineStatus();
+        }
+        return getResourceImage(String.format("avatar-status-%s.png", status.getKey()));
     }
 
     private Image getMaskLayer() {

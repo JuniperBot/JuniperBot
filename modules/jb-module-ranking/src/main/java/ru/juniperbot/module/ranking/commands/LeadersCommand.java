@@ -16,7 +16,13 @@
  */
 package ru.juniperbot.module.ranking.commands;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.worker.command.model.AbstractCommand;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
 
@@ -25,12 +31,20 @@ import ru.juniperbot.common.worker.command.model.DiscordCommand;
         description = "discord.command.leaders.desc",
         group = "discord.command.group.ranking",
         priority = 201)
-public class LeadersCommand extends RankingCommand {
+public class LeadersCommand extends AbstractCommand {
+
+    @Autowired
+    protected RankingConfigService rankingConfigService;
 
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
+    public boolean doCommand(GuildMessageReceivedEvent message, BotContext context, String content) {
         message.getChannel().sendMessage(messageService.getMessage("discord.command.leaders.message",
                 message.getGuild().getId())).queue();
         return true;
+    }
+
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return guild != null && rankingConfigService.isEnabled(guild.getIdLong());
     }
 }

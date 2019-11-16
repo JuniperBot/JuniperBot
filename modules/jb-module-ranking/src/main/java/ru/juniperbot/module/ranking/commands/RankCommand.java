@@ -22,14 +22,20 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.model.RankingInfo;
+import ru.juniperbot.common.model.exception.DiscordException;
+import ru.juniperbot.common.persistence.entity.LocalMember;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
+import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.command.model.BotContext;
 import ru.juniperbot.common.worker.command.model.DiscordCommand;
+import ru.juniperbot.common.worker.command.model.MemberReference;
+import ru.juniperbot.common.worker.command.model.MentionableCommand;
+import ru.juniperbot.module.ranking.service.RankingService;
 import ru.juniperbot.module.render.model.ReportType;
 import ru.juniperbot.module.render.service.ImagingService;
 import ru.juniperbot.module.render.service.JasperReportsService;
@@ -46,7 +52,13 @@ import java.util.Map;
         description = "discord.command.rank.desc",
         group = "discord.command.group.ranking",
         priority = 202)
-public class RankCommand extends RankingCommand {
+public class RankCommand extends MentionableCommand {
+
+    @Autowired
+    private RankingConfigService rankingConfigService;
+
+    @Autowired
+    private RankingService rankingService;
 
     @Autowired
     private JasperReportsService reportsService;
@@ -57,41 +69,46 @@ public class RankCommand extends RankingCommand {
     @Setter
     private boolean cardEnabled = true;
 
+    protected RankCommand() {
+        super(true, true);
+    }
+
     @Override
-    protected boolean doInternal(GuildMessageReceivedEvent message, BotContext context, String content) {
-        contextService.queue(message.getGuild(), message.getChannel().sendTyping(), e -> {
-            Member member = message.getMember();
-            if (CollectionUtils.isNotEmpty(message.getMessage().getMentionedUsers())) {
-                member = message.getGuild().getMember(message.getMessage().getMentionedUsers().get(0));
-            }
-            if (member == null) {
-                return;
-            }
+    protected boolean doCommand(MemberReference reference, GuildMessageReceivedEvent event, BotContext context, String content) throws DiscordException {
+        contextService.queue(event.getGuild(), event.getChannel().sendTyping(), e -> {
+            LocalMember member = reference.getLocalMember();
             RankingInfo info = rankingService.getRankingInfo(member);
 
-            Member self = message.getGuild().getSelfMember();
+            Member self = event.getGuild().getSelfMember();
             if (cardEnabled
-                    && self.hasPermission(message.getChannel(), Permission.MESSAGE_ATTACH_FILES)
-                    && sendCard(message.getChannel(), member, info)) {
+                    && self.hasPermission(event.getChannel(), Permission.MESSAGE_ATTACH_FILES)
+                    && sendCard(event.getChannel(), reference, info)) {
                 return;
             }
 
             EmbedBuilder builder = messageService.getBaseEmbed(true);
-            addFields(builder, info, member.getGuild());
+            addFields(builder, info, event.getGuild());
 
             long desiredPage = (info.getRank() / 50) + 1;
-            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", member.getGuild().getId(),
-                    desiredPage, member.getUser().getId());
+            String url = String.format("https://juniper.bot/ranking/%s?page=%s#%s", event.getGuild().getId(),
+                    desiredPage, reference.getId());
             builder.setAuthor(member.getEffectiveName(), url, member.getUser().getAvatarUrl());
-            messageService.sendMessageSilent(message.getChannel()::sendMessage, builder.build());
+            messageService.sendMessageSilent(event.getChannel()::sendMessage, builder.build());
         });
         return true;
     }
 
-    private boolean sendCard(TextChannel channel, Member member, RankingInfo info) {
+    @Override
+    public boolean isAvailable(User user, Member member, Guild guild) {
+        return guild != null && rankingConfigService.isEnabled(guild.getIdLong());
+    }
+
+    private boolean sendCard(TextChannel channel, MemberReference reference, RankingInfo info) {
         Map<String, Object> templateMap = new HashMap<>();
         templateMap.put("name", ""); // it fails on font fallback so we have to render it on our own
-        templateMap.put("avatarImage", imagingService.getAvatarWithStatus(member));
+        templateMap.put("avatarImage", reference.getMember() != null
+                ? imagingService.getAvatarWithStatus(reference.getMember())
+                : imagingService.getAvatarWithStatus(reference.getLocalMember()));
         templateMap.put("backgroundImage", imagingService.getResourceImage("ranking-card-background.png"));
         templateMap.put("percent", info.getPct());
         templateMap.put("remainingExp", info.getRemainingExp());
@@ -114,7 +131,7 @@ public class RankCommand extends RankingCommand {
         Graphics2D g2d = cardImage.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         List<Font> fontVariants = reportsService.loadFontVariants(Font.PLAIN, 40, "Roboto Light");
-        g2d.drawString(ImageUtils.createFallbackString(member.getEffectiveName(), fontVariants).getIterator(), 200, 63);
+        g2d.drawString(ImageUtils.createFallbackString(reference.getEffectiveName(), fontVariants).getIterator(), 200, 63);
         g2d.dispose();
 
         byte[] cardBytes = ImageUtils.getImageBytes(cardImage, "png");
