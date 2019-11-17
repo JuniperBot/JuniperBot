@@ -55,7 +55,8 @@ public interface ApiMapperService {
             @Mapping(target = "version", ignore = true),
             @Mapping(target = "guildId", ignore = true),
             @Mapping(target = "name", ignore = true),
-            @Mapping(target = "iconUrl", ignore = true)
+            @Mapping(target = "iconUrl", ignore = true),
+            @Mapping(target = "assistantEnabled", ignore = true)
     })
     void updateCommon(CommonConfigDto source, @MappingTarget GuildConfig target);
 

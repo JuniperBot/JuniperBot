@@ -168,10 +168,7 @@ public class DiscordEntityAccessorImpl implements DiscordEntityAccessor {
                 shouldSave = true;
             }
             if (member != null) {
-                if (!Objects.equals(member.getEffectiveName(), localMember.getEffectiveName())) {
-                    localMember.setEffectiveName(member.getEffectiveName());
-                    shouldSave = true;
-                }
+                // do not force update effective name here, it will be updated using listener
                 updateIfRequired(member.getUser(), localMember.getUser());
             }
             if (shouldSave) {

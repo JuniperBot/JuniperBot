@@ -63,6 +63,7 @@ public class RankingDao extends AbstractDao {
             config.setTextExpMultiplier(dto.getTextExpMultiplier() / 100.0d);
             config.setVoiceExpMultiplier(dto.getVoiceExpMultiplier() / 100.0d);
             config.setVoiceEnabled(dto.isVoiceEnabled());
+            config.setMaxVoiceMembers(dto.getMaxVoiceMembers());
         }
 
         if (dto.getRewards() != null) {

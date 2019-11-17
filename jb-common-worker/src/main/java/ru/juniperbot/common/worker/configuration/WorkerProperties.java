@@ -49,6 +49,8 @@ public class WorkerProperties {
 
     private Support support = new Support();
 
+    private Commands commands = new Commands();
+
     @Getter
     @Setter
     @ToString
@@ -92,6 +94,14 @@ public class WorkerProperties {
         private boolean historyEnabled = true;
         private int historyDays = 7;
         private boolean historyEncryption = true;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Commands {
+        private boolean invokeLogging = false;
+        private List<String> disabled = new ArrayList<>();
     }
 
     @Getter

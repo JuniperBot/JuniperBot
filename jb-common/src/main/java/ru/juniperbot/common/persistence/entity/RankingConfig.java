@@ -56,6 +56,9 @@ public class RankingConfig extends GuildEntity {
     @Column(precision = 3, scale = 2)
     private double voiceExpMultiplier = 1.0d;
 
+    @Column
+    private Integer maxVoiceMembers;
+
     @Column(name = "banned_roles", columnDefinition = "text[]")
     @Type(type = "string-array")
     private String[] bannedRoles;

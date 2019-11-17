@@ -1,5 +1,21 @@
 # JuniperBot Changelog:
 
+## Version 7.5
+ - **[Audit]** Fixed name changing logging;
+ - **[Ranking]** Ranking system improvements:
+   - Command `ранг/rank` now works with user IDs;
+   - Ranking card will not show cookies if they weren't enabled;
+   - Fixed issue when members gained EXP using voice even if they had EXP ignoring role;
+   - Added an option to set maximum member count in voice channel increasing voice EXP;
+ - DM notifications about bans and warnings now contains their expiration dates;
+ - "Assistant" was disabled as unnecessary and unwilling to support it;
+ - New command `вычислить/math` for mathematical expressions evaluation;
+ - Fixed nickname restore on member rejoin;
+ - Fixed duration texts for mute commands, again;
+ - Fixed audit warning action not contained warning expiration if specified;
+ - Fixed command `очистить/clear` usage with @mentioned member;
+ - Some small fixes and improvements.
+
 ## Version 7.4
  - **[Ranking]** Ranking system improvements:
    - **[Patreon]** Exp multiplier in range 50% - 500%

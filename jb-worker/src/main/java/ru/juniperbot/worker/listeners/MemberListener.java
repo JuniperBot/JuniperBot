@@ -188,7 +188,7 @@ public class MemberListener extends DiscordEventListener {
     @Override
     @Transactional
     public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
-        LocalMember member = entityAccessor.getOrCreate(event.getMember());
+        LocalMember member = memberService.get(event.getMember());
         if (member != null && !Objects.equals(event.getMember().getEffectiveName(), member.getEffectiveName())) {
             getAuditService().log(event.getGuild(), AuditActionType.MEMBER_NAME_CHANGE)
                     .withUser(member)

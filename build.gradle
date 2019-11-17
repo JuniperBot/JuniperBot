@@ -97,7 +97,7 @@ subprojects {
         jmxRemoteLegacy                    = '1.0-b01-ea'
 
         // Integration Properties
-        jdaVersion                         = '4.0.0_56'
+        jdaVersion                         = '4.0.0_61'
         discordWebhookVersion              = '0.1.7'
         lavaplayerVersion                  = '1.3.23'
         lavalinkVersion                    = '4.17'
@@ -111,6 +111,7 @@ subprojects {
         prometheusVersion                  = '0.6.0'
         jasyptVersion                      = '1.9.3'
         jasperReportsVersion               = '6.10.0'
+        evalExVersion                      = '2.4'
 
         //@formatter:on
     }

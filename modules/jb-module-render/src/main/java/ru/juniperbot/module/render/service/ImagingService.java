@@ -18,6 +18,8 @@ package ru.juniperbot.module.render.service;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import ru.juniperbot.common.persistence.entity.LocalMember;
+import ru.juniperbot.common.persistence.entity.LocalUser;
 
 import java.awt.image.BufferedImage;
 
@@ -27,6 +29,10 @@ public interface ImagingService {
 
     BufferedImage getAvatar(User user);
 
+    BufferedImage getAvatar(LocalUser user);
+
     BufferedImage getAvatarWithStatus(Member member);
+
+    BufferedImage getAvatarWithStatus(LocalMember member);
 
 }

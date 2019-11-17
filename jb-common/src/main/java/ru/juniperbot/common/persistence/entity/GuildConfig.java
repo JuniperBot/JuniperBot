@@ -73,6 +73,7 @@ public class GuildConfig extends GuildEntity {
     private String timeZone;
 
     @Column(name = "is_assistant_enabled")
+    @Deprecated
     private boolean assistantEnabled;
 
     @Type(type = "jsonb")

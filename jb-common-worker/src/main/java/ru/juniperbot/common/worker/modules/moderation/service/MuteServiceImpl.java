@@ -76,8 +76,8 @@ public class MuteServiceImpl implements MuteService {
         return getMutedRole(guild, true);
     }
 
-    private Role getMutedRole(Guild guild, boolean create) {
-        ModerationConfig moderationConfig = create
+    private Role getMutedRole(Guild guild, boolean updateable) {
+        ModerationConfig moderationConfig = updateable
                 ? configService.getOrCreate(guild.getIdLong())
                 : configService.get(guild);
 
@@ -91,25 +91,27 @@ public class MuteServiceImpl implements MuteService {
             role = CollectionUtils.isNotEmpty(mutedRoles) ? mutedRoles.get(0) : null;
         }
 
-        if (create && (role == null || !guild.getSelfMember().canInteract(role))) {
-            role = guild.createRole()
-                    .setColor(Color.GRAY)
-                    .setMentionable(false)
-                    .setName(MUTED_ROLE_NAME)
-                    .complete();
-        }
-
-        if (role != null) {
-            if (moderationConfig != null && !Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
-                moderationConfig.setMutedRoleId(role.getIdLong());
-                configService.save(moderationConfig);
+        if (updateable) {
+            if (role == null || !guild.getSelfMember().canInteract(role)) {
+                role = guild.createRole()
+                        .setColor(Color.GRAY)
+                        .setMentionable(false)
+                        .setName(MUTED_ROLE_NAME)
+                        .complete();
             }
 
-            for (TextChannel channel : guild.getTextChannels()) {
-                checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
-            }
-            for (VoiceChannel channel : guild.getVoiceChannels()) {
-                checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
+            if (role != null) {
+                if (moderationConfig != null && !Objects.equals(moderationConfig.getMutedRoleId(), role.getIdLong())) {
+                    moderationConfig.setMutedRoleId(role.getIdLong());
+                    configService.save(moderationConfig);
+                }
+
+                for (TextChannel channel : guild.getTextChannels()) {
+                    checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
+                }
+                for (VoiceChannel channel : guild.getVoiceChannels()) {
+                    checkPermission(channel, role, PermissionMode.DENY, Permission.VOICE_SPEAK);
+                }
             }
         }
         return role;

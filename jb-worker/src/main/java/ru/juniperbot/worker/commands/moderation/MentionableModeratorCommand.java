@@ -27,7 +27,6 @@ import ru.juniperbot.common.worker.command.model.MemberReference;
 import ru.juniperbot.common.worker.command.model.MentionableCommand;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 
-import java.util.Date;
 import java.util.Objects;
 
 public abstract class MentionableModeratorCommand extends MentionableCommand {
@@ -58,7 +57,7 @@ public abstract class MentionableModeratorCommand extends MentionableCommand {
     }
 
     protected String getMuteDuration(long duration) {
-        String result = PrettyTimeUtils.formatDuration(new Date(duration), contextService.getLocale());
+        String result = PrettyTimeUtils.formatDuration(duration, contextService.getLocale());
         return messageService.getMessage("discord.command.mod.warn.exceeded.message.MUTE.until", result);
     }
 }

@@ -89,6 +89,10 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
             return false;
         }
 
+        if (workerProperties.getCommands().getDisabled().contains(rawKey)) {
+            return true;
+        }
+
         CommandConfig commandConfig = event.getGuild() != null ? commandConfigService.findByKey(event.getGuild().getIdLong(), rawKey) : null;
         if (!isApplicable(command, commandConfig, event.getAuthor(), event.getMember(), channel)) {
             return false;
@@ -100,7 +104,7 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         Permission[] permissions = command.getPermissions();
         if (permissions != null && permissions.length > 0) {
             Member self = event.getGuild().getSelfMember();
-            if (self != null && !self.hasPermission(channel, permissions)) {
+            if (!self.hasPermission(channel, permissions)) {
                 String list = Stream.of(permissions)
                         .filter(e -> !self.hasPermission(channel, e))
                         .map(e -> messageService.getEnumTitle(e))
@@ -122,6 +126,9 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         context.setConfig(guildConfig);
 
         try {
+            if (workerProperties.getCommands().isInvokeLogging()) {
+                log.info("Invoke command [{}]: {}", command.getClass().getSimpleName(), content);
+            }
             command.doCommand(event, context, content);
             counter.inc();
             if (commandConfig != null && commandConfig.isDeleteSource()

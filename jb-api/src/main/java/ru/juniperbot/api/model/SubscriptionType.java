@@ -17,7 +17,6 @@
 package ru.juniperbot.api.model;
 
 public enum SubscriptionType {
-    JUNIPERFOXX,
     VK,
     TWITCH,
     YOUTUBE

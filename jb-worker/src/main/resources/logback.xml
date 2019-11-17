@@ -64,7 +64,7 @@
         </encoder>
     </appender>
 
-    <logger name="net.dv8tion.jda.core.requests.RateLimiter" level="INFO" additivity="false">
+    <logger name="net.dv8tion.jda.internal.requests.RateLimiter" level="INFO" additivity="false">
         <appender-ref ref="RATELIMITER"/>
     </logger>
 

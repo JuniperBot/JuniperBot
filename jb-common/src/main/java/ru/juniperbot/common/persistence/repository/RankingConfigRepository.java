@@ -27,4 +27,7 @@ public interface RankingConfigRepository extends GuildRepository<RankingConfig> 
 
     @Query("select count(r) > 0 FROM RankingConfig r WHERE r.guildId = :guildId AND r.enabled = true")
     boolean isEnabled(@Param("guildId") long guildId);
+
+    @Query("select r.maxVoiceMembers FROM RankingConfig r WHERE r.guildId = :guildId")
+    Integer findMaxVoiceMembersByGuildId(@Param("guildId") long guildId);
 }
