@@ -94,6 +94,11 @@ public class GulagCommand extends MentionableCommand {
                     .filter(e -> e.getOwner() != null && targetUser.equals(e.getOwner().getUser()))
                     .forEach(e -> e.leave().queue());
         }
+
+        Guild guild = discordService.getShardManager().getGuildById(id);
+        if (guild != null) {
+            guild.leave().queue();
+        }
         return true;
     }
 
