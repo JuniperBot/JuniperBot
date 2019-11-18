@@ -14,19 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.mafia;
+package ru.juniperbot.common.support
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+import java.text.MessageFormat
+import java.util.*
 
-@Configuration
-public class MafiaConfiguration {
+interface ModuleMessageSource {
 
-    @Bean
-    public ModuleMessageSourceImpl mafiaMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("mafia-jbmessages");
-        return source;
-    }
+    fun resolveCodeWithoutArguments(code: String, locale: Locale): String?
+
+    fun resolveCode(code: String, locale: Locale): MessageFormat?
 }

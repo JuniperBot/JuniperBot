@@ -17,14 +17,18 @@
 buildscript {
     ext {
         springBootVersion = '2.1.7.RELEASE'
+        kotlinVersion = '1.3.60'
     }
     repositories {
         jcenter()
+        mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
     }
 }
 
@@ -57,21 +61,26 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: 'kotlin'
     apply plugin: 'io.spring.dependency-management'
 
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 
+    compileKotlin.kotlinOptions.jvmTarget = "1.8"
+    compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+
     compileJava.options.encoding = 'UTF-8'
     compileJava.options.compilerArgs << "-Xlint:deprecation"
 
     ext {
-        generatedMainJava = "${buildDir}/generated"
+        generatedMainJava = "$buildDir/generated"
 
         //@formatter:off
 
         // Common Properties
-        springBootVersion                  = "${springBootVersion}"
+        springBootVersion                  = "$springBootVersion"
+        kotlinVersion                      = "$kotlinVersion"
         springCloudVersion                 = 'Greenwich.RELEASE'
         springConsulVersion                = '2.1.2.RELEASE'
         hibernateVersion                   = '5.3.7.Final'
@@ -131,20 +140,28 @@ subprojects {
     }
 
     dependencies {
-        compileOnly "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
-        compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        compileOnly "org.mapstruct:mapstruct-jdk8:$mapstructVersion"
+        compileOnly "org.mapstruct:mapstruct-processor:$mapstructVersion"
+        compileOnly "org.projectlombok:lombok:$lombokVersion"
         annotationProcessor "javax.xml.bind:jaxb-api"
-        annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
-        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.hibernate:hibernate-jpamodelgen:$hibernateVersion"
+        annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
-        testCompile "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
+
+        testCompile "org.projectlombok:lombok:$lombokVersion"
+        testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
     }
 
     dependencyManagement {
-        imports { mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES) }
+        imports {
+            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES) {
+                bomProperty("kotlin.version", "$kotlinVersion")
+            }
+        }
     }
 }
 

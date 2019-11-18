@@ -14,19 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.ranking;
+package ru.juniperbot.common.support
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+interface ModuleListener {
 
-@Configuration
-public class RankingConfiguration {
-
-    @Bean
-    public ModuleMessageSourceImpl rankingMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("ranking-jbmessages");
-        return source;
-    }
+    fun onShutdown()
 }

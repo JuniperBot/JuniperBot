@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.wikifur;
+package ru.juniperbot.module.ranking
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import ru.juniperbot.common.support.ModuleMessageSource
+import ru.juniperbot.common.support.ModuleMessageSourceImpl
 
 @Configuration
-public class WikiFurConfiguration {
+open class RankingConfiguration {
 
     @Bean
-    public ModuleMessageSourceImpl wikifurMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("wikifur-jbmessages");
-        return source;
-    }
+    open fun rankingMessages(): ModuleMessageSource = ModuleMessageSourceImpl("ranking-jbmessages")
 }

@@ -14,14 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.support;
+package ru.juniperbot.module.misc
 
-import java.text.MessageFormat;
-import java.util.Locale;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import ru.juniperbot.common.support.ModuleMessageSource
+import ru.juniperbot.common.support.ModuleMessageSourceImpl
 
-public interface ModuleMessageSource {
+@Configuration
+open class MiscConfiguration {
 
-    String resolveCodeWithoutArguments(String code, Locale locale);
-
-    MessageFormat resolveCode(String code, Locale locale);
+    @Bean
+    open fun miscMessages(): ModuleMessageSource = ModuleMessageSourceImpl("misc-jbmessages")
 }

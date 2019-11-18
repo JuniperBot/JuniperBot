@@ -14,9 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.support;
+package ru.juniperbot.module.audio
 
-public interface ModuleListener {
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import ru.juniperbot.common.support.ModuleMessageSource
+import ru.juniperbot.common.support.ModuleMessageSourceImpl
 
-    void onShutdown();
+@Configuration
+open class AudioConfiguration {
+
+    @Bean
+    open fun audioMessages(): ModuleMessageSource = ModuleMessageSourceImpl("audio-jbmessages")
 }
