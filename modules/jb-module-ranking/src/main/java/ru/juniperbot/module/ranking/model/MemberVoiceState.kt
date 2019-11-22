@@ -14,16 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.ranking
+package ru.juniperbot.module.ranking.model
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import ru.juniperbot.common.support.ModuleMessageSource
-import ru.juniperbot.common.support.ModuleMessageSourceImpl
+import com.google.common.util.concurrent.AtomicDouble
+import java.util.concurrent.atomic.AtomicLong
 
-@Configuration
-class RankingConfiguration {
-
-    @Bean
-    fun rankingMessages(): ModuleMessageSource = ModuleMessageSourceImpl("ranking-jbmessages")
+class MemberVoiceState {
+    val activityTime = AtomicLong(0)
+    val points = AtomicDouble(0.0)
+    var lastAccumulated = System.currentTimeMillis()
+    var frozen: Boolean = false
 }
