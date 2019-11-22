@@ -262,7 +262,7 @@ public class ContextServiceImpl implements ContextService {
                 return null;
             });
         } catch (ObjectOptimisticLockingFailureException e) {
-            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier());
         }
     }
 

@@ -134,7 +134,7 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
                 }
             });
         } catch (ObjectOptimisticLockingFailureException e) {
-            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
+            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier());
         }
     }
 

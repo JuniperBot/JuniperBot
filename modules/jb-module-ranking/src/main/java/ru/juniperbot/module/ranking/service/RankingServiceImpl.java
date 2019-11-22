@@ -282,6 +282,7 @@ public class RankingServiceImpl implements RankingService {
         Ranking ranking = configService.getRanking(member);
         if (ranking == null) {
             ranking = new Ranking();
+            member = memberService.get(member.getGuildId(), member.getUser().getUserId()); // force attach to transaction
             ranking.setMember(member);
             rankingRepository.save(ranking);
         }
@@ -298,6 +299,7 @@ public class RankingServiceImpl implements RankingService {
     }
 
     @Override
+    @Transactional
     public RankingInfo getRankingInfo(LocalMember member) {
         Ranking ranking = getRanking(member);
         RankingInfo rankingInfo = RankingUtils.calculateInfo(ranking);
