@@ -28,6 +28,7 @@ import ru.juniperbot.common.model.EmojiRole;
 import ru.juniperbot.common.persistence.entity.CommandReaction;
 import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
@@ -42,6 +43,9 @@ public class CommandReactionListener extends DiscordEventListener {
 
     @Autowired
     private FeatureSetService featureSetService;
+
+    @Autowired
+    private TransactionHandler transactionHandler;
 
     @Override
     public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {
@@ -92,6 +96,6 @@ public class CommandReactionListener extends DiscordEventListener {
 
     @Override
     public void onGuildMessageDelete(@Nonnull GuildMessageDeleteEvent event) {
-        contextService.inTransaction(() -> reactionRepository.deleteByMessageId(event.getMessageIdLong()));
+        transactionHandler.runInTransaction(() -> reactionRepository.deleteByMessageId(event.getMessageIdLong()));
     }
 }

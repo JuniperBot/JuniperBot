@@ -33,6 +33,7 @@ import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
 import ru.juniperbot.common.persistence.repository.CustomCommandRepository;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.model.MessageTemplateCompiler;
@@ -63,6 +64,9 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
     private FeatureSetService featureSetService;
+
+    @Autowired
+    private TransactionHandler transactionHandler;
 
     @Override
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
@@ -154,7 +158,8 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                         log.error("Could not add reaction emote", e);
                     }
                 });
-        contextService.inTransaction(() -> {
+
+        transactionHandler.runInTransaction(() -> {
             commandRepository.findById(command.getId())
                     .ifPresent(e -> reactionRepository.save(new CommandReaction(message, e)));
         });

@@ -18,10 +18,12 @@ package ru.juniperbot.module.ranking.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -37,16 +39,18 @@ import ru.juniperbot.common.persistence.repository.CookieRepository;
 import ru.juniperbot.common.persistence.repository.RankingRepository;
 import ru.juniperbot.common.service.MemberService;
 import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.utils.RankingUtils;
-import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
 import ru.juniperbot.common.worker.shared.service.DiscordService;
+import ru.juniperbot.module.ranking.model.GainExpResult;
 import ru.juniperbot.module.ranking.utils.VoiceActivityTracker;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,9 +70,6 @@ public class RankingServiceImpl implements RankingService {
     private DiscordService discordService;
 
     @Autowired
-    private ContextService contextService;
-
-    @Autowired
     private MessageTemplateService templateService;
 
     @Autowired
@@ -79,6 +80,9 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     private FeatureSetService featureSetService;
+
+    @Autowired
+    private TransactionHandler transactionHandler;
 
     private static Object DUMMY = new Object();
 
@@ -102,39 +106,36 @@ public class RankingServiceImpl implements RankingService {
         }
 
         String memberKey = String.format("%s_%s", guild.getId(), event.getAuthor().getId());
-        if (coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())) {
-            contextService.withContextAsync(guild, () -> {
-                Ranking ranking = getRanking(member);
-                int level = RankingUtils.getLevelFromExp(ranking.getExp());
-                ranking.setExp(ranking.getExp() + Math.round(RandomUtils.nextLong(15, 25)
-                        * config.getTextExpMultiplier()));
-                rankingRepository.save(ranking);
-                coolDowns.put(memberKey, DUMMY);
+        long gainExp = coolDowns.getIfPresent(memberKey) == null && !isIgnoredChannel(config, event.getChannel())
+                ? Math.round(RandomUtils.nextLong(15, 25) * config.getTextExpMultiplier()) : 0;
 
-                int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-                if (newLevel <= RankingUtils.MAX_LEVEL && level != newLevel) {
-                    performLevelUp(config, ranking, member, event.getChannel(), newLevel);
-                }
-            });
-        }
-
-        if (config.isCookieEnabled()
+        boolean hasCookie = config.isCookieEnabled()
                 && CollectionUtils.isNotEmpty(event.getMessage().getMentionedUsers())
                 && StringUtils.isNotEmpty(event.getMessage().getContentRaw())
-                && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE)) {
-            contextService.withContextAsync(null, () -> {
+                && event.getMessage().getContentRaw().contains(RankingService.COOKIE_EMOTE);
+
+        List<Member> cookieRecipients = hasCookie ?
+                event.getMessage().getMentionedMembers().stream().filter(e -> !e.getUser().isBot()
+                        && !Objects.equals(e.getUser(), event.getAuthor())
+                        && memberService.isApplicable(e))
+                        .collect(Collectors.toList())
+                : null;
+
+        if (gainExp == 0 && CollectionUtils.isEmpty(cookieRecipients)) {
+            return;
+        }
+
+        updateRanking(config, member, gainExp, event.getChannel(), ranking -> {
+            if (CollectionUtils.isNotEmpty(cookieRecipients)) {
                 Date checkDate = getCookieCoolDown();
-                for (User user : event.getMessage().getMentionedUsers()) {
-                    if (!user.isBot() && !Objects.equals(user, event.getAuthor())) {
-                        Member recipientMember = guild.getMember(user);
-                        if (recipientMember != null && memberService.isApplicable(recipientMember)) {
-                            LocalMember sender = entityAccessor.getOrCreate(member);
-                            LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
-                            giveCookie(sender, recipient, checkDate);
-                        }
-                    }
-                }
-            });
+                cookieRecipients.forEach(recipientMember -> {
+                    LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
+                    giveCookie(ranking.getMember(), recipient, checkDate);
+                });
+            }
+        });
+        if (gainExp > 0) {
+            coolDowns.put(memberKey, DUMMY);
         }
     }
 
@@ -146,9 +147,11 @@ public class RankingServiceImpl implements RankingService {
         }
         RankingConfig config = configService.get(senderMember.getGuild());
         if (config != null && config.isCookieEnabled()) {
-            LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
-            LocalMember sender = entityAccessor.getOrCreate(senderMember);
-            giveCookie(sender, recipient, getCookieCoolDown());
+            transactionHandler.runWithLockRetry(() -> {
+                LocalMember recipient = entityAccessor.getOrCreate(recipientMember);
+                LocalMember sender = entityAccessor.getOrCreate(senderMember);
+                giveCookie(sender, recipient, getCookieCoolDown());
+            });
         }
     }
 
@@ -162,37 +165,56 @@ public class RankingServiceImpl implements RankingService {
         if (config == null || !config.isEnabled()) {
             return;
         }
-
-        Ranking ranking = getRanking(member);
-        ranking.setVoiceActivity(ranking.getVoiceActivity() + state.getActivityTime().get());
-
-        if (config.isVoiceEnabled()
+        long gainedExp = config.isVoiceEnabled()
                 && featureSetService.isAvailable(member.getGuild())
-                && !configService.isBanned(config, member)) {
+                && !configService.isBanned(config, member)
+                ? Math.round(15 * state.getPoints().get() * config.getVoiceExpMultiplier()) : 0;
+        updateRanking(config, member, gainedExp, null, ranking -> {
+            ranking.setVoiceActivity(ranking.getVoiceActivity() + state.getActivityTime().get());
+        });
+    }
+
+    private void updateRanking(RankingConfig config,
+                               Member member,
+                               long gainedExp,
+                               TextChannel notifyChannel,
+                               Consumer<Ranking> preProcess) {
+        GainExpResult result = transactionHandler.runWithLockRetry(() -> {
+            Ranking ranking = getRanking(member);
+            preProcess.accept(ranking);
             int oldLevel = RankingUtils.getLevelFromExp(ranking.getExp());
-            long gainedExp = Math.round(15 * state.getPoints().get() * config.getVoiceExpMultiplier());
             ranking.setExp(ranking.getExp() + gainedExp);
             int newLevel = RankingUtils.getLevelFromExp(ranking.getExp());
             rankingRepository.save(ranking);
-            // notify after save
-            if (oldLevel < newLevel) {
-                performLevelUp(config, ranking, member, null, newLevel);
+            return new GainExpResult(ranking, oldLevel, newLevel);
+        });
+        if (result.getOldLevel() < result.getNewLevel()) {
+            if (config.isAnnouncementEnabled()) {
+                // it is lazy and out of current session
+                MessageTemplate template = config.getAnnounceTemplate() != null
+                        ? templateService.getById(config.getAnnounceTemplate().getId()) : null;
+                templateService
+                        .createMessage(template)
+                        .withFallbackContent("discord.command.rank.levelup")
+                        .withGuild(member.getGuild())
+                        .withMember(member)
+                        .withFallbackChannel(notifyChannel)
+                        .withDirectAllowed(true)
+                        .withVariable("level", result.getNewLevel())
+                        .compileAndSend();
             }
-        } else {
-            rankingRepository.save(ranking);
+            updateRewards(config, member, result.getRanking());
         }
     }
 
     private void giveCookie(LocalMember sender, LocalMember recipient, Date checkDate) {
         if (!cookieRepository.isFull(sender, recipient, checkDate)) {
-            configService.inTransaction(() -> {
-                cookieRepository.save(new Cookie(sender, recipient));
-                Ranking recipientRanking = configService.getRanking(recipient);
-                if (recipientRanking != null) {
-                    recipientRanking.incrementCookies();
-                    rankingRepository.save(recipientRanking);
-                }
-            });
+            cookieRepository.save(new Cookie(sender, recipient));
+            Ranking recipientRanking = configService.getRanking(recipient);
+            if (recipientRanking != null) {
+                recipientRanking.incrementCookies();
+                rankingRepository.save(recipientRanking);
+            }
         }
     }
 
@@ -234,28 +256,6 @@ public class RankingServiceImpl implements RankingService {
         Set<Role> rolesToAdd = getRoles(member, rewardsToAdd);
         Set<Role> rolesToRemove = getRoles(member, rewardsToRemove);
         member.getGuild().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
-    }
-
-    private void performLevelUp(@NonNull RankingConfig config,
-                                @NonNull Ranking ranking,
-                                @NonNull Member member,
-                                TextChannel defaultChannel,
-                                int newLevel) {
-        if (config.isAnnouncementEnabled()) {
-            // it is lazy and out of current session
-            MessageTemplate template = config.getAnnounceTemplate() != null
-                    ? templateService.getById(config.getAnnounceTemplate().getId()) : null;
-            templateService
-                    .createMessage(template)
-                    .withFallbackContent("discord.command.rank.levelup")
-                    .withGuild(member.getGuild())
-                    .withMember(member)
-                    .withFallbackChannel(defaultChannel)
-                    .withDirectAllowed(true)
-                    .withVariable("level", newLevel)
-                    .compileAndSend();
-        }
-        updateRewards(config, member, ranking);
     }
 
     private Set<Role> getRoles(Member member, List<RankingReward> rewards) {

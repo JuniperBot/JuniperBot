@@ -14,28 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.service;
+package ru.juniperbot.common.service
 
-import net.dv8tion.jda.api.entities.Guild;
-import ru.juniperbot.common.persistence.entity.base.GuildEntity;
+interface TransactionHandler {
 
-public interface DomainService<T extends GuildEntity> {
+    fun runInTransaction(action: Runnable)
 
-    T get(Guild guild);
+    fun runInNewTransaction(action: Runnable)
 
-    T get(long id);
+    fun runWithLockRetry(action: Runnable)
 
-    T getByGuildId(long guildId);
+    fun <T> runInTransaction(action: () -> T): T
 
-    T getOrCreate(long guildId);
+    fun <T> runInNewTransaction(action: () -> T): T
 
-    T save(T entity);
-
-    boolean exists(long guildId);
-
-    void evict(long guildId);
-
-    boolean isCacheable();
-
-    void setCacheable(boolean cacheable);
+    fun <T> runWithLockRetry(action: () -> T): T
 }

@@ -21,7 +21,7 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.juniperbot.common.persistence.entity.MemberWarning;
 import ru.juniperbot.common.persistence.repository.MemberWarningRepository;
-import ru.juniperbot.common.worker.event.service.ContextService;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.worker.shared.support.AbstractJob;
 
 public class UnWarnJob extends AbstractJob {
@@ -33,13 +33,13 @@ public class UnWarnJob extends AbstractJob {
     private MemberWarningRepository repository;
 
     @Autowired
-    private ContextService contextService;
+    private TransactionHandler transactionHandler;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         JobDataMap data = jobExecutionContext.getJobDetail().getJobDataMap();
         long warningId = data.getLongFromString(ATTR_WARNING_ID);
-        contextService.inTransaction(() -> repository.flushWarning(warningId));
+        transactionHandler.runInTransaction(() -> repository.flushWarning(warningId));
     }
 
     public static JobDetail createDetails(@NonNull MemberWarning warning) {
