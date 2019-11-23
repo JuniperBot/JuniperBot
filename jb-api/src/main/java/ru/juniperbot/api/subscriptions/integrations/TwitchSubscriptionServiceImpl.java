@@ -63,6 +63,8 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
 
     private TwitchConnectionRepository repository;
 
+    private volatile boolean initialized = false;
+
     public TwitchSubscriptionServiceImpl(@Autowired TwitchConnectionRepository repository) {
         super(repository);
         this.repository = repository;
@@ -106,6 +108,14 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
             return;
         }
 
+        if (!initialized) {
+            liveStreamsCache.addAll(liveStreams.stream().map(Stream::getId).collect(Collectors.toSet()));
+            log.info("Twitch channels notification initialized [Channels={}, Online={}]", userIds.size(),
+                    liveStreams.size());
+            initialized = true;
+            return;
+        }
+
         Set<User> users = getUsersByIds(liveStreams.stream().map(Stream::getUserId).collect(Collectors.toList()));
 
         if (users.isEmpty()) {
@@ -115,6 +125,7 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
         }
 
         Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+        Map<Long, Stream> streamMap = liveStreams.stream().collect(Collectors.toMap(Stream::getUserId, Function.identity()));
 
         List<Stream> streamsToNotify = liveStreams.stream()
                 .filter(e -> !liveStreamsCache.contains(e.getId()))
@@ -129,8 +140,6 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
 
         Lists.partition(streamsToNotify, 1000).forEach(e -> {
             List<TwitchConnection> toSave = new ArrayList<>(e.size());
-            Map<Long, Stream> streamMap = e.stream().collect(Collectors.toMap(Stream::getUserId,
-                    Function.identity()));
             repository.findActiveConnections(e.stream()
                     .map(Stream::getUserId)
                     .collect(Collectors.toSet()))
@@ -195,7 +204,7 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
         }
         Set<Stream> result = new HashSet<>(userIds.size());
         Lists.partition(userIds, 100).forEach(e -> {
-            Set<Stream> batch = new HashSet<>(e.size());
+            Set<Stream> batch = new TreeSet<>(Comparator.comparingLong(Stream::getUserId));
             Set<String> cursors = new HashSet<>();
             fetchStreams("", cursors, batch, e);
             result.addAll(batch);
