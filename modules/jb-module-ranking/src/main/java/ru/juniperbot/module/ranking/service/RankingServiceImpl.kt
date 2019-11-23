@@ -24,8 +24,12 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ru.juniperbot.common.configuration.CommonConfiguration
+import ru.juniperbot.common.extensions.modifyMemberRolesDelayed
 import ru.juniperbot.common.model.RankingInfo
 import ru.juniperbot.common.model.RankingReward
 import ru.juniperbot.common.persistence.entity.Cookie
@@ -78,6 +82,10 @@ class RankingServiceImpl : RankingService {
 
     @Autowired
     lateinit var transactionHandler: TransactionHandler
+
+    @Autowired
+    @Qualifier(CommonConfiguration.SCHEDULER)
+    lateinit var scheduler: TaskScheduler
 
     private val coolDowns = CacheBuilder.newBuilder()
             .concurrencyLevel(4)
@@ -153,7 +161,8 @@ class RankingServiceImpl : RankingService {
                 && featureSetService.isAvailable(member.guild)
                 && !configService.isBanned(config, member))
             (15.0 * state.points.get() * config.voiceExpMultiplier).roundToLong() else 0
-        updateRanking(config, member, gainedExp) {
+        // we should delay reward roles  (cuz they may conflict with InVoice roles)
+        updateRanking(config, member, gainedExp, null, 3000) {
             it.voiceActivity += state.activityTime.get()
         }
     }
@@ -162,6 +171,7 @@ class RankingServiceImpl : RankingService {
                               member: Member,
                               gainedExp: Long,
                               notifyChannel: TextChannel? = null,
+                              roleDelay: Long? = null,
                               preProcess: (Ranking) -> Unit) {
         val (result, oldLevel, newLevel) = transactionHandler.runWithLockRetry {
             val ranking = getRanking(member)
@@ -187,7 +197,7 @@ class RankingServiceImpl : RankingService {
                         .withVariable("level", newLevel)
                         .compileAndSend()
             }
-            updateRewards(config, member, result)
+            updateRewards(config, member, result, roleDelay)
         }
     }
 
@@ -212,7 +222,7 @@ class RankingServiceImpl : RankingService {
         }
     }
 
-    private fun updateRewards(config: RankingConfig, member: Member, ranking: Ranking) {
+    private fun updateRewards(config: RankingConfig, member: Member, ranking: Ranking, delay: Long? = null) {
         val self = member.guild.selfMember
         if (!discordService.isConnected(member.guild.idLong)
                 || config.rewards.isNullOrEmpty()
@@ -239,7 +249,7 @@ class RankingServiceImpl : RankingService {
 
         val rolesToAdd = getRoles(member, rewardsToAdd)
         val rolesToRemove = getRoles(member, rewardsToRemove)
-        member.guild.modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue()
+        member.guild.modifyMemberRolesDelayed(scheduler, member, rolesToAdd, rolesToRemove, delay)
     }
 
     private fun getRoles(member: Member, rewards: List<RankingReward>): List<Role> {
