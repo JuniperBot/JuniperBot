@@ -125,6 +125,7 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         BotContext context = getContext(event.getChannel());
         context.setConfig(guildConfig);
 
+        long millis = System.currentTimeMillis();
         try {
             if (workerProperties.getCommands().isInvokeLogging()) {
                 log.info("Invoke command [{}]: {}", command.getClass().getSimpleName(), content);
@@ -144,6 +145,11 @@ public class InternalCommandsServiceImpl extends BaseCommandsService implements 
         } finally {
             executions.mark();
             registry.incrementCommand(command);
+            long executionTime = System.currentTimeMillis() - millis;
+            if (executionTime > workerProperties.getCommands().getExecutionThresholdMs()) {
+                log.warn("Command [{}] took too long ({} ms) to execute with content: {}",
+                        command.getClass().getSimpleName(), executionTime, content);
+            }
         }
         return true;
     }

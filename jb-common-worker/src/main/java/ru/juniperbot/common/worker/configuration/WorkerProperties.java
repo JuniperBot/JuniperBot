@@ -101,6 +101,7 @@ public class WorkerProperties {
     @ToString
     public static class Commands {
         private boolean invokeLogging = false;
+        private int executionThresholdMs = 1000;
         private List<String> disabled = new ArrayList<>();
     }
 
