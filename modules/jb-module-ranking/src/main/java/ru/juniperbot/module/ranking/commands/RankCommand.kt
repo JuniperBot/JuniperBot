@@ -90,7 +90,7 @@ class RankCommand protected constructor() : MentionableCommand(true, true) {
     }
 
     private fun sendCard(channel: TextChannel, reference: MemberReference, config: RankingConfig?, info: RankingInfo): Boolean {
-        val templateMap = mutableMapOf<String, Any>()
+        val templateMap = mutableMapOf<String, Any?>()
         templateMap["name"] = "" // it fails on font fallback so we have to render it on our own
         templateMap["avatarImage"] = if (reference.member != null)
             imagingService.getAvatarWithStatus(reference.member)
