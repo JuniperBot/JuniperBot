@@ -45,6 +45,7 @@ import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
 import ru.juniperbot.common.worker.modules.audit.provider.ModerationAuditForwardProvider;
 import ru.juniperbot.common.worker.modules.audit.provider.NicknameChangeAuditForwardProvider;
+import ru.juniperbot.common.worker.modules.audit.provider.VoiceMoveAuditForwardProvider;
 import ru.juniperbot.common.worker.modules.audit.service.ActionsHolderService;
 import ru.juniperbot.common.worker.modules.moderation.model.ModerationActionRequest;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
@@ -215,9 +216,10 @@ public class MemberListener extends DiscordEventListener {
     @Transactional
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         if (!event.getMember().getUser().isBot()) {
-            getAuditService().log(event.getGuild(), AuditActionType.VOICE_JOIN)
+            getAuditService().log(event.getGuild(), AuditActionType.VOICE_MOVE)
                     .withUser(event.getMember())
                     .withChannel(event.getChannelJoined())
+                    .withAttribute(VoiceMoveAuditForwardProvider.OLD_CHANNEL, event.getChannelLeft())
                     .save();
         }
     }
