@@ -98,16 +98,6 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
             return;
         }
 
-        Set<User> users = getUsersByIds(userIds);
-
-        if (users.isEmpty()) {
-            log.info("No users found for {} connections, exiting...", userIds.size());
-            liveStreamsCache.clear();
-            return;
-        }
-
-        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
-
         Set<Stream> liveStreams = getLiveStreams(userIds);
 
         if (liveStreams.isEmpty()) {
@@ -115,6 +105,16 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
             liveStreamsCache.clear();
             return;
         }
+
+        Set<User> users = getUsersByIds(liveStreams.stream().map(Stream::getUserId).collect(Collectors.toList()));
+
+        if (users.isEmpty()) {
+            log.info("No users found for {} streams, exiting...", liveStreams.size());
+            liveStreamsCache.clear();
+            return;
+        }
+
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
 
         List<Stream> streamsToNotify = liveStreams.stream()
                 .filter(e -> !liveStreamsCache.contains(e.getId()))
@@ -196,13 +196,14 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
         Set<Stream> result = new HashSet<>(userIds.size());
         Lists.partition(userIds, 100).forEach(e -> {
             Set<Stream> batch = new HashSet<>(e.size());
-            fetchStreams("", batch, e);
+            Set<String> cursors = new HashSet<>();
+            fetchStreams("", cursors, batch, e);
             result.addAll(batch);
         });
         return result;
     }
 
-    private void fetchStreams(String afterCursor, Set<Stream> streams, List<Long> userIds) {
+    private void fetchStreams(String afterCursor, Set<String> cursors, Set<Stream> streams, List<Long> userIds) {
         StreamList result = helix
                 .getStreams("", afterCursor, "", 100, null, null, null, userIds, null)
                 .execute();
@@ -215,8 +216,11 @@ public class TwitchSubscriptionServiceImpl extends BaseSubscriptionService<Twitc
                     .filter(e -> "live".equals(e.getType()))
                     .collect(Collectors.toList()));
         }
-        if (result.getPagination() != null && StringUtils.isNotEmpty(result.getPagination().getCursor())) {
-            fetchStreams(result.getPagination().getCursor(), streams, userIds);
+        if (result.getPagination() != null) {
+            String cursor = result.getPagination().getCursor();
+            if (StringUtils.isNotEmpty(cursor) && cursors.add(cursor)) {
+                fetchStreams(cursor, cursors, streams, userIds);
+            }
         }
     }
 
