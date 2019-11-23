@@ -103,6 +103,8 @@ subprojects {
         mapstructVersion                   = '1.2.0.Final'
         opencvVersion                      = '3.2.0'
         jacksonVersion                     = '2.9.7'
+        evalExVersion                      = '2.4'
+        time4jVersion                      = '5.5'
         
         jmxRemote                          = '4.1.1'
         jmxRemoteLegacy                    = '1.0-b01-ea'
@@ -122,7 +124,6 @@ subprojects {
         prometheusVersion                  = '0.6.0'
         jasyptVersion                      = '1.9.3'
         jasperReportsVersion               = '6.10.0'
-        evalExVersion                      = '2.4'
 
         //@formatter:on
     }

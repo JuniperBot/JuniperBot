@@ -24,8 +24,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ocpsoft.prettytime.PrettyTime;
-import org.ocpsoft.prettytime.units.JustNow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.juniperbot.common.configuration.CommonProperties;
@@ -35,14 +33,13 @@ import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.entity.ModerationConfig;
 import ru.juniperbot.common.service.ConfigService;
 import ru.juniperbot.common.service.ModerationConfigService;
+import ru.juniperbot.common.utils.PrettyTimeUtils;
 import ru.juniperbot.common.worker.command.model.CoolDownHolder;
 import ru.juniperbot.common.worker.configuration.WorkerProperties;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.message.service.MessageService;
 import ru.juniperbot.common.worker.modules.moderation.service.ModerationService;
 import ru.juniperbot.common.worker.shared.service.DiscordEntityAccessor;
-
-import java.util.Date;
 
 @Slf4j
 public abstract class BaseCommandsService implements CommandsService, CommandHandler {
@@ -196,13 +193,9 @@ public abstract class BaseCommandsService implements CommandsService, CommandHan
                     long duration = holder.perform(event, commandConfig);
                     if (duration > 0) {
                         resultEmotion(event, "\uD83D\uDD5C", null);
-                        Date date = new Date();
-                        date.setTime(date.getTime() + duration);
-
-                        PrettyTime time = new PrettyTime(contextService.getLocale());
-                        time.removeUnit(JustNow.class);
+                        String durationText = PrettyTimeUtils.print(duration, contextService.getLocale());
                         messageService.onTempEmbedMessage(event.getChannel(), 10,
-                                "discord.command.restricted.cooldown", time.format(date));
+                                "discord.command.restricted.cooldown", durationText);
                         return true;
                     }
                 }

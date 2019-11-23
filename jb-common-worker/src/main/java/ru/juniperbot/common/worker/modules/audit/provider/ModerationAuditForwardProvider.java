@@ -51,7 +51,7 @@ public abstract class ModerationAuditForwardProvider extends LoggingAuditForward
     protected void addExpirationField(AuditAction action, EmbedBuilder embedBuilder) {
         Long durationMs = action.getAttribute(DURATION_MS_ATTR, Long.class);
         if (durationMs != null) {
-            String result = PrettyTimeUtils.formatDuration(durationMs, contextService.getLocale());
+            String result = PrettyTimeUtils.print(durationMs, contextService.getLocale());
             embedBuilder.addField(messageService.getMessage("audit.member.mute.durationms.title"), result, true);
         }
     }

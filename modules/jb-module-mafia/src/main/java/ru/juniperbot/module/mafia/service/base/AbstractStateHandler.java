@@ -19,13 +19,13 @@ package ru.juniperbot.module.mafia.service.base;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import ru.juniperbot.common.configuration.CommonConfiguration;
 import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.utils.PrettyTimeUtils;
 import ru.juniperbot.common.worker.event.listeners.ReactionsListener;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.message.service.MessageService;
@@ -120,9 +120,7 @@ public abstract class AbstractStateHandler implements MafiaStateHandler {
     }
 
     protected String getEndTimeText(MafiaInstance instance, long delay) {
-        Date date = new Date();
-        date.setTime(date.getTime() + delay);
-        return new PrettyTime(instance.getLocale()).format(date);
+        return PrettyTimeUtils.print(delay, instance.getLocale());
     }
 
     protected String getPlayerList(Collection<MafiaPlayer> players) {
