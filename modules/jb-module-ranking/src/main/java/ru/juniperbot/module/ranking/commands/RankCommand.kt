@@ -65,7 +65,7 @@ class RankCommand protected constructor() : MentionableCommand(true, true) {
                            content: String): Boolean {
         contextService.queue(event.guild, event.channel.sendTyping()) queue@{ _ ->
             val member = reference.localMember
-            val info = rankingService.getRankingInfo(event.guild.idLong, reference.id)!!
+            val info = rankingService.getRankingInfo(event.guild.idLong, reference.id) ?: return@queue
             val config = rankingConfigService.get(event.guild)
 
             val self = event.guild.selfMember
