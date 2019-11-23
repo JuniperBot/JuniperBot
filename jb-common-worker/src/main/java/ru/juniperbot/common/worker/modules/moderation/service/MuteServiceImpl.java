@@ -110,6 +110,9 @@ public class MuteServiceImpl implements MuteService {
                     configService.save(moderationConfig);
                 }
 
+                for (Category channel : guild.getCategories()) {
+                    checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
+                }
                 for (TextChannel channel : guild.getTextChannels()) {
                     checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
                 }
