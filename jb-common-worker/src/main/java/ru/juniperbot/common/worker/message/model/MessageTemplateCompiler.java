@@ -21,10 +21,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.springframework.util.PropertyPlaceholderHelper;
 import ru.juniperbot.common.persistence.entity.MessageTemplate;
 import ru.juniperbot.common.support.MapPlaceholderResolver;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Getter
@@ -41,6 +44,8 @@ public abstract class MessageTemplateCompiler {
     private boolean directAllowed;
 
     private final MessageTemplate template;
+
+    private final Set<PropertyPlaceholderHelper.PlaceholderResolver> resolverSet = new HashSet<>();
 
     private final MapPlaceholderResolver variables = new MapPlaceholderResolver();
 
@@ -75,6 +80,11 @@ public abstract class MessageTemplateCompiler {
 
     public MessageTemplateCompiler withVariable(String key, Serializable value) {
         this.variables.put(key, String.valueOf(value));
+        return this;
+    }
+
+    public MessageTemplateCompiler withResolver(PropertyPlaceholderHelper.PlaceholderResolver resolver) {
+        this.resolverSet.add(resolver);
         return this;
     }
 

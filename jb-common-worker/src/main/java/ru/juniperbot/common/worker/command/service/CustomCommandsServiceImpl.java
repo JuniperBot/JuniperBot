@@ -37,6 +37,7 @@ import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.model.MessageTemplateCompiler;
+import ru.juniperbot.common.worker.message.resolver.ContentPlaceholderResolver;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 
@@ -106,7 +107,7 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                 .withGuild(guild)
                 .withMember(event.getMember())
                 .withFallbackChannel(event.getChannel())
-                .withVariable("content", content);
+                .withResolver(new ContentPlaceholderResolver(content));
 
         switch (command.getType()) {
             case ALIAS:

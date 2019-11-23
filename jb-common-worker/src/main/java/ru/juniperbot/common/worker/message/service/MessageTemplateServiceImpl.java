@@ -262,6 +262,7 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
     private MessageTemplatePlaceholderResolver getPropertyResolver(@NonNull MessageTemplateCompiler compiler) {
         Set<PropertyPlaceholderHelper.PlaceholderResolver> resolvers = new HashSet<>();
         resolvers.add(compiler.getVariables());
+        resolvers.addAll(compiler.getResolverSet());
         Locale locale = null;
         if (compiler.getGuild() != null) {
             locale = contextService.getLocale(compiler.getGuild());
