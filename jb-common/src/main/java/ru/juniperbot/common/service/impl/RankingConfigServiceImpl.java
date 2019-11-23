@@ -103,9 +103,13 @@ public class RankingConfigServiceImpl
     @Override
     public void update(RankingUpdateRequest request) {
         LocalMember localMember = memberRepository.findByGuildIdAndUserId(request.getGuildId(), request.getUserId());
-        Ranking ranking = getRanking(localMember);
+        Ranking ranking = rankingRepository.findByMember(localMember);
         if (ranking == null) {
-            return;
+            if (localMember == null) {
+                return;
+            }
+            ranking = new Ranking();
+            ranking.setMember(localMember);
         }
 
         Integer level = request.getLevel();
@@ -152,24 +156,6 @@ public class RankingConfigServiceImpl
         List<String> bannedRoles = Arrays.asList(config.getBannedRoles());
         return CollectionUtils.isNotEmpty(member.getRoles()) && member.getRoles().stream()
                 .anyMatch(e -> bannedRoles.contains(e.getName().toLowerCase()) || bannedRoles.contains(e.getId()));
-    }
-
-    @Override
-    @Transactional
-    public Ranking getRanking(LocalMember member) {
-        Ranking ranking = rankingRepository.findByMember(member);
-        if (ranking == null && member != null) {
-            ranking = new Ranking();
-            ranking.setMember(member);
-            rankingRepository.save(ranking);
-        }
-        return ranking;
-    }
-
-    @Override
-    @Transactional
-    public Ranking getRanking(Member member) {
-        return rankingRepository.findByMember(member);
     }
 
     @Override

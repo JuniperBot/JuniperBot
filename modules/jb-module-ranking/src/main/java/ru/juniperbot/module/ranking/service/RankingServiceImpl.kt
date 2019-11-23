@@ -206,7 +206,7 @@ class RankingServiceImpl : RankingService {
             return
         }
         cookieRepository.save(Cookie(sender, recipient))
-        val recipientRanking = configService.getRanking(recipient)
+        val recipientRanking = getRanking(recipient)
         if (recipientRanking != null) {
             recipientRanking.incrementCookies()
             rankingRepository.save(recipientRanking)
@@ -260,15 +260,15 @@ class RankingServiceImpl : RankingService {
     }
 
     @Transactional
-    override fun getRankingInfo(member: Member): RankingInfo {
-        val ranking = getRanking(member)
+    override fun getRankingInfo(guildId: Long, userId: String): RankingInfo? {
+        val ranking = getRanking(guildId, userId) ?: return null
         val rankingInfo = RankingUtils.calculateInfo(ranking)
-        rankingInfo.rank = rankingRepository.getRank(member.guild.idLong, rankingInfo.totalExp)
+        rankingInfo.rank = rankingRepository.getRank(guildId, rankingInfo.totalExp)
         return rankingInfo
     }
 
     private fun getRanking(member: Member): Ranking {
-        var ranking: Ranking? = configService.getRanking(member)
+        var ranking = rankingRepository.findByMember(member)
         if (ranking == null) {
             val localMember = entityAccessor.getOrCreate(member)
             ranking = Ranking()
@@ -278,22 +278,18 @@ class RankingServiceImpl : RankingService {
         return ranking
     }
 
-    @Transactional
-    override fun getRankingInfo(member: LocalMember): RankingInfo {
-        val ranking = getRanking(member)
-        val rankingInfo = RankingUtils.calculateInfo(ranking)
-        rankingInfo.rank = rankingRepository.getRank(member.guildId, rankingInfo.totalExp)
-        return rankingInfo
-    }
-
-    private fun getRanking(member: LocalMember): Ranking {
-        var ranking = configService.getRanking(member)
-        if (ranking == null) {
+    private fun getRanking(member: LocalMember?): Ranking? {
+        var ranking: Ranking? = rankingRepository.findByMember(member)
+        if (ranking == null && member != null) {
             ranking = Ranking()
-            ranking.member = memberService.get(member.guildId, member.user.userId) // force attach to transaction
+            ranking.member = member
             rankingRepository.save(ranking)
         }
         return ranking
+    }
+
+    private fun getRanking(guildId: Long, userId: String): Ranking? {
+        return getRanking(memberService[guildId, userId])
     }
 
     private fun isIgnoredChannel(config: RankingConfig, channel: TextChannel): Boolean {
