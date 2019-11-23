@@ -224,13 +224,9 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
     @Override
     public boolean isValidKey(GuildMessageReceivedEvent event, String key) {
         String prefix = configService.getPrefix(event.getGuild().getIdLong());
-        if (StringUtils.isEmpty(prefix)) {
-            return false;
+        if (StringUtils.isNotEmpty(prefix) && key.startsWith(prefix)) {
+            key = key.replaceFirst("^" + Pattern.quote(prefix), "");
         }
-        if (!key.startsWith(prefix)) {
-            return false;
-        }
-        key = key.replaceFirst("^" + Pattern.quote(prefix), "");
         return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
     }
 }
