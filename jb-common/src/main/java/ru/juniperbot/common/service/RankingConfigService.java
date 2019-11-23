@@ -21,8 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.model.request.RankingUpdateRequest;
-import ru.juniperbot.common.persistence.entity.LocalMember;
-import ru.juniperbot.common.persistence.entity.Ranking;
 import ru.juniperbot.common.persistence.entity.RankingConfig;
 
 public interface RankingConfigService extends DomainService<RankingConfig> {
@@ -41,7 +39,4 @@ public interface RankingConfigService extends DomainService<RankingConfig> {
 
     boolean isBanned(RankingConfig config, Member member);
 
-    Ranking getRanking(LocalMember member);
-
-    Ranking getRanking(Member member);
 }

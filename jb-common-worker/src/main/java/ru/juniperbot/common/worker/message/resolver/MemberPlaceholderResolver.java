@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import org.springframework.context.ApplicationContext;
 import ru.juniperbot.common.model.RankingInfo;
 import ru.juniperbot.common.persistence.entity.Ranking;
-import ru.juniperbot.common.service.RankingConfigService;
+import ru.juniperbot.common.persistence.repository.RankingRepository;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.utils.RankingUtils;
 import ru.juniperbot.common.worker.message.resolver.node.AccessorsNodePlaceholderResolver;
@@ -69,7 +69,7 @@ public class MemberPlaceholderResolver extends AccessorsNodePlaceholderResolver<
         }
         synchronized (this) {
             if (rankingInfo == null) {
-                Ranking ranking = context.getBean(RankingConfigService.class).getRanking(member);
+                Ranking ranking = context.getBean(RankingRepository.class).findByMember(member);
                 rankingInfo = ranking != null ? RankingUtils.calculateInfo(ranking) : new RankingInfo();
             }
         }

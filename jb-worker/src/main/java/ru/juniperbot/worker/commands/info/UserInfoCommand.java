@@ -108,7 +108,7 @@ public class UserInfoCommand extends MentionableCommand {
         if (localMember != null) {
             RankingConfig config = rankingConfigService.get(event.getGuild());
             if (config != null && config.isEnabled()) {
-                RankingInfo info = rankingService.getRankingInfo(localMember);
+                RankingInfo info = rankingService.getRankingInfo(event.getGuild().getIdLong(), reference.getId());
                 rankCommand.addFields(builder, config, info, guild);
             }
         }

@@ -19,7 +19,6 @@ package ru.juniperbot.module.ranking.service
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import ru.juniperbot.common.model.RankingInfo
-import ru.juniperbot.common.persistence.entity.LocalMember
 import ru.juniperbot.module.ranking.model.MemberVoiceState
 
 interface RankingService {
@@ -36,8 +35,6 @@ interface RankingService {
 
     fun updateRewards(member: Member)
 
-    fun getRankingInfo(member: Member): RankingInfo
-
-    fun getRankingInfo(member: LocalMember): RankingInfo
+    fun getRankingInfo(guildId: Long, userId: String): RankingInfo?
 
 }
