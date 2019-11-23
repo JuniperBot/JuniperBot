@@ -52,7 +52,7 @@ public class CommandReactionListener extends DiscordEventListener {
         Guild guild = event.getGuild();
         Member self = guild.getSelfMember();
 
-        if (event.getMember().getUser().isBot()
+        if (event.getUser().isBot()
                 || !self.hasPermission(Permission.MANAGE_ROLES)
                 || !featureSetService.isAvailable(guild)) {
             return;
@@ -87,10 +87,15 @@ public class CommandReactionListener extends DiscordEventListener {
         if (targetRole == null || !self.canInteract(targetRole)) {
             return;
         }
+
+        Member issuer = guild.getMember(event.getUser());
+        if (issuer == null) {
+            return; // FIXME for some reason member can be null here
+        }
         if (event instanceof GuildMessageReactionAddEvent) {
-            guild.addRoleToMember(event.getMember(), targetRole).queue();
+            guild.addRoleToMember(issuer, targetRole).queue();
         } else {
-            guild.removeRoleFromMember(event.getMember(), targetRole).queue();
+            guild.removeRoleFromMember(issuer, targetRole).queue();
         }
     }
 
