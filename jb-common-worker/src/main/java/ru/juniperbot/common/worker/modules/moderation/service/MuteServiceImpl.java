@@ -33,6 +33,7 @@ import ru.juniperbot.common.persistence.entity.ModerationConfig;
 import ru.juniperbot.common.persistence.entity.MuteState;
 import ru.juniperbot.common.persistence.repository.MuteStateRepository;
 import ru.juniperbot.common.service.ModerationConfigService;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.worker.event.service.ContextService;
 import ru.juniperbot.common.worker.jobs.UnMuteJob;
 import ru.juniperbot.common.worker.modules.audit.model.AuditActionBuilder;
@@ -70,6 +71,9 @@ public class MuteServiceImpl implements MuteService {
     @Autowired
     private AuditService auditService;
 
+    @Autowired
+    private TransactionHandler transactionHandler;
+
     @Override
     @Transactional
     public Role getMutedRole(Guild guild) {
@@ -106,6 +110,9 @@ public class MuteServiceImpl implements MuteService {
                     configService.save(moderationConfig);
                 }
 
+                for (Category channel : guild.getCategories()) {
+                    checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
+                }
                 for (TextChannel channel : guild.getTextChannels()) {
                     checkPermission(channel, role, PermissionMode.DENY, Permission.MESSAGE_WRITE);
                 }
@@ -130,19 +137,17 @@ public class MuteServiceImpl implements MuteService {
                 .withAttribute(DURATION_MS_ATTR, request.getDuration())
                 .withAttribute(GLOBAL_ATTR, request.isGlobal()) : null;
 
-        Consumer<Object> schedule = g -> {
-            contextService.inTransaction(() -> {
-                if (!request.isStateless()) {
-                    if (request.getDuration() != null) {
-                        scheduleUnMute(request);
-                    }
-                    storeState(request);
+        Consumer<Object> schedule = g -> transactionHandler.runInTransaction(() -> {
+            if (!request.isStateless()) {
+                if (request.getDuration() != null) {
+                    scheduleUnMute(request);
                 }
-                if (actionBuilder != null) {
-                    actionBuilder.save();
-                }
-            });
-        };
+                storeState(request);
+            }
+            if (actionBuilder != null) {
+                actionBuilder.save();
+            }
+        });
 
         if (request.isGlobal()) {
             Guild guild = request.getGuild();

@@ -14,34 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.support;
+package ru.juniperbot.common.support
 
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource
+import java.text.MessageFormat
+import java.util.*
 
-import java.text.MessageFormat;
-import java.util.Locale;
+class ModuleMessageSourceImpl(baseName: String) : ResourceBundleMessageSource(), ModuleMessageSource {
 
-public class ModuleMessageSourceImpl extends ResourceBundleMessageSource implements ModuleMessageSource {
-
-    public ModuleMessageSourceImpl() {
-        setDefaultEncoding("UTF-8");
+    init {
+        setBasename(baseName)
+        this.defaultEncoding = "UTF-8"
     }
 
     /**
      * Resolves the given message code as key in the registered resource bundles,
      * returning the value found in the bundle as-is (without MessageFormat parsing).
      */
-    @Override
-    public String resolveCodeWithoutArguments(String code, Locale locale) {
-        return super.resolveCodeWithoutArguments(code, locale);
+    override fun resolveCodeWithoutArguments(code: String, locale: Locale): String? {
+        return super.resolveCodeWithoutArguments(code, locale)
     }
 
     /**
      * Resolves the given message code as key in the registered resource bundles,
      * returning the value found in the bundle as-is (without MessageFormat parsing).
      */
-    @Override
-    public MessageFormat resolveCode(String code, Locale locale) {
-        return super.resolveCode(code, locale);
+    override fun resolveCode(code: String, locale: Locale): MessageFormat? {
+        return super.resolveCode(code, locale)
     }
 }

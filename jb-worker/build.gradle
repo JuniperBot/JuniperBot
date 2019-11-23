@@ -25,7 +25,7 @@ ext {
     moduleName = 'JuniperBot-Worker'
 }
 
-mainClassName = 'ru.juniperbot.worker.JuniperWorkerApplication'
+mainClassName = 'ru.juniperbot.worker.Launcher'
 
 bootJar {
     archiveFileName = "JuniperBot-Worker.jar"
@@ -37,9 +37,9 @@ dependencies {
     implementation project(':jb-common-worker')
     implementation project(':modules')
 
-    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
-    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
-    implementation "org.joda:joda-money:${jodaMoneyVersion}"
+    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:$jmxRemote"
+    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:$jmxRemoteLegacy"
+    implementation "org.joda:joda-money:$jodaMoneyVersion"
 
     implementation "org.codehaus.groovy:groovy"
 }

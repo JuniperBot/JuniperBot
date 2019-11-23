@@ -25,7 +25,7 @@ ext {
     moduleName = 'JuniperBot-Web'
 }
 
-mainClassName = 'ru.juniperbot.api.JuniperApiApplication'
+mainClassName = 'ru.juniperbot.api.Launcher'
 
 bootJar {
     archiveFileName = "JuniperBot-API.jar"
@@ -34,25 +34,25 @@ bootJar {
 dependencies {
 
     implementation project(':jb-common')
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.security:spring-security-acl"
-    implementation "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springBootVersion}"
+    implementation "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:$springBootVersion"
 
-    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:${jmxRemote}"
-    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:${jmxRemoteLegacy}"
+    implementation "org.glassfish.main.external:jmxremote_optional-repackaged:$jmxRemote"
+    implementation "org.glassfish.external:opendmk_jmxremote_optional_jar:$jmxRemoteLegacy"
 
     implementation "org.openpnp:opencv:${opencvVersion}-0"
-    implementation "org.opencv:opencv:${opencvVersion}"
+    implementation "org.opencv:opencv:$opencvVersion"
 
     // SOCIAL DEPENDENCIES
-    implementation ("com.github.twitch4j:twitch4j:${twitch4jVersion}") {
+    implementation ("com.github.twitch4j:twitch4j:$twitch4jVersion") {
         exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
     }
-    implementation "com.vk.api:sdk:${vkSdkVersion}"
-    implementation "com.rometools:rome:${romeVersion}"
+    implementation "com.vk.api:sdk:$vkSdkVersion"
+    implementation "com.rometools:rome:$romeVersion"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"

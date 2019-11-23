@@ -27,9 +27,9 @@ import ru.juniperbot.common.persistence.entity.RankingConfig;
 import ru.juniperbot.common.service.RankingConfigService;
 import ru.juniperbot.common.worker.event.DiscordEvent;
 import ru.juniperbot.common.worker.event.listeners.DiscordEventListener;
+import ru.juniperbot.module.ranking.model.MemberVoiceState;
 import ru.juniperbot.module.ranking.service.RankingService;
 import ru.juniperbot.module.ranking.utils.GuildVoiceActivityTracker;
-import ru.juniperbot.module.ranking.utils.VoiceActivityTracker;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -106,7 +106,7 @@ public class VoiceActivityListener extends DiscordEventListener {
         if (tracker == null) {
             return;
         }
-        VoiceActivityTracker.MemberState state = tracker.remove(channel, member);
+        MemberVoiceState state = tracker.remove(channel, member);
         if (state != null) {
             rankingService.addVoiceActivity(member, state);
         }

@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.ranking;
+package ru.juniperbot.module.mafia
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import ru.juniperbot.common.support.ModuleMessageSource
+import ru.juniperbot.common.support.ModuleMessageSourceImpl
 
 @Configuration
-public class RankingConfiguration {
+open class MafiaConfiguration {
 
     @Bean
-    public ModuleMessageSourceImpl rankingMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("ranking-jbmessages");
-        return source;
-    }
+    open fun mafiaMessages(): ModuleMessageSource = ModuleMessageSourceImpl("mafia-jbmessages")
 }

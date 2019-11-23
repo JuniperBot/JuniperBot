@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.module.mafia;
+package ru.juniperbot.common.service
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import ru.juniperbot.common.support.ModuleMessageSourceImpl;
+interface TransactionHandler {
 
-@Configuration
-public class MafiaConfiguration {
+    fun runInTransaction(action: Runnable)
 
-    @Bean
-    public ModuleMessageSourceImpl mafiaMessages() {
-        ModuleMessageSourceImpl source = new ModuleMessageSourceImpl();
-        source.setBasename("mafia-jbmessages");
-        return source;
-    }
+    fun runInNewTransaction(action: Runnable)
+
+    fun runWithLockRetry(action: Runnable)
+
+    fun <T> runInTransaction(action: () -> T): T
+
+    fun <T> runInNewTransaction(action: () -> T): T
+
+    fun <T> runWithLockRetry(action: () -> T): T
 }

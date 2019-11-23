@@ -36,6 +36,7 @@ public enum AuditActionType {
     MESSAGES_CLEAR("#FF6D96"),
     MESSAGE_EDIT("#60AFFF"),
     VOICE_JOIN("#AD84E8"),
+    VOICE_MOVE("#AD84E8"),
     VOICE_LEAVE("#E5ACA0");
 
     @Getter

@@ -29,12 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NamedThreadLocal;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.juniperbot.common.configuration.CommonProperties;
 import ru.juniperbot.common.service.ConfigService;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.utils.LocaleUtils;
 
 import java.awt.*;
@@ -76,7 +75,7 @@ public class ContextServiceImpl implements ContextService {
     private SourceResolverService resolverService;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private TransactionHandler transactionHandler;
 
     @Override
     public Locale getLocale() {
@@ -245,25 +244,7 @@ public class ContextServiceImpl implements ContextService {
     @Override
     @Async
     public void withContextAsync(Guild guild, Runnable action) {
-        inTransaction(() -> withContext(guild, action));
-    }
-
-    @Override
-    public void inTransaction(Runnable action) {
-        try {
-            transactionTemplate.execute(status -> {
-                try {
-                    action.run();
-                } catch (ObjectOptimisticLockingFailureException e) {
-                    throw e;
-                } catch (Exception e) {
-                    log.error("Async task results in error", e);
-                }
-                return null;
-            });
-        } catch (ObjectOptimisticLockingFailureException e) {
-            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
-        }
+        transactionHandler.runInTransaction(() -> withContext(guild, action));
     }
 
     @Override

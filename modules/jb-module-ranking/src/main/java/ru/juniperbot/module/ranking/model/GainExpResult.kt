@@ -14,28 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.service;
+package ru.juniperbot.module.ranking.model
 
-import net.dv8tion.jda.api.entities.Guild;
-import ru.juniperbot.common.persistence.entity.base.GuildEntity;
+import ru.juniperbot.common.persistence.entity.Ranking
 
-public interface DomainService<T extends GuildEntity> {
-
-    T get(Guild guild);
-
-    T get(long id);
-
-    T getByGuildId(long guildId);
-
-    T getOrCreate(long guildId);
-
-    T save(T entity);
-
-    boolean exists(long guildId);
-
-    void evict(long guildId);
-
-    boolean isCacheable();
-
-    void setCacheable(boolean cacheable);
-}
+data class GainExpResult(val ranking: Ranking, val oldLevel: Int, val newLevel: Int)

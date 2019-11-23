@@ -16,11 +16,10 @@
  */
 package ru.juniperbot.common.utils;
 
-import org.ocpsoft.prettytime.PrettyTime;
-import org.ocpsoft.prettytime.units.JustNow;
-import org.ocpsoft.prettytime.units.Millisecond;
+import net.time4j.PrettyTime;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.Locale;
 
 public class PrettyTimeUtils {
@@ -29,10 +28,11 @@ public class PrettyTimeUtils {
         // private
     }
 
-    public static String formatDuration(long duration, Locale locale) {
-        PrettyTime formatter = new PrettyTime(new Date(0), locale);
-        formatter.removeUnit(JustNow.class);
-        formatter.removeUnit(Millisecond.class);
-        return formatter.format(new Date(duration));
+    public static String print(long amount, TemporalUnit unit, Locale locale) {
+        return PrettyTime.of(locale).print(Duration.of(amount, unit));
+    }
+
+    public static String print(long durationMs, Locale locale) {
+        return PrettyTime.of(locale).print(Duration.ofMillis(durationMs));
     }
 }

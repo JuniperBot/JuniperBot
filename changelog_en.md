@@ -1,5 +1,17 @@
 # JuniperBot Changelog:
 
+## Version 7.6
+ - **[Audit]** New action type for voice move event;
+ - Fixed custom commands invocations via @mention;
+ - `вычислить/math` command improvements:
+   - Precision is 32 digits now;
+   - Fixed error handling;
+ - Fixed duration texts for mute commands, again;
+ - Fixed role granting conflict using voice channels (between In-Voice role and ranking reward);
+ - Mute role now configures category permissions according to text channel;
+ - Custom command template variable `{content}` now supports parameters by their sequence number (divided by space): `{content:1}`, `{content:2}` and so on;
+ - Some small fixes and improvements.
+
 ## Version 7.5
  - **[Audit]** Fixed name changing logging;
  - **[Ranking]** Ranking system improvements:

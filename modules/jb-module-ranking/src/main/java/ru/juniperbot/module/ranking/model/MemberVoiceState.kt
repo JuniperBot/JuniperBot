@@ -14,9 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.support;
+package ru.juniperbot.module.ranking.model
 
-public interface ModuleListener {
+import com.google.common.util.concurrent.AtomicDouble
+import java.util.concurrent.atomic.AtomicLong
 
-    void onShutdown();
+class MemberVoiceState {
+    val activityTime = AtomicLong(0)
+    val points = AtomicDouble(0.0)
+    var lastAccumulated = System.currentTimeMillis()
+    var frozen: Boolean = false
 }

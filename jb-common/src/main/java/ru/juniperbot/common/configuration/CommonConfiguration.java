@@ -22,6 +22,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -34,6 +35,7 @@ import ru.juniperbot.common.support.JbMessageSource;
 import ru.juniperbot.common.support.jmx.ThreadPoolTaskExecutorMBean;
 
 @EnableAsync
+@EnableRetry
 @EnableScheduling
 @EnableAspectJAutoProxy
 @EnableTransactionManagement

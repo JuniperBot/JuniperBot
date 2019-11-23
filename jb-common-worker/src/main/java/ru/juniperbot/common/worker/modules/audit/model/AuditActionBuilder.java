@@ -91,13 +91,32 @@ public abstract class AuditActionBuilder {
     }
 
     public AuditActionBuilder withAttribute(String key, Object value) {
-        this.action.getAttributes().put(key, value);
+        this.action.getAttributes().put(key, getReferenceForObject(value));
         return this;
     }
 
     public AuditActionBuilder withAttachment(String key, byte[] data) {
         this.attachments.put(key, data);
         return this;
+    }
+
+    private Object getReferenceForObject(Object object) {
+        if (object instanceof User) {
+            return getReference((User) object);
+        }
+        if (object instanceof LocalUser) {
+            return getReference((LocalUser) object);
+        }
+        if (object instanceof Member) {
+            return getReference((Member) object);
+        }
+        if (object instanceof LocalMember) {
+            return getReference((LocalMember) object);
+        }
+        if (object instanceof GuildChannel) {
+            return getReference((GuildChannel) object);
+        }
+        return object;
     }
 
     private NamedReference getReference(User user) {

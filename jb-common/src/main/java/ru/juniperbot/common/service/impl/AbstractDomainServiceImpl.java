@@ -22,11 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.juniperbot.common.persistence.entity.base.GuildEntity;
 import ru.juniperbot.common.persistence.repository.base.GuildRepository;
 import ru.juniperbot.common.service.DomainService;
@@ -49,9 +45,6 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
 
     @Autowired
     protected ApplicationContext applicationContext;
-
-    @Autowired
-    protected TransactionTemplate transactionTemplate;
 
     @Autowired
     protected GatewayService gatewayService;
@@ -122,20 +115,6 @@ public abstract class AbstractDomainServiceImpl<T extends GuildEntity, R extends
             }
         }
         return result;
-    }
-
-    @Override
-    public void inTransaction(Runnable action) {
-        try {
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    action.run();
-                }
-            });
-        } catch (ObjectOptimisticLockingFailureException e) {
-            log.warn("Optimistic locking failed for object {} [id={}]", e.getPersistentClassName(), e.getIdentifier(), e);
-        }
     }
 
     protected abstract T createNew(long guildId);

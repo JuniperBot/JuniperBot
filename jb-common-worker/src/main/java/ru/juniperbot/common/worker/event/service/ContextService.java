@@ -62,8 +62,6 @@ public interface ContextService {
 
     void initContext(long guildId);
 
-    void inTransaction(Runnable action);
-
     void resetContext();
 
     <T> void queue(Guild guild, RestAction<T> action, Consumer<T> success);

@@ -14,28 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with JuniperBot. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.juniperbot.common.service;
+package ru.juniperbot.module.audio
 
-import net.dv8tion.jda.api.entities.Guild;
-import ru.juniperbot.common.persistence.entity.base.GuildEntity;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import ru.juniperbot.common.support.ModuleMessageSource
+import ru.juniperbot.common.support.ModuleMessageSourceImpl
 
-public interface DomainService<T extends GuildEntity> {
+@Configuration
+open class AudioConfiguration {
 
-    T get(Guild guild);
-
-    T get(long id);
-
-    T getByGuildId(long guildId);
-
-    T getOrCreate(long guildId);
-
-    T save(T entity);
-
-    boolean exists(long guildId);
-
-    void evict(long guildId);
-
-    boolean isCacheable();
-
-    void setCacheable(boolean cacheable);
+    @Bean
+    open fun audioMessages(): ModuleMessageSource = ModuleMessageSourceImpl("audio-jbmessages")
 }

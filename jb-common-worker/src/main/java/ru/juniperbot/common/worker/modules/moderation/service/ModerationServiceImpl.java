@@ -373,7 +373,7 @@ public class ModerationServiceImpl implements ModerationService {
             StringBuilder builder = new StringBuilder(messageService.getMessage(finalCode, args));
             if (duration != null) {
                 builder.append("\n\n").append(messageService.getMessage(code + ".duration",
-                        PrettyTimeUtils.formatDuration(duration, contextService.getLocale())));
+                        PrettyTimeUtils.print(duration, contextService.getLocale())));
             }
 
             JDA jda = member.getGuild().getJDA();

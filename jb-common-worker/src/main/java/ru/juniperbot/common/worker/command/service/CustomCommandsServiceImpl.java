@@ -33,9 +33,11 @@ import ru.juniperbot.common.persistence.entity.CustomCommand;
 import ru.juniperbot.common.persistence.entity.GuildConfig;
 import ru.juniperbot.common.persistence.repository.CommandReactionRepository;
 import ru.juniperbot.common.persistence.repository.CustomCommandRepository;
+import ru.juniperbot.common.service.TransactionHandler;
 import ru.juniperbot.common.utils.CommonUtils;
 import ru.juniperbot.common.worker.feature.service.FeatureSetService;
 import ru.juniperbot.common.worker.message.model.MessageTemplateCompiler;
+import ru.juniperbot.common.worker.message.resolver.ContentPlaceholderResolver;
 import ru.juniperbot.common.worker.message.service.MessageTemplateService;
 import ru.juniperbot.common.worker.utils.DiscordUtils;
 
@@ -63,6 +65,9 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
 
     @Autowired
     private FeatureSetService featureSetService;
+
+    @Autowired
+    private TransactionHandler transactionHandler;
 
     @Override
     public boolean sendCommand(GuildMessageReceivedEvent event, String content, String key, GuildConfig config) {
@@ -102,7 +107,7 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                 .withGuild(guild)
                 .withMember(event.getMember())
                 .withFallbackChannel(event.getChannel())
-                .withVariable("content", content);
+                .withResolver(new ContentPlaceholderResolver(content));
 
         switch (command.getType()) {
             case ALIAS:
@@ -154,7 +159,8 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
                         log.error("Could not add reaction emote", e);
                     }
                 });
-        contextService.inTransaction(() -> {
+
+        transactionHandler.runInTransaction(() -> {
             commandRepository.findById(command.getId())
                     .ifPresent(e -> reactionRepository.save(new CommandReaction(message, e)));
         });
@@ -219,13 +225,9 @@ public class CustomCommandsServiceImpl extends BaseCommandsService {
     @Override
     public boolean isValidKey(GuildMessageReceivedEvent event, String key) {
         String prefix = configService.getPrefix(event.getGuild().getIdLong());
-        if (StringUtils.isEmpty(prefix)) {
-            return false;
+        if (StringUtils.isNotEmpty(prefix) && key.startsWith(prefix)) {
+            key = key.replaceFirst("^" + Pattern.quote(prefix), "");
         }
-        if (!key.startsWith(prefix)) {
-            return false;
-        }
-        key = key.replaceFirst("^" + Pattern.quote(prefix), "");
         return commandRepository.existsByKeyAndGuildId(key, event.getGuild().getIdLong());
     }
 }
